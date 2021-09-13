@@ -1,0 +1,53 @@
+= Distributed Query Mode
+
+== Introduction
+
+In a distributed graph (where the data are spread across multiple machines), the default execution plan is as follows:
+
+* One machine will be selected as the execution hub, regardless of the number or the distribution of starting point vertices.
+* All the computation work for the query will take place at the execution hub.  The vertex and edge data from other machines will be copied to the hub machine for processing.
+
+TigerGraph Enterprise Edition offers a Distributed Query mode which provides a more optimized execution plan for queries which are likely to start at several machines and continue their traversal across several machines.
+
+* A set of machines representing one full copy of the entire graph will participate in the query. If the cluster has a replication factor of 2 (so there are two copies of each piece of data), then half the machines will participate.
+* The query executes in parallel across all the machines which have source vertex data for a given hop in the query. That is, each SELECT statement defines a 1-hop traversal from a set of source vertices to a set of target vertices. Unlike the default mode where all the needed data are brought to one machine, in Distributed Query mode, the computation moves across the cluster, following the traversal pattern of the query.
+* The output results will be gathered at one machine.
+
+== Invoke Distributed Query Mode
+
+To invoke Distributed Query Mode, insert the keyword `DISTRIBUTED` before `QUERY` in the query definition:
+
+[source,erlang]
+----
+createQuery :=
+    CREATE [OR REPLACE][DISTRIBUTED] QUERY queryName "(" [parameterList] ")"
+               FOR GRAPH graphName
+               [RETURNS "("  baseType | accumType ")"]
+               [API "(" stringLiteral ")"]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+----
+
+== Guidelines for Selecting Distributed Query Mode
+
+The basic trade-off between distributed query mode and default mode is greater parallelism for the given query vs. using more system resources, which reduces the potential for concurrency with other operations. Each machine has a certain number of workers available for concurrent execution of queries.  A query in default mode uses only one worker out of the whole system. (This one worker will have multiple threads for processing edge traversals in parallel.)  However, a query in distributed mode uses one query worker _per machine._ This means this query can run faster, but it leaves fewer workers for other queries running concurrently.
+
+In general, Distributed Query Mode is likely to improve the performance of a query if the query:
+
+* Starts at a very large set of starting point vertices.
+* Performs many hops.
+
+For example, algorithms that compute a value for every vertex or one value for the entire graph should use Distributed Query Mode. This includes PageRank, Centrality, and Connected Component algorithms.
+
+{% hint style="info" %}
+For applications where the same query (queries with the same logic but different input parameters) will be run many times in production, the application designer is encouraged to try both modes during development and choose the one which works better for their use case and data.
+{% endhint %}
+
+== Unsupported Features
+
+The following GSQL features are not supported in Distributed Query Mode:
+
+* Functions
+ ** `Evaluate()`
+* Accumulator nesting limitations
+ ** Accumulator methods are not supported if the accumulator is nested inside another accumulator

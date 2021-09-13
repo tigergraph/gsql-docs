@@ -1,0 +1,178 @@
+= Query User-Defined Functions
+:pp: {plus}{plus}
+
+In GSQL, users can supplement the language by defining their own query user-defined functions (query UDF). Query UDFs can be called in queries and subqueries to perform a set of defined actions and return a value like the built-in functions.
+
+This page introduces the process to define a query UDF. Once defined, the new functions will be added into GSQL automatically next time GSQL is executed.
+
+== Define a query UDF
+
+Below are the steps to add a Query UDF to GSQL:
+
+=== Step 1: Download current query UDF file
+
+Use the `GET ExprFunctions` command in GSQL to download the current UDF file to any location on your machine. The file and the directores will be created if they do not exist, and the file must end with the file extention `.hpp`:
+
+[source,text]
+----
+GSQL > GET ExprFunctions TO "/example/path/to/ExprFunctions.hpp"
+----
+
+If your query UDF requires a user-defined struct or helper function, also use the `GET ExprUtil` command to download the current `ExprUtil` file:
+
+[source,text]
+----
+GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
+----
+
+=== Step 2: Define C{pp} function
+
+Define the C{pp} function inside the `UDIMPL` namespace inside of the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`. Only `bool`, `int`, `float`, `double`, and `string` (NOT `std::string`) are allowed as the return value type and the function argument type. However, any C{pp} type is allowed inside a function body.
+
+If the function requires a user-defined struct or helper function, define it in the `ExprUtil` file you downloaded in Step 1.
+
+Below is an example of a query UDF definition:
+
+{% code title="New code in ExprFunctions.hpp" %}
+
+[source,cpp]
+----
+#include <algorithm>  // for std::reverse
+inline bool greater_than_three (double x) {
+  return x > 3;
+}
+inline string reverse(string str){
+  std::reverse(str.begin(), str.end());
+  return str;
+}
+----
+
+{% endcode %}
+
+{% hint style="warning" %}
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL cannot install any GSQL query, even if the GSQL query doesn't call any query UDF. Therefore, please test each new query UDF after adding it. One way of testing a function is to create a new file `test.cpp` and compile it: +
+`> g{pp} test.cpp
+
+____
+./a.out``
+You might need to remove the include header ``#include <gle/engine/cpplib/headers.hpp>`` in ``ExprFunctions.hpp`` and ``ExprUtil.hpp` in order to compile.
+____
+
+{% code title="test.cpp" %}
+
+[source,sql]
+----
+#include "ExprFunctions.hpp"
+#include <iostream>
+int main () {
+  std::cout << to_string (123) << std::endl;    // to_string and str_to_int are two built-in functions in ExprFunction.hpp
+  std::cout << str_to_int ("123") << std::endl;
+  return 0;
+}
+----
+
+{% endcode %}
+{% endhint %}
+
+=== Step 3: Upload files
+
+After you have defined the function, use the `PUT` command to upload the files you modified.
+
+[source,text]
+----
+GSQL > PUT ExprFunctions FROM "/path/to/udf_file.hpp"
+PUT ExprFunctions successfully.
+GSQL > PUT ExprUtil FROM "/path/to/utils_file.hpp"
+PUT ExprUtil successfully.
+----
+
+The `PUT` command will automatically upload the files to all nodes in a cluster. Once the files are uploaded, you will be able to call the query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or executing GSQL scripts from a bash shell.
+
+{% code title="Example of a GSQL query that uses the UDF" %}
+
+[source,sql]
+----
+CREATE QUERY udfExample() FOR GRAPH minimalNet {
+  DOUBLE x;
+  BOOL y;
+
+  x = 3.5;
+  PRINT greater_than_three(x);
+  y = greater_than_three(2.5);
+  PRINT y;
+
+  PRINT reverse("abc");
+}
+----
+
+{% endcode %}
+
+== Example
+
+Suppose you are working in a distributed environment and want to add a function that that returns a random double between 0 and 1.
+
+Start by downloading the current UDF file with the `GET` command:
+
+[source,text]
+----
+GSQL > GET ExprFunctions TO "/home/tigergraph/documents/udf.hpp"
+----
+
+In the downloaded file, add the function definition for function `rng` and add the necessary include directives at the top:
+
+{% code title="udf.hpp" %}
+
+[source,cpp]
+----
+// Some code is left out for simplicity
+
+// Copyright (c) 2015-2021, TigerGraph Inc.
+
+#ifndef EXPRFUNCTIONS_HPP_
+#define EXPRFUNCTIONS_HPP_
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string>
+#include <gle/engine/cpplib/headers.hpp>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <random> // include statement for rng()
+#include <vector>
+#include <map>
+
+#include "ExprUtil.hpp"
+
+namespace UDIMPL {
+  typedef std::string string;
+
+  // other UDFs ...
+
+  inline double rng() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution < double > distribution(0.0, 1.0);
+
+    return distribution(gen);
+  }
+
+  // other UDFs ...
+
+}
+
+
+#endif /* EXPRFUNCTIONS_HPP_ */
+----
+
+{% endcode %}
+
+Lastly, use the `PUT` command to upload the file. This will uploaded the file to all nodes in a cluster:
+
+[source,text]
+----
+GSQL > PUT ExprFunction FROM "/home/tigergraph/documents/udf.hpp"
+PUT ExprFunctions successfully.
+----
+
+The UDF has now been added to GSQL and you can start using the function in GSQL queries.

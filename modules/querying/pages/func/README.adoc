@@ -1,0 +1,21 @@
+= Functions
+:description: This section contains information on all functions in the GSQL query language.
+
+This section contains information on all functions in the GSQL query language. Functions are categorized by data type when applicable, and by purpose when the function involves multiple data structures.
+
+All built-in function names are case-insensitive. However, user-defined function names are case-sensitive
+
+Built-in functions:
+
+* xref:aggregation-functions.adoc[Aggregation functions]
+* xref:datetime-functions.adoc[Datetime functions]
+* xref:edge-methods.adoc[Edge methods]
+* xref:jsonarray-methods.adoc[JSON array functions]
+* xref:json-object-methods.adoc[JSON object functions]
+* xref:mathematical-functions.adoc[Mathematical functions]
+* xref:string-functions.adoc[String functions]
+* xref:type-conversion-functions.adoc[Type conversion functions]
+* xref:vertex-methods.adoc[Vertex functions]
+* xref:miscellaneous-functions.adoc[Miscellaneous functions]
+
+In GSQL, users can supplement the language by defining their own Query User-Defined Functions (Query UDF). To learn about how to define a Query UDF, see xref:query-user-defined-functions.adoc[Query User-Defined Functions].

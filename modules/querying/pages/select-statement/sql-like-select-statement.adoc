@@ -1,0 +1,338 @@
+= SQL-like SELECT statement
+
+The SQL-like SELECT statement defines a tabular output. It introduces the GROUP BY clause, as well as internal table structures which can be printed.
+
+{% code title="EBNF for SQL-Like Select Statement" %}
+
+[source,erlang]
+----
+sqlSelectBlock := sqlSelectClause
+               fromClause
+               [whereClause]
+               [groupByClause]
+               [havingClause]
+               [orderClause]
+               [limitClause]
+
+sqlSelectClause := SELECT [DISTINCT] columnExpr ("," columnExpr)*
+               INTO tableName
+columnExpr := expr [AS columnName]
+            | aggregator "("[DISTINCT] expr ")" [AS columnName]
+columnName := name
+tableName := name
+----
+
+{% endcode %}
+
+Just as in SQL, the SELECT keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.  The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query. A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
+
+{% hint style="warning" %}
+If some columns are aggregated, the non-aggregated (grouping) columns must come first.
+{% endhint %}
+
+Unlike the classic GSQL SELECT statement which assigns its output to a vertex set variable, the SQL-like form uses `INTO tableName` to store the results in a table. `tableName` can be any identifier that has not been used in the query before.
+
+`DISTINCT` has the same meaning as it does in SQL: values that appear more than once in the raw data should only be used once. It can be used either individually for aggregated columns (e.g., count how many unique values there are) or collectively so that there are no repeated rows in the table.
+
+The SQL-like form may use the link:sql-like-select-statement.md#group-by-clause[GROUP  BY clause] but may not use the ACCUM and POST-ACCUM clauses.
+
+{% hint style="warning" %}
+This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header. +
+{% endhint %}
+
+[discrete]
+==== Example:
+
+In the example graph `socialNet`, which has vertex types `person` and `post`, and edge type `liked` for when someone likes a post, use a query to retrieve timestamps of all likes, the subject of the posts being liked, and the primary IDs of the people who liked the posts.
+
+{% tabs %}
+{% tab title="Query" %}
+
+[source,sql]
+----
+CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
+    SELECT l.actionTime, pt.subject, p INTO T
+        FROM person:p -(liked>:l)- post:pt;
+    PRINT T;
+}
+----
+
+{% endtab %}
+
+{% tab title="Output" %}
+
+----
+[
+  {
+    "Table1": [
+      {
+        "actionTime": "2010-01-12 11:22:05",
+        "p": "person7",
+        "subject": "cats"
+      },
+      {
+        "actionTime": "2010-01-12 21:12:05",
+        "p": "person5",
+        "subject": "tigergraph"
+      },
+      {
+        "actionTime": "2010-01-11 11:32:00",
+        "p": "person1",
+        "subject": "Graphs"
+      },
+      {
+        "actionTime": "2010-01-13 03:16:05",
+        "p": "person4",
+        "subject": "coffee"
+      },
+      {
+        "actionTime": "2010-01-12 10:52:15",
+        "p": "person2",
+        "subject": "Graphs"
+      },
+      {
+        "actionTime": "2010-01-11 16:02:26",
+        "p": "person2",
+        "subject": "cats"
+      },
+      {
+        "actionTime": "2010-01-16 05:15:53",
+        "p": "person3",
+        "subject": "Graphs"
+      },
+      {
+        "actionTime": "2010-01-11 03:26:05",
+        "p": "person8",
+        "subject": "coffee"
+      },
+      {
+        "actionTime": "2010-01-14 11:23:05",
+        "p": "person6",
+        "subject": "cats"
+      }
+    ]
+  }
+]
+----
+
+{% endtab %}
+{% endtabs %}
+
+== GROUP BY Clause
+
+The optional GROUP BY clause acts just as it does in basic SQL: it groups and merge rows of data together, so that the output table summarizes the data, rather than showing every individual tuple which matches the SELECT and FROM clauses.
+
+{% code title="EBNF for GROUP BY clause" %}
+
+[source,erlang]
+----
+groupByClause := GROUP BY groupExpr ("," groupExpr)*
+groupExpr = expr
+----
+
+{% endcode %}
+
+The SELECT clause's list of column expressions defines a set of tuples or rows. All the tuples which have the same value for `groupExpr` are grouped together. If there is a second `groupExpr`, then this is used to subdivide each group into subgroups, and so on through the list of `groupExpr` from left to right.
+
+[discrete]
+==== Coordinating SELECT and GROUP BY
+
+The SELECT clause and GROUP BY clause must be coordinated. Each expression `groupExpr` may be a vertex or edge alias from the FROM clause, or an attribute of a vertex or edge alias. Furthermore, each `groupExpr` must either be the same as or the basis of a SELECT `columnExpr`. In the SELECT clause, any columns which are not associated with a  groupExpr must be be aggregated (with COUNT, SUM, AVG, MIN or MAX) and must be at the end of the list of columns. For example, in the workNet graph, if we have this FROM clause: +
+`FROM person:p -(worksFor:w)- company:c` +
+and if we want columns for company's country, whether working full time or not, and employees, with no grouping we could have
+
+[source,sql]
+----
+SELECT c.country, w.fulltime, p INTO T
+FROM person:p -(worksFor:w)- company:c
+----
+
+The non-grouped output would look like this:
+
+[source,sql]
+----
+[{"T": [
+      {"country": "us","fullTime": true,"p": "person3"},
+      {"country": "us","fullTime": true,"p": "person6"},
+      {"country": "us","fullTime": true,"p": "person10"},
+      ...
+----
+
+If we want to group by country and then by work status, we could have this:
+
+{% code title="Coordination between SELECT columns and GROUP BY expressions" %}
+
+[source,sql]
+----
+SELECT c.country, w.fulltime, COUNT(p) AS numEmployees INTO T
+FROM person:p -(worksFor:w)- company:c
+GROUP BY c.country, w.fulltime
+----
+
+{% endcode %}
+
+Then the grouped output would look like this:
+
+[source,sql]
+----
+[{"T": [
+      {"country": "us","fullTime": true,"numEmployees": 7},
+      {"country": "chn","fullTime": false,"numEmployees": 4},
+      {"country": "chn","fullTime": true,"numEmployees": 2},
+      ...
+----
+
+[discrete]
+==== Implied GROUP BY
+
+If the SELECT clause contains aggregator functions, the GROUP BY clause can be omitted. Instead, GSQL will assume that every SELECT expression that is not aggregrated is to be used for grouping, in left-to-right order.
+
+[discrete]
+==== Examples
+
+Example 1 (grouping and aggregation): For each employee, find the number of its employers
+
+{% tabs %}
+{% tab title="Query" %}
+
+[source,sql]
+----
+CREATE QUERY tabularEx1() FOR GRAPH workNet SYNTAX v2 {
+  SELECT    p AS employee, count(c) AS employerCount INTO T
+  FROM      person:p -(worksFor)- company:c
+  GROUP BY p;
+
+  PRINT T;
+}
+----
+
+{% endtab %}
+
+{% tab title="Output" %}
+
+----
+{"version":{"edition":"enterprise",
+                  "api":"v2",
+           	      "schema":0},
+"error":false,
+"message":"",
+"results":[{"T":[
+{"employee":"person6","employerCount":1},
+{"employee":"person7","employerCount":2},
+{"employee":"person12","employerCount":1},
+{"employee":"person3","employerCount":1},
+{"employee":"person11","employerCount":1},
+{"employee":"person4","employerCount":1},
+{"employee":"person9","employerCount":2},
+{"employee":"person10","employerCount":2},
+{"employee":"person1","employerCount":2},
+{"employee":"person5","employerCount":1},
+{"employee":"person2","employerCount":2},
+{"employee":"person8","employerCount":1}]}]}
+----
+
+{% endtab %}
+{% endtabs %}
+
+Example 2 (HAVING clause): Find persons with at least 2 employers.
+
+{% tabs %}
+{% tab title="Query" %}
+
+[source,sql]
+----
+CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
+  SELECT    p AS employee, count(c) AS employerCount INTO T
+  FROM      person:p -(worksFor)- company:c
+  GROUP BY p
+  HAVING  employerCount > 1;
+
+  PRINT T;
+}
+----
+
+{% endtab %}
+
+{% tab title="Output" %}
+
+----
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"T": [
+    {"employee": "person2","employerCount": 2},
+    {"employee": "person1","employerCount": 2},
+    {"employee": "person7","employerCount": 2},
+    { "employee": "person10","employerCount": 2},
+    {"employee": "person9","employerCount": 2}
+  ]}]
+}
+----
+
+{% endtab %}
+{% endtabs %}
+
+Example 2a (implicit grouping): Same as Example 2, but with implicit grouping from the SELECT clause.
+
+[source,sql]
+----
+CREATE QUERY tabularEx2a() FOR GRAPH workNet SYNTAX v2 {
+  SELECT    p AS employee, count(c) AS employerCount INTO T
+  FROM      person:p -(worksFor)- company:c
+  HAVING  employerCount > 1;
+
+  PRINT T;
+}
+----
+
+The output is the same as for Example 2.
+
+Example 3 (grouping, aggregation, order by and limit): Group employees by country and by work status, sorted by group size and then by country name.
+
+{% tabs %}
+{% tab title="Query" %}
+
+[source,sql]
+----
+CREATE QUERY tabularEx3() SYNTAX v2 {
+  SELECT    c.country, w.fullTime, COUNT(p) AS numEmployees INTO T
+  FROM      person:p -(worksFor:w)- company:c
+  GROUP BY c.country, w.fullTime
+  ORDER BY  numEmployees DESC, c.country ASC
+  LIMIT  10;
+
+  PRINT T;
+}
+----
+
+{% endtab %}
+
+{% tab title="Output" %}
+
+----
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"T": [
+    {"country":"us", "numEmployees":7, "fullTime":true},
+    {"country":"chn", "numEmployees":4, "fullTime":false},
+    {"country":"chn", "numEmployees":2, "fullTime":true},
+    {"country":"jp", "numEmployees":2, "fullTime":false},
+    {"country":"can", "numEmployees":1, "fullTime":true},
+    {"country":"jp", "numEmployees":1, "fullTime":true}
+  ]}]
+}
+----
+
+{% endtab %}
+{% endtabs %}

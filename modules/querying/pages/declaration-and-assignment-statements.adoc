@@ -1,0 +1,673 @@
+= Declaration and Assignment Statements
+
+In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment. This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
+
+{% code title="EBNF" %}
+
+[source,erlang]
+----
+## Declarations ##
+accumDeclStmt :=
+          accumType localAccumName ["=" constant]
+                    ["," localASccumName ["=" constant]]*
+        | [STATIC] accumType globaAccumName ["=" constant]
+                    ["," GlobalAccumName ["=" constant]]*
+localAccumName := "@"accumName;
+globalAccumName := "@@"accumName;
+
+baseDeclStmt    := baseType name ["=" constant] ["," name ["=" constant]]*
+fileDeclStmt := FILE fileVar "(" filePath ")"
+fileVar := name
+
+localVarDeclStmt := baseType varName "=" expr
+
+vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
+
+simpleSet := vertexSetName
+           | "(" simpleSet ")"
+           | simpleSet (UNION | INTERSECT | MINUS) simpleSet
+
+seedSet := "{" [seed ["," seed ]*] "}"
+seed := '_'
+      | ANY
+      | vertexSetName
+      | globalAccumName
+      | vertexType ".*"
+      | paramName
+      | "SelectVertex" selectVertParams
+
+selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
+          stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
+
+columnId := "$" (integer | stringLiteral)
+
+## Assignment Statements ##
+assignStmt := name "=" expr
+            | name "." attrName "=" expr
+
+attrAccumStmt := name "." attrName "+=" expr
+
+lAccumAssignStmt := vertexAlias "." localAccumName ("+="| "=") expr
+
+gAccumAssignStmt :=  globalAccumName ("+=" | "=") expr
+
+loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
+                                  ["," LOADACCUM loadAccumParams]* "}"
+
+loadAccumParams := "(" filePath "," columnId ["," columnId]* ","
+          stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
+
+## Function Call Statement ##
+funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
+              | globaAccumName ("." funcName "(" [argList] ")")+
+              | "reset_collection_accum" "(" accumName ")"
+
+argList := expr ["," expr]*
+----
+
+{% endcode %}
+
+== Variable scopes
+
+Different types of variable declarations use different scoping rules. There are two types of scoping rules in a GSQL query:
+
+* link:declaration-and-assignment-statements.md#block-scoping[Block scoping]
+* link:declaration-and-assignment-statements.md#global-scoping[Global scoping]
+
+=== Block scoping
+
+In GSQL, curly brackets, as well as `IF .. THEN`, `ELSE`, `+WHILE ... DO+`, `+FOREACH ... DO+` statements create a block. A `SELECT` statement also creates a block. A block-scoped variable declared inside a block scope is only accessible inside that scope.
+
+Additionally, variables declared in a lower scope can use the same name as a variable already declared in a higher scope. The lower-scope declaration will take precedence over the higher-scope declaration until the end of the lower scope.
+
+The following types of variables use block scoping:
+
+* xref:accumulators.adoc[Accumulators]
+* link:declaration-and-assignment-statements.md#base-type-variables[Base type variables]
+* link:declaration-and-assignment-statements.md#local-base-type-variables[Local base type variables]
+* link:declaration-and-assignment-statements.md#file-object-declaration[File objects]
+* link:select-statement/#aliases-and-accum-post-accum-iteration-model[Vertex or edge aliases]
+
+=== Global scoping
+
+A global-scoped variable is always accessible anywhere in the query once it has been declared regardless of where it is declared. One also cannot declare another variable with the same name as a  global-scoped variable that has already been declared.
+
+The following types of variables use global scoping:
+
+* link:declaration-and-assignment-statements.md#vertex-set-variable-declaration-and-assignment[Vertex set variables]
+
+== Declaration Statements
+
+There are six types of variable declarations in a GSQL query:
+
+* Accumulator
+* Base type variable
+* Local base type variable
+* Vertex set
+* File object
+* Vertex or edge aliases
+
+The first five types each have their own declaration statement syntax and are covered in this section. Aliases are declared implicitly in a `SELECT` statement.
+
+=== Accumulators
+
+Accumulator declaration is discussed in link:accumulators.md#declaration-of-accumulators[Accumulators].
+
+=== Base type variables
+
+In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables. The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
+
+{% code title="EBNF for base type variable declaration" %}
+
+[source,sql]
+----
+baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
+----
+
+{% endcode %}
+
+A base type variable can be declared and accessed anywhere in the query. To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side. You can declare multiple variables of the same type in a single declaration statement.
+
+[source,cpp]
+----
+CREATE QUERY baseTypeVariable() {
+    STRING a;
+    DOUBLE num1, num2 = 3.2;
+    INT year = 2020, month = 12, day = 115;
+    INT b = rand(5);
+    PRINT a, b, num;
+}
+----
+
+When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exitng the clause. Therefore, if there are multiple assignment statements for the same base type variable in an `ACCUM` or `POST-ACCUM` clause, only the last one will take effect.
+
+For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends. Therefore, the accumulator will not receive the value and will hold a value of 0 at the end of the query.
+
+[source,sql]
+----
+CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
+  MaxAccum<INT> @@maxDateGlob;
+  DATETIME dt;
+
+  allUser = {person.*};
+  allUser = SELECT src
+            FROM allUser:src - (liked:e) -> post
+            ACCUM
+            dt = e.actionTime,           # dt isn't updated yet
+            @@maxDateGlob += datetime_to_epoch(dt);
+  PRINT @@maxDateGlob, dt;  # @@maxDateGlob will be 0
+}
+----
+
+=== Local base type variables
+
+Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
+
+Local base type variables are block-scoped and are accessible in the block where they are declared only. Within a local base type variable's scope, another local base type variable with the same name cannot be declared at the same level.  However, a new local base type variable with the same name can be declared at a lower level (i.e., within a nested `SELECT` or `UPDATE` statement). The lower declaration takes precedence at the lower level.
+
+In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
+
+{% code title="EBNF for local base type variable declaration and initialization" %}
+
+[source,sql]
+----
+localVarDeclStmt := baseType varName "=" expr
+----
+
+{% endcode %}
+
+Local base type variables are not subject to the assignment restrictions of regular base type variables. Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
+
+==== Example:
+
+{% code title="Base type variable declaration in DML statements" %}
+
+[source,sql]
+----
+# An example showing a local base type variable succeeds
+# where a base type variable fails
+CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
+  MaxAccum<INT> @@maxDate, @@maxDateGlob;
+  DATETIME dtGlob;
+
+  allUser = {person.*};
+  allUser = SELECT src
+            FROM allUser:src - (liked:e) -> post
+            ACCUM
+            DATETIME dt = e.actionTime,      # Declare and assign local dt
+            dtGlob = e.actionTime,           # dtGlob isn't updated yet
+            @@maxDate     += datetime_to_epoch(dt),
+            @@maxDateGlob += datetime_to_epoch(dtGlob);
+  PRINT @@maxDate, @@maxDateGlob, dtGlob;  # @@maxDateGlob will be 0
+}
+----
+
+{% endcode %}
+
+{% code title="localVariable Query Results" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY localVariable("person1")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{
+    "dtGlob": "2010-01-11 03:26:05",
+    "@@maxDateGlob": 0,
+    "@@maxDate": 1263618953
+  }]
+}
+----
+
+{% endcode %}
+
+=== Vertex Set Variable Declaration and Assignment
+
+Variables that contain a set of one or more vertices are called vertex set variables. Vertex set variables play a special role within GSQL queries. They are used for both the input and output of `SELECT` statements. Therefore, before the first `SELECT` statement in a query, a vertex set variable must be declared and initialized. This initial vertex set is called the _seed set_.
+
+Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
+
+{% code title="EBNF for Vertex Set Variable Declaration" %}
+
+[source,erlang]
+----
+vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
+
+simpleSet := vertexSetName
+      | "(" simpleSet ")"
+      | simpleSet (UNION | INTERSECT | MINUS) simpleSet
+
+seedSet := "{" [seed ["," seed ]*] "}"
+seed := '_'
+      | ANY
+      | vertexSetName
+      | globalAccumName
+      | vertexType ".*"
+      | paramName
+      | "SelectVertex" selectVertParams
+
+selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
+     stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
+
+columnId := "$" (integer | stringLiteral)
+----
+
+{% endcode %}
+
+The query below lists all ways of assigning a vertex set variable an initial set of vertices (that is, forming a seed set).
+
+* A vertex parameter, untyped or typed, enclosed in curly brackets
+* A vertex set parameter, untyped or typed
+* A global `SetAccum<VERTEX>` accumulator, untyped or typed
+* All vertices of any type or of one type
+* A list of vertex IDs in an external file
+* Copy of another vertex set
+* A combination of individual vertices, vertex set parameters, or base type variables, enclosed in curly brackets
+* Union of vertex set variables
+
+{% code title="Seed Set Example" %}
+
+[source,sql]
+----
+CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VERTEX<person>> v4) FOR GRAPH socialNet {
+  SetAccum<VERTEX> @@testSet;
+  SetAccum<VERTEX<person>> @@testSet2;
+  S1 = { v1 };    # untyped vertex parameter enclosed in curly brackets
+  S2 = { v2 };    # typed vertex parameter enclosed in curly brackets
+  S3 = v3;                       # untyped vertex set parameter
+  S4 = v4;                       # typed vertex set parameter
+  S5 = @@testSet;                # untyped global set accumulator
+  S6 = @@testSet2;               # typed global set accumulator
+  S7 = ANY;                      # All vertices
+  S8 = person.*;                 # All person vertices
+  S9 = _;                        # Equivalent to ANY
+  S10 = SelectVertex("absolute_path_to_input_file", $0, post, ",", false);   # See Section "SelectVertex()" function
+  S11 = S1;                      # copy of another vertex set
+  S12 = {@@testSet, v2, v3};     # Individual vertex: v2
+                                 # Vertex set parameter: v3
+                                 # global accumulator: @@testSet
+                                 # Inside curly brackets cannot be put another
+                                 # seedset, e.g., S1
+  S13 = S11 UNION S12;           # but we can use UNION to combine S1
+}
+----
+
+{% endcode %}
+
+When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
+
+{% hint style="danger" %}
+Declaration syntax difference: vertex set variable vs. base type variable
+
+In a vertex set variable declaration, the optional type specifier follows the variable name and should be surrounded by parentheses: *`vSetName(type)`* +
+This is different than a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
+{% endhint %}
+
+==== Assignment
+
+After a vertex set variable is declared, the vertex type of the vertex set variable is immutable. Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type. The following is an example in which we must declare the vertex set variable type.
+
+{% code title="Vertex set variable type" %}
+
+[source,sql]
+----
+CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet {
+  INT ite = 0;
+  S (ANY) = {m1};   # ANY is necessary
+  WHILE  ite < 5 DO
+    S = SELECT t
+        FROM S:s - (ANY:e) -> ANY:t;
+
+    ite = ite + 1;
+  END;
+  PRINT S;
+}
+----
+
+{% endcode %}
+
+In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex. If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type. However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices. Therefore, `S` must be declared as an ANY-type vertex set variable.
+
+=== `FILE` Object Declaration
+
+A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
+
+{% code title="EBNF for FILE object declaration" %}
+
+[source,sql]
+----
+fileDeclStmt := FILE fileVar "(" filePath ")"
+fileVar := name
+----
+
+{% endcode %}
+
+When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.  When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
+
+==== Example:
+
+{% code title="File object query example" %}
+
+[source,sql]
+----
+CREATE QUERY getUSWorkerInterests (STRING fileLocation) FOR GRAPH workNet {
+    // Declare FILE object f1
+    FILE f1 (fileLocation);
+    // Initialize a seed set of all person vertices
+    P = {person.*};
+
+    PRINT "header" TO_CSV f1;
+
+    // Select workers located in the US and print their interests onto
+    // the FILE object
+    USWorkers = SELECT v FROM P:v
+              WHERE v.locationId == "us"
+              ACCUM f1.println(v.id, v.interestList);
+    PRINT "footer" TO_CSV f1;
+}
+INSTALL QUERY getUSWorkers
+RUN QUERY getUSWorkerInterests("/home/tigergraph/fileEx.txt")
+----
+
+{% endcode %}
+
+== Assignment and Accumulate Statements
+
+Assignment statements are used to set or update the value of a variable after it has been declared. This applies to base type variables, vertex set variables, and accumulators. Accumulators also have the special += accumulate statement, which was discussed in the Accumulator section.  Assignment statements can use expressions to define the new value of the variable.
+
+{% code title="EBNF for Assignment Statements" %}
+
+[source,sql]
+----
+## Assignment Statement ##
+assignStmt := name "=" expr         # baseType variable, vertex set variable
+            | name "." name "=" expr      # attribute of a vertex or edge
+
+attrAccumStmt := name "." attrName "+=" expr
+
+lAccumAssignStmt := vertexAlias "." localAccumName ("+="| "=") expr
+
+gAccumAssignStmt :=  globalAccumName ("+=" | "=") expr
+
+loadAccumStmt := globalAccumName "=" "{" "LOADACCUM" loadAccumParam
+                                  ["," "LOADACCUM" loadAccumParams]* "}"
+----
+
+{% endcode %}
+
+{% hint style="success" %}
+Vertex and edge (non-accumulator) attributes can use the += operator in an ACCUM or POST-ACCUM clause to perform parallel accumulation.
+
+[source,sql]
+----
+attrAccumStmt := name "."attrName "+=" expr
+----
+
+{% endhint %}
+
+=== *Restrictions on Assignment Statements*
+
+In general, assignment statements can take place anywhere after the variable has been declared.  However, there are some restrictions. These restrictions apply to "inner level" statements which are within the body of a higher-level statement:
+
+* The `ACCUM` or `POST-ACCUM` clause of a `SELECT` statement
+* The `SET` clause of an `UPDATE` statement
+* The body of a `FOREACH` statement
+
+{% hint style="danger" %}
+
+* Global accumulator assignment is not permitted within the body of `SELECT` or `UPDATE` statements
+* Base type variable assignment is permitted in `ACCUM` or `POST-ACCUM` clauses, but the change in value will not take place until exiting the clause. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
+* Vertex attribute assignment is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted. This is because the `ACCUM` clause iterates over an edge set.
+* There are additional restrictions within `FOREACH` loops for the loop variable. See the Data Modification section.
+{% endhint %}
+
+=== `LOADACCUM` Statement
+
+[source,erlang]
+----
+loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
+                                  ["," LOADACCUM loadAccumParams]* "}"
+
+loadAccumParams := "(" filePath "," columnId ["," [columnId]* ","
+          stringLiteral "," (TRUE | FALSE) ")" ["."FILTER "(" condition ")"]
+columnId := "$"(integer | stringLiteral)
+----
+
+`LOADACCUM()` can initialize a global accumulator by loading data from a file. `LOADACCUM()` has 3+n parameters explained in the table below, where n is the number of fields in the accumulator.
+
+{% hint style="danger" %}
+Any accumulator using generic `VERTEX` as an element type cannot be initialized by `LOADACCUM()`.
+{% endhint %}
+
+==== Parameters:
+
+|===
+| Name | Type | Description
+
+| `filePath`
+| String
+| The absolute file path of the input file to be read. A relative path is not supported.
+
+| `columnId`
+| String or number
+| The column position(s) or column name(s) of the data file that supply data values to each field of the accumulator.
+
+| `separator`
+| Single-character string
+| The separator of columns.
+
+| `header`
+| Boolean
+| Whether this file has a header.
+|===
+
+One assignment statement can have multiple `LOADACCUM()` function calls. However, every `LOADACCUM()` referring to the same file in the same assignment statement must use the same separator and header parameter values.
+
+==== Example:
+
+{% code title="loadAccumInput.csv" %}
+
+[source,sql]
+----
+person1,1,"test1",3
+person5,2,"test2",4
+person6,3,"test3",5
+----
+
+{% endcode %}
+
+{% code title="LoadAccum example" %}
+
+[source,sql]
+----
+CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
+  TYPEDEF TUPLE<STRING aaa, VERTEX<post> ddd> yourTuple;
+  MapAccum<VERTEX<person>, MapAccum<INT, yourTuple>> @@testMap;
+  GroupByAccum<STRING a, STRING b, MapAccum<STRING, STRING> strList> @@testGroupBy;
+
+  @@testMap = { LOADACCUM (filename, $0, $1, $2, $3, ",", false)};
+  @@testGroupBy = { LOADACCUM ( filename, $1, $2, $3, $3, ",", true) };
+
+  PRINT @@testMap, @@testGroupBy;
+}
+----
+
+{% endcode %}
+
+{% code title="Results of Query loadAccumEx" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{
+    "@@testGroupBy": [
+      {
+        "a": "3",
+        "b": "\"test3\"",
+        "strList": {"5": "5"}
+      },
+      {
+        "a": "2",
+        "b": "\"test2\"",
+        "strList": {"4": "4"}
+      }
+    ],
+    "@@testMap": {
+      "person1": {"1": {
+        "aaa": "\"test1\"",
+        "ddd": "3"
+      }},
+      "person6": {"3": {
+        "aaa": "\"test3\"",
+        "ddd": "5"
+      }},
+      "person5": {"2": {
+        "aaa": "\"test2\"",
+        "ddd": "4"
+      }}
+    }
+  }]
+}
+----
+
+{% endcode %}
+
+== Function Call Statements
+
+[source,erlang]
+----
+funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
+              | globalAccumName ("." funcName "(" [argList] ")")+
+              | "reset_collection_accum" "(" accumName ")"
+
+argList := expr ["," expr]*
+----
+
+Typically, a function call returns a value and so is part of an xref:operators-and-expressions.adoc[expression]. In some cases, however, the function does not return a value (i.e., returns `VOID`) or the return value can be ignored, so the function call can be used as an entire statement. This is a Function Call Statement.
+
+{% code title="Examples of Function Call statements" %}
+
+[source,sql]
+----
+ListAccum<STRING> @@listAcc;
+BagAccum<INT> @@bagAcc;
+...
+# examples of function call statements
+@@listAcc.clear();
+@@bagAcc.removeAll(0);
+----
+
+{% endcode %}
+
+=== Clear Collection Accumulators
+
+Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant. It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty). If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
+
+[source,erlang]
+----
+"reset_collection_accum" "(" accumName ")"
+----
+
+{% hint style="warning" %}
+`reset_collection_accum` only works in DISTRIBUTED mode queries.  If the query is not in distributed mode, the reset does not take place.
+{% endhint %}
+
+[source,erlang]
+----
+CREATE DISTRIBUTED QUERY reset_accum()
+FOR GRAPH workNet SYNTAX v2 {
+  ListAccum<STRING> @stuff;
+  ListAccum<STRING> @@allStuff;
+
+  Comp = SELECT c
+    FROM    person:p -(worksFor:w)- company:c
+    ACCUM   c.@stuff += p.id,
+            @@allStuff += p.id,
+            c.@stuff += p.locationId,
+            @@allStuff += p.locationId,
+            FOREACH interest IN p.interestList DO
+              c.@stuff += interest,
+              @@allStuff += interest
+            END
+  ;
+  // display accum size: should be full
+  PRINT Comp[Comp.@stuff.size()] AS stuffCount;
+  PRINT @@allStuff.size() AS allStuffCount;
+
+  reset_collection_accum(@stuff);
+  reset_collection_accum(@@allStuff);
+  // display accum size: should be empty
+  PRINT Comp[Comp.@stuff.size()] AS stuffClear;
+  PRINT @@allStuff.size() AS allStuffClear;
+}
+----
+
+[source,erlang]
+----
+[{
+    "stuffCount": [
+      {"attributes": {"Comp.@stuff.size()": 23},
+        "v_id": "company2",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 7},
+        "v_id": "company4",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 12},
+        "v_id": "company3",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 21},
+        "v_id": "company1",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 4},
+        "v_id": "company5",
+        "v_type": "company"
+      }]
+  },
+  {
+    "allStuffCount": 67
+  },
+  {
+    "stuffClear": [
+      {"attributes": {"Comp.@stuff.size()": 0},
+        "v_id": "company2",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 0},
+        "v_id": "company4",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 0},
+        "v_id": "company3",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 0},
+        "v_id": "company1",
+        "v_type": "company"
+      },
+      {"attributes": {"Comp.@stuff.size()": 0},
+        "v_id": "company5",
+        "v_type": "company"
+      }]
+  },
+  {
+    "allStuffClear": 0
+  }]
+----

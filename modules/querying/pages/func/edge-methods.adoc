@@ -1,0 +1,123 @@
+= Edge Methods
+
+This page lists all built-in edge methods that can be accessed by edge aliases using the dot (`.`) operator.
+
+[discrete]
+=== `getAttr()`
+
+[discrete]
+==== Syntax
+
+`e.getAttr( attrName, atterType )`
+
+[discrete]
+==== Description
+
+Returns the value of an attribute of the edge.
+
+[discrete]
+==== Return type
+
+The data type of the attribute itself.
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `attrName`
+| The name of the attribute.
+| `STRING`
+
+| `attrType`
+| The type of the attribute
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+If we have the following edge:
+
+[source,text]
+----
+{
+      "e_type": "User_Video",
+      "directed": false,
+      "from_id": "0",
+      "from_type": "VidUser",
+      "to_id": "2",
+      "to_type": "Video",
+      "attributes": {
+        "rating": 5.2,
+        "date_time": 0
+}
+----
+
+Assume the alias of the edge is `e`:
+
+[source,text]
+----
+e.getAttr("rating", "DOUBLE") -> 5.2
+----
+
+[discrete]
+=== `isDirected()`
+
+[discrete]
+==== Syntax
+
+`e.isDirected()`
+
+[discrete]
+==== Description
+
+Returns a boolean value indicating whether the edge is directed or undirected.
+
+[discrete]
+==== Return type
+
+`BOOL`
+
+[discrete]
+==== Parameters
+
+None.
+
+[discrete]
+=== `setAttr()`
+
+[discrete]
+==== Syntax
+
+`e.setAttr( attrName, attrType, attrNewValue)`
+
+[discrete]
+==== Description
+
+Sets an attribute of an edge to a new value.
+
+[discrete]
+==== Return type
+
+No return value.
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `attrName`
+| The name of the attribute
+| `STRING`
+
+| `attrType`
+| The type of the attribute
+| `STRING`
+
+| `attrNewValue`
+| The new value of the attribute
+| `attrType`
+|===

@@ -1,0 +1,927 @@
+= String Functions
+
+This page lists the string functions available in the GSQL query language
+
+[discrete]
+=== ascii()
+
+[discrete]
+==== Syntax
+
+`ascii( str )`
+
+[discrete]
+==== Description
+
+Returns the ASCII (numeric) position of the first character in a string. If the argument is an empty string, returns 0.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+ascii("") => 0
+ascii("A") => 65
+----
+
+[discrete]
+=== chr()
+
+[discrete]
+==== Syntax
+
+`chr( n )`
+
+[discrete]
+==== Description
+
+Converts an integer to a character according to its ASCII position. If the input value `n` is greater than 255, returns the character at the position of the modulo of `n / 256`.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `n`
+| An integer value
+| `INT`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+chr(65) => 'A'
+chr(322) => 'B'
+----
+
+[discrete]
+=== difference()
+
+[discrete]
+==== Syntax
+
+`difference(str1, str2)`
+
+[discrete]
+==== Description
+
+Compares the link:string-functions.md#soundex[Soundex codes] of two strings and returns an integer. The return value ranges from 0 to 4, and it indicates the similarity between the input strings' phonetic representation values.
+
+0 indicates weak similarity, and 4 indicates strong similarity with identical phonetic representation values.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str1`
+| A string value
+| `STRING`
+
+| `str2`
+| A string value
+| `STRING`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+difference("Johnson", "Jonson") => 4
+difference("Adams", "Addamms") => 4
+difference("Mary", "Bob") => 2
+----
+
+[discrete]
+=== find_in_set()
+
+[discrete]
+==== Syntax
+
+`find_in_set(str, str_list)`
+
+[discrete]
+==== Description
+
+Returns the position of a string within a list of strings separated by commas.
+
+If `string` is not found in `string_list`, this function returns -1.
+
+____
+*NOTE*: `find_in_set` does _not_ ignore whitespace after the comma. For example, `find_in_set("a", "b a, a") = 0`, indicating that "`a`" is not an element in the list. This happens because the second and third elements of the list are space+a, rather than a.
+____
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+
+| `str_list`
+| A string representation of a list of strings.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+find_in_set("a","") => 0
+find_in_set("a","b,c,d") => 0
+find_in_set("a","b,a,d") => 2
+----
+
+[discrete]
+=== gsql_uuid_v4()
+
+[discrete]
+==== Syntax
+
+`gsql_uuid_v4()`
+
+[discrete]
+==== Description
+
+Generates and returns a https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_%28random%29[version-4 universally unique identifier(UUID)].
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+None.
+
+[discrete]
+=== insert()
+
+[discrete]
+==== Syntax
+
+`insert(str1, position[, number], str2)`
+
+[discrete]
+==== Description
+
+Inserts a string within a string at the specified position and for a certain number of characters, and replaces a specified number of characters starting from the insertion position. The starting index is 0.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str1`
+| The string to insert another string into
+| `STRING`
+
+| `position`
+| The index of the starting position to insert the string
+| `INT`
+
+| `number`
+| Optional. The number of characters from the original string that will be replaced. If the argument is left off, it defaults to 0.
+| `STRING`
+
+| `str2`
+| The string to be inserted
+| `STRING`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+insert("tigergraph.com", 0, 10, "Example") => "Example.com”
+insert("tigergraph.com", 0, 2, "Example") => "Examplegergraph.com”
+insert("tigergraph.com", 2, 20, "Example") => ”tiExample”
+insert("Complete blank.", 9, "every ") => "Complete every blank."
+----
+
+[discrete]
+=== instr()
+
+[discrete]
+==== Syntax
+
+`instr (str, substr [, position, occurence])`
+
+[discrete]
+==== Description
+
+Searches a string (`str`) for a substring (`substr`) and returns the location of the substring in the string. If a substring that is equal to `substr` is found, then the function returns an integer indicating the position of the first character of this substring. If no such substring is found, then the function returns -1.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to search
+| `STRING`
+
+| `substr`
+| The string to search for in `str`
+| `STRING`
+
+| `position`
+| Optional. The position is a nonzero integer indicating the character of `str` from where the search begins. If omitted, it defaults to 0. The first position in the string is 0. If `position` is negative, then the function counts backward from the end of `str` and then searches backward from the resulting position.
+| `STRING`
+
+| `occurrence`
+| Optional, The occurrence is an integer indicating which occurrence of `substr` in `str` the function should search for.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+instr("This is the thing", "Th") -> 0;
+instr("This is the thing", "is", 3) -> 5;
+----
+
+[discrete]
+=== left()
+
+[discrete]
+==== Syntax
+
+`left(str, number_of_chars)`
+
+[discrete]
+==== Description
+
+Extracts a number of characters from a string starting from left.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+
+| `number_of_chars`
+| The number of characters to extract
+| `INT`
+|===
+
+[discrete]
+=== length()
+
+[discrete]
+==== Syntax
+
+`length(str)`
+
+[discrete]
+==== Description
+
+Returns the length of the input string.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string whose length to evaluate
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+length("hello world") -> 11
+length("") -> 0
+----
+
+[discrete]
+=== ltrim()
+
+[discrete]
+==== Syntax
+
+`ltrim( str[, set] )`
+
+[discrete]
+==== Description
+
+Removes all occurrences of the characters contained in a set from a string from the left side.
+
+The function begins scanning the string from its first character and removes all characters that appear in _`set` until reaching a character not in `set` and then returns the result._
+
+[discrete]
+==== _Return type_
+
+_`STRING`_
+
+[discrete]
+==== _Parameters_
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+
+| `set`
+| Optional. A string of characters. The distinct characters from the string form the set. If not specified, it defaults to a single space.
+| `STRING`
+|===
+
+[discrete]
+=== lower()
+
+[discrete]
+==== Syntax
+
+`lower(str)`
+
+[discrete]
+==== Description
+
+Returns the input string with all letters in lowercase.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to convert to lowercase
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+lower("GSQL") -> "gsql"
+----
+
+[discrete]
+=== lpad()
+
+[discrete]
+==== Syntax
+
+`lpad(str, padded_length [, pad_str] )`
+
+[discrete]
+==== Description
+
+Pads the left side of a string with another pad string. If the pad string (`pad_str`) is omitted, it will pad with white space. If the parameter length is smaller than the original string, it will truncate the string from the right side.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to pad characters to
+| `STRING`
+
+| `padded_length`
+| The number of characters to return. If the `padded_length` is smaller than the original string, the `lpad` function will truncate the string to the size of `padded_length`.
+| `INT`
+
+| `pad_str`
+| Optional. This is the string that will be padded to the left-hand side of `str`. If this parameter is omitted, the `lpad` function will pad spaces to the left-side of `str`.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+ lpad("PQR", 5) -> "  PQR"
+ lpad("PQR", 2) -> "PQ"
+ lpad("PQR", 10, "ABC") -> "ABCABCAPQR"
+----
+
+[discrete]
+=== replace()
+
+[discrete]
+==== Syntax
+
+`replace(str, str_to_replace [, replacement_str])`
+
+[discrete]
+==== Description
+
+Replaces a sequence of characters in a string with another set of characters.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The original string whose substrings are to be replaced
+| `STRING`
+
+| `str_to_replace`
+| The string that will be searched for and replaced in `str`
+| `STRING`
+
+| `replacement_str`
+| Optional. The string that will replace `str_to_replace`. If omitted, `replace()` removes all occurrences of _string_to_replace_, and returns the resulting string.
+| `STRING`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+ replace("SSQLL", "S", "G") -> "GGQLL"
+ replace("SSQLL", "SQL", "Q") -> "SQL"
+ replace("SSQLL", "L") -> "SSQ"
+----
+
+[discrete]
+=== right()
+
+[discrete]
+==== Syntax
+
+`right(str, number_of_chars)`
+
+[discrete]
+==== Description
+
+Extracts a number of characters from a string starting from the right.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+
+| `number_of_chars`
+| The number of characters to extract
+| `INT`
+|===
+
+[discrete]
+=== rpad()
+
+[discrete]
+==== Syntax
+
+`rpad(str, padded_length [, pad_str] )`
+
+[discrete]
+==== Description
+
+Pads the right side of a string (`str`) with another pad string. If the pad string (`pad_str`) is omitted, it will pad with white space. If the parameter length is smaller than the original string, it will truncate the string from the right side.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to pad characters to
+| `STRING`
+
+| `padded_length`
+| The number of characters to return. If the `padded_length` is smaller than the original string, the `lpad` function will truncate the string to the size of `padded_length`.
+| `INT`
+
+| `pad_str`
+| Optional. This is the string that will be padded to the right-hand side of `str`. If this parameter is omitted, the `lpad` function will pad spaces to the right-side of `str`.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+rpad("PQR", 5) -> "PQF  "
+lpad("PQR", 2) -> "PQ"
+lpad("PQR", 10, "ABC") -> "ABCABCAPQR"
+----
+
+[discrete]
+=== rtrim()
+
+[discrete]
+==== Syntax
+
+`rtrim( str [,set] )`
+
+[discrete]
+==== Description
+
+Removes all occurrences of the characters contained in a set from a string from the right side.
+
+The function begins scanning the string from its last character and removes all characters that appear in _`set` until reaching a character not in `set` and then returns the result._
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+
+| `set`
+| Optional. A string of characters. The distinct characters from the string form the set. If not specified, it defaults to a single space.
+| `STRING`
+|===
+
+[discrete]
+=== soundex()
+
+[discrete]
+==== Syntax
+
+`soundex( str )`
+
+[discrete]
+==== Description
+
+Returns a character string containing the https://en.wikipedia.org/wiki/Soundex#:~:text=Soundex%20is%20a%20phonetic%20algorithm,despite%20minor%20differences%20in%20spelling.&text=Improvements%20to%20Soundex%20are%20the%20basis%20for%20many%20modern%20phonetic%20algorithms.[Soundex] code of `str`. This function lets you compare words that are spelled differently, but sound alike in English.
+
+Soundex is a phonetic algorithm defined in _The Art of Computer Programming_, Volume 3: Sorting and Searching, by Donald E. Knuth, as follows:
+
+. Retain the first letter of the string and remove all other occurrences of the following letters: a, e, h, i, o, u, w, y.
+. Assign numbers to the remaining letters (after the first) as follows:
++
+[source,text]
+----
+b, f, p, v = 1
+c, g, j, k, q, s, x, z = 2
+d, t = 3
+l = 4
+m, n = 5
+r = 6
+----
+
+. If two or more letters with the same number were adjacent in the original name (before step 1), or adjacent except for any intervening h and w, then retain the first letter and omit the rest of all the adjacent letters with the same number.
+. Return the first four bytes padded with 0.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+soundex("Ashcraft") => "A261"
+soundex("Burroughs") => "B620"
+soundex("Burrows") => "B620"
+----
+
+[discrete]
+=== space()
+
+[discrete]
+==== Syntax
+
+`space( n )`
+
+[discrete]
+==== Description
+
+Returns a string that contains the specified number of space characters
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `n`
+| An integer value
+| `INT`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+space(0) = ””
+space(1) = ” ”
+space(5) = ”     ”
+----
+
+[discrete]
+=== substr()
+
+[discrete]
+==== Syntax
+
+`substr(str, start [, length])`
+
+[discrete]
+==== Description
+
+Returns the substring indicated by the start point and length. If the parameter length is omitted, then it will extend to the end.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to extract substring from
+| `STRING`
+
+| `start`
+| The position that indicates the start of the substring
+| `INT`
+
+| `length`
+| Optional. The length of the substring. If omitted, the substring will be
+| `INT`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+substr("ABCDE", 2) -> "CDE"
+substr("ABCDE", 2, 2) -> "CD"
+substr("ABCDE", -2, 1) -> "D"
+----
+
+[discrete]
+=== translate()
+
+[discrete]
+==== Syntax
+
+`translate( str_origin, characters, translations )`
+
+[discrete]
+==== Description
+
+Returns the string from the first argument after the characters specified in the second argument are translated into the characters specified at the same index in the third argument.
+
+____
+*NOTE*: The function will return an error if `characters` and `translations` have different lengths.
+____
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str_origin`
+| A string value
+| `STRING`
+
+| `characters`
+| A string of characters
+| `STRING`
+
+| `translations`
+| A string of characters
+| `STRING`
+|===
+
+[discrete]
+==== Examples
+
+[source,text]
+----
+translate(”Hello world”, "", "") = ”Hello World”
+translate(”Hello world”, "o", "U") = ”HellU WUrld”
+translate(”Hello world”, "lo", "aU") = ”HeaaU WUrad”
+translate(””, "lo", "aU") = ””
+----
+
+[discrete]
+=== trim()
+
+[discrete]
+==== Syntax
+
+`trim( [ [ LEADING | TRAILING | BOTH ] [removal_char FROM] ] str )`
+
+[discrete]
+==== Description
+
+Trims characters from the leading and/or trailing ends of a string.
+
+By using one of the keywords `LEADING`, `TRAILING`, or `BOTH`, the user can specify that characters are to be removed from the left end, right end, or both ends of the string, respectively. If none of these keywords is used, the function will remove from both ends.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `removal_char`
+| Optional. The character to remove. If `removal_char` is not specified, the function will remove whitespaces, including spaces, tabs, and newlines. If `removal_char` is specified, the user must also write the keyword `FROM` between `removal_char` and `str`.
+| `STRING`
+
+| `str`
+| A string value.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,sql]
+----
+trim("  Abc   ") => "Abc"
+trim( LEADING " a A   ") => "a A   "
+trim( TRAILING "a" FROM "aa ABC aaa") => "aa ABC "
+----
+
+[discrete]
+=== upper()
+
+[discrete]
+==== Syntax
+
+`upper(str)`
+
+[discrete]
+==== Description
+
+Returns the input string with all letters in uppercase.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to convert to uppercase
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,text]
+----
+upper("gsql") -> "GSQL"
+----

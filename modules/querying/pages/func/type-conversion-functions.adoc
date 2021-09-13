@@ -1,0 +1,184 @@
+= Type Conversion Functions
+
+The functions on this page are used to convert data from one type to another in the GSQL query language.
+
+[discrete]
+=== `parse_json_array()`
+
+[discrete]
+==== Syntax
+
+`parse_json_array( str )`
+
+[discrete]
+==== Description
+
+Converts a string into a JSON array. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `{ }` and brackets `[ ]`, each value field must be one of the following:
+
+* a string
+* a number
+* a boolean
+* a JSONOBJECT - Each key of a key-value pair must be a string in double quotes.
+* a JSON array
+
+[discrete]
+==== Return type
+
+`JSONARRAY`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to be converted into a JSON array.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,javascript]
+----
+parse_json_array("[123]") -> [123]
+----
+
+[discrete]
+=== `parse_json_object()`
+
+[discrete]
+==== Syntax
+
+`parse_json_object( str )`
+
+[discrete]
+==== Description
+
+Converts a string into a JSON object. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `{ }` and brackets `[ ]`, each value field must be one of the following:
+
+* a string
+* a number
+* a boolean
+* a JSONOBJECT - Each key of a key-value pair must be a string in double quotes, and the quotes need to be escaped with a backlash-escape `\`. However, if you are supplying the string in GraphStudio as a parameter, you do not need the backlash-escape since string values are not enclosed in double quotes.
+* a JSON array
+
+[discrete]
+==== Return type
+
+`JSONOBJECT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to be converted into a JSON object.
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,javascript]
+----
+parse_json_object("{\"abc\":123}")  -> {"abc": 123}
+----
+
+[discrete]
+=== `str_to_int ()`
+
+[discrete]
+==== Syntax
+
+`str_to_int (str)`
+
+[discrete]
+==== Description
+
+Converts a string to an integer.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string that contains an integer to convert to an integer
+| `STRING`
+|===
+
+[discrete]
+=== `to_datetime ()`
+
+[discrete]
+==== Syntax
+
+`to_datetime ( str )`
+
+[discrete]
+==== Description
+
+Converts a string value into a `DATETIME` value.
+
+[discrete]
+==== Return type
+
+`DATETIME`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| A string value
+| `STRING`
+|===
+
+[discrete]
+==== Example
+
+[source,javascript]
+----
+to_datetime("2020-01-02 01:02:03") -> 2020-01-02 01:02:03
+----
+
+[discrete]
+=== `to_string()`
+
+[discrete]
+==== Syntax
+
+`to_string(num)`
+
+[discrete]
+==== Description
+
+Converts a number to a string.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to turn into a string
+| Number
+|===

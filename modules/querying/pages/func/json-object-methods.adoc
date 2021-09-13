@@ -1,0 +1,206 @@
+= JSON Object Methods
+
+This page lists the methods of a JSON object variable. Methods can be accessed using the dot(`.`) operator.
+
+[discrete]
+=== `containsKey()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.containsKey( keyStr )`
+
+[discrete]
+==== Description
+
+Returns a boolean value indicating whether the JSON object contains a specified key.
+
+[discrete]
+==== Return type
+
+`BOOL`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| A string.
+| `STRING`
+|===
+
+[discrete]
+=== `getBool()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getBool( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the boolean value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`BOOL`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===
+
+[discrete]
+=== `getDouble()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getDouble( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the double value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`DOUBLE`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===
+
+[discrete]
+=== `getInt()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getInt( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the integer value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`INT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===
+
+[discrete]
+=== `getJsonArray()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getJsonArray( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the JSON array value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`JSONARRAY`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===
+
+[discrete]
+=== `getJsonObject()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getJsonObject( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`JSONOBJECT`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===
+
+[discrete]
+=== `getString()`
+
+[discrete]
+==== Syntax
+
+`jsonobject.getString( keyStr )`
+
+[discrete]
+==== Description
+
+Returns the string value associated with a specified key.
+
+[discrete]
+==== Return type
+
+`STRING`
+
+[discrete]
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `keyStr`
+| The key whose value to return
+| `STRING`
+|===

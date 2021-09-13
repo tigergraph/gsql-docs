@@ -1,0 +1,45 @@
+= Interpreted GSQL Limitations
+
+Currently, a query defined with``CREATE DISTRIBUTED QUERY``cannot be run in Interpreted Mode. However, interpreted queries can still run on a distributed graph with a regular, non-distributed execution model.
+
+The list below includes additional limitations. These limitations are expected to be temporary. We are continuing to expand the capabilities of Interpreted Mode.
+
+== Unsupported Features in Interpreted Mode
+
+* Distributed Query Mode
+* Any operation involving files
+ ** `FILE` objects
+ ** `PRINT TO_CSV`
+ ** `LoadAccum()` function
+ ** `SelectVertex()` function
+* Statements
+ ** Exception statements:
+  *** `RAISE` statements
+  *** `+TRY...EXCEPTION+` statements
+ ** `RETURN` statement
+  *** Returning a vertex set variable
+ ** `SELECT` statement
+  *** `ORDER BY` clause
+ ** Assigning value to a global variable at the statement level
+* Attributes and accumulators
+ ** `ArrayAccum`
+ ** Accessing the previous value of a vertex-attached accumulator with the ' operator, e.g., `src.@acc'`
+ ** `STRING COMPRESS` as accumulator type
+ ** Accessing the attribute of a vertex variable that is not a vertex alias defined in a `FROM` clause
+* Functions and Operators
+ ** Aggregate functions: `AVG()`, `MIN()`, `MAX()`, `COUNT()`, `ISEMPTY()`, `SUM()`
+ ** `neighbor()`, `neighborAttribute()`
+ ** `COALESCE()`
+ ** `IS NULL`, `IS NOT NULL`
+ ** `evaluate()`
+ ** `datetime_format()`
+ ** `parse_json_object()`, `parse_json_array()`
+ ** User-Defined Functions
+* Data types
+ ** `JSONOBJECT`, `JSONARRAY`
+ ** `BAG` type parameters
+* Other
+ ** In `INSERT`: Optional vertex type information for from- and to- vertices when inserting edges
+ ** Using `_` or `ANY` to specify any source vertex type in a `FROM` clause
+ ** Having the same name for global accumulators, global variables, and query parameters
+  *** For example, there cannot be a query parameter named `param` and a global accumulator named `@@param` within the same query

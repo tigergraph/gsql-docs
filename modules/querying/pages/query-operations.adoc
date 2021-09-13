@@ -1,0 +1,1004 @@
+= CREATE/INTERPRET/INSTALL/RUN QUERY
+:pp: {plus}{plus}
+
+{% hint style="info" %}
+Query Privileges
+
+Users with the `querywriter` role or greater (`designer`, `admin`, `globaldesigner,` and `superuser`) can create, install, and drop queries.
+
+Any user with the `queryreader` role or greater for a given graph can run the queries for that graph.
+
+To implement fine-grained control over which queries can be executed by which sets of users:
+
+. Group your queries into your desired privilege groups.
+. Define a graph for each privilege group. These graphs can all have the same domain if you wish.
+. Create your queries, assigning each to its appropriate privilege group.
+{% endhint %}
+
+{% code title="EBNF for CREATE QUERY" %}
+
+[source,coffeescript]
+----
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               [RETURNS "("  baseType | accumType ")"]
+               [API "(" stringLiteral ")"]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+
+interpretQuery := INTERPRET QUERY "(" ")"
+               [FOR GRAPH graphName]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+
+parameterValueList := parameterValue ["," parameterValue]*
+parameterValue := parameterConstant
+                | "[" parameterValue ["," parameterValue]* "]"  // BAG or SET
+                | "(" stringLiteral "," stringLiteral ")"        // generic VERTEX value
+parameterConstant := numeric | stringLiteral | TRUE | FALSE
+parameterList := parameterType paramName ["=" constant]
+                 ["," parameterType paramName ["=" constant]]*
+
+syntaxName := name
+
+queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
+typedefs := (typedef ";")+
+declStmts := (declStmt ";")+
+declStmt := baseDeclStmt | accumDeclStmt | fileDeclStmt
+declExceptStmts := (declExceptStmt ";")+
+queryBodyStmts := (queryBodyStmt ";")+
+
+installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
+runQuery := RUN QUERY [runOptions] queryName "(" parameterValueList ")"
+
+showQuery := SHOW QUERY queryName
+dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
+----
+
+{% endcode %}
+
+A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation. Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data. A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing. A query can be run in one of three ways:
+
+. Define and run an unnamed query immediately:
+ .. `INTERPRET QUERY`: execute the query's statements
+
++
+Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
+`POST /gsqlserver/interpreted_query` +
+See the link:../../restpp-api/[RESTPP API User Guide] for details.
+. Define a named query and then run it.
+ .. `CREATE QUERY`: define the functionality of the query
+ .. `INTERPRET QUERY`: execute the query with input values
+. Define a named query, compile it to optimize performance, and then run it.
+ .. `CREATE QUERY`: define the functionality of the query
+ .. `INSTALL QUERY`: compile the query
+ .. `RUN QUERY`: execute the query with input values
+
+There are some limitations to Interpreted Mode. See the section on link:query-operations.md#interpret-query[`INTERPRET QUERY`] and the appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
+
+== `CREATE QUERY`
+
+[source,coffeescript]
+----
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               [RETURNS "("  baseType | accumType ")"]
+               [API "(" stringLiteral ")"]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+
+queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
+----
+
+`CREATE QUERY` defines the functionality of a query on a given graph schema.
+
+A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "link:output-statements-and-file-objects.md#return-statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body. The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
+
+{% hint style="info" %}
+*Dynamic Query Support*
+
+As of TigerGraph 3.0+, *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: +
+*`GSQL -g graphName [<gsql_command>]`* +
+or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command. +
+This is one aspect of link:query-operations.md#dynamic-querying[Dynamic Querying].
+{% endhint %}
+
+If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name. The new query will not be installed.  That is, +
+`CREATE OR REPLACE QUERY name` +
+acts like +
+`DROP QUERY name
+CREATE QUERY name` +
+However, if there are any errors in this query definition, then the previous query definition will be maintained. If the `OR REPLACE` option is not used, then GSQL will reject a `CREATE QUERY` command that uses an existing name.
+
+The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster. If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster. For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
+
+Typedefs allow the definition of custom types for use within the body.  The declarations support the definition of _accumulators_ (see Chapter  "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.  All accumulators and global variables must be declared before any statements. There are various types of statements that can be used within the body.  Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements. The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`. It also supports calling functions, assigning variables, printing, and modifying the graph data.
+
+The query body may include calls to other queries. That is, the other queries are treated as subquery functions.  See the subsection on "link:operators-and-expressions.md#queries-as-functions[Queries as Functions]".
+
+{% code title="Example of a CREATE QUERY statement" %}
+
+[source,coffeescript]
+----
+CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
+  SYNTAX v2 {
+  # declaration statements
+  users = {person.*};
+  # body statements
+  posts = SELECT p
+    FROM users:u-(posted)->:p
+    WHERE u.id == uid;
+  PRINT posts;
+  RETURN posts.size();
+}
+----
+
+{% endcode %}
+
+=== Query parameter and return types
+
+This table lists the supported data types for input parameters and return values.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:center">+++Type+++</th>+++
+      +++<th style="text-align:left">+++Supported Data Types+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:center">+++Parameter Types+++</td>+++
+      +++<td style="text-align:left">++++++<ul>++++++<li>+++Any base type (except +++<code>+++EDGE+++</code>+++ or +++<code>+++JSONOBJECT+++</code>+++): +++<code>+++INT, UINT, FLOAT, DOUBLE, STRING, BOOL, STRING, DATETIME, VERTEX, JSONARRAY+++</code>++++++</li>+++
+          +++<li>++++++<code>+++SET<baseType>+++</code>+++, +++<code>+++BAG<baseType>+++</code>+++
+            +++<ul>++++++<li>++++++<code>+++Edge+++</code>+++ and +++<code>+++JSONOBJECT +++</code>++++++</li>++++++</ul>++++++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:center">+++Return Types+++</td>+++
+      +++<td style="text-align:left">++++++<ul>++++++<li>+++any baseType (including EDGE): INT, UINT, FLOAT, DOUBLE, STRING, BOOL,
+            STRING, VERTEX, EDGE, JSONOBJECT, JSONARRAY+++</li>+++
+          +++<li>+++any accumulator type, except GroupByAccum+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:center">+++API (JSON output format)+++</td>+++
+      +++<td style="text-align:left">+++Currently, the only option is &quot;v2&quot; (default)+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:center">+++SYNTAX+++</td>+++
+      +++<td style="text-align:left">+++v1 (default) or v2 (pattern matching). See the +++<a href="select-statement/">+++SELECT Statement +++</a>+++section
+        for an outline of the differences. See +++<a href="../../../start/gsql-102/">+++Pattern Matching+++</a>+++ for
+        details on v2.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+=== Default parameter values
+
+You can specify default values for parameters of primitive types when creating a query. Primitive types include:
+
+* `INT`
+* `UINT`
+* `FLOAT`
+* `DOUBLE`
+* `STRING`
+* `BOOL`
+* `STRING`
+* `DATETIME`
+
+To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
+
+{% code title="Example of a CREATE QUERY command with a default parameter value" %}
+
+[source,coffeescript]
+----
+CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int)
+  SYNTAX v2 {
+  # declaration statements
+  users = {person.*};
+  # body statements
+  posts = SELECT p
+    FROM users:u-(posted)->:p
+    WHERE u.id == uid;
+  PRINT posts;
+  RETURN posts.size();
+}
+----
+
+{% endcode %}
+
+=== Dynamic querying
+
+TigerGraph 3.0+ supports Dynamic Querying. This means the query can be written and installed as a saved procedure without referencing a particular graph. Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
+
+Here are the ingredients for a dynamic query:
+
+* *Graph name:* When link:query-operations.md#create-query-statement[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
+* *Vertex type and edge type in `SELECT` statements*.  Typically, the link:select-statement/#from-clause-vertex-and-edge-sets[`FROM` clause] mentions the name of specific vertex types and edge types.  String or string set parameters can be used for edge and target types instead.
+* *Attribute names*. Thelink:operators-and-expressions.md#vertex-functions[`getAttr` and setAttr functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
+* `INSERT` *statements*: If you are using link:data-modification-statements.md#insert-into-statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add. This can also be parameterized.
+
+Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniques. Here is the PageRank algorithm from our GSQL Graph Algorithm library. Here is it written with schema information embedded statically in the query:
+
+* graph name = social
+* vertex type = Page
+* edge type  = Link
+* vertex attribute = Score
+
+[source,erlang]
+----
+CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
+  FLOAT damping=0.85)  //parameters
+  FOR GRAPH gsql_demo
+{
+  MaxAccum<float> @@maxDiff = 9999;
+  SumAccum<float> @rcvd_score = 0;
+  SumAccum<float> @score = 1;
+
+  Start = {Page.*};
+  WHILE @@maxDiff > maxChange LIMIT maxIter DO
+      @@maxDiff = 0;
+      V = SELECT s
+          FROM Start:s -(Linkto:e)- Page:t       //hardcoded types
+          ACCUM t.@rcvd_score += s.@score/(s.outdegree("Linkto")) //Param
+          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
+                      s.@rcvd_score = 0,
+                      @@maxDiff += abs(s.@score - s.@score');
+  END;
+
+  V = SELECT s FROM Start:s
+      POST-ACCUM s.Score = s.@score;    //hardcoded attribute
+}
+RUN QUERY pageRank(_,_,_)
+----
+
+Here is the same algorithm written in Dynamic Querying style:
+
+[source,erlang]
+----
+CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
+  FLOAT damping=0.85,
+  STRING vType, STRING eType, STRING attr)  //parameterized schema
+//no graph name
+{
+  MaxAccum<float> @@maxDiff = 9999;
+  SumAccum<float> @rcvd_score = 0;
+  SumAccum<float> @score = 1;
+
+  Start = {vType};
+  WHILE @@maxDiff > maxChange LIMIT maxIter DO
+      @@maxDiff = 0;
+      V = SELECT s
+          FROM Start:s -(eType:e)- vType:t //parameterized
+          ACCUM t.@rcvd_score += s.@score/(s.outdegree(eType)) //param
+          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
+                      s.@rcvd_score = 0,
+                      @@maxDiff += abs(s.@score - s.@score');
+  END;
+
+  V = SELECT s FROM Start:s
+      POST-ACCUM s.setAttr(attr, s.@score); //parameterized
+}
+RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
+----
+
+=== Statement types
+
+A _statement_ is a standalone instruction that expresses an action to be carried out. The most common statements are _*data manipulation language (DML) statements*_. DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
+
+A GSQL query has two levels of statements. The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short. This statement type is part of either the top-level block or a query-body control flow block. For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement. If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement. Each query-body statement ends with a semicolon.
+
+The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short. This statement type is used inside certain query-body DML statements, to define particular data manipulation actions. DML-sub-statements are comma-separated. There is no comma or semicolon after the last DML-sub-statement in a block. For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.  If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
+
+There is some overlap in the types. For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
+
+[source,text]
+----
+queryBodyStmts := (queryBodyStmt ";")+
+
+queryBodyStmt := assignStmt           // Assignment
+               | vSetVarDeclStmt      // Declaration
+               | gAccumAssignStmt     // Assignment
+               | gAccumAccumStmt      // Assignment
+               | lAccumAccumStmt      // Assignment
+               | funcCallStmt         // Function Call
+               | selectStmt           // Select
+               | queryBodyCaseStmt    // Control Flow
+               | queryBodyIfStmt      // Control Flow
+               | queryBodyWhileStmt   // Control Flow
+               | queryBodyForEachStmt // Control Flow
+               | BREAK                // Control Flow
+               | CONTINUE             // Control Flow
+               | updateStmt           // Data Modification
+               | insertStmt           // Data Modification
+               | queryBodyDeleteStmt  // Data Modification
+               | printStmt            // Output
+               | printlnStmt          // Output
+               | logStmt              // Output
+               | returnStmt           // Output
+               | raiseStmt            // Exception
+               | tryStmt              // Exception
+
+DMLSubStmtList := DMLSubStmt ["," DMLSubStmt]*
+
+DMLSubStmt := assignStmt           // Assignment
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | DMLSubCaseStmt       // Control Flow
+            | DMLSubIfStmt         // Control Flow
+            | DMLSubWhileStmt      // Control Flow
+            | DMLSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | DMLSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
+
+Guidelines for understanding statement type hierarchy:
+
+* Top-level statements are Query-Body type (each statement ending with a semicolon).
+* The statements within a DML statement are DML-sub statements (comma-separated list).
+* The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
+
+{% code title="Schematic illustration of relationship between queryBodyStmt and DMLSubStmt" %}
+
+[source,coffeescript]
+----
+# Each statement's operation type is either ControlFlow, DML, or other.
+# Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
+
+CREATE QUERY stmtTypes (parameterList) FOR GRAPH g [
+	other queryBodyStmt1;
+	ControlFlow queryBodyStmt2   # ControlFlow inside top level.
+		other queryBodyStmt2.1;      # subStmts in ControlFlow are queryBody unless inside DML.
+		ControlFlow queryBodyStmt2.2 # ControlFlow inside ControlFlow inside top level
+			other queryBodyStmt2.2.1;
+			other queryBodyStmt2.2.2;
+		END;
+		DML queryBodyStmt2.3     # DML inside ControlFlow inside top-level
+			other DMLSubStmt2.3.1,   # switch to DMLSubStmt
+			other DMLSubStmt2.3.2
+		;
+	END;
+	DML queryBodyStmt3           # DML inside top level.
+		other DMLSubStmt3.1,      # All subStmts in DML must be DMLSubStmt type
+		ControlFlow DMLSubStmt3.2 # ControlFlow inside DML inside top level
+			other DMLSubStmt3.2.1,
+			other DMLSubStmt3.2.2
+		,
+		DML DMLsubStmt3.3
+			other DMLSubStmt3.3.1,
+			other DMLSubStmt3.3.2
+	;
+	other queryBodyStmt4;
+----
+
+{% endcode %}
+
+Here is a descriptive list of query-body statements:
+
+|===
+| EBNF term | Common Name | Description
+
+| assignStmt
+| Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| vSetVarDeclStmt
+| Vertex Set Variable Declaration Statement
+| See "Declaration and Assignment Statements"
+
+| gAccumAssignStmt
+| Global Accumulator Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| gAccumAccumStmt
+| Global Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| lAccumAccumStmt
+| Local Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| funcCallStmt
+| Functional Call or Query Call Statement
+| See "Declaration and Assignment Statements"
+
+| selectStmt
+| SELECT Statement
+| See "SELECT Statement"
+
+| queryBodyCaseStmt
+| query-body CASE statement
+| See "Control Flow Statements"
+
+| queryBodyIfStmt
+| query-body IF statement
+| See "Control Flow Statements"
+
+| queryBodyWhileStmt
+| query-body WHILE statement
+| See "Control Flow Statements"
+
+| queryBodyForEachStmt
+| query-body FOREACH statement
+| See "Control Flow Statements"
+
+| updateStmt
+| UPDATE Statement
+| See "Data Modification Statements"
+
+| insertStmt
+| INSERT INTO statement
+| See "Data Modification Statements"
+
+| queryBodyDeleteStmt
+| Query-body DELETE Statement
+| See "Data Modification Statements"
+
+| printStmt
+| PRINT Statement
+| See "Output Statements"
+
+| logStmt
+| LOG Statement
+| See Output Statements"
+
+| returnStmt
+| RETURN Statement
+| See  "Output Statements"
+
+| raiseStmt
+| PRINT Statement
+| See  "Exception Statements"
+
+| tryStmt
+| TRY Statement
+| See "Exception Statements"
+|===
+
+Here is a descriptive list of DML-sub-statements:
+
+|===
+| EBNF term | Common Name | Description
+
+| assignStmt
+| Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| funcCallStmt
+| Functional Call Statement
+| See  "Declaration and Assignment Statements"
+
+| gAccumAccumStmt
+| Global Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| lAccumAccumStmt
+| Local Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| attrAccumStmt
+| Attribute Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| vAccumFuncCall
+| Vertex-attached Accumulator Function Call Statement
+| See "Declaration and Assignment Statements"
+
+| localVarDeclStmt
+| Local Variable Declaration Statement
+| See "SELECT Statement"
+
+| insertStmt
+| INSERT INTO Statement
+| See "Control Flow Statements"
+
+| DMLSubDeleteStmt
+| DML-sub DELETE Statement
+| See "Data Modification Statements"
+
+| DMLSubcaseStmt
+| DML-sub CASE statement
+| See "Data Modification Statements"
+
+| DMLSubIfStmt
+| DML-sub IF statement
+| See "Data Modification Statements"
+
+| DMLSubForEachStmt
+| DML-sub FOREACH statement
+| See "Data Modification Statements"
+
+| DMLSubWhileStmt
+| DML-sub WHILE statement
+| See "Data Modification Statements"
+
+| logStmt
+| LOG Statement
+| See "Output Statements"
+|===
+
+== `INTERPRET QUERY`
+
+`INTERPRET QUERY` runs a query by translating it line-by-line. This is in contrast to the 2-step flow: (1) `INSTALL` to pre-translate and optimize a query, then (2) `RUN` to execute the installed query.  The basic trade-off between `INTERPRET QUERY` and `INSTALL/RUN QUERY` is as follows:
+
+* `INTERPRET`:
+ ** Starts running immediately but may take longer to finish than running an installed query.
+ ** Suitable for ad hoc exploration of a graph or when developing and debugging an application, and rapid experimentation is desired.
+ ** Supports most but not all of the features of the full GSQL query language.  See the Appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
+* `INSTALL`/`RUN`:
+ ** Takes up to a minute to `INSTALL`.
+ ** Runs faster than `INTERPRET`, from only a few percent faster to twice as fast.
+ ** Should always be used for production environments with fixed queries.
+
+There are two GSQL syntax options for Interpreted GSQL: link:query-operations.md#immediate-mode-define-and-interpret[Immediate mode] and link:query-operations.md#interpret-a-saved-query[Saved-query mode]. In addition there is also a predefined RESTful endpoint for running interpreted GSQL: `POST /gsqlserver/interpreted_query`.  The query body is sent as the payload of the request. The syntax is like the Immediate query option, except that it is possible to provide parameters, using the query string of the endpoint's request URL. The example below shows a parameterized query using the `POST /gsqlserver/interpreted_query` endpoint. For more details, see the link:../../restpp-api/[RESTPP API User Guide].
+
+{% code title="Interpreted GSQL REST Endpoint with Immediate Query" %}
+
+[source,csharp]
+----
+curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interpreted_query?a=10' -d '
+  INTERPRET QUERY (int a) FOR GRAPH gsql_demo {
+    PRINT a;
+  }
+'
+----
+
+{% endcode %}
+
+=== Immediate mode: define and interpret
+
+{% code title="interpret-anonymous-query syntax" %}
+
+[source,coffeescript]
+----
+interpretQuery := INTERPRET QUERY "(" ")"
+               [FOR GRAPH graphName]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+----
+
+{% endcode %}
+
+This syntax is similar in concept to SQL queries. Queries are not named, do not accept parameters, and are not saved after being run. Syntax differences from compiled GSQL:
+
+* The keyword `CREATE` is replaced with `INTERPRET`.
+* The query is executed immediately by the `INTERPRET` statement.  The `INSTALL` and `RUN` statements are not used.
+* Parameters are not accepted.
+
+Compare the example below to the example in the `Create Query` section:
+
+* No query name, no parameters, no `RETURN` statement.
+* Because no parameter is allowed, the parameter `uid` is set within the query.
+
+{% code title="Example of Immediate Mode for INTERPRET QUERY" %}
+
+[source,coffeescript]
+----
+INTERPRET QUERY () FOR GRAPH socialNet {
+  # declaration statements
+  STRING uid = "Jane.Doe";
+  users = {person.*};
+  # body statements
+  posts = SELECT p
+    FROM users:u-(posted)->:p
+    WHERE u.id == uid;
+  PRINT posts, posts.size();
+}
+----
+
+{% endcode %}
+
+=== Interpret a created query
+
+{% code title="interpret-saved-query syntax" %}
+
+[source,coffeescript]
+----
+runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+----
+
+{% endcode %}
+
+This syntax is like `RUN` query, except
+
+. The keyword `RUN` is replaced with `INTERPRET`.
+. Some options may not be supported.
+
+{% code title="Example of Interpret-Only Mode for INTERPRET QUERY" %}
+
+[source,coffeescript]
+----
+INTERPRET QUERY createQueryEx ("Jane.Doe")
+----
+
+{% endcode %}
+
+== `INSTALL QUERY`
+
+[source,coffeescript]
+----
+installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
+----
+
+`INSTALL QUERY` installs a query or multiple queries on a graph. Installing a query compiles the procedures described by the query as well as generates a link:../../restpp-api/built-in-endpoints.md#run-an-installed-query-get[REST endpoint] for running the query.
+
+Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command. The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
+
+If a query calls a link:operators-and-expressions.md#subqueries[subquery], the query can only be installed after one of the following conditions is met:
+
+* The subquery has already been installed
+* The subquery is being installed in the same `INSTALL QUERY` command as the query itself
+
+If a subquery that was previously installed is dropped from the graph, all installed queries that call the subquery will be disabled. To re-enable a disabled query, all its subqueries need to be installed with the same parameters and return type.
+
+When a single `INSTALL QUERY` command installs multiple queries, each query is installed independently. If one query fails to be installed, it will not affect the installation of other queries.
+
+To install a query, the user needs to have the `WRITE_QUERY` privilege on the graph where the query is to be installed or on the global scope.
+
+Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, using either of the following commands:
+
+* `INSTALL QUERY *`
+* `INSTALL QUERY ALL`
+
+{% hint style="warning" %}
+Installing takes several seconds for each query. The current version does not support concurrent installation and running of queries. Other concurrent graph operations will be delayed until the installation finishes.
+
+Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
+{% endhint %}
+
+=== Options for `INSTALL QUERY`
+
+The following options are available:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Option+++</th>+++
+      +++<th style="text-align:left">+++Effect+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<p>++++++<code>+++-FORCE+++</code>++++++<b>++++++</b>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>+++Reinstall the query even if the system indicates the query is already
+          installed.+++</p>+++
+        +++<p>++++++</p>+++
+        +++<p>+++This is useful for overwriting an installation that is corrupted or otherwise
+          outdated, without having to drop and then recreate the query. If this option
+          is not used, the GSQL shell will refuse to re-install a query that is already
+          installed.+++</p>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++-DISTRIBUTED+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++If you have a distributed database deployment, installing the query in
+        Distributed Query Mode can increase performance for single queries - using
+        a single worker from each available machine to yield results. Certain cases
+        may benefit more from this option than others -- more detailed information
+        is available on the next page: +++<a href="https://docs.tigergraph.com/dev/gsql-ref/querying/distributed-query-mode">+++Distributed Query Mode+++</a>+++.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+=== Optimize installed queries
+
+`INSTALL QUERY -OPTIMIZE`
+
+Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The names of the individual queries are not needed. This operation optimizes all previously installed queries, reducing their run times by about 20%. Optimize a query if query run time is more important to you than query installation time.
+
+== RUN QUERY
+
+The `RUN QUERY` command runs an installed query. To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses. Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
+
+You can also run an installed query through REST requests - see link:../../restpp-api/built-in-endpoints.md#run-an-installed-query-get[Run an installed query].
+
+=== Syntax
+
+{% code title="RUN QUERY syntax" %}
+
+[source,bash]
+----
+runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
+    "(" parameterValueList | parameterValueJSON ")"
+
+runOptions := ( "-av" | "-d" )*
+parameterValueList := parameterValue ["," parameterValue]*
+parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
+----
+
+{% endcode %}
+
+=== Query parameters
+
+There are two ways of passing parameters to a query in a `RUN QUERY` command:
+
+* link:query-operations.md#parameter-list[Pass parameters as an ordered list separated by commas]
+* link:query-operations.md#parameter-json-object[Pass parameters by name in JSON]
+
+==== Parameter list
+
+To pass parameters to a query with a list, the parameters must be put in the same order as they were in the query definition. Each value passed in will correspond to the parameter at the same index when the query was created.
+
+To use the default value for a parameter, use the `_` character for the value of the parameter. You can also omit parameters to use their default value. However, if you omit one parameter, you also have to omit all parameters that come after that parameter.
+
+For example, if we have the following query definition:
+
+[source,text]
+----
+CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
+  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
+{
+  PRINT age, name, birthday;
+}
+----
+
+To run the query with default values for the parameter `name,` use `_` in the place of the second parameter value:
+
+[source,coffeescript]
+----
+GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
+# Below is the query output
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{
+    "birthday": "2020-02-02 20:02:20",
+    "name": "John",
+    "age": 21
+  }]
+}
+----
+
+To use the default values for both the second and the third parameters, you can omit both parameters and only provide a value for the first parameter.
+
+[source,coffeescript]
+----
+GSQL > RUN QUERY greetPerson(21)
+# Below is the query output
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{
+    "birthday": "2019-02-19 19:19:19",
+    "name": "John",
+    "age": 21
+  }]
+}
+----
+
+==== Parameter JSON object
+
+To pass query parameters by name with a JSON object, map the parameter names to their values in a JSON object enclosed in parentheses. Parameters that are not named in the JSON object will keep their default values for the execution of the query.
+
+For example, if we have the following query:
+
+[source,text]
+----
+CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
+  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
+{
+  PRINT age, name, birthday;
+}
+----
+
+Supplying the parameters with a JSON object will look like the following. The parameter `birthday` is not named in the parameter JSON object and therefore takes the default value:
+
+[source,text]
+----
+RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
+----
+
+=== Complex type parameter passing
+
+This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`. More details about all parameter types are described in Section "link:data-types.md#query-parameter-types[Query Parameter Types]".
+
+==== Parameter list+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
+      +++<th style="text-align:left">+++Syntax+++</th>+++
+      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Use a string formatted as +++<code>+++&quot;YYYY-MM-DD HH-MM-SS&quot;+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++&quot;2019-02-19 19:19:19&quot;+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
+      +++<td style="text-align:left">+++Use square brackets to enclose the collection of values.+++</td>+++
+      +++<td style="text-align:left">+++A set of integers: +++<code>+++[1,5,10]+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++If the vertex type is specified in the query definition, then the vertex
+        argument is +++<b>++++++<code>+++vertex_id+++</code>++++++<br>++++++</br>++++++</b>++++++</td>+++
+      +++<td style="text-align:left">+++The vertex type is +++<code>+++person+++</code>+++ and the desired ID is +++<code>+++person2+++</code>+++.
+        +++<br>++++++</br>++++++<code>+++&quot;person2&quot; +++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++VERTEX+++</code>++++++</p>+++
+        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>+++If the type is not defined in the query definition, then the argument
+          must provide both the id and type in parentheses:+++<b>+++(vertex_id, vertex_type)+++</b>++++++</p>+++
+        +++<p>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++A vertex with ID +++<code>+++&quot;person1&quot;+++</code>+++ and +++<code>+++type=&quot;person+++</code>+++:
+        +++<br>++++++</br>++++++<code>+++(&quot;person1&quot;,&quot;person&quot;)+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Same as a SET or BAG of primitives, where the primitive type is vertex_id.
+        +++<br>++++++</br>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++[ &quot;person3&quot;, &quot;person4&quot; ]+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<p>+++Set or bag of +++<code>+++VERTEX+++</code>++++++</p>+++
+        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
+      +++<td style="text-align:left">+++Same as a SET or BAG of vertices, with vertex type not pre-specified.
+        Square brackets enclose a comma-separated list of vertex (id, type) pairs.
+        Mixed types are permitted.
+        +++<br>++++++</br>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++[ (&quot;person1&quot;,&quot;person&quot;),(&quot;11&quot;,&quot;post&quot;) ]+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+==== Parameter JSON object+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
+      +++<th style="text-align:left">+++Syntax+++</th>+++
+      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Use a string formatted as +++<code>+++&quot;YYYY-MM-DD HH-MM-SS&quot;+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++&quot;2019-02-19 19:19:19&quot;+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
+      +++<td style="text-align:left">+++Use a JSON array containing the primitive values+++</td>+++
+      +++<td style="text-align:left">++++++<code>+++[&quot;a&quot;, &quot;list&quot;, &quot;of&quot;, &quot;args&quot;]+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
+        vertex ID and a field +++<code>+++&quot;type&quot;+++</code>+++ for the type of the vertex+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
+        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}+++</code>++++++</p>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>+++ (type not specified)+++</td>+++
+      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
+        vertex ID+++</td>+++
+      +++<td style="text-align:left">++++++<code>+++{&quot;id&quot;: &quot;person1&quot;}+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX<type>+++</code>+++ object+++</td>+++
+      +++<td style="text-align:left">++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;}, {&quot;id&quot;: &quot;person2&quot;}]+++</code>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++Set or bag of vertices of unspecified types+++</td>+++
+      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
+        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;},{&quot;id&quot;: &quot;person2&quot;,+++</code>++++++</p>+++
+        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}]+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+=== Options
+
+==== All-vertex mode -av option
+
+Some queries run with all or almost all vertices in a SELECT statement s, e.g. PageRank algorithm. In this case, the graph processing engine can run much more efficiently in all-vertex mode. In the all-vertex mode, all vertices are always selected, and the following actions become ineffective:
+
+* Filtering with selected vertices or vertex types. The source vertex set must be all vertices.
+* Filtering with the WHERE clause.
+* Filtering with the HAVING clause.
+* Assigning designated vertex or designated type of vertexes. E.g. X = { _vertex_type_ .*}
+
+To run the query in all-vertex mode, use the -av option in shell mode or include `__GQUERY__USING_ALL_ACTIVE_MODE=true` in the query string of an HTTP request.
+
+[source,coffeescript]
+----
+GSQL > RUN QUERY -av test()
+
+## In a curl URL call.  Note the use of both single and double underscores.
+curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL_ACTIVE_MODE=true'
+----
+
+==== Detached mode -async option
+
+Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries. Starting with TigerGraph 3.1, you can run queries in Detached Mode to enable background execution of long-running queries.
+
+Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using thelink:../../restpp-api/intro.md#gsql-query-timeout[`GSQL-TIMEOUT`] header.
+
+To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
+
+[source,erlang]
+----
+GSQL > RUN QUERY -async <queryName>
+----
+
+You will receive a JSON response immediately containing a query ID (`request_id`):
+
+[source,erlang]
+----
+{
+  "error": false,
+  "message": "The query is successfully submitted. Please check query status using the request id.",
+  "request_id": "<RequestID>"
+}
+----
+
+To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` header and set its value to true. If the query takes parameters, put them in the query string:
+
+[source,coffeescript]
+----
+$ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
+----
+
+To check the status and results of the queries executed in Detached Mode, use the link:../../restpp-api/built-in-endpoints.md#check-query-status-detached-mode-query_status[*`/query_status`*] and the link:../../restpp-api/built-in-endpoints.md#check-query-results-detached-mode-query_result[*`/query_result`*] __**__RESTPP endpoints.
+
+== GSQL Query output format
+
+The standard output of GSQL queries is in industry-standard JSON format. A JSON *object* is an unordered set of *key-value pairs*, enclosed in curly braces. Among the acceptable data types for a JSON *value* are *array* and *object*. A JSON *array* is an ordered list of *values*, enclosed in square brackets. Since values can be objects or arrays, JSON supports hierarchical, nested structures. Strings are enclosed in double quotation marks. We also use the term *field* to refer to a key (or a key-value pair) of a given object.
+
+At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code"). If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query. If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
+
+Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Field+++</th>+++
+      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++api+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>+++String specifying the output API version. Values are specified as follows:+++</p>+++
+        +++<ul>++++++<li>+++&quot;v1&quot;: Output API used in TigerGraph platform v0.8 through v1.0.
+            +++<br>++++++</br>++++++<b>+++NOTE: &quot;v1&quot; support is no longer available as of TigerGraph v3.0.+++</b>++++++</li>+++
+          +++<li>+++&quot;v2&quot; (default): Output API introduced in TigerGraph platform
+            v1.1 This is the latest API.+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++edition+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++String indicating the edition of the product.+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++schema+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Integer representing which version of the user&apos;s graph schema is
+        currently in use. When a +++<code>+++CREATE GRAPH+++</code>+++ statement is executed,
+        the version is initialized to 0. Each time a +++<code>+++SCHEMA_CHANGE JOB+++</code>+++ is
+        run, the schema value is incremented by 1 (e.g., 1, 2, etc.).+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+Other top-level objects, such as "code" may appear in certain circumstances. Note that the top-level objects are enclosed in curly braces, meaning that they form an unordered set. They may appear in any order.
+
+Below is an example of the output of a successful query:
+
+{% code title="Top Level JSON of a Valid Query - Example" %}
+
+[source,coffeescript]
+----
+{
+  "version": {"edition": "developer","api": "v2","schema": "1"},
+  "error": false,
+  "message": "",
+  "results": [
+    {results_of_PRINT_statement_1},
+    ...,
+    {results_of_PRINT_statement_N}
+  ]
+}
+----
+
+{% endcode %}
+
+The value of the "results" key-value pair is a sequential list of the data objects specified by the PRINT statements of the query. The list order follows the order of PRINT execution. The detailed format of the PRINT statement results is described in  xref:output-statements-and-file-objects.adoc[Output Statements and FILE Objects].
+
+The following REST response misspells the name of the endpoint
+
+{% code title="GET echo/ Request and Response" %}
+
+[source,bash]
+----
+curl -X GET "http://localhost:9000/eco"
+----
+
+{% endcode %}
+
+and generates the following output:
+
+[source,javascript]
+----
+{
+  "version": {"edition":"developer","api":"v2","schema":0},
+  "error": true,
+  "message": "Endpoint is not found from url = /eco, please use GET /endpoints to list all valid endpoints.",
+  "code": "REST-1000"
+}
+----
+
+=== Changing the default output API
+
+The following GSQL statement can be used to set the JSON output API configuration.
+
+[source,text]
+----
+SET json_api = <version_string>
+----
+
+This statement sets a persistent system parameter. Each version of the TigerGraph platform is pre-configured to what was the latest output API that at the time of release. For example, platform version 1.1 is configured so that each query will produce v2 output by default.
+
+As of TigerGraph v3.0, the only supported JSON API is "v2".
+
+== SHOW QUERY
+
+[source,coffeescript]
+----
+showQuery := SHOW QUERY queryName
+----
+
+To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`. See  link:../ddl-and-loading/defining-a-graph-schema.md#show-view-parts-of-the-catalog[SHOW: View Parts of the Catalog]
+
+Additionally, the `ls` GSQL command lists all created queries and identifies which queries have been installed.
+
+== DROP QUERY
+
+[source,coffeescript]
+----
+dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
+----
+
+To drop a query, run `DROP QUERY query_name` __. The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
+
+To drop all queries, either of the following commands can be used: +
+`DROP QUERY ALL
+DROP QUERY *`
+
+{% hint style="info" %}
+The scope of ALL depends on the user's current scope. If the user has set a working graph, then DROP ALL removes all the jobs for that graph. If a superuser has set their scope to be global, then DROP ALL removes all jobs across all graph spaces.
+{% endhint %}

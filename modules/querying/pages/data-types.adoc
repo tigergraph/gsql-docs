@@ -1,0 +1,564 @@
+= Data Types
+
+This section describes the data types that are native to and are supported by the GSQL Query Language. Most of the data objects used in queries come from one of three sources:
+
+* The query's input parameters
+* The vertices, edges, and their attributes which are encountered when traversing the graph
+* The variables defined within the query to assist in the computational work of the query
+
+This section covers the following subset of the EBNF language definitions:
+
+{% code title="EBNF for Data Types" %}
+
+[source,erlang]
+----
+lowercase          := [a-z]
+uppercase          := [A-Z]
+letter             := lowercase | uppercase
+digit              := [0-9]
+integer            := ["-"]digit+
+real               := ["-"]("."digit+) | ["-"](digit+"."digit*)
+numeric            := integer | real
+stringLiteral      := '"' [~["] | '\\' ('"' | '\\')]* '"'
+
+name := (letter | "_") [letter | digit | "_"]*   // Can be a single "_" or start with "_"
+graphName := name
+queryName := name
+paramName := name
+vertexType := name
+edgeType := name
+accumName := name
+vertexSetName := name
+attrName := name
+varName := name
+tupleType := name
+fieldName :=name
+funcName := name
+
+type := baseType | tupleType | accumType | STRING COMPRESS
+
+baseType := INT
+          | UINT
+          | FLOAT
+          | DOUBLE
+          | STRING
+          | BOOL
+          | VERTEX ["<" vertexType ">"]
+          | EDGE
+          | JSONOBJECT
+          | JSONARRAY
+          | DATETIME
+
+filePath := paramName | stringLiteral
+
+typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
+
+tupleFields := (baseType fieldName) | (fieldName baseType)
+           ["," (baseType fieldName) | (fieldName baseType)]*
+
+parameterType := baseType
+               | [ SET | BAG ] "<" baseType ">"
+               | FILE
+----
+
+{% endcode %}
+
+== Identifiers
+
+An identifier is the name for an instance of a language element. In the GSQL query language, identifiers are used to name elements such as a query, a variable, or a user-defined function.  In the EBNF syntax, an identifier is referred as `name`. It can be a sequence of letters, digits, or underscores (`"_"`). Other punctuation characters are not supported. The initial character can only be a letter or an underscore.
+
+{% code title="name (identifier)" %}
+
+[source,sql]
+----
+name := (letter | "_") [letter | digit | "_"]*
+----
+
+{% endcode %}
+
+== Overview of Types
+
+Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).  The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++EBNF term+++</th>+++
+      +++<th style="text-align:left">+++Description+++</th>+++
+      +++<th style="text-align:left">+++Use Case+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++baseType+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++INT+++</code>+++, +++<code>+++UINT+++</code>+++, +++<code>+++FLOAT+++</code>+++, +++<code>+++DOUBLE+++</code>+++, +++<code>+++STRING+++</code>+++, +++<code>+++BOOL+++</code>+++, +++<code>+++DATETIME,+++</code>+++  +++<code>+++VERTEX+++</code>+++, +++<code>+++EDGE+++</code>+++,
+        +++<br>++++++</br>++++++<code>+++JSONOBJECT+++</code>+++, or +++<code>+++JSONARRAY+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Global variable+++</li>+++
+          +++<li>+++Query return value+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++tupleType+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Sequence of base types+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++User-defined tuple+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++accumType+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Family of specialized data objects which support accumulation operations+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Accumulate and aggregate data, when traversing a set of vertices or edges
+            +++<br>++++++</br>+++(Details are in the +++<a href="accumulators.md">+++Query Lang Spec - Accumulators+++</a>+++ chapter.)+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++FILE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++FILE+++</code>+++ object+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Global sequential data object, linked to a text file+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++parameterType+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++ (except +++<code>+++EDGE+++</code>+++ or +++<code>+++JSONOBJECT+++</code>+++),
+        a set or bag of +++<code>+++baseType+++</code>+++, or +++<code>+++FILE+++</code>+++ object+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Query parameter+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++STRING COMPRESS+++</code>++++++</p>+++
+        +++<p>+++(&#x26A0;+++<b>+++suitable only in limited circumstances+++</b>+++)+++</p>++++++</td>+++
+      +++<td style="text-align:left">+++STRING COMPRESS+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++more compact storage of STRING, +++<b>+++if there is a limited number of different values and the value is rarely accessed. Otherwise, it may use more memory.+++</b>++++++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++elementType+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++, +++<code>+++STRING COMPRESS+++</code>+++, or identifier+++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Element for most types of container accumulators: +++<code>+++SetAccum+++</code>+++, +++<code>+++BagAccum+++</code>+++, +++<code>+++GroupByAccum+++</code>+++,
+            key of a +++<code>+++MapAccum+++</code>+++ element+++</li>++++++</ul>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++type+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++, +++<code>+++STRING COMPRESS+++</code>+++, identifier, or +++<code>+++accumType+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++</p>+++
+        +++<ul>++++++<li>+++Element of a +++<code>+++ListAccum+++</code>+++, value of a +++<code>+++MapAccum+++</code>+++ element+++</li>+++
+          +++<li>+++Local variable+++</li>++++++</ul>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+== Base Types
+
+The query language supports the following _base types_, which can be declared and assigned anywhere within their scope. Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator. Accumulators are described in detail in a later section.
+
+{% code title="EBNF" %}
+
+[source,erlang]
+----
+baseType := INT
+          | UINT
+          | FLOAT
+          | DOUBLE
+          | STRING
+          | BOOL
+          | VERTEX ["<" vertexType ">"]
+          | EDGE
+          | JSONOBJECT
+          | JSONARRAY
+          | DATETIME
+----
+
+{% endcode %}
+
+The default value of each base type is shown in the table below. The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions (see Section "Operators, Functions, and Expressions" for more details).
+
+The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "link:../ddl-and-loading/system-and-language-basics.md#attribute-data-types[Attribute Data Types]" section of link:../ddl-and-loading/[_*GSQL Language Reference, Part 1*_].
+
+|===
+| Type | Default value | Literal
+
+| `INT`
+| `0`
+| A signed integer: `-3`
+
+| `UINT`
+| `0`
+| An unsigned integer: `5`
+
+| `FLOAT`
+| `0`
+| A decimal: `3.14159`
+
+| `DOUBLE`
+| `0`
+| A decimal with greater precision than `FLOAT`
+
+| `BOOL`
+| `false`
+| `TRUE` or `FALSE`
+
+| `STRING`
+| `""`
+| Characters enclosed by double quotes: `"Hello"`
+
+| `DATETIME`
+| `1970-01-01 00:00:00`
+| No literal. Can be converted from a correctly formatted string with link:func/type-conversion-functions.md#to_datetime[`to_datetime()`].
+
+| `VERTEX`
+| `"Unknown"`
+| No literal.
+
+| `EDGE`
+| No edge: `{}`
+| No literal.
+
+| `JSONOBJECT`
+| An empty object: `{}`
+| No literal. Can be converted from a correctly formatted string with link:func/type-conversion-functions.md#parse_json_object[`parse_json_object()`].
+
+| `JSONARRAY`
+| An empty array: `[]`
+| No literal. Can be converted from a correctly formatted string with link:func/type-conversion-functions.md#parse_json_array[`parse_json_array()`].
+|===
+
+{% hint style="danger" %}
+`FLOAT` and `DOUBLE` input values must be in fixed point `d.dddd` __**__format, where `d` is a digit. Output values will be printed in either fixed point for exponential notation, whichever is more compact.
+
+The GSQL Loader can read FLOAT and DOUBLE values with exponential notation (e.g., 1.25 E-7).
+{% endhint %}
+
+=== Vertex and edge
+
+Vertex and edge are the two types of objects which form a graph. A query parameter or variable can be declared as either of these two types. In addition, the schema for the graph defines specific vertex and edge types. The parameter or variable type can be restricted by giving the vertex/edge type in angle brackets `<>` after the keyword `VERTEX` or `EDGE`. A vertex or edge variable declared without a specifier is called a _generic_ type. Below are examples of generic and typed vertex and edge variable declarations:
+
+{% code title="Examples of generic and typed VERTEX and EDGE declarations" %}
+
+[source,sql]
+----
+VERTEX anyVertex;
+VERTEX<person> owner;
+EDGE anyEdge;
+EDGE<friendship> friendEdge;
+----
+
+{% endcode %}
+
+=== Vertex and Edge Attribute Types
+
+The following table maps vertex or edge attribute types in the Data Definition Language (DDL) to GSQL query language types. If an attribute of a vertex or edge is referenced in a GSQL query, they will be automatically converted to their corresponding data type in the GSQL query language.
+
+|===
+| DDL | GSQL Query
+
+| `INT`
+| `INT`
+
+| `UINT`
+| `UINT`
+
+| `FLOAT`
+| `FLOAT`
+
+| `DOUBLE`
+| `DOUBLE`
+
+| `BOOL`
+| `BOOL`
+
+| `STRING`
+| `STRING`
+
+| `STRING COMPRESS`
+| `STRING`
+
+| `SET< type >`
+| `SetAccum< type >`
+
+| `LIST< type >`
+| `ListAccum< type >`
+
+| `MAP <key_type, value_type>`
+| `MapAccum <key_type, value_type>`
+
+| `DATETIME`
+| `DATETIME`
+|===
+
+==== `SET` and `LIST` literals
+
+In the GSQL query language, one cannot declare a variable of `SET` (link:declaration-and-assignment-statements.md#vertex-set-variable-declaration-and-assignment[vertex sets] are an exception), `LIST` , or `MAP` types.  However, one can still use `SET` and `LIST` literals to update the value of a vertex attribute of type `SET` or `LIST`, insert a vertex or edge with attributes of type `SET` or `LIST` , and initialize an accumulator.
+
+[source,cpp]
+----
+// Elements within a set or a list need to be of the same type
+set_literal := "(" expr ("," expr)* ")"
+list_literal := "[" expr ("," expr)* "]"
+expr := INT | UINT | FLOAT | DOUBLE | BOOL | STRING | UDT | DATETIME
+----
+
+{% hint style="info" %}
+Currently, GSQL query language syntax does not support `MAP` literals. +
+{% endhint %}
+
+=== `JSONOBJECT` and `JSONARRAY`
+
+These two base types allow users to pass a complex data object or to write output in a customized format. These types follow the industry-standard definition of link:www.json.org[JSON]. A `JSONOBJECT` instance's external representation (as input and output) is a string, starting and ending with curly braces ( `{}`) which enclose an unordered list of key-value _****_pairs. A `JSONARRAY` is represented as a string, starting and ending with square brackets (`[]`)which enclose an ordered list of _values_. Since a _value ****_can be an object or an array, JSON supports hierarchical, nested data structures.
+
+More details are introduced in the Section link:operators-and-expressions.md#jsonobject-and-jsonarray-functions[JSONOBJECT and JSONARRAY Functions].
+
+{% hint style="danger" %}
+ A `JSONOBJECT` or `JSONARRAY` value is immutable. No operator is allowed to modify its value.
+{% endhint %}
+
+== Tuple
+
+A tuple is a user-defined data structure consisting of a fixed sequence of base type variables. Tuple types can be created and named using a `TYPEDEF` statement. Tuples must be defined first, before any other statements in a query.
+
+{% code title="ENBF for tuples" %}
+
+[source,sql]
+----
+typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
+
+tupleFields := (baseType fieldName) | (fieldName baseType)
+           ["," (baseType fieldName) | (fieldName baseType)]*
+----
+
+{% endcode %}
+
+A tuple can also be defined in a graph schema and then can be used as a vertex or edge attribute type. A tuple type that has been defined in the graph schema does not need to be re-defined in a query.
+
+The vertex type `person` contains two complex attributes:
+
+* `secretInfo` of type `SECRET_INFO`, which a user-defined tuple
+* `portfolio` of type `MAP<STRING, DOUBLE>`
+
+{% code title="investmentNet schema" %}
+
+[source,sql]
+----
+TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
+CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
+CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
+CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
+CREATE GRAPH investmentNet (*)
+----
+
+{% endcode %}
+
+The query below reads both the `SECRET_INFO` tuple and the portfolio MAP. The tuple type does not need to redefine `SECRET_INFO`. To read and save the map, we define a link:accumulators.md#mapaccum[`MapAccum`] with the same types for key and value as the `portfolio`  attribute. In addition, the query creates a new tuple type, `ORDER_RECORD`.
+
+{% code title="tupleEx query" %}
+
+[source,sql]
+----
+CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
+  #TYPEDEF TUPLE <UINT age, STRING mothersName> SECRET_INFO;       # already defined in schema
+  TYPEDEF TUPLE <STRING ticker, FLOAT price, DATETIME orderTime> ORDER_RECORD; # new for query
+
+  SetAccum<SECRET_INFO> @@info;
+  ListAccum<ORDER_RECORD> @@orderRecords;
+  MapAccum<STRING, DOUBLE> @@portf;       # corresponds to MAP<STRING, DOUBLE> attribute
+
+  INIT = {p};
+
+  # Get person p's secret_info and portfolio
+  X = SELECT v FROM INIT:v
+      ACCUM @@portf += v.portfolio, @@info += v.secretInfo;
+
+  # Search person p's orders to record ticker, price, and order time.
+  # Note that the tuple gathers info from both edges and vertices.
+  orders = SELECT t
+      FROM INIT:s -(makeOrder:e)->stockOrder:t
+      ACCUM @@orderRecords += ORDER_RECORD(t.ticker, t.price, e.orderTime);
+
+  PRINT @@portf, @@info;
+  PRINT @@orderRecords;
+}
+----
+
+{% endcode %}
+
+{% code title="tupleEx.json" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY tupleEx("person1")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "@@info": [{
+        "mothersName": "JAMES",
+        "age": 25
+      }],
+      "@@portf": {
+        "AAPL": 3142.24,
+        "MS": 5000,
+        "G": 6112.23
+      }
+    },
+    {"@@orderRecords": [
+      {
+        "ticker": "AAPL",
+        "orderTime": "2017-03-03 18:42:28",
+        "price": 34.42
+      },
+      {
+        "ticker": "B",
+        "orderTime": "2017-03-03 18:42:30",
+        "price": 202.32001
+      },
+      {
+        "ticker": "A",
+        "orderTime": "2017-03-03 18:42:29",
+        "price": 50.55
+      }
+    ]}
+  ]
+}
+----
+
+{% endcode %}
+
+== `STRING COMPRESS`
+
+`STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`. The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally. A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
+
+{% hint style="danger" %}
+Using `STRING COMPRESS` instead of `STRING` is a trade-off: smaller storage vs. slower access times. The storage space will only be smaller if (1) the original strings are long, and (2) there are only a small number of different strings.  Performance will always be slower; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
+
+We recommend performing comparison tests for both performance and memory usage before settling on `STRING COMPRESS`.
+{% endhint %}
+
+`STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times. In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
+
+An accumulator containing `STRING COMPRESS` stores the dictionary when it is assigned an attribute value or from another accumulator containing `STRING COMPRESS`. An accumulator containing `STRING COMPRESS` can store multiple dictionaries. A `STRING` value can be converted to a `STRING COMPRESS` value only if the value is in the dictionaries. If the `STRING` value is not in the dictionaries, the original string value is saved. A `STRING COMPRESS` value can be automatically converted to a `STRING` value.
+
+When a `STRING COMPRESS` value is output (e.g. by a link:output-statements-and-file-objects.md#print-statement-api-v-2[`PRINT` statement]), it is shown as a `STRING`.
+
+{% hint style="danger" %}
+ `STRING COMPRESS` is not a base type.
+{% endhint %}
+
+{% code title="STRING COMPRESS example" %}
+
+[source,sql]
+----
+CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
+  ListAccum<STRING COMPRESS> @@strCompressList, @@strCompressList2;
+  SetAccum<STRING COMPRESS> @@strCompressSet, @@strCompressSet2;
+  ListAccum<STRING> @@strList, @@strList2;
+  SetAccum<STRING> @@strSet, @@strSet2;
+
+  S = {m1};
+
+  S = SELECT s
+      FROM S:s
+      ACCUM @@strSet += s.interestSet,
+            @@strList += s.interestList,
+            @@strCompressSet += s.interestSet,   # use the dictionary from person.interestSet
+            @@strCompressList += s.interestList; # use the dictionary from person.interestList
+
+  @@strCompressList2 += @@strCompressList;  # @@strCompressList2 gets the dictionary from @@strCompressList, which is from person.interestList
+  @@strCompressList2 += "xyz";   # "xyz" is not in the dictionary, so store the actual string value
+
+  @@strCompressSet2 += @@strCompressSet;
+  @@strCompressSet2 += @@strSet;
+
+  @@strList2 += @@strCompressList;  # string compress integer values are decoded to strings
+  @@strSet2 += @@strCompressSet;
+
+  PRINT @@strSet, @@strList, @@strCompressSet, @@strCompressList;
+  PRINT @@strSet2, @@strList2, @@strCompressSet2, @@strCompressList2;
+}
+----
+
+{% endcode %}
+
+{% code title="stringCompressEx.json Results" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY stringCompressEx("person12")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "@@strCompressList": [
+        "music",
+        "engineering",
+        "teaching",
+        "teaching",
+        "teaching"
+      ],
+      "@@strSet": [ "teaching", "engineering", "music" ],
+      "@@strCompressSet": [ "music", "engineering", "teaching" ],
+      "@@strList": [
+        "music",
+        "engineering",
+        "teaching",
+        "teaching",
+        "teaching"
+      ]
+    },
+    {
+      "@@strSet2": [ "music", "engineering", "teaching" ],
+      "@@strCompressList2": [
+        "music",
+        "engineering",
+        "teaching",
+        "teaching",
+        "teaching",
+        "xyz"
+      ],
+      "@@strList2": [
+        "music",
+        "engineering",
+        "teaching",
+        "teaching",
+        "teaching"
+      ],
+      "@@strCompressSet2": [ "teaching", "engineering", "music" ]
+    }
+  ]
+}
+----
+
+{% endcode %}
+
+== `FILE` Object
+
+A `FILE` object is a sequential data storage object, associated with a text file on the local machine.
+
+{% hint style="info" %}
+When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
+{% endhint %}
+
+When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to the `FILE` will be appended to the `FILE`. When the query where the `FILE` was declared finishes running, the `FILE` contents are saved to the text file.
+
+A `FILE` object can be passed as a parameter to another query. When a query receives a `FILE` object as a parameter, it can append data to that `FILE`, as can every other query which receives this `FILE` object as a parameter.
+
+== Query Parameter Types
+
+Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`). A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter. Within the query, `SET` and `BAG` are converted to link:accumulators.md#setaccum[`SetAccum`] and link:accumulators.md#bagaccum[`BagAccum`], respectively.
+
+{% hint style="danger" %}
+A query parameter is immutable. It cannot be assigned a new value within the query.
+
+The `FILE` object is a special case.  It is passed by reference, meaning that the receiving query gets a link to the original `FILE` object.  The receiving query can write to the `FILE` object.
+{% endhint %}
+
+{% code title="EBNF" %}
+
+[source,sql]
+----
+parameterType := INT
+               | UINT
+               | FLOAT
+               | DOUBLE
+               | STRING
+               | BOOL
+               | VERTEX ["<" vertexType ">"]
+               | DATETIME
+               | [ SET | BAG ] "<" baseType ">"
+               | FILE
+----
+
+{% endcode %}
+
+{% code title="Examples of collection type parameters" %}
+
+[source,sql]
+----
+(SET<VERTEX<person> p1, BAG<INT> ids, FILE f1)
+----
+
+{% endcode %}

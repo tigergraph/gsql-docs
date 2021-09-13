@@ -1,0 +1,546 @@
+= Example Graphs
+
+Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: *workNet* , *socialNet* , *friendNet* , *computerNet* , *minimalNet* , and**investmentNet** .  The tar-gzip file *gsql_ref_examples_2.0.gz* contains all of these files. Each graph has its own folder. To create a particular graph, go in its folder and run the following command: +
+gsql graph_create.gsql
+
+{% file src="../../../../.gitbook/assets/gsql_ref_examples_2.0.gz" caption=" gsql_ref_examples_2.0.gz" %}
+
+== *workNet*
+
+{% code title="graph_create.gsql for workNet" %}
+
+[source,sql]
+----
+# Updated 5/1/18 for v2.0
+DROP ALL
+CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING COMPRESS>, interestList LIST<STRING COMPRESS>)
+CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
+CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
+CREATE GRAPH workNet(*)
+
+USE GRAPH workNet // v1.2
+CREATE LOADING JOB loadMember FOR GRAPH workNet {
+  DEFINE FILENAME f;
+  LOAD f
+    TO VERTEX person VALUES($0, $0, $1, _, _, SPLIT($3,"|"), SPLIT($3,"|") ),
+    TO TEMP_TABLE t2(id, skill) VALUES ($0, flatten($2,"|",1));
+
+  LOAD TEMP_TABLE t2
+    TO VERTEX person VALUES($0, _, _, $"skill", $"skill", _, _);
+}
+
+CREATE LOADING JOB loadCompany FOR GRAPH workNet {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX company VALUES($0, $0, $1);
+}
+
+CREATE LOADING JOB loadMemberCompany FOR GRAPH workNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE worksFor VALUES($0, $1, $2, $3, $4);
+}
+
+RUN LOADING JOB loadMember USING f="./persons"
+RUN LOADING JOB loadCompany USING f="./companies"
+RUN LOADING JOB loadMemberCompany USING f="./person_company"
+----
+
+{% endcode %}
+
+{% code title="file: persons (vertices)" %}
+
+[source,sql]
+----
+person1,us,1|2|3,management|financial
+person2,chn,2|3|5|6,engineering
+person3,jp,4|1|6,teaching
+person4,us,4|1|10,football
+person5,can,|8|2|5,sport|financial|engineering
+person6,jp,7|10,music|art
+person7,us,8|6,art|sport
+person8,chn,1|5|2,management
+person9,us,4|7|2,financial|teaching
+person10,us,3,football|sport
+person11,can,10,sport|football
+person12,jp,1|5|2|2|2,music|engineering|teaching|teaching|teaching
+----
+
+{% endcode %}
+
+{% code title="file: company (vertices)" %}
+
+[source,sql]
+----
+company1,us
+company2,chn
+company3,jp
+company4,us
+company5,can
+----
+
+{% endcode %}
+
+{% code title="file: person_company (edges)" %}
+
+[source,sql]
+----
+person1,company1,2016,1,1
+person1,company2,2014,3,0
+person2,company1,2015,7,1
+person2,company2,2012,6,0
+person3,company1,2016,6,1
+person4,company2,2013,2,1
+person5,company2,2016,4,0
+person6,company1,2015,1,1
+person7,company2,2016,3,0
+person7,company3,2014,1,0
+person8,company1,2013,2,1
+person9,company2,2015,12,1
+person9,company3,2016,11,1
+person10,company1,2016,2,1
+person10,company3,2014,5,0
+person11,company5,2016,5,1
+person12,company4,2014,1,1
+----
+
+{% endcode %}
+
+== *socialNet*
+
+{% code title="graph_create.gsql for socialNet" %}
+
+[source,sql]
+----
+# Updated 5/1/18 for v2.0
+DROP ALL
+CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+CREATE UNDIRECTED EDGE friend(FROM person, TO person)
+CREATE VERTEX post(PRIMARY_ID postId UINT, subject STRING, postTime DATETIME)
+CREATE DIRECTED EDGE posted(FROM person, TO post)
+CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
+CREATE GRAPH socialNet(*)
+
+USE GRAPH socialNet // v1.2
+CREATE LOADING JOB loadMember FOR GRAPH socialNet {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX person VALUES($0, $0, $1) ;
+}
+
+CREATE LOADING JOB loadFriend FOR GRAPH socialNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE friend VALUES($0, $1) ;
+}
+
+CREATE LOADING JOB loadPost FOR GRAPH socialNet {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX post VALUES($0, $1, $2);
+}
+
+CREATE LOADING JOB loadPosted FOR GRAPH socialNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE posted VALUES($0, $1) ;
+}
+
+CREATE LOADING JOB loadLiked FOR GRAPH socialNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE liked VALUES($0, $1, $2) ;
+}
+
+RUN LOADING JOB loadMember USING f="./persons"
+RUN LOADING JOB loadFriend USING f="./friends"
+RUN LOADING JOB loadPost USING f="./posts"
+RUN LOADING JOB loadPosted USING f="./posted"
+RUN LOADING JOB loadLiked USING f="./liked"
+----
+
+{% endcode %}
+
+{% code title="file: persons (vertices)" %}
+
+[source,sql]
+----
+person1,Male
+person2,Female
+person3,Male
+person4,Female
+person5,Female
+person6,Male
+person7,Male
+person8,Male
+----
+
+{% endcode %}
+
+{% code title="file: friends (edges)" %}
+
+[source,sql]
+----
+person1,person2
+person2,person3
+person3,person4
+person4,person5
+person4,person6
+person5,person7
+person6,person8
+person7,person8
+person8,person1
+----
+
+{% endcode %}
+
+{% code title="file: posts (vertices)" %}
+
+[source,sql]
+----
+0,Graphs,2010-01-12 11:22:05
+1,tigergraph,2011-03-03 23:02:00
+2,query languages,2011-02-03 01:02:42
+3,cats,2011-02-05 01:02:44
+4,coffee,2011-02-07 05:02:51
+5,tigergraph,2011-02-06 01:02:02
+6,tigergraph,2011-02-05 02:02:05
+7,Graphs,2011-02-04 17:02:41
+8,cats,2011-02-03 17:05:52
+9,cats,2011-02-05 23:12:42
+10,cats,2011-02-04 03:02:31
+11,cats,2011-02-03 01:02:21
+----
+
+{% endcode %}
+
+{% code title="file: posted (edges)" %}
+
+[source,sql]
+----
+person1,0
+person2,1
+person3,2
+person4,3
+person5,4
+person5,11
+person6,5
+person6,10
+person7,6
+person7,9
+person8,7
+person8,8
+----
+
+{% endcode %}
+
+{% code title="file: liked (edges)" %}
+
+[source,sql]
+----
+person1,0,2010-01-11 11:32:00
+person2,0,2010-01-12 10:52:15
+person2,3,2010-01-11 16:02:26
+person3,0,2010-01-16 05:15:53
+person4,4,2010-01-13 03:16:05
+person5,6,2010-01-12 21:12:05
+person6,8,2010-01-14 11:23:05
+person7,10,2010-01-12 11:22:05
+person8,4,2010-01-11 03:26:05
+----
+
+{% endcode %}
+
+== *friendNet*
+
+{% code title="graph_create.gsql for friendNet" %}
+
+[source,sql]
+----
+# Updated 5/1/18 for v2.0
+DROP ALL
+CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING)
+CREATE UNDIRECTED EDGE friend(FROM person, TO person)
+CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
+CREATE GRAPH friendNet(*)
+
+USE GRAPH friendNet // v1.2
+CREATE LOADING JOB loadMember FOR GRAPH friendNet {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX person VALUES($0, $0);
+}
+
+CREATE LOADING JOB loadFriend FOR GRAPH friendNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE friend VALUES($0, $1);
+}
+
+CREATE LOADING JOB loadCoworker FOR GRAPH friendNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE coworker VALUES($0, $1);
+}
+
+RUN LOADING JOB loadMember USING f="./persons"
+RUN LOADING JOB loadFriend USING f="./friends"
+RUN LOADING JOB loadCoworker USING f="./coworkers"
+----
+
+{% endcode %}
+
+{% code title="file: persons (vertices)" %}
+
+[source,sql]
+----
+person1
+person2
+person3
+person4
+person5
+person6
+person7
+person8
+person9
+person10
+person11
+person12
+----
+
+{% endcode %}
+
+{% code title="file: friends (edges)" %}
+
+[source,sql]
+----
+person1,person2
+person1,person3
+person1,person4
+person2,person8
+person3,person9
+person4,person6
+person5,person6
+person6,person9
+person7,person9
+person8,person10
+person9,person8
+person10,person12
+person11,person12
+person12,person8
+person12,person9
+----
+
+{% endcode %}
+
+{% code title="file: coworkers (edges)" %}
+
+[source,sql]
+----
+person1,person4
+person1,person5
+person1,person6
+person2,person3
+person2,person4
+person3,person5
+person3,person6
+person4,person5
+person4,person6
+person5,person6
+person6,person5
+person7,person9
+person7,person5
+person7,person4
+person8,person9
+person9,person2
+person10,person7
+person11,person7
+person12,person7
+----
+
+{% endcode %}
+
+== *computerNet*
+
+{% code title="graph_create.gsql for computerNet" %}
+
+[source,sql]
+----
+# Updated 5/1/18 for v2.0
+DROP ALL
+CREATE VERTEX computer(PRIMARY_ID compID UINT, id STRING)
+CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed DOUBLE, securityLevel INT)
+CREATE GRAPH computerNet(*)
+
+USE GRAPH computerNet // v1.2
+CREATE LOADING JOB loadComputer FOR GRAPH computerNet {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX computer VALUES($0, $0);
+}
+CREATE LOADING JOB loadConnection FOR GRAPH computerNet {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE connected VALUES($0, $1, $2, $3);
+}
+
+RUN LOADING JOB loadComputer USING f="./computers"
+RUN LOADING JOB loadConnection USING f="./connections"
+----
+
+{% endcode %}
+
+{% code title="file: computers (vertices)" %}
+
+[source,sql]
+----
+c1
+c2
+c3
+c4
+c5
+c6
+c7
+c8
+c9
+c10
+c11
+c12
+c13
+c14
+c15
+c16
+c17
+c18
+c19
+c20
+c21
+c22
+c23
+c24
+c25
+c26
+c27
+c28
+c29
+c30
+c31
+----
+
+{% endcode %}
+
+{% code title="file: connections (edges)" %}
+
+[source,sql]
+----
+c1,c2,16.0,3
+c1,c3,64.0,3
+c1,c4,64.0,2
+c1,c5,16.5,3
+c1,c6,64.3,3
+c1,c7,3.2,3
+c1,c8,-3.5,3
+c1,c9,-5.1,1
+c1,c10,15.5,3
+c1,c10,.5,1
+c1,c10,126,3
+c10,c11,16,3
+c11,c12,.5,3
+c12,c13,-0.5,3
+c12,c14,0.16,4
+c12,c15,1e2,3
+c12,c16,3.516e3,3
+c12,c17,5.12e-3,2
+c12,c18,-2.34e-5,1
+c12,c19,-0.000000000234,5
+c12,c20,0.000123e-5,4
+c12,c21,1000e3,1
+c12,c22,0.000123e10,1
+c14,c23,123456e-6,1
+c14,c24,123456e5,3
+c23,c24,64,2
+c23,c25,16,2
+c23,c26,32,2
+c23,c27,16,2
+c23,c28,3,1
+c23,c29,32,2
+c23,c30,16,2
+c23,c25,3,2
+c23,c26,3,2
+c23,c27,64,2
+c23,c28,32,2
+c23,c29,3,2
+c23,c30,3,2
+c23,c31,32,2
+c4,c23,16,2
+c4,c23,32,2
+c4,c23,64,2
+c4,c23,3,2
+----
+
+{% endcode %}
+
+== *minimalNet*
+
+{% code title="graph_create.gsql for minimalNet" %}
+
+[source,sql]
+----
+DROP ALL
+CREATE VERTEX testV(PRIMARY_ID id STRING)
+CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
+CREATE GRAPH minimalNet(*)
+----
+
+{% endcode %}
+
+There is no loading job or data for minimalNet (hence, "minimal.")
+
+== *investmentNet*
+
+{% code title="graph_create.gsql for investmentNet" %}
+
+[source,sql]
+----
+# Updated 5/1/18 for v2.0
+DROP ALL
+TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
+CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
+CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
+CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
+CREATE GRAPH investmentNet (*)
+
+USE GRAPH investmentNet // v1.2
+CREATE LOADING JOB loadPerson FOR GRAPH investmentNet {
+  DEFINE FILENAME f;
+    LOAD f
+    TO VERTEX person VALUES($0, SPLIT($1, ":", ";"), SECRET_INFO( $2, $3 ) );
+}
+
+CREATE LOADING JOB loadOrder FOR GRAPH investmentNet {
+  DEFINE FILENAME f;
+    LOAD f
+    TO VERTEX stockOrder VALUES($1, $3, $4, $5),
+    TO EDGE makeOrder VALUES($0, $1, $2);
+}
+
+RUN LOADING JOB loadPerson USING f="./persons"
+RUN LOADING JOB loadOrder USING f="./orders"
+----
+
+{% endcode %}
+
+{% code title="file: persons (vertices)" %}
+
+[source,sql]
+----
+person1,AAPL:3142.24;G:6112.23;MS:5000.00,25,JAMES
+person2,A:5242.62;GCI:5331.21;BAH:3200.00,67,SMITH
+person3,AA:5223.73;P:7935.00;BAK:6923.52,45,WILLIAMS
+person4,ACH:3542.62;S:6521.55;BABA:4030.52,51,ANTHONY
+----
+
+{% endcode %}
+
+{% code title="file: orders (vertices and edges)" %}
+
+[source,sql]
+----
+person1,0,1488566548,AAPL,500,34.42
+person1,1,1488566549,A,210,50.55
+person1,2,1488566550,B,211,202.32
+person2,3,1488566555,S,2,42.44
+person3,4,1488566155,ABC,2,52.44
+person4,5,1488566255,Z,2,62.34
+person4,6,1488566655,S,2,10.01
+----
+
+{% endcode %}

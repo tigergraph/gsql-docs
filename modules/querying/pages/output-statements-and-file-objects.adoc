@@ -1,0 +1,763 @@
+= Output Statements and FILE Objects
+
+== `PRINT` Statement (API v2)
+
+The PRINT statement specifies output data. Each execution of a PRINT statement adds a JSON object to the results array which will be part of the query output. A PRINT statement can appear anywhere that query-body statements are permitted.
+
+{% hint style="warning" %}
+ A PRINT statement does not trigger immediate output.  The full set of data from all PRINT statements is delivered at one time, when the query concludes.
+
+A query can print a maximum of 2GB of data.
+
+If the output is to a FILE object, then the size limit does not apply.
+{% endhint %}
+
+{% code title="EBNF" %}
+
+[source,erlang]
+----
+printStmt := PRINT printExpr ("," printExpr)* [WHERE condition] [TO_CSV (filePath | fileVar)]
+printExpr := (expr | vExprSet) [ AS jsonKey]
+           | tableName
+vExprSet  := expr "[" vSetProj ("," vSetProj)* "]"
+vSetProj  := expr [ AS jsonKey]
+jsonKey := name
+----
+
+{% endcode %}
+
+Each PRINT statement contains a list of expressions for output data. The optional WHERE clause filters the output. If the _condition_ is false for any items, then those items are excluded from the output.
+
+Each `printExpr` __contributes one key-value pair to the PRINT statement's JSON object result.  The optional AS clause sets the JSON key for the expression, overriding the default key (explained below).
+
+{% hint style="info" %}
+If the query includes one more tabular SELECT statements, the PRINT statement can include table names. Both tabular and non-tabular `printExpr` expressions can be including in one PRINT statement.
+{% endhint %}
+
+{% code title="Simple Example Showing JSON Output Format" %}
+
+[source,sql]
+----
+STRING str = "first statement";
+INT number = 5;
+PRINT str, number;
+
+str = "second statement";
+number = number + 1;
+PRINT str, number;
+
+# The statements above produce the following output
+{
+  "version": {"edition": "developer","api": "v2","schema": 0},
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "str": "first statement",
+      "number": 5
+    },
+    {
+      "str": "second statement",
+      "number": 6
+    }
+  ]
+}
+----
+
+{% endcode %}
+
+=== `PRINT` Expressions
+
+Each _`printExpr`_ may be one of the following:
+
+* A literal value
+* A global or local variable (including `VERTEX` and `EDGE` variables)
+* An attribute of a vertex variable, e.g., Person.name
+* A global accumulator
+* An expression whose terms are among the types above.  The following operators may be used:
+
+|===
+| Data type | Operators
+
+| String
+| concatenation: `+`
+
+| Set
+| `UNION INTERSECT MINUS`
+
+| Numeric
+| Arithmetic: `+ - * / . %`  Bit: `<< >> & \|`
+|===
+
+Parentheses can be used for controlling order of precedence.
+
+. A vertex set variable
+. A vertex expression set _`vExprSet`_ (only available if the output API is set to `"v2"`. Vertex expression sets are explained in a link:output-statements-and-file-objects.md#vertex-expression-set[separate section below].
+
+=== JSON Format: Keys
+
+If a _`printExpr`_ includes the optional *AS* _*name*_ clause, then the _name_ sets the key for that expression in the JSON output. Otherwise, the following rules determine the key: If the expression is simply a single variable (local variable, global variable, global accumulator, or vertex set variable), then the key is the variable name.  Also, for a vertex expression set, the key is the vertex set variable name. Otherwise, the key is the entire expression, represented as a string.
+
+=== *JSON Format: Values*
+
+Each data type has a distinct output format.
+
+* Simple numeric, string, and boolean data types follow JSON standards.
+* Lists, sets, bags, and arrays are printed as JSON *arrays* (i.e., a list enclosed in square brackets).
+* Maps and tuples are printed as JSON *objects* (i.e., a list of key:value pairs enclosed in curly braces).
+* Vertices and edges have a custom JSON object, shown below.
+* A vertex set variable is treated as a list of vertices.
+* Accumulator output format is determined by the accumulator's return type. For example, an `AvgAccum` outputs a `DOUBLE` value, and a `BitwiseAndAccum` outputs an `INT` value. For container accumulators, simply consider whether the output is a list, set, bag, or map.
+ ** `ListAccum`, `SetAccum`, `BagAccum`, `ArrayAccum`: list
+ ** `MapAccum`: map
+ ** `HeapAccum`, `GroupByAccum`: list of tuples
+
+{% hint style="danger" %}
+Full details of vertices are printed only when part of a vertex set variable or vertex expression set. When a single vertex is printed (from a variable or accumulator whose data type happens to be VERTEX), only the vertex id is printed.
+
+{% code title="Cases where only the vertex id will be printed" %}
+
+[source,erlang]
+----
+ListAccum<VERTEX> @@vList;  // not a vertex set variable
+VERTEX v;                   // not a vertex set variable
+...
+PRINT @@vList, v;           // output will contain only vertex ids
+----
+
+{% endcode %}
+{% endhint %}
+
+*Vertex (when not part of a vertex set variable)*
+
+The output is just the vertex id as a string:
+
+{% code title="Output Format for a Value which is a Vertex, not part of a Vertex Set Variable" %}
+
+[source,sql]
+----
+"<vertex_id>"
+----
+
+{% endcode %}
+
+*Vertex (as part of a vertex set variable)*
+
+{% code title="Output Format for a Vertex as part of a Vertex Set Variable" %}
+
+[source,yaml]
+----
+{
+  "v_id":   "<vertex_id>",
+  "v_type": "<vertex_type>",
+  "attributes": {
+    <list of key:value pairs,
+     one for each attribute
+     or vertex-attached accumulator>
+  }
+}
+----
+
+{% endcode %}
+
+*Edge*
+
+{% code title="Output Format for a Value which is an Edge" %}
+
+[source,yaml]
+----
+{
+  "e_type":    "<edge_type>",
+  "directed":  <boolean_value>,
+  "from_id":   "<source_vertex_id>",
+  "from_type": "<source_vertex_type>",
+  "to_id":     "<target_vertex_id>",
+  "to_type":   "<target_vertex_type>",
+  "attributes": {
+    <list of key:value pairs,
+     one for each attribute>
+  }
+}
+----
+
+{% endcode %}
+
+*List, Set or Bag*
+
+{% code title="Output format for a Value which is a List, Set, or Bag" %}
+
+[source,sql]
+----
+[
+  <value1>,
+  <value2>,
+  ...,
+  <valueN>
+]
+----
+
+{% endcode %}
+
+*Map*
+
+{% code title="Output Format for a Value which is a Map" %}
+
+[source,sql]
+----
+{
+  <key1>: <value1>,
+  <key2>: <value2>,
+  ...,
+  <keyN>: <valueN>
+}
+----
+
+{% endcode %}
+
+*Tuple*
+
+{% code title="Output Format for a Value which is a Tuple" %}
+
+[source,sql]
+----
+{
+  <fieldName1>: <value1>,
+  <fieldName2>: <value2>,
+  ...,
+  <fieldNameN>: <valueN>
+}
+----
+
+{% endcode %}
+
+*Vertex Set Variable*
+
+{% code title="Output Format for a Value which is a Vertex Set Variable" %}
+
+[source,sql]
+----
+[
+  <vertex1>,
+  <vertex2>,
+  ...,
+  <vertexN>
+]
+----
+
+{% endcode %}
+
+=== Vertex Expression Set
+
+A vertex expression set is a list of expressions which is applied to each vertex in a vertex set variable. The expression list is used to compute an alternative set of values to display in the "attributes" field of each vertex.
+
+The easiest way to understand this is to consider examples containing only one term and then consider combinations. Consider the following example query. C is a vertex set variable containing the set of all company vertices. Furthermore, each vertex has a vertex-attached accumulator @count.
+
+{% code title="Example Query for Vertex Expression Set" %}
+
+[source,erlang]
+----
+# CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
+
+CREATE QUERY vExprSet () FOR GRAPH workNet {
+  SumAccum<INT> @count;
+  C = {company.*};
+
+  # include some print statements here
+}
+----
+
+{% endcode %}
+
+If we print the full vertex set, the "attributes" field of each vertex will contain 3 fields: "id", "country", and "@count".  Now consider some simple vertex expression sets:
+
+* `PRINT C[C.country]` prints the vertex set variable C, except that the "attributes" field will contain only "country", instead of 3 fields.
+* `PRINT C[C.@count]` prints the vertex set variable C, except that the "attributes" field will contain only "@count", instead of 3 fields.
+* `PRINT C[C.@count AS company_count]` prints the same as above, except that the "@count" accumulator is is aliased as "company_count".
+* `PRINT C[C.id, C.@count]` prints the vertex set variable C, except that the "attributes" field will contain only "id" and "@count".
+* `PRINT C[C.id+"_ex", C.@count+1]` prints the vertex set variable C, except that the "attributes" field contains the following:
+ ** One field consists of each vertex's id value, with the string "_ex" appended to it.
+ ** Another field consists of the @count value incremented by 1.  Note: the value of @count itself has not changed, only the displayed value is incremented.
+
+The last example illustrates the general format for a vertex expression set:
+
+{% code title="Syntax for Vertex Expression Set" %}
+
+[source,sql]
+----
+vExprSet  := expr "[" vSetProj {, vSetProj} "]"
+vSetProj  := expr [ AS name]
+----
+
+{% endcode %}
+
+The vertex expression set begins with the name of a vertex set variable.  It is followed by a list of attribute expressions, enclosed in square brackets. Each attribute expression follows the same rules described earlier in the Print Expressions section.  That is, each attribute expression may refer to one or more attributes or vertex-attached accumulators of the current vertices, as well as literals, local or global variables, and global accumulators. The allowed operators (for numeric, string, or set operations) are the same ones mentioned above.
+
+The _key_ for the vertex expression set is the vertex set variable name.
+
+The _value_ for the vertex expression set is a modified vertex set variable, where the regular "attributes" value for each vertex is replaced with a set of key:value pairs corresponding to the set of attribute expressions given in the print expression.
+
+An example which shows all of the cases described above, in combination, is shown below.
+
+{% code title="Print Basic Example" %}
+
+[source,erlang]
+----
+CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
+
+  SetAccum<VERTEX> @@setOfVertices;
+  SetAccum<EDGE> @postedSet;
+  MapAccum<VERTEX,ListAccum<VERTEX>> @@testMap;
+  FLOAT paperWidth = 8.5;
+  INT paperHeight = 11;
+  STRING Alpha = "ABC";
+
+  Seed = person.*;
+  A = SELECT s
+      FROM Seed:s
+      WHERE s.gender == "Female"
+      ACCUM @@setOfVertices += s;
+
+  B = SELECT t
+      FROM Seed:s - (posted:e) -> post:t
+      ACCUM s.@postedSet += e,
+        @@testMap += (s -> t);
+
+# Numeric, String, and Boolean expressions, with renamed keys:
+  PRINT paperHeight*paperWidth AS PaperSize, Alpha+"XYZ" AS Letters,
+    A.size() > 10 AS AsizeMoreThan10;
+# Note how an expression is named if "AS" is not used:
+  PRINT A.size() > 10;
+
+# Vertex variables.  Only the vertex id is included (no attributes):
+  PRINT v, @@setOfVertices;
+
+# Map of Person -> Posts posted by that person:
+  PRINT @@testMap;
+
+# Vertex Set Variable. Each vertex has a vertex-attached accumulator, which
+# happens to be a set of edges (SetAccum<EDGE>), so edge format is shown also:
+  PRINT A AS VSetVarWomen;
+
+# Vertex Set Expression. The same set of vertices as above, but with only
+# one attribute plus one computed attribute:
+  PRINT A[A.gender, A.@postedSet.size()] AS VSetExpr;
+}
+----
+
+{% endcode %}
+
+{% hint style="info" %}
+Note how the results of the six PRINT statements are grouped in the JSON "results" field below:
+
+. Each of the six PRINT statements is represented as one JSON object with the "results" array.
+. When a PRINT statement has more than one expression (like the first one), the expressions may appear in the output in a different order than on the PRINT statement.
+. The 2nd PRINT statement shows a key that is generated from the expression itself.
+. The 3rd and 4th PRINT statements show a set of vertices (different than a vertex set variable) and a map, respectively.
+. The 5th PRINT statement shows the vertex set variable A, including its vertex-attached accumulators (PRINT A).
+. The 6th PRINT statement shows a vertex set expression for A, customized to include only one static attribute plus a newly computed attribute.
+{% endhint %}
+
+{% code title="Results from Query printExampleV2 (WITH COMMENTS ADDED)" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY printExampleV2("person1")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "AsizeMoreThan10": false,
+      "Letters": "ABCXYZ",
+      "PaperSize": 93.5
+    },
+    {"A.size()>10": false},
+    {
+      "v": "person1",
+      "@@setOfVertices": [ "person4", "person5", "person2" ]
+    },
+    {"@@testMap": {
+      "person4": ["3"],
+      "person3": ["2"],
+      "person2": ["1"],
+      "person1": ["0"],
+      "person8": [ "7", "8" ],
+      "person7": [ "9", "6" ],
+      "person6": [ "10", "5" ],
+      "person5": [ "4", "11" ]
+    }},
+    {"VSetVarWomen": [
+      {
+        "v_id": "person4",
+        "attributes": {
+          "gender": "Female",
+          "id": "person4",
+          "@postedSet": [{
+            "from_type": "person",
+            "to_type": "post",
+            "directed": true,
+            "from_id": "person4",
+            "to_id": "3",
+            "attributes": {},
+            "e_type": "posted"
+          }]
+        },
+        "v_type": "person"
+      },
+      {
+        "v_id": "person5",
+        "attributes": {
+          "gender": "Female",
+          "id": "person5",
+          "@postedSet": [
+            {
+              "from_type": "person",
+              "to_type": "post",
+              "directed": true,
+              "from_id": "person5",
+              "to_id": "11",
+              "attributes": {},
+              "e_type": "posted"
+            },
+            {
+              "from_type": "person",
+              "to_type": "post",
+              "directed": true,
+              "from_id": "person5",
+              "to_id": "4",
+              "attributes": {},
+              "e_type": "posted"
+            }
+          ]
+        },
+        "v_type": "person"
+      },
+      {
+        "v_id": "person2",
+        "attributes": {
+          "gender": "Female",
+          "id": "person2",
+          "@postedSet": [{
+            "from_type": "person",
+            "to_type": "post",
+            "directed": true,
+            "from_id": "person2",
+            "to_id": "1",
+            "attributes": {},
+            "e_type": "posted"
+          }]
+        },
+        "v_type": "person"
+      }
+    ]},
+    {"VSetExpr": [
+      {
+        "v_id": "person4",
+        "attributes": {
+          "A.@postedSet.size()": 1,
+          "A.gender": "Female"
+        },
+        "v_type": "person"
+      },
+      {
+        "v_id": "person5",
+        "attributes": {
+          "A.@postedSet.size()": 2,
+          "A.gender": "Female"
+        },
+        "v_type": "person"
+      },
+      {
+        "v_id": "person2",
+        "attributes": {
+          "A.@postedSet.size()": 1,
+          "A.gender": "Female"
+        },
+        "v_type": "person"
+      }
+    ]}
+  ]
+}
+----
+
+{% endcode %}
+
+=== Printing CSV to a FILE Object
+
+Instead of printing output in JSON format, output can be written to a FILE object in comma-separated values (CSV) format. To select this option, at the end of the PRINT statement, include the keyword `TO_CSV` followed by the `FILE` object name:
+
+{% tabs %}
+{% tab title="PRINT to CSV FILE syntax example" %}
+
+[source,erlang]
+----
+PRINT @@setOfVertices TO_CSV file1;
+----
+
+{% endtab %}
+{% endtabs %}
+
+Each execution of the `PRINT` statement appends one line to the `FILE`. If the `PRINT` statement includes multiple expressions, then each printed value is separated from its neighbor by a comma. If an expression evaluates to a set or list, then the collection's values are delimited by single spaces. Due to the simpler format of CSV vs. JSON, the `TO_CSV` feature only supports data with a simple one- or two-dimension structure.
+
+{% hint style="danger" %}
+Limitations of PRINT > File
+
+* Printing a full Vertex set variable is not supported.
+* If a vertex is printed, only its ID value is printed.
+* If printing a vertex set's vertex-attached accumulator or a vertex set's variable, the result is a list of values, one for each vertex, separated by newlines.
+* The syntax for printing a vertex set expression is currently different when printing to a file than when printing to standard output. Compare:
+ ** PRINT A[A.gender]; # with brackets
+ ** PRINT A.gender TO_CSV file1; # without brackets
+{% endhint %}
+
+{% hint style="warning" %}
+Writing to FILE objects is optimized for parallel processing. Consequently, the order in which data is written to the FILE is not guaranteed.  Therefore, it is strongly recommended that the user design their queries such that one of these conditions is satisfied:
+
+. The query prints only one set of data, and the order of the set is not important.
+. Each line of data to print to a file includes a label which can be used to identify the data.
+{% endhint %}
+
+{% code title="PRINT WHERE and PRINT TO_CSV FILE Object Example" %}
+
+[source,erlang]
+----
+CREATE QUERY printExampleFile() FOR GRAPH socialNet {
+  SetAccum<VERTEX> @@testSet, @@testSet2;
+  ListAccum<STRING> @@strList;
+  int x = 3;
+  FILE file1 ("/home/tigergraph/printExampleFile.txt");
+
+  Seed = person.*;
+  A = SELECT s
+      FROM Seed:s
+      WHERE s.gender == "Female"
+      ACCUM @@testSet += s, @@strList += s.gender;
+  A = SELECT s
+      FROM Seed:s
+      WHERE s.gender == "Male"
+      ACCUM @@testSet2 += s;
+
+  PRINT @@testSet, @@testSet2 TO_CSV file1;  # 1st line: 2 4 5, 1 3 6 7 8 (order not guaranteed)
+  PRINT x WHERE x < 0 TO_CSV file1;   # 2nd line: <skipped because no content>
+  PRINT x WHERE x > 0 TO_CSV file1;   # 3rd line: 3
+  PRINT @@strList TO_CSV file1;       # 4th line: Female Female Female
+  PRINT A.gender TO_CSV file1;     # 5th line: Male\n Male\n Male\n Male\n Male
+}
+----
+
+{% endcode %}
+
+== `FILE println` statement
+
+The `FILE println` statement writes data to a `FILE` object. Unlike the `PRINT` statement, which is a query-body level statement, the `FILE println` statement can be either a query-body level statement or a DML-sub-statement.
+
+{% code title="EBNF for FILE println statement" %}
+
+[source,erlang]
+----
+printlnStmt := fileVar".println" "(" expr ("," expr)* ")"
+----
+
+{% endcode %}
+
+`println` is a method of a FILE object variable. The `println` statement can be used either at the query-body level or a DML-sub-statement, e.g., within the ACCUM clause of a SELECT block. Each time `println` is called, it adds one new line of values to the `FILE` object, and then to the corresponding file.
+
+The `println` function can print any expression that can be printed by a `PRINT` statement with the exception of vertex set variables. Vertex expression sets are also not applicable to the `println` function.
+
+If the `println` statement has a list of expressions to print, it will produce a comma-separated list of values. If an expression refers to a list or set, then the output will be a list of values separated by spaces.
+
+{% hint style="danger" %}
+The data from query-body level `FILE` print statements (either `TO_CSV` or `println`) will appear in their original order. However, due to the parallel processing of statements in an ACCUM block, the order in which `println` statements at the DML-sub-statement level are processed cannot be guaranteed.
+{% endhint %}
+
+[discrete]
+==== Example
+
+{% code title="File object query example" %}
+
+[source,erlang]
+----
+CREATE QUERY fileEx (STRING fileLocation) FOR GRAPH workNet {
+
+    FILE f1 (fileLocation);
+    P = {person.*};
+
+    PRINT "header" TO_CSV f1;
+
+    USWorkers = SELECT v FROM P:v
+              WHERE v.locationId == "us"
+              ACCUM f1.println(v.id, v.interestList);
+
+    PRINT "footer" TO_CSV f1;
+}
+INSTALL QUERY fileEx
+RUN QUERY fileEx("/home/tigergraph/files")
+----
+
+{% endcode %}
+
+All of the `PRINT` statements in this example use the `TO_CSV` option, so there is no JSON output to the console.
+
+{% code title="Results from Query fileEx" %}
+
+[source,sql]
+----
+GSQL > RUN QUERY fileEx("/home/tigergraph/fileEx.txt")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": []
+}
+----
+
+{% endcode %}
+
+All the output in this case goes to the `FILE` object. In the query definition, the line `"header"` is printed first, followed by the `println` statements in the `ACCUM` clause, and `"footer"` is printed last. The output in the file follows this order because the order of query-body level statements is maintained in the output.
+
+{% code title="File contents produced by fileEx example" %}
+
+[source,sql]
+----
+[tigergraph@localhost]$ more /home/tigergraph/fileEx.txt
+header
+person7,art sport
+person10,football sport
+person4,football
+person9,financial teaching
+person1,management financial
+footer
+----
+
+{% endcode %}
+
+However, within the `ACCUM` clause itself, the order of the `println` statements is not guranteed.
+
+== Passing a FILE Object as a Parameter
+
+A FILE Object can be passed from one query to a subquery.  The subquery can then also write to the FILE object.
+
+{% code title="Example: query passing a FILE object to another query" %}
+
+[source,erlang]
+----
+CREATE QUERY fileParamSub(FILE f, STRING label, INT num) FOR GRAPH socialNet {
+    f.println(label, "header");
+    FOREACH i IN RANGE [1,2] DO
+        f.println(label, num+i);
+    END;
+    f.println(label, "footer");
+}
+
+CREATE QUERY fileParamMain(STRING mainlabel) FOR GRAPH socialNet {
+    FILE f ("/home/tigergraph/fileParam.txt");
+    f.println(mainlabel, "header");
+    FOREACH i IN RANGE [1,2] DO
+        f.println(mainlabel, i);
+        fileParamSub(f, " sub", 10*i);
+    END;
+    f.println(mainlabel, "footer");
+}
+----
+
+{% endcode %}
+
+[source,text]
+----
+GSQL > RUN QUERY fileParamMain("main")
+GSQL > EXIT
+
+$ cat /home/tigergraph/fileParam.txt
+main,header
+main,1
+ sub,header
+ sub,11
+ sub,12
+ sub,footer
+main,2
+ sub,header
+ sub,21
+ sub,22
+ sub,footer
+main,footer
+----
+
+== `LOG` Statement
+
+The LOG statement is another means to output data.  It works as a function that outputs information to a log file.
+
+{% code title="EBNF for LOG statement" %}
+
+[source,sql]
+----
+logStmt := LOG "(" condition "," argList ")"
+----
+
+{% endcode %}
+
+The first argument of the LOG statement is a boolean condition that enables or disables logging.  This allows logging to be easily turned on/off, for uses such as debugging.  After the condition, LOG takes one or more expressions (separated by commas).  These expressions are evaluated and output to the log file.
+
+Unlike the PRINT statement, which can only be used as a query-body statement, the LOG statement can be used as both a query-body statement and a DML-sub-statement.
+
+The values will be recorded in the GPE log. To find the log file after the query has completed, open a Linux shell and use the command  "gadmin log gpe".  It may show you more than one log file name; use the one ending in "INFO".  Search this file for "UDF_".
+
+{% code title="Examples" %}
+
+[source,sql]
+----
+BOOLEAN debug = TRUE;
+INT x = 10;
+
+LOG(debug, 20);
+LOG(debug, 10, x);
+----
+
+{% endcode %}
+
+== `RETURN` Statement
+
+{% code title="EBNF for RETURN statement" %}
+
+[source,sql]
+----
+returnStmt := RETURN expr
+----
+
+{% endcode %}
+
+The RETURN statement specifies data that a link:operators-and-expressions.md#subquery[_subquery_] __passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
+
+For subqueries to return a link:accumulators.md#heapaccum[`HeapAccum`] or link:accumulators.md#groupbyaccum[`GroupByAccum`], the accumulators must be link:../ddl-and-loading/defining-a-graph-schema.md#catalog-level-typedef[defined at the catalog level]. See the example below:
+
+{% code title="Subquery Returning HeapAccum Example" %}
+
+[source,coffeescript]
+----
+TYPEDEF tuple<name string, friends int> myTuple
+TYPEDEF HeapAccum<myTuple>(3, friends DESC) myHeap
+
+CREATE QUERY subquery1() FOR GRAPH socialNet RETURNS (myHeap){
+	myHeap @@heap;  	// Define the heap accumulator at the global level
+	SumAccum<int> @friends;
+	Start = {person.*};
+	Start = select s from Start:s-(friend:e)-:t
+	        accum s.@friends += 1
+	        post-accum @@heap += myTuple(s.id,s.@friends);
+	RETURN @@heap;
+}
+
+CREATE QUERY query1() FOR GRAPH socialNet {
+	PRINT subquery1();
+}
+----
+
+{% endcode %}

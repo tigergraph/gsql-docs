@@ -1,0 +1,76 @@
+= Introduction
+
+The GSQL ® Query Language is a language for the exploration and analysis of large scale graphs. The high-level language makes it easy to perform powerful graph traversal queries in the TigerGraph system. By combining features familiar to database users and programmers with highly expressive new capabilities, the GSQL query language offers both easy authoring and powerful execution. A GSQL query contains one or more SELECT statements, where each SELECT statement describes a traversal over a set of vertices and edges in the graph or describes a selection of a subset of vertices.  By combining multiple SELECT statements, the user can map out query patterns to answer a virtually unlimited set of real-life data questions.
+
+This document focuses on the formal specification for the GSQL Query Language. It includes example queries that demonstrate the language, each of which works on one of the following six graphs:**`workNet`, `socialNet`, `friendNet`, `computerNet`, `minimalNet`,** and *`investmentNet`* . Their schemas are shown below. Appendix D lists the full command and data files to create and load these graphs with small sets of data (~10 to 20 vertices). The data sets are small so that you can understand the result of each query example. The tarball file *`gsql_ref_examples_2.0.tar.gz`* (linked below) __**__contains all of the graph schemas, data files, and queries.
+
+{% file src="../../../.gitbook/assets/gsql_ref_examples_2.0.tar.gz" caption="gsql_ref_examples_2.0.tar.gz" %}
+
+== Schemas for Example Graphs
+
+{% code title="Graph Schema: socialNet" %}
+
+[source,sql]
+----
+CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+CREATE UNDIRECTED EDGE friend(FROM person, TO person)
+CREATE VERTEX post(PRIMARY_ID postId UINT, subject STRING, postTime DATETIME)
+CREATE DIRECTED EDGE posted(FROM person, TO post)
+CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
+----
+
+{% endcode %}
+
+{% code title="Graph Schema: workNet" %}
+
+[source,sql]
+----
+CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING COMPRESS>, interestList LIST<STRING COMPRESS>)
+CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
+CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
+----
+
+{% endcode %}
+
+{% code title="Graph Schema: friendNet" %}
+
+[source,sql]
+----
+CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING)
+CREATE UNDIRECTED EDGE friend(FROM person, TO person)
+CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
+----
+
+{% endcode %}
+
+{% code title="Graph Schema: computerNet" %}
+
+[source,sql]
+----
+CREATE VERTEX computer(PRIMARY_ID compID STRING, id STRING)
+CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed INT)
+----
+
+{% endcode %}
+
+{% code title="Graph Schema: minimalNet" %}
+
+[source,sql]
+----
+CREATE VERTEX testV(PRIMARY_ID id STRING)
+CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
+----
+
+{% endcode %}
+
+{% code title="Graph Schema: investmentNet" %}
+
+[source,sql]
+----
+TYPEDEF TUPLE < age UINT (4), mothersName STRING(20) > SECRET_INFO
+CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
+CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
+CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
+----
+
+{% endcode %}

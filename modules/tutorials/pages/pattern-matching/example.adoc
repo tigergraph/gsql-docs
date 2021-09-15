@@ -1,0 +1,252 @@
+= Example - A Recommender
+
+We have demonstrated the basic pattern match syntax. You should have mastered the basics by this point. In this section, we show two end-to-end solutions using the pattern match syntax.
+
+== A Recommendation Application
+
+In this example, we want to recommend some messages (comments or posts) to the person Viktor Akhiezer.
+
+How do we do this?
+
+One way is to find Others who likes the same messages Viktor likes. And then recommend the messages that Others like but Viktor have not seen. The pattern is roughly like below
+
+* Viktor - (Likes>) - Message - (<Likes) - Others
+* Others - (Likes>) - NewMessage
+* Recommend NewMessage to Viktor
+
+However, this is too fine granularity, and we are overfitting the message level data with a collaborative filtering algorithm. The intuition is that two persons are similar to each other when their "liked" messages fall into the same category (tag). This makes more sense and common than finding two persons that "likes" the same set of messages. As a result,  one way to avoid this overfitting is to go one level above. That is, instead of finding common messages as a similarity base, we find common messages'  tags as a similarity base. Person A and Person B are similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
+
+* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others
+* Others - (Likes>) -  NewMessage
+* Recommend NewMessage to Viktor
+
+*GSQL. RecommendMessage Application.*
+
+This time, we create the query first, and interpret the query by calling the query name with parameters. +
+If we are satisfied with this query, we can use "install query queryName" to get the compiled query installed which has the best performance.
+
+{% code title="GSQL Recommendation Algorithm " %}
+
+[source,sql]
+----
+use graph ldbc_snb
+set query_timeout=60000
+DROP QUERY RecommendMessage
+
+CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
+
+  SumAccum<int> @TagInCommon;
+  SumAccum<float> @SimilarityScore;
+  SumAccum<float> @Rank;
+  OrAccum @Liked = false;
+
+   #1. mark messages liked by Viktor
+   #2. calculate log similarity score for each persons share the same
+   #   interests at Tag level.
+    Others =
+       SELECT p
+       FROM Person:s-(LIKES>)-:msg - (HAS_TAG>.<HAS_TAG.<LIKES)- :p
+       WHERE s.firstName == fn AND s.lastName == ln
+       ACCUM msg.@Liked = true, p.@TagInCommon +=1
+       POST-ACCUM p.@SimilarityScore = log (1 + p.@TagInCommon);
+
+    # recommend new messages to Viktor that have not liked by him.
+    RecommendedMessage =
+             SELECT msg
+             FROM Others:o-(LIKES>) - :msg
+             WHERE  msg.@Liked == false
+             ACCUM msg.@Rank +=o.@SimilarityScore
+             ORDER BY msg.@Rank DESC
+             LIMIT 2;
+
+  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
+}
+
+
+INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
+#try the second person with just parameter change.
+INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
+----
+
+{% endcode %}
+
+You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
+
+{% code title="Linux Bash" %}
+
+[source,bash]
+----
+gsql app1.gsql
+----
+
+{% endcode %}
+
+{% code title=" Output of App1" %}
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+The query RecommendMessage is dropped.
+The query RecommendMessage has been added!
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"RecommendedMessage": [
+    {
+      "v_id": "549760294602",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4855.49219,
+        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
+      },
+      "v_type": "Post"
+    },
+    {
+      "v_id": "549760292109",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4828.7251,
+        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
+      },
+      "v_type": "Post"
+    }
+  ]}]
+}
+----
+
+{% endcode %}
+
+[discrete]
+==== Install the query
+
+When you are satisfied with your query  in the GSQL interpret mode,  you can now install it as a generic service which has a much faster speed.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, we can set the syntax version and install it.
+
+{% code title="GSQL Prepare Install Query" %}
+
+[source,coffeescript]
+----
+#before install the query, need to set the syntax version
+SET syntax_version="v2"
+USE GRAPH ldbc_snb
+
+#install query
+INSTALL QUERY RecommendMessage
+----
+
+{% endcode %}
+
+{% code title="GSQL Run the Installed Query" %}
+
+[source,coffeescript]
+----
+GSQL > install query RecommendMessage
+Start installing queries, about 1 minute ...
+RecommendMessage query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/RecommendMessage?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+
+[========================================================================================================] 100% (1/1)
+GSQL > run query RecommendMessage("Viktor", "Akhiezer")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"RecommendedMessage": [
+    {
+      "v_id": "549760294602",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4855.49219,
+        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
+      },
+      "v_type": "Post"
+    },
+    {
+      "v_id": "549760292109",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4828.7251,
+        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
+      },
+      "v_type": "Post"
+    }
+  ]}]
+}
+----
+
+{% endcode %}
+
+{% code title="Linux Bash:  Shutdown The System" %}
+
+[source,coffeescript]
+----
+#when you are not using the TigerGraph System on your laptop,
+# to save resource, you can stop it by
+gadmin stop
+#when you need to start it again, use
+gadmin start
+----
+
+{% endcode %}
+
+The above use log-cosine as a similarity measurement. We can also use cosine similarity by using two persons liked messages.
+
+{% code title="GSQL Recommendation Algorithm 2" %}
+
+[source,sql]
+----
+use graph ldbc_snb
+set query_timeout=60000
+DROP QUERY RecommendMessage
+
+CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
+
+  SumAccum<int> @MsgInCommon = 0;
+  SumAccum<int> @MsgCnt = 0 ;
+  SumAccum<int> @@InputPersonMsgCnt = 0;
+  SumAccum<float> @SimilarityScore;
+  SumAccum<float> @Rank;
+  SumAccum<float> @TagCnt = 0;
+  OrAccum @Liked = false;
+  float sqrtOfInputPersonMsgCnt;
+
+   #1. mark messages liked by input user
+   #2. find common msg between input user and other persons
+    Others =
+       SELECT p
+       FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
+       WHERE s.firstName == fn AND s.lastName == ln
+       ACCUM msg.@Liked = true, @@InputPersonMsgCnt += 1,
+             p.@MsgInCommon += 1;
+
+    sqrtOfInputPersonMsgCnt = sqrt(@@InputPersonMsgCnt);
+
+    #calculate cosine similarity score.
+    #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
+    Others  =
+        SELECT o
+        FROM Others:o-(LIKES>)-:msg
+        ACCUM o.@MsgCnt += 1
+        POST-ACCUM o.@SimilarityScore = o.@MsgInCommon/(sqrtOfInputPersonMsgCnt * sqrt(o.@MsgCnt));
+
+   #recommend new messages to input user that have not liked by him.
+    RecommendedMessage =
+             SELECT msg
+             FROM Others:o-(LIKES>) - :msg
+             WHERE  msg.@Liked == false
+             ACCUM msg.@Rank +=o.@SimilarityScore
+             ORDER BY msg.@Rank DESC
+             LIMIT 3;
+
+  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
+}
+
+INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
+#try the second person with just parameter change.
+INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
+----
+
+{% endcode %}

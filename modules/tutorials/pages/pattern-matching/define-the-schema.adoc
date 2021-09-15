@@ -1,0 +1,200 @@
+= Define the Schema
+
+== Data Set
+
+We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmark] (LDBC SNB) data set. This data set models a typical social forum, where communities of persons can post messages on a forum to discuss a topic. It comes with a data generator, which allows you to generate data at different scale factors. Scale factor 1 generates roughly 1GB of raw data, scale factor 10 generates roughly 10GB of raw data, etc.
+
+image::../../.gitbook/assets/screen-shot-2019-05-15-at-5.05.00-pm.png[Figure 1. LDBC SNB Schema]
+
+Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]). It models the activities and relationships of social forum participants. For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment. A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company. A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass. The relationships between entities are modeled as directed edges, except person KNOWS person is modeled as an undirected edge. For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, hasMember and hasModerator.
+
+{% hint style="info" %}
+LDBC SNB schema uses *inheritance* to model certain relationships:
+
+* *Message* is the superclass of Post and Comment.
+* *Place* is the superclass of City, Country, and Continent.
+* *Organization* is the superclass of University and Company.
+
+We do not use the superclasses in our graph model. When there is an edge type connecting an entity to a superclass, we instead create an edge type from the entity to each of the subclasses of the superclass. For example, Message has an _isLocatedIn_ relationship to Country. Since Message has two subclasses, Post and Comment, both connected with Country by the _isLocatedIn_ relationship, we create an edge type IS_LOCATED_IN, connecting both vertex type pairs using the *compound edge type* available in TigerGraph 3.0.
+
+* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN ( *FROM* Comment, *TO* Country                                                                              | *FROM* Post,          *TO* Country )
+{% endhint %}
+
+{% hint style="info" %}
+This new DDL syntax allows a general edge type to be defined over multiple vertex pairs. For example, there are many relationships in the LDBC schema all called _isLocatedIn_ which connect something to a geographical entity. We can model them all as a single edge type IS_LOCATED_IN. The result is a more succinct graph model and less GSQL code when expressing pattern matching queries.
+
+* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN (*FROM* Comment, *TO* Country | *FROM* Post, *TO* Country | *FROM* Company, *TO* Country | *FROM* Person, *TO* City | *FROM* University, *TO* City) *WITH* *REVERSE_EDGE*="IS_LOCATED_IN_REVERSE"
+{% endhint %}
+
+== Schema Naming Conventions
+
+{% hint style="success" %}
+*Vertex Type*
+
+For each entity in Figure 1 (the rectangular boxes), we create a vertex type with the entity's name in UpperCamelCase.
+
+* *Person* is a person who participates in a forum.
+* *Forum* is a place where persons discuss topics.
+* *City, Country*, and *Continent* are geographic locations of other entities.
+* *Company* and *University* are organizations with which a person can be affiliated.
+* *Comment* and *Post* are the interaction messages created by persons in a forum.
+* *Tag* is a topic or a concept.
+* *TagClass* is a class or a category. TagClass can form a hierarchy of tags.
+{% endhint %}
+
+{% hint style="success" %}
+*Edge Type*
+
+For each relationship type,  we create an edge type with the relationship name *(all capitalized and words are separated by an underscore).* For example,
+
+* *CONTAINER_OF*: Forum is the container of posts.
+* *HAS_INTERESTS*: Person has interest in tag(s).
+* *IS_SUBCLASS_OF:* Tag is a subclass of another Tag.
+
+When multiple relationships share the same semantics in Figure 1, we merge them into a single compound edge type. For example:
+
+* *IS_LOCATED_IN:* Comment or Post is located in Country, Company is located in Country, Person is located in City, and University is located in City.
+{% endhint %}
+
+== GSQL Schema DDL
+
+Two  GSQL scripts for defining the LDBC-SNB schema are shown below. Choose the one that serve your needs. They are not equivalent if you have different organizations using the same graph database instance.
+
+=== Method 1. Bottom-up DDL
+
+{% hint style="info" %}
+In this method,  global vertex/edge type containers are created first. Next, graphs are created to group them. In other words, the global vertex/edge type containers can be shared across graphs.
+{% endhint %}
+
+{% code title="#LDBC-SNB schema" %}
+
+[source,sql]
+----
+//clear the current catalog.
+// It may take a while since it restarts the subsystem services.
+DROP ALL
+
+//create vertex types
+
+## Post and Comment
+CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING,
+    browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Post (PRIMARY_ID id UINT, imageFile STRING, creationDate DATETIME,
+    locationIP STRING, browserUsed STRING, lang STRING, content STRING,
+    length UINT) WITH primary_id_as_attribute="TRUE"
+## organisation
+CREATE VERTEX Company (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX University (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+## place
+CREATE VERTEX City (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Country (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Continent (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+## etc
+CREATE VERTEX Forum (PRIMARY_ID id UINT, title STRING, creationDate DATETIME) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Person (PRIMARY_ID id UINT, firstName STRING, lastName STRING, gender STRING, birthday DATETIME,
+   creationDate DATETIME, locationIP STRING, browserUsed STRING, speaks set<STRING>, email set<STRING>)
+   WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Tag (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX TagClass (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+
+// create edge types
+CREATE DIRECTED EDGE CONTAINER_OF (FROM Forum, TO Post) WITH REVERSE_EDGE="CONTAINER_OF_REVERSE"
+CREATE DIRECTED EDGE HAS_CREATOR (FROM Comment|Post, TO Person) WITH REVERSE_EDGE="HAS_CREATOR_REVERSE"
+CREATE DIRECTED EDGE HAS_INTEREST (FROM Person, TO Tag) WITH REVERSE_EDGE="HAS_INTEREST_REVERSE"
+CREATE DIRECTED EDGE HAS_MEMBER (FROM Forum, TO Person, joinDate DATETIME) WITH REVERSE_EDGE="HAS_MEMBER_REVERSE"
+CREATE DIRECTED EDGE HAS_MODERATOR (FROM Forum, TO Person) WITH REVERSE_EDGE="HAS_MODERATOR_REVERSE"
+CREATE DIRECTED EDGE HAS_TAG (FROM Comment|Post|Forum, TO Tag) WITH REVERSE_EDGE="HAS_TAG_REVERSE"
+CREATE DIRECTED EDGE HAS_TYPE (FROM Tag, TO TagClass) WITH REVERSE_EDGE="HAS_TYPE_REVERSE"
+CREATE DIRECTED EDGE IS_LOCATED_IN (FROM Comment, TO Country
+                                  | FROM Post, TO Country
+                                  | FROM Company, TO Country
+                                  | FROM Person, TO City
+                                  | FROM University, TO City) WITH REVERSE_EDGE="IS_LOCATED_IN_REVERSE"
+CREATE DIRECTED EDGE IS_PART_OF (FROM City, TO Country
+                               | FROM Country, TO Continent) WITH REVERSE_EDGE="IS_PART_OF_REVERSE"
+CREATE DIRECTED EDGE IS_SUBCLASS_OF (FROM TagClass, TO TagClass) WITH REVERSE_EDGE="IS_SUBCLASS_OF_REVERSE"
+CREATE UNDIRECTED EDGE KNOWS (FROM Person, TO Person, creationDate DATETIME)
+CREATE DIRECTED EDGE LIKES (FROM Person, TO Comment|Post, creationDate DATETIME) WITH REVERSE_EDGE="LIKES_REVERSE"
+CREATE DIRECTED EDGE REPLY_OF (FROM Comment, TO Comment|Post) WITH REVERSE_EDGE="REPLY_OF_REVERSE"
+CREATE DIRECTED EDGE STUDY_AT (FROM Person, TO University, classYear INT) WITH REVERSE_EDGE="STUDY_AT_REVERSE"
+CREATE DIRECTED EDGE WORK_AT (FROM Person, TO Company, workFrom INT) WITH REVERSE_EDGE="WORK_AT_REVERSE"
+
+//create graph type
+CREATE GRAPH ldbc_snb (*)
+----
+
+{% endcode %}
+
+=== Method 2. Top-down DDL
+
+{% hint style="info" %}
+In this method, an empty graph is created first. Next, local vertex/edge type containers are added to the empty graph via a schema change job. The vertex/egde type containers added this way will be private to the graph, no other graph can see them.
+{% endhint %}
+
+{% code title="#LDBC-SNB schema" %}
+
+[source,sql]
+----
+//clear the current catalog.
+// It may take a while since it restarts the subsystem services.
+DROP ALL
+
+# 1. Create graph
+CREATE GRAPH ldbc_snb ()
+
+# 2. Create schema_change job to include all vertex/edge types
+CREATE SCHEMA_CHANGE JOB change_schema_of_ldbc  FOR GRAPH ldbc_snb {
+
+  ## Post and Comment
+  ADD VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING,
+    browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE";
+
+  ADD VERTEX Post (PRIMARY_ID id UINT, imageFile STRING, creationDate DATETIME,
+    locationIP STRING, browserUsed STRING, lang STRING, content STRING,
+    length UINT) WITH primary_id_as_attribute="TRUE";
+  ## organisation
+  ADD VERTEX Company (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX University (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ## place
+  ADD VERTEX City (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Country (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Continent (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ## etc
+  ADD  VERTEX Forum (PRIMARY_ID id UINT, title STRING, creationDate DATETIME) WITH primary_id_as_attribute="TRUE";
+  ADD  VERTEX Person (PRIMARY_ID id UINT, firstName STRING, lastName STRING, gender STRING, birthday DATETIME,
+   creationDate DATETIME, locationIP STRING, browserUsed STRING, speaks set<STRING>, email set<STRING>)
+   WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Tag (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX TagClass (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+
+  // create edge types
+  ADD DIRECTED EDGE CONTAINER_OF (FROM Forum, TO Post) WITH REVERSE_EDGE="CONTAINER_OF_REVERSE";
+  ADD  DIRECTED EDGE HAS_CREATOR (FROM Comment|Post, TO Person) WITH REVERSE_EDGE="HAS_CREATOR_REVERSE";
+  ADD  DIRECTED EDGE HAS_INTEREST (FROM Person, TO Tag) WITH REVERSE_EDGE="HAS_INTEREST_REVERSE";
+  ADD DIRECTED EDGE HAS_MEMBER (FROM Forum, TO Person, joinDate DATETIME) WITH REVERSE_EDGE="HAS_MEMBER_REVERSE";
+  ADD DIRECTED EDGE HAS_MODERATOR (FROM Forum, TO Person) WITH REVERSE_EDGE="HAS_MODERATOR_REVERSE";
+  ADD DIRECTED EDGE HAS_TAG (FROM Comment|Post|Forum, TO Tag) WITH REVERSE_EDGE="HAS_TAG_REVERSE";
+  ADD DIRECTED EDGE HAS_TYPE (FROM Tag, TO TagClass) WITH REVERSE_EDGE="HAS_TYPE_REVERSE";
+  ADD  DIRECTED EDGE IS_LOCATED_IN (FROM Comment, TO Country
+                                  | FROM Post, TO Country
+                                  | FROM Company, TO Country
+                                  | FROM Person, TO City
+                                  | FROM University, TO City) WITH REVERSE_EDGE="IS_LOCATED_IN_REVERSE";
+  ADD DIRECTED EDGE IS_PART_OF (FROM City, TO Country
+                               | FROM Country, TO Continent) WITH REVERSE_EDGE="IS_PART_OF_REVERSE";
+  ADD DIRECTED EDGE IS_SUBCLASS_OF (FROM TagClass, TO TagClass) WITH REVERSE_EDGE="IS_SUBCLASS_OF_REVERSE";
+  ADD UNDIRECTED EDGE KNOWS (FROM Person, TO Person, creationDate DATETIME)
+  ADD DIRECTED EDGE LIKES (FROM Person, TO Comment|Post, creationDate DATETIME) WITH REVERSE_EDGE="LIKES_REVERSE";
+  ADD DIRECTED EDGE REPLY_OF (FROM Comment, TO Comment|Post) WITH REVERSE_EDGE="REPLY_OF_REVERSE";
+  ADD DIRECTED EDGE STUDY_AT (FROM Person, TO University, classYear INT) WITH REVERSE_EDGE="STUDY_AT_REVERSE";
+  ADD DIRECTED EDGE WORK_AT (FROM Person, TO Company, workFrom INT) WITH REVERSE_EDGE="WORK_AT_REVERSE";
+}
+
+# 3. Run schema_change job
+RUN SCHEMA_CHANGE JOB change_schema_of_ldbc
+
+# 4. Drop schema_change job
+DROP JOB change_schema_of_ldbc
+----
+
+{% endcode %}

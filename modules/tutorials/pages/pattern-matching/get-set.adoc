@@ -1,0 +1,82 @@
+= Get Set
+
+== Introduction
+
+In this tutorial, we will show you how to write and run Pattern Matching queries. Pattern Matching is available in TigerGraph v2.4+.
+
+We assume you have finished link:../gsql-101/[GSQL 101]. If not, please complete GSQL 101 first.
+
+{% hint style="info" %}
+This tutorial was updated for TigerGraph 3.0. If you are using an older version, please change to the documentation for that version.
+{% endhint %}
+
+=== What is a Graph Pattern?
+
+A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps. A pattern can be a linear trace, or a non-linear trace (tree, circle etc.). For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type. A pattern could be a trace on this simple schema,
+
+[source,text]
+----
+Person - (Friendship) - Person - (Friendship) - Person
+----
+
+or, use *2 to denote the two consecutive Friendship edges,
+
+[source,text]
+----
+Person - (Friendship*2) - Person
+----
+
+=== What is Pattern Matching?
+
+Pattern matching is the process of finding subgraphs in a data graph that conform to a given query pattern.
+
+== Prepare Your TigerGraph Environment
+
+We assume you are running your own TigerGraph instance as the sole user with full privileges. If you are on a multiuser Enterprise Edition, consult with your DB administrator. You need to have Designer or Admin privilege on an empty graph. At various points in this tutorial, there are links to download files. Most are small, but the graph data file is 1GB when uncompressed.
+
+First, let's check that you can access GSQL, and that your version is 3.0 or higher.
+
+. Open a Linux shell.
+. Type `gsql` as below. A GSQL shell prompt should appear as below.
+. Type version in GSQL shell. It should show 2.4 or higher as below. If not, please download and install the latest version from https://www.tigergraph.com/download/
++
+{% code title="Linux Shell" %}
++
+[source,bash]
+----
+$ gsql
+GSQL > version
+GSQL version: 3.0
+----
++
+{% endcode %}
+
+. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:../../admin/admin-guide/system-management/management-with-gadmin.adoc[manage TigerGraph with gadmin], and  xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs].
+. You need to start from an empty data catalog. If necessary, run `drop all` to clear the catalog first.
+
+=== Cheatsheet
+
+The following general use commands were introduced in link:../gsql-101/[GSQL 101].
+
+* The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privilege to run most gadmin commands.
+* The *`GSQL>`* prefix indicates GSQL shell commands.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Command+++</th>+++
+      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++% gsql+++</td>+++
+      +++<td style="text-align:left">+++Enter the GSQL shell in interactive mode+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++% gsql &apos;<GSQL command string>&apos;+++</td>+++
+      +++<td style="text-align:left">+++Run one GSQL command+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++% gadmin status+++</td>+++
+      +++<td style="text-align:left">+++Check the status of TigerGraph services
+        +++<br>++++++</br>+++(If your graph store is empty, it is normal for
+        +++<br>++++++</br>+++some statuses to be flagged in red.)+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++% gadmin restart+++</td>+++
+      +++<td style="text-align:left">+++Restart TigerGraph services+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++GSQL> ls+++</td>+++
+      +++<td style="text-align:left">+++List the graph schema, loading jobs, and queries+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++GSQL> show user+++</td>+++
+      +++<td style="text-align:left">+++Show your user name and roles+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++GSQL> drop all+++</td>+++
+      +++<td style="text-align:left">++++++<p>+++Delete the entire schema, all data, all+++</p>+++
+        +++<p>+++jobs, and all queries+++</p>++++++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">+++GSQL> exit+++</td>+++
+      +++<td style="text-align:left">+++Exit GSQL interactive shell+++</td>++++++</tr>++++++</tbody>++++++</table>+++

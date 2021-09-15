@@ -1,0 +1,462 @@
+= One-hop patterns
+
+== Introduction
+
+‌Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.‌
+
+A pattern usually appears in the FROM clause, the most fundamental part of the query structure. The pattern specifies sets of vertex types and how they are connected by edge types. A pattern can be refined further with conditions in the WHERE clause. In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
+
+{% hint style="info" %}
+Currently, pattern matching may only be used in read-only queries. DML support will be added in the near future release.
+{% endhint %}
+
+{% hint style="success" %}
+Pattern matching queries support nested queries
+{% endhint %}
+
+== 1-Hop Pattern
+
+The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
+
+In classic GSQL queries, described in link:../gsql-101/[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
+
+[source,sql]
+----
+Person:p -(LIKES:e)-> Message:m          /* Classic GSQL example */
+----
+
+In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, where the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
+
+* For an undirected edge E, no added decoration:    `E`
+* For a directed edge E from left to right, use a suffix:  `E>`
+* For a directed edge E from right to left, use a prefix:  `<E`
+
+‌For example, in the LDBC SNB schema, there are two directed relationships between Person and Message: person _LIKES_ message, and message _HAS_CREATOR_ person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
+
+[source,sql]
+----
+Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* Pattern example */
+----
+
+[discrete]
+==== Edge Type Wildcards
+
+The underscore _`_`_ is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `_>` or `<_` or `_` +
+The empty parentheses `()` means any edge, directed or undirected.
+
+[discrete]
+==== Vertex Type Wildcards and Path Symmetry
+
+Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined as an explicit set, prior to the SELECT statement.  A typical approach is shown here.
+
+{% code title="Seed set definition required in classic GSQL" %}
+
+[source,sql]
+----
+CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
+    Source = {Person}; // Seed set
+    SELECT t FROM Source:s -(IS_LOCATED_IN:e)- :t;
+    PRINT t;
+}
+----
+
+{% endcode %}
+
+Beginning in TigerGraph 3.0, SYNTAX V2 treats the source vertex set the same as the target vertex set.  That is, the source or the target vertex set may be:
+
+* a vertex type `SELECT t FROM Person:s -(IS_LOCATED_IN>:e) - City:t`
+* an alternation of vertex types `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e) - Country:t`
+* omitted, with only an alias, meaning any vertex type `SELECT s FROM :s -(IS_LOCATED_IN>:e) - Country:t`
+* omitted, without an alias, meaning any vertex type `SELECT t FROM -(IS_LOCATED_IN>:e) - Country:t`
+
+{% hint style="info" %}
+Performance may be better when types are explicitly provided.
+{% endhint %}
+
+[discrete]
+==== *Examples of 1-Hop Patterns*
+
+. `FROM X:x - (E1:e1) - Y:y`
+ ** E1 is an undirected edge, x and y bind to the end points of E1, and e1 is the alias of E1.
+. `FROM X:x - (E2>:e2) - Y:y`
+ ** Right directed edge x binds to the source of E2; y binds to the target of E2.
+. `FROM X:x - (<E3:e3) - Y:y`
+ ** Left directed edge; y binds to the source of E3; x binds to the target of E3.
+. `FROM X:x - (_:e) - Y:y`
+ ** Any undirected edge between a member of X and a member of Y.
+. `FROM X:x - (_>:e) - Y:y`
+ ** Any right directed edge with source in X and target in Y.
+. `FROM X:x - (<_:e) - Y:y`
+ ** Any left directed edge with source in Y and target in X.
+. `FROM X:x - ((<_|_):e) - Y:y`
+ ** Any left directed or any undirected; "|" means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern (<_|_).
+. `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
+ ** Any one of the three edge patterns.
+. `FROM X:x - () - Y:y`
+ ** any edge (directed or undirected)
+ ** Same as `(<_|_>|_)`
+
+== Entering Pattern Match Syntax Mode
+
+To use pattern matching, you need to either set a session parameter or specify it in the query. There are currently two syntax versions for queries:
+
+* "v1" is the classic syntax, traversing one hop per SELECT statement. This is the default mode.
+* "v2" enhances the v1 syntax with pattern matching.
+
+=== syntax_version Session Parameter
+
+You can use the SET command to assign a value to the _syntax_version_ session parameter: v1 for classic syntax; v2 for pattern matching. If the parameter is never set, the classic v1 syntax is enabled. Once set, the selection remains valid for the duration of the GSQL client session, or until it is changed with another SET command.
+
+{% code title="GSQL: Set Syntax Version By A Session Parameter" %}
+
+[source,erlang]
+----
+SET syntax_version="v2"
+----
+
+{% endcode %}
+
+=== Query-Level SYNTAX option
+
+You can also select the syntax by using the SYNTAX clause in the CREATE QUERY statement: v1 for classic syntax (default); v2 for pattern matching. The query-level SYNTAX option overrides the syntax_version session parameter.
+
+{% code title="GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query " %}
+
+[source,erlang]
+----
+CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
+{
+  ...
+}
+----
+
+{% endcode %}
+
+== Running Anonymous Queries Without Installing
+
+In this tutorial, we will use Interpreted Mode for GSQL, introduced in TigerGraph 2.4. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+
+To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
+
+[source,coffeescript]
+----
+INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
+----
+
+{% hint style="warning" %}
+Recommendation: Increase the query timeout threshold.
+
+Interpreted queries may run slower than installed queries, so we recommend increasing the query timeout threshold:
+
+{% code title="GSQL: Set Longer Timeout" %}
+
+[source,coffeescript]
+----
+# set query time out to 1 minutes
+# 1 unit is 1 millisecond
+SET query_timeout = 60000
+----
+
+{% endcode %}
+{% endhint %}
+
+== Examples of 1-Hop Fixed Length Query
+
+*Example 1*. Find persons who know the person named "Viktor Akhiezer" and return the top 3 oldest such persons.
+
+{% code title="Example 1. Left Directed Edge Pattern" %}
+
+[source,sql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+   #1-hop pattern.
+   friends = SELECT p
+             FROM Person:s -(KNOWS:e)- Person:p
+             WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+             ORDER BY p.birthday ASC
+             LIMIT 3;
+
+    PRINT  friends[friends.firstName, friends.lastName, friends.birthday];
+}
+----
+
+{% endcode %}
+
+{% hint style="info" %}
+Syntax Enhancement in TigerGraph 3.0+
+
+* In Example 1, "FOR GRAPH ldbc_snb" is not used after () in the query signature. It's an optional component in 3.0+ when "USE GRAPH graphName" is used; Or from the command line, "gsql -g graphName " precedes any query invocation.
+* In the FROM clause, we directly use vertex type Person as the starting vertex set. This syntax enhancement is available in syntax V2 only.
+{% endhint %}
+
+You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
+
+{% code title="Linux Bash" %}
+
+[source,bash]
+----
+gsql example1.gsql
+----
+
+{% endcode %}
+
+{% code title=" Output of Example 1" %}
+
+[source,coffeescript]
+----
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "developer",
+    "api": "v2"
+  },
+  "results": [{"friends": [
+    {
+      "v_id": "10995116279461",
+      "attributes": {
+        "friends.birthday": "1980-05-13 00:00:00",
+        "friends.lastName": "Cajes",
+        "friends.firstName": "Gregorio"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "4398046517846",
+      "attributes": {
+        "friends.birthday": "1980-04-24 00:00:00",
+        "friends.lastName": "Glosca",
+        "friends.firstName": "Abdul-Malik"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "6597069776731",
+      "attributes": {
+        "friends.birthday": "1981-02-25 00:00:00",
+        "friends.lastName": "Carlsson",
+        "friends.firstName": "Sven"
+      },
+      "v_type": "Person"
+    }
+  ]}]
+}
+----
+
+{% endcode %}
+
+*Example 2*. Find the total number of comments and total number of posts liked by Viktor. A Person can reach Comments or Posts via a directed edge LIKES.
+
+{% code title="Example 2. Right-directed Edge Pattern" %}
+
+[source,sql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+   SumAccum<int> @commentCnt= 0;
+   SumAccum<int> @postCnt= 0;
+
+   #1-hop pattern.
+   Result = SELECT s
+            FROM Person:s -(LIKES>)- :tgt
+            WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+            ACCUM CASE WHEN tgt.type == "Comment" THEN
+                           s.@commentCnt += 1
+                       WHEN tgt.type == "Post" THEN
+                           s.@postCnt += 1
+                   END;
+
+    PRINT  Result[Result.@commentCnt, Result.@postCnt];
+}
+----
+
+{% endcode %}
+
+You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in Linux.
+
+{% code title="Linux Bash" %}
+
+[source,bash]
+----
+gsql example2.gsql
+----
+
+{% endcode %}
+
+{% code title="Output of Example 2." %}
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"Result": [{
+    "v_id": "28587302323577",
+    "attributes": {
+      "Result.@commentCnt": 108,
+      "Result.@postCnt": 51
+    },
+    "v_type": "Person"
+  }]}]
+}
+----
+
+{% endcode %}
+
+*Example 3*. Solve the same problem as in Example 2, but use a left-directed edge pattern.
+
+Note below (line 8) that the source vertex set are now Comment and Post, and the target is Person.
+
+{% code title="Example 3. Left-directed Edge Pattern" %}
+
+[source,sql]
+----
+USE GRAPH ldbc_snb
+​
+INTERPRET QUERY () SYNTAX v2{
+   SumAccum<int> @commentCnt= 0;
+   SumAccum<int> @postCnt= 0;
+​
+   Result = SELECT tgt
+            FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src
+            WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+            ACCUM CASE WHEN src.type == "Comment" THEN
+                           tgt.@commentCnt += 1
+                       WHEN src.type == "Post" THEN
+                           tgt.@postCnt += 1
+                   END;
+​
+  PRINT Result[Result.@commentCnt, Result.@postCnt];
+}
+----
+
+{% endcode %}
+
+You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in linux command line. The output should be the same as in Example 2.
+
+*Example 4*. Find Viktor Akhiezer's total number of related comments and total number of related posts. That is, a comment or post is either created by Viktor or is liked by Viktor. Note that the HAS_CREATOR edge type starts from Comment|Post, and the LIKES edge type starts from Person.
+
+{% code title="Example 4. Disjunctive 1-hop edge pattern." %}
+
+[source,sql]
+----
+USE GRAPH ldbc_snb
+set query_timeout=60000
+
+INTERPRET QUERY () SYNTAX v2{
+  SumAccum<int> @commentCnt= 0;
+  SumAccum<int> @postCnt= 0;
+
+  Result = SELECT tgt
+           FROM Person:tgt -(<HAS_CREATOR|LIKES>)- (Comment|Post):src
+           WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+           ACCUM CASE WHEN src.type == "Comment" THEN
+                          tgt.@commentCnt += 1
+                      WHEN src.type == "Post" THEN
+                          tgt.@postCnt += 1
+                 END;
+
+  PRINT Result[Result.@commentCnt, Result.@postCnt];
+}
+----
+
+{% endcode %}
+
+You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in Linux:
+
+{% code title="Linux Bash" %}
+
+[source,coffeescript]
+----
+gsql example4.gsql
+----
+
+{% endcode %}
+
+{% code title="Output of Example 4." %}
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"Result": [{
+    "v_id": "28587302323577",
+    "attributes": {
+      "Result.@commentCnt": 152,
+      "Result.@postCnt": 96
+    },
+    "v_type": "Person"
+  }]}]
+}
+----
+
+{% endcode %}
+
+*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use wildcard "_" to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
+
+{% code title="Example 5. Disjunctive 1-hop edge pattern." %}
+
+[source,sql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+  SumAccum<int> @@cnt= 0;
+
+  Result = SELECT tgt
+           FROM Person:tgt -(<_)- (Comment|Post):src
+           WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+           ACCUM  @@cnt += 1;
+
+  PRINT @@cnt;
+}
+----
+
+{% endcode %}
+
+You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in Linux:
+
+{% code title="Linux Bash" %}
+
+[source,bash]
+----
+gsql example5.gsql
+----
+
+{% endcode %}
+
+{% code title="Output of Example 5." %}
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"@@cnt": 248}]
+}
+----
+
+{% endcode %}

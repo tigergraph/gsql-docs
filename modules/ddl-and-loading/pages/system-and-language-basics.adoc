@@ -208,32 +208,33 @@ Use the SET command to set the value of a session parameter:
 [source,sql]
 ----
 SET session_parameter = value
-----+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Session Parameter+++</th>+++
-      +++<th style="text-align:left">+++Meaning and Usage+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++sys.data_root+++</td>+++
-      +++<td style="text-align:left">+++The value should be a string, representing the absolute or relative path
-        to the folder where data files are stored. After the parameter has been
-        set, a loading statement can reference this parameter with $sys.data_root.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_src_dir+++</td>+++
-      +++<td style="text-align:left">+++The value should be a string, representing the absolute or relative path
-        to the root folder for the gsql system installation. After the parameter
-        has been set, a loading statement can reference this parameter with $gsql_src_dir.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++exit_on_error+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++When this parameter is true (default), if a semantic error occurs while
-          running a GSQL command file, the GSQL shell will terminate. Accepted parameter
-          values: true, false (case insensitive). If the parameter is set to false,
-          then a command file which is syntactically correct will continue running,
-          even if certain runtime errors in individual commands occur. Specifically,
-          this affects these commands:+++</p>+++
-        +++<ul>++++++<li>+++CREATE+++</li>+++
-          +++<li>+++INSTALL QUERY+++</li>+++
-          +++<li>+++RUN JOB+++</li>++++++</ul>+++
-        +++<p>+++Semantic errors include a reference to a nonexistent entity or an improper
-          reuse of an entity.+++</p>+++
-        +++<p>+++This session parameter does not affect GSQL interactive mode; GSQL interactive
-          mode does not exit on any error.+++</p>+++
-        +++<p>+++This session parameter does not affect syntactic errors: GSQL will always
-          exit on a syntactic error.+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+----
+
+[width="100%",cols="23%,77%",options="header",]
+|===
+|Session Parameter |Meaning and Usage
+|sys.data_root |The value should be a string, representing the absolute
+or relative path to the folder where data files are stored. After the
+parameter has been set, a loading statement can reference this parameter
+with $sys.data_root.
+
+|gsql_src_dir |The value should be a string, representing the absolute
+or relative path to the root folder for the gsql system installation.
+After the parameter has been set, a loading statement can reference this
+parameter with $gsql_src_dir.
+
+|exit_on_error |When this parameter is true (default), if a semantic
+error occurs while running a GSQL command file, the GSQL shell will
+terminate. Accepted parameter values: true, false (case insensitive). If
+the parameter is set to false, then a command file which is
+syntactically correct will continue running, even if certain runtime
+errors in individual commands occur. Specifically, this affects these
+commands:CREATEINSTALL QUERYRUN JOBSemantic errors include a reference
+to a nonexistent entity or an improper reuse of an entity.This session
+parameter does not affect GSQL interactive mode; GSQL interactive mode
+does not exit on any error.This session parameter does not affect
+syntactic errors: GSQL will always exit on a syntactic error.
+|===
 
 {% code title="Example of exit_on_error = FALSE" %}
 
@@ -333,30 +334,25 @@ The GSQL Query Language currently only reads values without exponents. It may di
 Some numeric expressions may return a non-numeric string result, such as "inf" for Infinity or "NaN" for Not a Number.
 {% endhint %}
 
-=== Advanced Types+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Default value+++</th>+++
-      +++<th style="text-align:left">+++Supported data format+++</th>+++
-      +++<th style="text-align:left">+++Range and Precision+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++STRING COMPRESS+++</code>++++++</p>+++
-        +++<p>+++(&#x26A0;+++<b>+++suitable only in limited circumstances+++</b>+++)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++Empty string+++</td>+++
-      +++<td style="text-align:left">+++.*+++</td>+++
-      +++<td style="text-align:left">+++UTF-8+++</td>+++
-      +++<td style="text-align:left">+++String with a finite set of categorical values. More compact storage of
-        STRING, +++<b>+++if there is a limited number of different values and the value is rarely accessed. Otherwise, it may use more memory.+++</b>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++UTC time 0+++</td>+++
-      +++<td style="text-align:left">+++See Section &quot; Loading DATETIME Attribute &quot;+++</td>+++
-      +++<td style="text-align:left">+++1582-10-15 00:00:00 to 9999-12-31 23:59:59+++</td>+++
-      +++<td style="text-align:left">+++Date and time (UTC) as the number of seconds elapsed since the start of
-        Jan 1, 1970. Time zones are not supported. Displayed in YYYY-MM-DD hh:mm:ss
-        format.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++FIXED_BINARY(+++</code>++++++<em>++++++<code>+++n +++</code>++++++</em>++++++<code>+++)+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++N/A+++</td>+++
-      +++<td style="text-align:left">++++++</td>+++
-      +++<td style="text-align:left">+++N/A+++</td>+++
-      +++<td style="text-align:left">+++Stream of n binary-encoded bytes+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+=== Advanced Types
+[width="100%",cols="30%,5%,19%,19%,27%",options="header",]
+|===
+|Name |Default value |Supported data format |Range and Precision
+|Description
+|`STRING COMPRESS`(⚠*suitable only in limited circumstances*) |Empty
+string |.* |UTF-8 |String with a finite set of categorical values. More
+compact storage of STRING, *if there is a limited number of different
+values and the value is rarely accessed. Otherwise, it may use more
+memory.*
+
+|`DATETIME` |UTC time 0 |See Section ” Loading DATETIME Attribute ”
+|1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC) as the
+number of seconds elapsed since the start of Jan 1, 1970. Time zones are
+not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
+
+|`FIXED_BINARY(\'\'*n* \'\')` |N/A | |N/A |Stream of n binary-encoded
+bytes
+|===
 
 Additionally, GSQL also supports the following complex data types:
 

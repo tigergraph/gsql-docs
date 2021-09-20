@@ -26,7 +26,7 @@ Example: A SELECT query is grammatically a single statement, so GSQL requires th
 
 {% code title="Long statement displayed as one line" %}
 
-[source,sql]
+[source,gsql]
 ----
 SELECT *|attribute_name FROM vertex_type_name [WHERE conditions] [ORDER BY attribute1,attribute2,...] [LIMIT k]
 ----
@@ -37,7 +37,7 @@ However, the statement is easier to read and to understand when displayed one cl
 
 {% code title="Long statement displayed on multiple lines but with only one prompt" %}
 
-[source,sql]
+[source,gsql]
 ----
 SELECT *|attribute_name
     FROM vertex_type_name
@@ -50,7 +50,7 @@ SELECT *|attribute_name
 
 * *Repeated zero or more times*  In template code, it is sometimes desirable to show that a term is repeated an arbitrary number of times. For example, a vertex definition contains zero or more user-defined attributes. A loading job contains one or more LOAD statements. In formal template code, if an asterisk (Kleene star) immediately follows option brackets, then the bracketed term can be repeated zero or more times.  For example:
 
-[source,sql]
+[source,gsql]
 ----
 TO VERTEX|EDGE object_name VALUES ( id_expr [, attr_expr ]*)
 ----
@@ -59,21 +59,21 @@ means that the VALUES list contains at least one attribute expression. It may be
 
 * *Optional content*  Square brackets are used to enclose a portion that is optional.  Options can be nested. Square brackets themselves are rarely used as part of the GSQL language itself.  Example: In the RUN JOB statement, the -n flag is optional.  If used, -n is to be followed by a value.
 
-[source,sql]
+[source,gsql]
 ----
 RUN JOB [-n count ] job_name
 ----
 
 Sometimes, options are nested, which means that an inner option can only be used if the  outer option is used:
 
-[source,sql]
+[source,gsql]
 ----
 RUN JOB [-n [ first_line_num , ] last_line_num ] job_name
 ----
 
 means that _first_line_num_ may be specified if and only if _last_line_num_ is specified first. These options provide three possible forms for this statement:
 
-[source,sql]
+[source,gsql]
 ----
 RUN JOB job_name
 RUN JOB -n last_line_num job_name
@@ -86,14 +86,14 @@ The vertical bar | is used to separate the choices, when the syntax requires tha
 +
 Template:
 
-[source,sql]
+[source,gsql]
 ----
 LOAD " file_path " TO VERTEX|EDGE object_type_name VALUES (id_expr, attr_expr1 , attr_expr2 ,...)
 ----
 
 Possible actual values:
 
-[source,sql]
+[source,gsql]
 ----
 LOAD "data/users.csv" TO VERTEX user VALUES ($0, $1, $2)
 ----
@@ -102,18 +102,19 @@ The user-defined identifiers are _edge_type_ name_ , _vertex_type_name1_, _verte
 
 * *Placeholder identifiers and values*  In template code, any token that is not a keyword, a literal value, or punctuation is a placeholder identifier or a placeholder value.  Example:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE UNDIRECTED EDGE edge_type_name (FROM vertex_type_name1 , TO vertex_type_name2 ,
 attribute_name type [DEFAULT default_value ],...)
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
 In a very few cases, some option keywords are case-sensitive. For example, in the command to delete all data from the graph store, +
 clear graph store -HARD
 
 the option -HARD must be in all capital letters.
-{% endhint %}
+====
 
 * *Shell prompts*  Most of the examples in this document take place within the GSQL shell.  When clarity is needed, the GSQL shell prompt is represented by a greater-than arrow: `>`  When a command is to be issued from the operating system, outside of the GSQL shell, the prompt is the following: `os$`
 * *Keywords*  In the GSQL language, keywords are not case sensitive, but user-defined identifiers are case sensitive. In code examples, keywords are in ALL CAPS to make clear the distinction between keywords and user-defined identifiers.

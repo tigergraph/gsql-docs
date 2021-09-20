@@ -7,25 +7,27 @@ There are two aspects to clearing the system: flushing the data and clearing the
 
 === CLEAR GRAPH STORE
 
-{% hint style="info" %}
+[NOTE]
+====
 Available only to superusers.
-{% endhint %}
+====
 
 The CLEAR GRAPH STORE command flushes all the data out of the graph store (database).  By default, the system will ask the user to confirm that you really want to discard all the graph data.  To force the clear operation and bypass the confirmation question, use the -HARD option, e.g.,
 
-[source,sql]
+[source,gsql]
 ----
 CLEAR GRAPH STORE -HARD
 ----
 
 Clearing the graph store does not affect the schema.
 
-{% hint style="danger" %}
+[WARNING]
+====
 
 . Use the -HARD option with extreme caution. There is no undo option. -HARD must be in all capital letters.
 . CLEAR GRAPH STORE stops all the TigerGraph servers (GPE, GSE, RESTPP, Kafka, and Zookeeper).
 . Loading jobs and queries are aborted.
-{% endhint %}
+====
 
 link:defining-a-graph-schema.md#drop-all[DROP ALL] clears both the data and the schema.
 
@@ -38,7 +40,7 @@ Running a loading job executes a previously installed loading job.  The job read
 {% tabs %}
 {% tab title="RUN LOADING JOB syntax for concurrent loading" %}
 
-[source,sql]
+[source,gsql]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname [
     USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
@@ -62,7 +64,7 @@ If the -noprint option is included, the output will omit the progress and summar
 
 {% code title="Example of minimal output when -noprint option is used" %}
 
-[source,sql]
+[source,gsql]
 ----
 Kick off the following job:
   JobName: load_videoE, jobid: gsql_demo_m1.1525091090494
@@ -113,7 +115,7 @@ When a loading job starts, the GSQL server assigns it a job id and displays it f
 
 {% code title="Example of SHOW LOADING STATUS output" %}
 
-[source,sql]
+[source,gsql]
 ----
 Kick off the following job, i.e.
   JobName: load_test1, jobid: demo_graph_m1.1523663024967
@@ -154,7 +156,7 @@ The command SHOW LOADING JOB shows the current status of either a specified load
 
 {% code title="SHOW LOADING JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 SHOW LOADING STATUS job_id|ALL
 ----
@@ -169,7 +171,7 @@ The command ABORT LOADING JOB aborts either a specified load job or all active l
 
 {% code title="ABORT LOADING JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 ABORT LOADING JOB job_id|ALL
 ----
@@ -180,7 +182,7 @@ The output will show a summary of aborted loading jobs.
 
 {% code title="ABORT LOADING JOB example" %}
 
-[source,sql]
+[source,gsql]
 ----
 gsql -g demo_graph "abort loading job all"
 
@@ -211,7 +213,7 @@ The command RESUME LOADING JOB will restart a previously-run job which ended for
 
 {% code title="RESUME LOADING JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 RESUME LOADING JOB job_id
 ----
@@ -222,7 +224,7 @@ If the job is finished, this command will do nothing. The RESUME command should 
 
 {% code title="RESUME LOADING JOB example" %}
 
-[source,sql]
+[source,gsql]
 ----
 gsql -g demo_graph "RESUME LOADING JOB demo_graph_m1.1519111662589"
 [RESUME_SUCCESS] m1
@@ -287,7 +289,7 @@ Note that failing a WHERE clause is not necessarily a bad result.  If the user's
 
 Below is an example.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX movie (PRIMARY_ID id UINT, title STRING, country STRING COMPRESS, year UINT)
 CREATE DIRECTED EDGE sequel_of (FROM movie, TO movie)
@@ -301,7 +303,7 @@ RUN LOADING JOB load_movie USING f="movie.dat"
 
 {% code title="movie.dat" %}
 
-[source,sql]
+[source,gsql]
 ----
 0,abc,USA,-1990
 1,abc,CHN,1990
@@ -318,7 +320,7 @@ The above loading job and data generate the following report
 
 {% code title="load_output.log (tail)" %}
 
-[source,sql]
+[source,gsql]
 ----
 --------------------Statistics------------------------------
 Valid lines:             6

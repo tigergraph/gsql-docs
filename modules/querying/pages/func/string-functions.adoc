@@ -882,7 +882,7 @@ By using one of the keywords `LEADING`, `TRAILING`, or `BOTH`, the user can spec
 [discrete]
 ==== Example
 
-[source,sql]
+[source,gsql]
 ----
 trim("  Abc   ") => "Abc"
 trim( LEADING " a A   ") => "a A   "

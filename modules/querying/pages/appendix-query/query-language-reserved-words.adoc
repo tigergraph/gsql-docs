@@ -12,7 +12,7 @@ The compiler will reject the use of a Reserved Word as a user-defined identifier
 
 {% code title="Query Language Reserved Words" %}
 
-[source,sql]
+[source,gsql]
 ----
 ACCUM               AND                 ANY                 API
 AS                  ASC                 AVG                 BAG

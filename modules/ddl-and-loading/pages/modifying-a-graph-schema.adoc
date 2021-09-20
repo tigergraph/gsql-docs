@@ -10,20 +10,22 @@ To safely update the graph schema, the user should follow this procedure:
 * If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema.
 * if the change is unsuccessful, report the failure and return to the state before the attempt.
 
-{% hint style="danger" %}
+[WARNING]
+====
 A schema change will invalidate any loading jobs or query jobs which relate to an altered part of the schema. Specifically:
 
 * A loading job becomes invalid if it refers to a vertex or and an edge which has been *dropped* (deleted) or *altered* .
 * A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been *dropped* .
 
 Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
-{% endhint %}
+====
 
 Jobs and queries for unaltered parts of the schema will still be available and do not need to be reinstalled.  However, even though these jobs are valid (e.g., they *can* be run), the user may wish to examine whether they still perform the preferred operations (e.g., do you *want* to run them?)
 
-{% hint style="danger" %}
+[WARNING]
+====
  Load or query operations which begin before the schema change will be completed based on the pre-change schema. Load or query operations which begin after the schema change, and which have not been invalidated, will be completed based on the post-change schema.
-{% endhint %}
+====
 
 == *Global vs. Local Schema Changes*
 
@@ -31,11 +33,12 @@ Only a superuser or globaldesigner can add, alter, or drop global vertex types o
 
 An admin or designer user can add, alter, or drop local vertex types or local edge types which are created in the context of that graph. Local vertex and edge types are created using an ADD statement inside a SCHEMA_CHANGE JOB. To alter or drop any of these local types, the admin user uses a regular SCHEMA_CHANGE JOB.
 
-{% hint style="info" %}
+[NOTE]
+====
 Local graphs can define vertex and edge types independently of the vertex and edge types in other graph. That is, the same name can be used in different graphs for (different) vertex or edge types.
 
 It is even permitted for a local graph and the global graph to use the same name for their own vertex or edge types, as long as the global vertex/edge type is not used within the local graph.
-{% endhint %}
+====
 
 The two types of schema change jobs are described below.
 
@@ -45,7 +48,7 @@ The CREATE SCHEMA_CHANGE JOB block defines a sequence of ADD, ALTER, and DROP st
 
 {% code title="CREATE SCHEMA_CHANGE JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE SCHEMA_CHANGE JOB job_name FOR GRAPH graph_name {
     [sequence of DROP, ALTER, and ADD statements, each line ending with a semicolon]
@@ -56,13 +59,14 @@ CREATE SCHEMA_CHANGE JOB job_name FOR GRAPH graph_name {
 
 One use of CREATE SCHEMA_CHANGE JOB is to define an additional vertex type and edge type to be the structure for a secondary index. For example, if you wanted to index the postalCode attribute of the User vertex, you could create a postalCode_idx (PRIMARY_ID id string, code string) vertex type and hasPostalCode (FROM User, TO postalCode_idx) edge type. Then create an index structure having one edge from each User to a postalCode_idx vertex.
 
-{% hint style="danger" %}
+[WARNING]
+====
 By its nature, a SCHEMA_CHANGE JOB may contain multiple statements. If the job block is used in the interactive GSQL shell, then the BEGIN and END commands should be used to permit the SCHEMA_CHANGE JOB to be entered on several lines. if the job is stored in a command file to be read in batch mode, then BEGIN and END are not needed.
 
 Remember to include a semicolon at the end of each DROP, ALTER, or ADD statement within the JOB block.
 
 If a SCHEMA_CHANGE JOB defines a new edge type which connects to a new vertex type, the ADD VERTEX statement should precede the related ADD EDGE statement. However, the ADD EDGE and ADD VERTEX statements can be in the same SCHEMA_CHANGE JOB.
-{% endhint %}
+====
 
 === *`ADD VERTEX | EDGE` (local)*
 
@@ -70,7 +74,7 @@ The ADD statement defines a new type of vertex or edge and automatically adds it
 
 {% code title="ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE" %}
 
-[source,sql]
+[source,gsql]
 ----
 ADD VERTEX v_type_name (PRIMARY_ID id type [',' attribute_list]) [WITH STATS '=' "none"|"outdegree_by_edgetype"];
 ADD UNDIRECTED EDGE e_type_name (FROM v_type_name',' TO v_type_name [',' edge_attribute_list])
@@ -86,7 +90,7 @@ The `ALTER` statement adds attributes to or removes attributes from an existing 
 
 {% code title="ALTER VERTEX / EDGE" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 ----
@@ -102,7 +106,7 @@ Added attributes are appended to the end of the schema. The new attributes may i
 {% tabs %}
 {% tab title="ALTER VERTEX ... ADD" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX vertex_type_name ADD
     ATTRIBUTE (attribute_name type [DEFAULT default_value]
@@ -114,7 +118,7 @@ ALTER VERTEX vertex_type_name ADD
 
 For example:
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX Company ADD ATTRIBUTE (industry
 STRING, marketcap DOUBLE)
@@ -125,7 +129,7 @@ To add to an edge's endpoint vertex types or attributes, the syntax is as follow
 {% tabs %}
 {% tab title="ALTER EDGE... ADD" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER EDGE edge_type_name ADD
     [ATTRIBUTE (attribute_name type [DEFAULT default_value]
@@ -141,7 +145,7 @@ ALTER EDGE edge_type_name ADD
 
 *Syntax*
 
-[source,sql]
+[source,gsql]
 ----
 ALTER EDGE edgeType ADD PAIR
 "(" FROM vertexType, TO vertexType (| FROM vertexType, TO vertexType)* ")”
@@ -151,7 +155,7 @@ ALTER EDGE edgeType ADD PAIR
 
 In the example below, the first statement in the schema change job will add an edge pair (`FROM person, TO company`) to the edge type `visit`.  The second example adds two edge pairs to the edge type `has_pet`; the edge type can now connect both `person` and `dog` vertices, as well as `person` and `bird` vertices.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE SCHEMA_CHANGE JOB job2 FOR GRAPH example_graph {
   ALTER EDGE visit ADD PAIR (FROM person, TO company);
@@ -165,7 +169,7 @@ The syntax for ALTER ... DROP is analogous to that of ALTER ... ADD.
 
 {% code title="ALTER ... DROP" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
       attribute_name [',' attribute_name]* );
@@ -179,7 +183,7 @@ ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
 
 {% code title="ALTER VERTEX WITH TAGGABLE" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 ----
@@ -192,7 +196,7 @@ The DROP statement removes the specified vertex type or edge type from the datab
 
 {% code title="drop vertex / edge" %}
 
-[source,sql]
+[source,gsql]
 ----
 DROP VERTEX v_type_name [',' v_type_name]*
 DROP EDGE e_type_name [',' e_type_name]*
@@ -219,7 +223,7 @@ DROP TUPLE tuple_name [',' tuple_name]*
 
 {% code title="Syntax for ADD TAG" %}
 
-[source,erlang]
+[source,gsql]
 ----
 ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 ----
@@ -232,7 +236,7 @@ ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 
 {% code title="Syntax for DROP TAG" %}
 
-[source,erlang]
+[source,gsql]
 ----
 DROP TAG <tag_name> ["," <tag_name>]*
 ----
@@ -247,7 +251,7 @@ Below is an example. The schema change job add_reviews adds a Review vertex type
 
 {% code title="SCHEMA_CHANGE JOB example" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH Book_rating
 CREATE SCHEMA_CHANGE JOB add_reviews FOR GRAPH Book_rating {
@@ -264,7 +268,7 @@ RUN SCHEMA_CHANGE JOB add_reviews
 
 To drop (remove) a schema change job, run `DROP JOB schema_change_job` name from the GSQL shell. The specific schema change job will be removed from GSQL. Refer to the link:creating-a-loading-job.md#drop-job-statement[Creating a Loading Job page] for more information about dropping jobs.
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > USE GRAPH Book_rating
 GSQL > DROP JOB local_schema_change123
@@ -273,9 +277,10 @@ The job local_schema_change_change123 is dropped!
 
 == *`USE GLOBAL`*
 
-{% hint style="info" %}
+[NOTE]
+====
 The USE GLOBAL command changes a superuser's mode to Global mode.  In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.  For example, the user should run USE GLOBAL before creating or running a GLOBAL SCHEMA_CHANGE JOB.
-{% endhint %}
+====
 
 == *`CREATE GLOBAL SCHEMA_CHANGE JOB`*
 
@@ -283,7 +288,7 @@ The `CREATE GLOBAL SCHEMA_CHANGE JOB` block defines a sequence of `ADD`, `ALTER`
 
 {% code title="CREATE GLOBAL SCHEMA_CHANGE JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE GLOBAL SCHEMA_CHANGE JOB job_name {
     [sequence of global DROP, ALTER, and ADD statements, each line ending with a semicolon]
@@ -310,19 +315,21 @@ Although both global and local schema change jobs have `ADD` and `DROP` statemen
 | Adds or drops attributes from a global vertex/edge type, which may affect several graphs.
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
 Remember to include a semicolon at the end of each `DROP`, `ALTER`, or `ADD` statement within the JOB block.
-{% endhint %}
+====
 
 === *`ADD VERTEX | EDGE` (global)*
 
-{% hint style="info" %}
+[NOTE]
+====
  The ADD statement adds existing global vertex or edge types to one of the graphs.
-{% endhint %}
+====
 
 {% code title="ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE (Global)" %}
 
-[source,sql]
+[source,gsql]
 ----
 ADD VERTEX v_type_name [',' v_type_name...] TO GRAPH gname;
 ADD EDGE e_type_name [',' e_type_name...] TO GRAPH gname;
@@ -332,15 +339,16 @@ ADD EDGE e_type_name [',' e_type_name...] TO GRAPH gname;
 
 === *`ALTER VERTEX | EDGE`*
 
-{% hint style="info" %}
+[NOTE]
+====
 The `ALTER` statement is used to add attributes to or remove attributes from an existing global vertex type or edge type. The `ALTER VERTEX / EDGE` syntax for global schema changes is the same as that for local schema change jobs.
-{% endhint %}
+====
 
 The ALTER statement is used to add attributes to or remove attributes from an existing vertex type or edge type. It can also be used to add or remove source (FROM) vertex types or destination (TO) vertex types of an edge type.  It may only be used within a SCHEMA_CHANGE JOB.  The basic format is as follows:
 
 {% code title="ALTER VERTEX / EDGE" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 ----
@@ -354,7 +362,7 @@ Added attributes are appended to the end of the schema.  The new attributes may 
 {% tabs %}
 {% tab title="ALTER VERTEX ... ADD" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX vertex_type_name ADD
     ATTRIBUTE (attribute_name type [DEFAULT default_value]
@@ -366,7 +374,7 @@ ALTER VERTEX vertex_type_name ADD
 
 For example:
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX Company ADD ATTRIBUTE (industry
 STRING, marketcap DOUBLE)
@@ -377,7 +385,7 @@ To add to an edge's endpoint vertex types or attributes, the syntax is as follow
 {% tabs %}
 {% tab title="ALTER EDGE... ADD" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER EDGE edge_type_name ADD
     [FROM (vertex_type_name [','vertex_type_name])]
@@ -391,7 +399,7 @@ ALTER EDGE edge_type_name ADD
 
 For example:
 
-[source,sql]
+[source,gsql]
 ----
 ALTER EDGE Like ADD TO (Animal) ATTRIBUTE (suggested_by STRING)
 ----
@@ -402,7 +410,7 @@ ALTER EDGE Like ADD TO (Animal) ATTRIBUTE (suggested_by STRING)
 
 *Syntax*
 
-[source,sql]
+[source,gsql]
 ----
 ALTER EDGE edgeType ADD PAIR
 "(" FROM vertexType, TO vertexType (| FROM vertexType, TO vertexType)* ")”
@@ -412,7 +420,7 @@ ALTER EDGE edgeType ADD PAIR
 
 In the example below, the first statement in the schema change job will add an edge pair (`FROM person, TO company`) to the edge type `visit`.  The second example adds two edge pairs to the edge type `has_pet`; the edge type can now connect both `person` and `dog` vertices, as well as `person` and `bird` vertices.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE GLOBAL SCHEMA_CHANGE JOB job2 FOR GRAPH example_graph {
   ALTER EDGE visit ADD PAIR (FROM person, TO company);
@@ -426,7 +434,7 @@ The syntax for `+ALTER ... DROP+` is analogous to that of `+ALTER ... ADD+`.
 
 {% code title="ALTER ... DROP" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
       attribute_name [',' attribute_name]* );
@@ -440,7 +448,7 @@ The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as tagg
 
 {% code title="ALTER VERTEX WITH TAGGABLE" %}
 
-[source,sql]
+[source,gsql]
 ----
 ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 ----
@@ -449,13 +457,14 @@ ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 
 === *`DROP VERTEX | EDGE` (global)*
 
-{% hint style="info" %}
+[NOTE]
+====
  The DROP statement removes specified global vertex or edge types from one of the graphs. The command does not delete any data.
-{% endhint %}
+====
 
 {% code title="drop vertex / edge" %}
 
-[source,sql]
+[source,gsql]
 ----
 DROP VERTEX v_type_name [',' v_type_name...] FROM GRAPH gname;
 DROP EDGE e_type_name   [',' e_type_name...] FROM GRAPH gname;
@@ -465,15 +474,16 @@ DROP EDGE e_type_name   [',' e_type_name...] FROM GRAPH gname;
 
 == *`RUN GLOBAL SCHEMA_CHANGE JOB`*
 
-{% hint style="info" %}
+[NOTE]
+====
 *RUN GLOBAL SCHEMA_CHANGE JOB job_name* performs the global schema change job. After the schema has been changed, the GSQL system checks all existing GSQL queries. If an existing GSQL query uses a dropped vertex, edge, or attribute, the query becomes invalid, and GSQL will show the message "Query _query_name_ becomes invalid after schema update, please update it.".
-{% endhint %}
+====
 
 Below is an example. The schema change alter_friendship_make_library drops the on_date attribute from the friend_of edge and adds Book type to the library graph.
 
 {% code title="GLOBAL SCHEMA_CHANGE JOB example" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GLOBAL
 CREATE GRAPH library()
@@ -492,7 +502,7 @@ Global schema change jobs can be dropped by using the DROP JOB command. Refer to
 
 {% code title="DROP GLOBAL SCHEMA_CHANGE JOB example" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GLOBAL
 DROP JOB alter_friendship_make_library

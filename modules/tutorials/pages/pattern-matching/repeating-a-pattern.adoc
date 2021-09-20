@@ -55,7 +55,7 @@ In this tutorial, we will use the Interpreted Mode for GSQL, introduced in Tiger
 
 {% code title="Example 1.  Directed Edge Pattern Unconstrained Repetition " %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -153,7 +153,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Exmaple 2. Exactly 1 Repetition of A Directed Edge" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -211,7 +211,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 3.  1 to 2 Repetition Of A Directed Edge. " %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -280,7 +280,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 4.  Up-to 2 Repetition Of A Directed Edge. " %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -358,7 +358,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 5.  At Least 1 Repetition  Of A Directed Edge. " %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -445,7 +445,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 6.  Disjunctive 1-Repetition Directed Edge. " %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 

@@ -6,13 +6,15 @@
 
 A pattern usually appears in the FROM clause, the most fundamental part of the query structure. The pattern specifies sets of vertex types and how they are connected by edge types. A pattern can be refined further with conditions in the WHERE clause. In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
 
-{% hint style="info" %}
+[NOTE]
+====
 Currently, pattern matching may only be used in read-only queries. DML support will be added in the near future release.
-{% endhint %}
+====
 
-{% hint style="success" %}
+[NOTE]
+====
 Pattern matching queries support nested queries
-{% endhint %}
+====
 
 == 1-Hop Pattern
 
@@ -20,7 +22,7 @@ The easiest way to understand patterns is to start with a simple 1-Hop pattern. 
 
 In classic GSQL queries, described in link:../gsql-101/[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
 
-[source,sql]
+[source,gsql]
 ----
 Person:p -(LIKES:e)-> Message:m          /* Classic GSQL example */
 ----
@@ -33,7 +35,7 @@ In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, w
 
 ‌For example, in the LDBC SNB schema, there are two directed relationships between Person and Message: person _LIKES_ message, and message _HAS_CREATOR_ person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
 
-[source,sql]
+[source,gsql]
 ----
 Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* Pattern example */
 ----
@@ -51,7 +53,7 @@ Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined a
 
 {% code title="Seed set definition required in classic GSQL" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
     Source = {Person}; // Seed set
@@ -69,9 +71,10 @@ Beginning in TigerGraph 3.0, SYNTAX V2 treats the source vertex set the same as 
 * omitted, with only an alias, meaning any vertex type `SELECT s FROM :s -(IS_LOCATED_IN>:e) - Country:t`
 * omitted, without an alias, meaning any vertex type `SELECT t FROM -(IS_LOCATED_IN>:e) - Country:t`
 
-{% hint style="info" %}
+[NOTE]
+====
 Performance may be better when types are explicitly provided.
-{% endhint %}
+====
 
 [discrete]
 ==== *Examples of 1-Hop Patterns*
@@ -109,7 +112,7 @@ You can use the SET command to assign a value to the _syntax_version_ session pa
 
 {% code title="GSQL: Set Syntax Version By A Session Parameter" %}
 
-[source,erlang]
+[source,gsql]
 ----
 SET syntax_version="v2"
 ----
@@ -122,7 +125,7 @@ You can also select the syntax by using the SYNTAX clause in the CREATE QUERY st
 
 {% code title="GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query " %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
 {
@@ -143,7 +146,8 @@ To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, 
 INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Recommendation: Increase the query timeout threshold.
 
 Interpreted queries may run slower than installed queries, so we recommend increasing the query timeout threshold:
@@ -158,7 +162,7 @@ SET query_timeout = 60000
 ----
 
 {% endcode %}
-{% endhint %}
+====
 
 == Examples of 1-Hop Fixed Length Query
 
@@ -166,7 +170,7 @@ SET query_timeout = 60000
 
 {% code title="Example 1. Left Directed Edge Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -184,12 +188,13 @@ INTERPRET QUERY () SYNTAX v2 {
 
 {% endcode %}
 
-{% hint style="info" %}
+[NOTE]
+====
 Syntax Enhancement in TigerGraph 3.0+
 
 * In Example 1, "FOR GRAPH ldbc_snb" is not used after () in the query signature. It's an optional component in 3.0+ when "USE GRAPH graphName" is used; Or from the command line, "gsql -g graphName " precedes any query invocation.
 * In the FROM clause, we directly use vertex type Person as the starting vertex set. This syntax enhancement is available in syntax V2 only.
-{% endhint %}
+====
 
 You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
 
@@ -252,7 +257,7 @@ gsql example1.gsql
 
 {% code title="Example 2. Right-directed Edge Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -319,7 +324,7 @@ Note below (line 8) that the source vertex set are now Comment and Post, and the
 
 {% code title="Example 3. Left-directed Edge Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 ​
@@ -348,7 +353,7 @@ You can copy the above GSQL script to a file named example3.gsql, and invoke thi
 
 {% code title="Example 4. Disjunctive 1-hop edge pattern." %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 set query_timeout=60000
@@ -413,7 +418,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 5. Disjunctive 1-hop edge pattern." %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 

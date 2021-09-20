@@ -15,7 +15,7 @@ Now, let's write our first GSQL query. We'll display all the direct (1-hop) neig
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 USE GRAPH social
 CREATE QUERY hello(VERTEX<person> p) {
@@ -46,7 +46,7 @@ Rather than defining our query in interactive mode, we can store the query in a 
 
 {% code title="GSQL shell" %}
 
-[,sql]
+[,gsql]
 ----
 GSQL > @hello.gsql
 Using graph 'social'
@@ -81,7 +81,7 @@ However, the query is not installed yet; it is not ready to run. In the GSQL she
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 INSTALL QUERY hello
 ----
@@ -197,7 +197,7 @@ Now, let's do a more advanced query. This time, we are going to learn to use the
 
 {% code title="GSQL command file - hello2.gsql" %}
 
-[,sql]
+[,gsql]
 ----
 USE GRAPH social
 CREATE QUERY hello2 (VERTEX<person> p) {

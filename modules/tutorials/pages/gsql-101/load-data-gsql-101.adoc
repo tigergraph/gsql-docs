@@ -12,7 +12,7 @@ The loading job below assumes that your data files are in the folder `/home/tige
 
 {% code title="GSQL commands to define a loading job" %}
 
-[,sql]
+[,gsql]
 ----
 USE GRAPH social
 BEGIN
@@ -41,7 +41,7 @@ When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and
 
 {% code title="GSQL shell" %}
 
-[,sql]
+[,gsql]
 ----
 GSQL > USE GRAPH social
 Using graph 'social'
@@ -65,7 +65,7 @@ You can now run your loading job to load data into your graph:
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 RUN LOADING JOB load_social
 ----

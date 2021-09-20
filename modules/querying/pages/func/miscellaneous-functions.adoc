@@ -30,7 +30,7 @@ The function takes a number of parameters and returns the first one that does no
 [discrete]
 ==== Example
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY coalesceFuncEx (INT p1, DOUBLE p2) FOR GRAPH social {
   PRINT COALESCE(p1, p2, 999.5);  # p2 and the last value will be converted into first argument type, which is INT.
@@ -88,14 +88,15 @@ The following situations generate a run-time error:
 * The expression string expressionStr cannot be compiled (unless the error is due to a non-existent  vertex or edge attribute).
 * The result type of the expression does not match the parameter typeStr.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Silent failure conditions
 
 If any of the following conditions occur, the query may continue running, but the entire clause or statement in which the evaluate() function resides will fail, without producing a run-time error message. For conditional clauses (WHERE, HAVING), a failing evaluate() clause is treated as if the condition is false. An assignment statement with a failing evaluate() will not execute, and an ORDER BY clause with a failing evaluate() will not sort.
 
 . The expression references a non-existent attribute of a vertex or edge alias.
 . The expression uses an operator for non-compatible operation. For example, 123 == "xyz".
-{% endhint %}
+====
 
 [discrete]
 ==== Return type

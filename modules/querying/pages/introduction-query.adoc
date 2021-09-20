@@ -10,7 +10,7 @@ This document focuses on the formal specification for the GSQL Query Language. I
 
 {% code title="Graph Schema: socialNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 CREATE UNDIRECTED EDGE friend(FROM person, TO person)
@@ -23,7 +23,7 @@ CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
 
 {% code title="Graph Schema: workNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING COMPRESS>, interestList LIST<STRING COMPRESS>)
 CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
@@ -34,7 +34,7 @@ CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMon
 
 {% code title="Graph Schema: friendNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING)
 CREATE UNDIRECTED EDGE friend(FROM person, TO person)
@@ -45,7 +45,7 @@ CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
 
 {% code title="Graph Schema: computerNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX computer(PRIMARY_ID compID STRING, id STRING)
 CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed INT)
@@ -55,7 +55,7 @@ CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed INT)
 
 {% code title="Graph Schema: minimalNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX testV(PRIMARY_ID id STRING)
 CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
@@ -65,7 +65,7 @@ CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
 
 {% code title="Graph Schema: investmentNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 TYPEDEF TUPLE < age UINT (4), mothersName STRING(20) > SECRET_INFO
 CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)

@@ -14,7 +14,7 @@ To enter the GSQL shell and work in interactive mode, type *`gsql`* from an oper
 
 {% code title="GSQL command syntax for entering interactive mode" %}
 
-[source,sql]
+[source,gsql]
 ----
 gsql [-u username] [-p password] [-g gname]
 ----
@@ -25,7 +25,7 @@ If a user name is provided but not a password, the GSQL system will then ask for
 
 {% code title="Login example with user name" %}
 
-[source,sql]
+[source,gsql]
 ----
 os$ gsql -u victor
 Password for victor : ***
@@ -38,7 +38,7 @@ If a user name is not given, then GSQL will assume that you are attempting to lo
 
 {% code title="Login example without user name" %}
 
-[source,sql]
+[source,gsql]
 ----
 os$ gsql
 Password for tigergraph : *****
@@ -55,7 +55,7 @@ To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
 
 For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity. Set the GSQL_CLIENT_IDLE_TIMEOUT_SEC bash environment variable=<num_sec>. Then every time you start a GSQL session, the idle timeout will be applied. To disable the timeout, omit <num,_sec>.  The default setting is no timeout.  Example, using the Linux export command to set the environment variable:
 
-[source,sql]
+[source,gsql]
 ----
 tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=10
 tigergraph@123:~$ gsql
@@ -80,7 +80,7 @@ To enter multi-line mode, use the command BEGIN.  The end-of-line character is n
 
 {% code title="Example: BEGIN and END defining a multi-line block" %}
 
-[source,sql]
+[source,gsql]
 ----
 BEGIN
 SELECT member_id, last_name, first_name,  date_joined, status
@@ -108,7 +108,7 @@ Similarly, a single GSQL command can be run by enclosing the command string in q
 
 {% code title="Login example with inline command or command file" %}
 
-[source,sql]
+[source,gsql]
 ----
 gsql [-u username] [-g graphname] ['command_string' | command_file]
 ----
@@ -119,7 +119,7 @@ In the example below, the file name_query.gsql contains the multi-line CREATE QU
 
 {% code title="Example using command files and inline commands" %}
 
-[source,sql]
+[source,gsql]
 ----
 os$ gsql pagerank_query.gsql
 os$ gsql 'INSTALL QUERY namesSimilar'
@@ -142,7 +142,7 @@ The *`ls`* command displays the _catalog_ : all the vertex types, edge types, gr
 
 The --reset option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.  The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
 
-[source,sql]
+[source,gsql]
 ----
 $ gsql --reset
 
@@ -188,7 +188,8 @@ The table below summaries the basic system commands introduced so far.
 | Clear the graph store and erase the dictionary.
 |===
 
-{% hint style="info" %}
+[NOTE]
+====
  Notes on the LS command
 
 Starting with v1.2, the output of the LS command is sensitive to the user and the active graph:
@@ -197,7 +198,7 @@ Starting with v1.2, the output of the LS command is sensitive to the user and th
  .. If the user is a superuser, then LS displays global vertices, global edges, and all graph schemas.
  .. If the user is not a superuser, then LS displays nothing (null).
 . If the user has set an active graph, then LS displays the schema, jobs, queries, and other definitions for that particular graph.
-{% endhint %}
+====
 
 == *Session Parameters*
 
@@ -205,7 +206,7 @@ Session parameters are built-in system variables whose values are valid during t
 
 Use the SET command to set the value of a session parameter:
 
-[source,sql]
+[source,gsql]
 ----
 SET session_parameter = value
 ----
@@ -238,7 +239,7 @@ syntactic errors: GSQL will always exit on a syntactic error.
 
 {% code title="Example of exit_on_error = FALSE" %}
 
-[source,sql]
+[source,gsql]
 ----
 # exitOnError.gsql
 SET exit_on_error = FALSE
@@ -257,7 +258,7 @@ CREATE GRAPH g2(*)
 
 {% code title="Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 os$ gsql exitOnError.gsql
 
@@ -324,15 +325,17 @@ Each attribute of a vertex or edge has an assigned data type. The following type
 | character string. The string value can optionally be enclosed by single quote marks or double quote marks. Please see the QUOTE parameter in Section "Other Optional LOAD Clauses".
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
 For FLOAT and DOUBLE values, the GSQL Loader supports exponential notation as shown (e.g., 1.25 E-7).
 
 The GSQL Query Language currently only reads values without exponents. It may display output values with exponential notation, however.
-{% endhint %}
+====
 
-{% hint style="danger" %}
+[WARNING]
+====
 Some numeric expressions may return a non-numeric string result, such as "inf" for Infinity or "NaN" for Not a Number.
-{% endhint %}
+====
 
 === Advanced Types
 [width="100%",cols="30%,5%,19%,19%,27%",options="header",]
@@ -363,9 +366,10 @@ Additionally, GSQL also supports the following complex data types:
  ** Supported element types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `DATETIME`, and `UDT`
  ** To declare a list type, use angle brackets `<>` to enclose the element type, e.g. `LIST<STRING>.`
 
-{% hint style="danger" %}
+[WARNING]
+====
 Due to multithreaded GSQL loading, the initial order of elements loaded into a LIST might be different than the order in which they appeared in the input data.
-{% endhint %}
+====
 
 * `SET`: A set is an *unordered* collection of *unique* elements of the same type.
  ** Default value: an empty set `()`
@@ -384,7 +388,7 @@ A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields 
 {% tabs %}
 {% tab title="TYPEDEF TUPLE syntax" %}
 
-[source,erlang]
+[source,gsql]
 ----
 TYPEDEF TUPLE "<" fieldName fieldType ["(" fieldSize ")"]
                   ( "," fieldName fieldType ["(" fieldSize ")"] )* ">" tupleName
@@ -437,7 +441,7 @@ A UDT must be defined before being used as a field in a vertex type or edge type
 {% tabs %}
 {% tab title="Example: UDT Definition " %}
 
-[source,sql]
+[source,gsql]
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
 ----

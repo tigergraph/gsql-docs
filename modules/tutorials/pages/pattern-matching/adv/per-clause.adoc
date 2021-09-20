@@ -8,7 +8,7 @@ Patterns are paths in the graphs, and each row in the match table is a distinct 
 
 For example, consider the following query which counts the number of paths in a simple 2-hop pattern:
 
-[source,sql]
+[source,gsql]
 ----
 SumAccum<int> @@cnt;
 
@@ -19,7 +19,7 @@ S = SELECT t
 
 Suppose the query produces the following match table.
 
-[source,sql]
+[source,gsql]
 ----
 (s, edge1, m , edge2, t)//match table schema
 v1, e1, v3, e2, v2 //match 1
@@ -41,7 +41,7 @@ To provide users with this added flexibility and finer control over ACCUM iterat
 
 The PER Clause is an optional clause that comes at the start of the ACCUM clause in a SELECT statement. As illustrated below, it starts with the keyword PER, and followed by a pair of parenthesis, in which user can put one or more distinct vertex aliases found in the FROM pattern.
 
-[source,sql]
+[source,gsql]
 ----
 selectBlock := SELECT alias
                FROM pattern
@@ -58,7 +58,7 @@ perClause := PER (vertex_alias_1, vertex_alias_2, ...)
 
 *Examples*. Below are multiple examples of the PER Clause using the same FROM clause.
 
-[source,sql]
+[source,gsql]
 ----
 S1 = SELECT s
      FROM S:s - (E1:edge1) - M:m - (E2:edge2) - T:t
@@ -98,7 +98,7 @@ Suppose s, m, and t are vertex aliases in a pattern. Below are some interpretati
 
 Examples to show PER clause semantics.
 
-[source,sql]
+[source,gsql]
 ----
 //match table
 (s, edge1, m , edge2, t)//schema
@@ -144,13 +144,14 @@ S5 = SELECT t
      ACCUM @@cnt += 1;
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 If the PER Clause is used in a SELECT query block, then the vertex aliases used in the SELECT, ACCUM , and POST-ACCUM clauses must be confined to the aliases that appear in the PER clause.
-{% endhint %}
+====
 
 Below are some illegal cases.
 
-[source,sql]
+[source,gsql]
 ----
 //semantic error. SELECT t, but t doesn't appear in PER clause.
 S1 = SELECT t
@@ -176,7 +177,7 @@ S3 = SELECT s
 
 *Example 1.* Count the number of Countries that has a City which has a resident that likes a post.
 
-[source,sql]
+[source,gsql]
 ----
 //Example 1.
 USE GRAPH ldbc_snb
@@ -209,7 +210,7 @@ The query AA is dropped.
 
 *Example 2.* Count the number of posts liked by a person who is located in a city that belongs to a country. (All cities are in a country, but humor us.  We are reusing the same FROM pattern in several examples.)
 
-[source,sql]
+[source,gsql]
 ----
 //Example 2.
 USE GRAPH ldbc_snb
@@ -240,7 +241,7 @@ Using graph 'ldbc_snb'
 
 *Example 3.* Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country.
 
-[source,sql]
+[source,gsql]
 ----
 //Exmaple 3
 USE GRAPH ldbc_snb
@@ -278,7 +279,7 @@ Using graph 'ldbc_snb'
 
 *Example 4.*  Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country. Use local accumulators this time.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -350,7 +351,7 @@ To get the best performance, we recommend three guidelines for writing efficient
 
 Per target is in general faster than Per source. In the example below, query q2 is faster than q1. The only difference between these two queries is q2's FROM pattern is the flip of q1's FROM pattern.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -387,7 +388,7 @@ CREATE QUERY q2 () SYNTAX v2 {
 
 The match table is built by traversing the pattern from left to right. Follow the basic principle of pruning early rather than late by orienting the query the  smaller cardinality set on the left. This practice will result in producing the least number of candidate matches during the query computation. For example, if there are fewer distinct tags than persons, then query q4 is faster than q3.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -423,7 +424,7 @@ CREATE QUERY q4 () SYNTAX v2 {
 
 Specifying complete type information improves performance. For example, query q6 is faster than q5 even though they are known to be logically identical. `Forum` is the `CONTAINER_OF` `Post`, so it does not need to be specified in q5, but explicitly saying `Forum` in q6 speeds up performance.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 

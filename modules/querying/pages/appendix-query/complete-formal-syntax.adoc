@@ -8,7 +8,7 @@ This defines the EBNF notation used to describe the syntax.  Rules contains term
 
 {% code title="EBNF Syntax example: A rule" %}
 
-[source,sql]
+[source,gsql]
 ----
 assignmentStmt := name "=" expr op expr ";"
 ----
@@ -19,7 +19,7 @@ A *vertical bar |* in EBNF indicates choice.  Choose either the symbol on the le
 
 {% code title="EBNF Syntax: vertical bar" %}
 
-[source,sql]
+[source,gsql]
 ----
 op := "+" | "-" | "*" | "/"
 ----
@@ -30,7 +30,7 @@ op := "+" | "-" | "*" | "/"
 
 {% code title="EBNF Syntax: Square brackets and parentheses" %}
 
-[source,sql]
+[source,gsql]
 ----
 constant := ["+" | "-"] (digit | (digit digit) | (digit digit digit))
 ----
@@ -41,7 +41,7 @@ constant := ["+" | "-"] (digit | (digit digit) | (digit digit digit))
 
 {% code title="EBNF Syntax: square brackets and parentheses" %}
 
-[source,sql]
+[source,gsql]
 ----
 intConstant := ["+" | "-"] digit+
 floatConstant := ["+" | "-"] digit* "." digit+
@@ -52,7 +52,7 @@ list := "(" expr ["," expr]* ")"
 
 == GSQL Query Language EBNF
 
-[source,erlang]
+[source,gsql]
 ----
 #########################################################
 ## EBNF for GSQL Query Language

@@ -4,7 +4,7 @@ In GSQL, different types of variables and objects follow different rules when it
 
 {% code title="EBNF" %}
 
-[source,erlang]
+[source,gsql]
 ----
 ## Declarations ##
 accumDeclStmt :=
@@ -119,7 +119,7 @@ In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, 
 
 {% code title="EBNF for base type variable declaration" %}
 
-[source,sql]
+[source,gsql]
 ----
 baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
@@ -143,7 +143,7 @@ When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` 
 
 For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends. Therefore, the accumulator will not receive the value and will hold a value of 0 at the end of the query.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
   MaxAccum<INT> @@maxDateGlob;
@@ -169,7 +169,7 @@ In a `POST-ACCUM` clause, each local base type variable may only be used in sour
 
 {% code title="EBNF for local base type variable declaration and initialization" %}
 
-[source,sql]
+[source,gsql]
 ----
 localVarDeclStmt := baseType varName "=" expr
 ----
@@ -182,7 +182,7 @@ Local base type variables are not subject to the assignment restrictions of regu
 
 {% code title="Base type variable declaration in DML statements" %}
 
-[source,sql]
+[source,gsql]
 ----
 # An example showing a local base type variable succeeds
 # where a base type variable fails
@@ -206,7 +206,7 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
 
 {% code title="localVariable Query Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY localVariable("person1")
 {
@@ -235,7 +235,7 @@ Vertex set variables are global-scoped. They are also the only type of variable 
 
 {% code title="EBNF for Vertex Set Variable Declaration" %}
 
-[source,erlang]
+[source,gsql]
 ----
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
 
@@ -273,7 +273,7 @@ The query below lists all ways of assigning a vertex set variable an initial set
 
 {% code title="Seed Set Example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VERTEX<person>> v4) FOR GRAPH socialNet {
   SetAccum<VERTEX> @@testSet;
@@ -302,12 +302,13 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
 
 When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Declaration syntax difference: vertex set variable vs. base type variable
 
 In a vertex set variable declaration, the optional type specifier follows the variable name and should be surrounded by parentheses: *`vSetName(type)`* +
 This is different than a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
-{% endhint %}
+====
 
 ==== Assignment
 
@@ -315,7 +316,7 @@ After a vertex set variable is declared, the vertex type of the vertex set varia
 
 {% code title="Vertex set variable type" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet {
   INT ite = 0;
@@ -340,7 +341,7 @@ A `FILE` object is a sequential text storage object, associated with a text file
 
 {% code title="EBNF for FILE object declaration" %}
 
-[source,sql]
+[source,gsql]
 ----
 fileDeclStmt := FILE fileVar "(" filePath ")"
 fileVar := name
@@ -354,7 +355,7 @@ When a `FILE` object is declared, associated with a particular text file, any ex
 
 {% code title="File object query example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY getUSWorkerInterests (STRING fileLocation) FOR GRAPH workNet {
     // Declare FILE object f1
@@ -383,7 +384,7 @@ Assignment statements are used to set or update the value of a variable after it
 
 {% code title="EBNF for Assignment Statements" %}
 
-[source,sql]
+[source,gsql]
 ----
 ## Assignment Statement ##
 assignStmt := name "=" expr         # baseType variable, vertex set variable
@@ -401,15 +402,16 @@ loadAccumStmt := globalAccumName "=" "{" "LOADACCUM" loadAccumParam
 
 {% endcode %}
 
-{% hint style="success" %}
+[NOTE]
+====
 Vertex and edge (non-accumulator) attributes can use the += operator in an ACCUM or POST-ACCUM clause to perform parallel accumulation.
 
-[source,sql]
+[source,gsql]
 ----
 attrAccumStmt := name "."attrName "+=" expr
 ----
 
-{% endhint %}
+====
 
 === *Restrictions on Assignment Statements*
 
@@ -419,17 +421,18 @@ In general, assignment statements can take place anywhere after the variable has
 * The `SET` clause of an `UPDATE` statement
 * The body of a `FOREACH` statement
 
-{% hint style="danger" %}
+[WARNING]
+====
 
 * Global accumulator assignment is not permitted within the body of `SELECT` or `UPDATE` statements
 * Base type variable assignment is permitted in `ACCUM` or `POST-ACCUM` clauses, but the change in value will not take place until exiting the clause. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
 * Vertex attribute assignment is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted. This is because the `ACCUM` clause iterates over an edge set.
 * There are additional restrictions within `FOREACH` loops for the loop variable. See the Data Modification section.
-{% endhint %}
+====
 
 === `LOADACCUM` Statement
 
-[source,erlang]
+[source,gsql]
 ----
 loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
                                   ["," LOADACCUM loadAccumParams]* "}"
@@ -441,9 +444,10 @@ columnId := "$"(integer | stringLiteral)
 
 `LOADACCUM()` can initialize a global accumulator by loading data from a file. `LOADACCUM()` has 3+n parameters explained in the table below, where n is the number of fields in the accumulator.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Any accumulator using generic `VERTEX` as an element type cannot be initialized by `LOADACCUM()`.
-{% endhint %}
+====
 
 ==== Parameters:
 
@@ -473,7 +477,7 @@ One assignment statement can have multiple `LOADACCUM()` function calls. However
 
 {% code title="loadAccumInput.csv" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,1,"test1",3
 person5,2,"test2",4
@@ -484,7 +488,7 @@ person6,3,"test3",5
 
 {% code title="LoadAccum example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
   TYPEDEF TUPLE<STRING aaa, VERTEX<post> ddd> yourTuple;
@@ -502,7 +506,7 @@ CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
 
 {% code title="Results of Query loadAccumEx" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
 {
@@ -548,7 +552,7 @@ GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
 
 == Function Call Statements
 
-[source,erlang]
+[source,gsql]
 ----
 funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
               | globalAccumName ("." funcName "(" [argList] ")")+
@@ -561,7 +565,7 @@ Typically, a function call returns a value and so is part of an xref:operators-a
 
 {% code title="Examples of Function Call statements" %}
 
-[source,sql]
+[source,gsql]
 ----
 ListAccum<STRING> @@listAcc;
 BagAccum<INT> @@bagAcc;
@@ -577,16 +581,17 @@ BagAccum<INT> @@bagAcc;
 
 Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant. It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty). If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
 
-[source,erlang]
+[source,gsql]
 ----
 "reset_collection_accum" "(" accumName ")"
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 `reset_collection_accum` only works in DISTRIBUTED mode queries.  If the query is not in distributed mode, the reset does not take place.
-{% endhint %}
+====
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE DISTRIBUTED QUERY reset_accum()
 FOR GRAPH workNet SYNTAX v2 {
@@ -616,7 +621,7 @@ FOR GRAPH workNet SYNTAX v2 {
 }
 ----
 
-[source,erlang]
+[source,gsql]
 ----
 [{
     "stuffCount": [

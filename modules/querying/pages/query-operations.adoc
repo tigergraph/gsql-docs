@@ -1,7 +1,8 @@
 = CREATE/INTERPRET/INSTALL/RUN QUERY
 :pp: {plus}{plus}
 
-{% hint style="info" %}
+[NOTE]
+====
 Query Privileges
 
 Users with the `querywriter` role or greater (`designer`, `admin`, `globaldesigner,` and `superuser`) can create, install, and drop queries.
@@ -13,7 +14,7 @@ To implement fine-grained control over which queries can be executed by which se
 . Group your queries into your desired privilege groups.
 . Define a graph for each privilege group. These graphs can all have the same domain if you wish.
 . Create your queries, assigning each to its appropriate privilege group.
-{% endhint %}
+====
 
 {% code title="EBNF for CREATE QUERY" %}
 
@@ -96,14 +97,15 @@ queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
 
 A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "link:output-statements-and-file-objects.md#return-statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body. The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
 
-{% hint style="info" %}
+[NOTE]
+====
 *Dynamic Query Support*
 
 As of TigerGraph 3.0+, *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: +
 *`GSQL -g graphName [<gsql_command>]`* +
 or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command. +
 This is one aspect of link:query-operations.md#dynamic-querying[Dynamic Querying].
-{% endhint %}
+====
 
 If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name. The new query will not be installed.  That is, +
 `CREATE OR REPLACE QUERY name` +
@@ -208,7 +210,7 @@ Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniqu
 * edge type  = Link
 * vertex attribute = Score
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
   FLOAT damping=0.85)  //parameters
@@ -237,7 +239,7 @@ RUN QUERY pageRank(_,_,_)
 
 Here is the same algorithm written in Dynamic Querying style:
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
   FLOAT damping=0.85,
@@ -631,11 +633,12 @@ Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, 
 * `INSTALL QUERY *`
 * `INSTALL QUERY ALL`
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Installing takes several seconds for each query. The current version does not support concurrent installation and running of queries. Other concurrent graph operations will be delayed until the installation finishes.
 
 Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
-{% endhint %}
+====
 
 === Options for `INSTALL QUERY`
 
@@ -868,14 +871,14 @@ Queries executed in Detached mode are still subject to the system timeout limit.
 
 To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
 
-[source,erlang]
+[source,gsql]
 ----
 GSQL > RUN QUERY -async <queryName>
 ----
 
 You will receive a JSON response immediately containing a query ID (`request_id`):
 
-[source,erlang]
+[source,gsql]
 ----
 {
   "error": false,
@@ -999,6 +1002,7 @@ To drop all queries, either of the following commands can be used: +
 `DROP QUERY ALL
 DROP QUERY *`
 
-{% hint style="info" %}
+[NOTE]
+====
 The scope of ALL depends on the user's current scope. If the user has set a working graph, then DROP ALL removes all the jobs for that graph. If a superuser has set their scope to be global, then DROP ALL removes all jobs across all graph spaces.
-{% endhint %}
+====

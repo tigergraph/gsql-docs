@@ -49,7 +49,8 @@ inline string reverse(string str){
 
 {% endcode %}
 
-{% hint style="warning" %}
+[CAUTION]
+====
 If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL cannot install any GSQL query, even if the GSQL query doesn't call any query UDF. Therefore, please test each new query UDF after adding it. One way of testing a function is to create a new file `test.cpp` and compile it: +
 `> g{pp} test.cpp
 
@@ -60,7 +61,7 @@ ____
 
 {% code title="test.cpp" %}
 
-[source,sql]
+[source,gsql]
 ----
 #include "ExprFunctions.hpp"
 #include <iostream>
@@ -72,7 +73,7 @@ int main () {
 ----
 
 {% endcode %}
-{% endhint %}
+====
 
 === Step 3: Upload files
 
@@ -90,7 +91,7 @@ The `PUT` command will automatically upload the files to all nodes in a cluster.
 
 {% code title="Example of a GSQL query that uses the UDF" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY udfExample() FOR GRAPH minimalNet {
   DOUBLE x;

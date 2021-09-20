@@ -27,7 +27,7 @@ If we are satisfied with this query, we can use "install query queryName" to get
 
 {% code title="GSQL Recommendation Algorithm " %}
 
-[source,sql]
+[source,gsql]
 ----
 use graph ldbc_snb
 set query_timeout=60000
@@ -196,7 +196,7 @@ The above use log-cosine as a similarity measurement. We can also use cosine sim
 
 {% code title="GSQL Recommendation Algorithm 2" %}
 
-[source,sql]
+[source,gsql]
 ----
 use graph ldbc_snb
 set query_timeout=60000

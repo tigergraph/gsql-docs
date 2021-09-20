@@ -8,7 +8,7 @@ The script to load the LDBC-SNB data is below.
 
 {% code title="# GSQL script for loading LDBC-SNB data" %}
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 CREATE LOADING JOB load_ldbc_snb FOR GRAPH ldbc_snb {

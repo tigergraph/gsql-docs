@@ -113,7 +113,8 @@ Everything is dropped.
 
 {% endcode %}
 
-{% hint style="warning" %}
+[CAUTION]
+====
 *Restarting TigerGraph*
 
 If you need to restart TigerGraph for any reason, use the following command sequence:
@@ -132,9 +133,10 @@ $ gadmin restart -y
 ----
 
 {% endcode %}
-{% endhint %}
+====
 
-{% hint style="success" %}
+[NOTE]
+====
 *Running GSQL commands from Linux*
 
 You can also run GSQL commands from a Linux shell. To run a single command, just use "gsql" followed by the command line enclosed in single quotes. (The quotes aren't necessary if there is no parsing ambiguity; it's safer to just use them.)  For example,
@@ -152,6 +154,6 @@ gsql 'ls'
 {% endcode %}
 
 You can also execute a series of commands which you have stored in a file, by simply invoking "gsql" following by the name of the file.
-{% endhint %}
+====
 
 When you are done, you can exit the GSQL shell with the command "quit" (without the quotes).

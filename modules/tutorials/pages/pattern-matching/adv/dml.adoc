@@ -7,11 +7,12 @@ In general, data modification can be at two levels in GSQL:
 . Top level. The statement does not need to within any other statement.
 . Within a SELECT query statement. The FROM-WHERE clauses define a match table, and the data modification is performed based on the vertex and edge information in the match table. The GSQL specifications calls these within-SELECT statements *DML-sub statements*.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 
 * Insert, Update, and Delete currently work in compiled mode only (e.g., you must run INSTALL QUERY before RUN QUERY.)  Data Modification in interpreted mode is not yet available.
 * SELECT queries with data modification may only have one POST-ACCUM clause.
-{% endhint %}
+====
 
 == INSERT
 
@@ -22,7 +23,7 @@ Pattern matching Insert is supported at both the top-level and within-SELECT lev
 
 *Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  KNOWS edges connecting Tiger Woods with Viktor's favorite authors.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -106,7 +107,7 @@ Check the inserted vertex.
 
 {% code title="Linux Shell" %}
 
-[source,sql]
+[source,gsql]
 ----
 #check the inserted vertex
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
@@ -147,7 +148,7 @@ Check the inserted edges.
 
 {% code title="Linux file" %}
 
-[source,sql]
+[source,gsql]
 ----
 #check the inserted edges using tiger's id (100,000,000)
 curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
@@ -204,18 +205,19 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410"
 
 == UPDATE
 
-{% hint style="info" %}
+[NOTE]
+====
 
 * Top-level UPDATE statements are not yet supported in syntax v2.
 +
 Vertex attributes can only be updated in POST-ACCUM clause, and  edge attributes can only be updated in the ACCUM clause.
 
 * To perform within-SELECT updates, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
-{% endhint %}
+====
 
 *Example 2.* For all KNOWS edges that connect Viktor Akhiezer and his friends whose lastName begins with "S", update the edge creationDate to "2020-10-01".  Also, for the Person vertex (Tiger Woods) update the vertex's creationDate and language he speaks.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -252,7 +254,7 @@ Check Tiger Woods' creationDate and language he speaks.
 
 {% code title="Linux Shell" %}
 
-[source,sql]
+[source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
 #result
@@ -294,7 +296,7 @@ Check KNOWS edges whose source is tiger woods.
 
 {% code title="Linux Shell" %}
 
-[source,sql]
+[source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
 
@@ -351,17 +353,18 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
 
 You  can use delete () function to delete edges and vertices in ACCUM and POST-ACCUM clauses.
 
-{% hint style="info" %}
+[NOTE]
+====
 
 * Top-levels  DELETE statements are not yet supported in SYNTAX v2.
 * Edges can only be deleted in the ACCUM clause.
 * For best performance, vertices should be deleted in the POST-ACCUM clause.
 * To perform within-SELECT deletes, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
-{% endhint %}
+====
 
 *Example 3.* Delete vertex Tiger Woods and its KNOWS edges.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -387,7 +390,7 @@ RUN QUERY DeleteEdgeAndVertex()
 
 To verify the result, you can use built-in REST calls.
 
-[source,sql]
+[source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
 #vertexresults

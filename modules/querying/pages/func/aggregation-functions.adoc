@@ -2,9 +2,10 @@
 
 This page lists the aggregation functions available in the GSQL query language. These functions take a single `SET/BAG` or `SetAccum/BagAccum` as the parameter and return an aggregated value from all members of the set or bag.
 
-{% hint style="success" %}
+[NOTE]
+====
 The ``DISTINCT``keyword can be used to include repeated values only once when aggregating.
-{% endhint %}
+====
 
 [discrete]
 === avg()

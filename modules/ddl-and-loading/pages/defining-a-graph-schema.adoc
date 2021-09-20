@@ -18,12 +18,13 @@ In the first schema diagram above, there are seven entities: four vertex types a
 
 Once the graph designer has chosen a graph schema, the schema is ready to be formalized into a series of GSQL statements.
 
-{% hint style="info" %}
+[NOTE]
+====
 Graph Creation and Modification Privileges
 
 Only superusers and globaldesigners can define global vertex types. global edge types, and graphs, using CREATE VERTEX / EDGE / GRAPH. +
 However, once a graph has been created, its admin and designer users can customize its schema, including adding new local vertex types and local edge types, by using a SCHEMA_CHANGE JOB, described in the next section. +
-{% endhint %}
+====
 
 == *CREATE VERTEX*
 
@@ -51,14 +52,19 @@ CREATE VERTEX vertex_type_name "(" primary_id_name_type
 
 === Keys and Attributes
 
-{% hint style="info" %}
+[NOTE]
+====
+
+[NOTE]
+====
 Beginning with v2.3, there are two syntaxes for specifying the primary id/key:
 
 Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additional options and additional flexibility:
 
 . PRIMARY_ID and WITH primary_id_as attribute
 . PRIMARY KEY syntax.  This syntax is modeled after SQL.
-{% endhint %}
+====
+====
 
 ==== *PRIMARY_ID  and WITH primary_id_as_attribute*
 
@@ -100,9 +106,10 @@ Example:
 CREATE VERTEX movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
 PRIMARY KEY is not supported in GraphStudio. If you decide to use this feature, you will only be able to use command line interface.
-{% endhint %}
+====
 
 ==== *COMPOSITE KEY*
 
@@ -120,9 +127,10 @@ Example:
 CREATE VERTEX movie (id UINT, title STRING, year UINT, PRIMARY KEY (title,year,id) )
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
 COMPOSITE KEY is not supported in GraphStudio. If you decide to use this feature, you will only be able to use command line interface.
-{% endhint %}
+====
 
 ==== *Vertex Attribute List*
 
@@ -145,7 +153,7 @@ Example:
 
 {% code title="Vertex definitions for User-Book-Rating graph" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
 CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING)
@@ -189,7 +197,7 @@ The CREATE EDGE statement defines a new global edge type. There are two forms of
 
 {% code title="CREATE UNDIRECTED EDGE" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE UNDIRECTED EDGE edge_type_name "("
         FROM vertex_type_name "," TO vertex_type_name
@@ -201,7 +209,7 @@ CREATE UNDIRECTED EDGE edge_type_name "("
 
 {% code title="CREATE DIRECTED EDGE" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE DIRECTED EDGE edge_type_name "("
         FROM vertex_type_name "," TO vertex_type_name
@@ -214,7 +222,7 @@ CREATE DIRECTED EDGE edge_type_name "("
 
 As of v3.0, a single edge type can be defined between multiple pairs of vertex types, e.g.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE DIRECTED EDGE member_of (FROM Person, TO Org | FROM Org, TO Org,
                                joined DATETIME)
@@ -228,16 +236,17 @@ An edge type can be defined which connects FROM and/or TO any of the currently d
 
 {% code title="Wildcard edge type" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE DIRECTED EDGE any_edge (FROM *, TO *, label STRING)
 ----
 
 {% endcode %}
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Note: If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard. That is, "*" is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
-{% endhint %}
+====
 
 === WITH REVERSE_EDGE
 
@@ -251,7 +260,7 @@ Create undirected edges for the three edge types in Figure 1.
 
 {% code title="Edge definitions for User-Book-Rating graph" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE UNDIRECTED EDGE user_occupation (FROM User, TO Occupation)
 CREATE UNDIRECTED EDGE book_genre (FROM Book, TO Genre)
@@ -268,7 +277,7 @@ Create the additional edges depicted in Figure 2.
 
 {% code title="Additional Edge definitions for Expanded-User-Book-Rating graph" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE UNDIRECTED EDGE friend_of (FROM User, TO User, on_date UINT)
 CREATE UNDIRECTED EDGE user_book_read (FROM User, To Book, on_date UINT)
@@ -290,7 +299,7 @@ User-defined tuple types defined in a query cannot be used outside of its query 
 
 The example below defines a tuple type `myTuple` and a heap accumulator type `myHeap`, so that the subquery `subquery1` can return a value of `myHeap` type to its outer query `query1`.
 
-[source,erlang]
+[source,gsql]
 ----
 // Define the heap accumulator at the catalog level
 TYPEDEF tuple<name string, friends int> myTuple
@@ -321,7 +330,7 @@ When a STRING COMPRESS attribute is declared in a vertex or edge, the user can o
 
 {% code title="Shared STRING COMPRESS dictionaries" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX v1 (PRIMARY_ID main_id STRING, att1 STRING COMPRESS e1, att2 STRING COMPRESS e1)
 CREATE UNDIRECTED EDGE e (FROM v1, TO v2, att1 STRING COMPRESS e1)
@@ -337,9 +346,10 @@ The TigerGraph database allows users to define on vertex attributes. __**__User 
 
 Indexes can be created on vertices on a single attribute of the following data types only:  STRING, UINT, INT, DATETIME, and STRING COMPRESS. Indexes will be used to optimize queries with all predicate types. However, if a predicate uses an in-built function, then index will not be used to optimize the query. Also, built-in queries are not optimized using indexes.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Indexes are very important for data retrieval performance. However, adding indexes will affect write performance. For this reason, users should be judicious about adding indexes. Users should review the querying patterns to decide where Indexes can help.
-{% endhint %}
+====
 
 Users can create and drop indexes using ALTER VERTEX command as shown below.
 
@@ -360,21 +370,23 @@ CREATE GLOBAL SCHEMA_CHANGE job <job-name>
 
 == *CREATE GRAPH*
 
-{% hint style="info" %}
+[NOTE]
+====
 Available to _superuser_ and _globaldesigner_ roles only.
-{% endhint %}
+====
 
-{% hint style="info" %}
+[NOTE]
+====
 Multiple Graph support
 
 If the optional MultiGraph service is enabled, CREATE GRAPH can be invoked multiple times to define multiple graphs, and vertex types and edge types may be re-used (shared) among multiple graphs. There is an option to assign an admin use for the new graph.
-{% endhint %}
+====
 
 After all the required vertex and edge types are created, the CREATE GRAPH command defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data. The vertex types and edge types may be listed in any order.
 
 {% code title="CREATE GRAPH syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...)
                 [WITH ADMIN username]
@@ -393,7 +405,7 @@ Instead of providing a list of specific vertex types and edge types, it is also 
 
 {% code title="Examples of CREATE GRAPH with all vertex & edge types and with an empty domain." %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE GRAPH everythingGraph (*)
 CREATE GRAPH emptyGraph ()
@@ -407,7 +419,7 @@ Create graph Book_rating for the edge and vertex types defined for Figure 1:
 
 {% code title="Graph definition for User-Book-Rating graph" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE GRAPH Book_rating (*)
 ----
@@ -418,7 +430,7 @@ The following code example shows the full set of statements to define the expand
 
 {% code title="Full definition for the Expanded User-Book-Rating graph" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
 CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING)
@@ -445,7 +457,7 @@ This command can only be run on the base graph and requires the user to have the
 
 {% code title="Synopsis" %}
 
-[source,erlang]
+[source,gsql]
 ----
 <create_tag_graph> :=
     CREATE GRAPH <tag_graph_name> AS <base_graph_name>
@@ -466,7 +478,7 @@ The syntax for creating tag-based graphs is the same as creating a regular graph
 
 Use the ampersand operator (`&`) to express vertices with multiple tags:
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE GRAPH mixedNet AS socialNet(person:public&vip, post:public&tech&dummy,
 friend, posted, liked)
@@ -476,16 +488,17 @@ friend, posted, liked)
 
 Use a colon to specify tags directly after the graph name to include everything in the base graph that has the specified tags:
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE GRAPH publicNet2 AS socialNet:public
 ----
 
 == *USE GRAPH*
 
-{% hint style="info" %}
+[NOTE]
+====
 New requirement for MultiGraph support. Applies even if only one graph exists.
-{% endhint %}
+====
 
 Before a user can make use of a graph, first the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The USE GRAPH command sets or changes the user's working graph, for the current session.
 
@@ -493,7 +506,7 @@ For more about roles and privileges, see the document link:[Managing User Privil
 
 {% code title="USE GRAPH syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH gname
 ----
@@ -504,13 +517,14 @@ Instead of the USE GRAPH command, gsql can be invoked with the -g <graph_name> o
 
 == *DROP GRAPH*
 
-{% hint style="info" %}
+[NOTE]
+====
 Available to _superuser_ and _globaldesigner_ roles only. The effect of this command takes into account shared domains.
-{% endhint %}
+====
 
 {% code title="DROP GRAPH syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 DROP GRAPH gname
 ----
@@ -521,15 +535,17 @@ The DROP GRAPH deletes the logical definition of the named graph. Furthermore, i
 
 == DROP ALL
 
-{% hint style="info" %}
+[NOTE]
+====
 Available only to superusers.
-{% endhint %}
+====
 
 The DROP ALL statement clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 `DROP ALL`, along with all DROP operations, is nonreversible.
-{% endhint %}
+====
 
 == SHOW - View Parts of the Catalog
 
@@ -542,9 +558,10 @@ SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> [ <name> | <glob> | -r <regex
 
 This feature supports the *?* and *** from linux globbing operations, and also regular expression matching. Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Regular expression searching will not work with escaping characters.
-{% endhint %}
+====
 
 To use regular expressions, you will need to use the *-r* flag after the part of the schema you wish to show. If you wish to dive deeper into regular expressions, visit https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html["Java Patterns"]. The following are a few examples of what is supported by the SHOW command.
 

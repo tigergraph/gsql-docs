@@ -8,7 +8,7 @@ In general, a CPM query block consists of multiple patterns in the FROM clause. 
 
 {% code title="# Conjunctive Pattern Matching Syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 SelectBlock := SELECT alias
                FROM pattern
@@ -36,7 +36,7 @@ This is where the conjunctive matching is expressed. The FROM clause consists of
 
 For example, consider this CPM:
 
-[source,sql]
+[source,gsql]
 ----
 FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z,
      Z:z - (E3:e3) - U:u - (E4>:e4) - V:v
@@ -56,7 +56,7 @@ The first pattern's variables are x, e1, y, e2, and z; the second pattern's vari
 
 Natural joining two match tables compares all the shared vertex aliases between the two tables, and the resulting joined table contains all non-shared variables plus one copy of each of the shared vertex variables.  Here is the match table for the CPM above:
 
-[source,sql]
+[source,gsql]
 ----
 #natural join result; the shared vertex variable z appears once.
 (x, e1, y, e2, z, e3, u, e4, v)
@@ -70,7 +70,7 @@ If the match tables of the patterns in a FROM clause can be naturally joined int
 
 For example, below we show two valid CPM inputs and one invalid CPM input.
 
-[source,sql]
+[source,gsql]
 ----
 # a valid CPM, since the two patterns natrually join on :tgt
 SELECT
@@ -96,7 +96,7 @@ The predicates in the WHERE clause can use any of the vertex or edge aliases in 
 
 In the example below, `x2.age > x4.age` is a cross-pattern predicate, `e1.timestamp < e3.timestamp` is a cross-pattern predicate, and `x1.gender == x4.gender` is a local predicate of the second pattern.
 
-[source,sql]
+[source,gsql]
 ----
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3,
      X1:x1-(E3:e3)-X4:x4
@@ -111,7 +111,7 @@ The ACCUM clause by default will execute _*as many times*_ _*as*_ the row (match
 
 {% code title="ACCUM To The Three Vertex Variables of A CPM Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 #accum to x1, x2 and x4.
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3,
@@ -129,7 +129,7 @@ For example, below we have three POST-ACCUM clauses. The first one iterates thro
 
 {% code title="POST-ACCUM to a global accumulator @@cnt, using three CPM Vertex Variables " %}
 
-[source,sql]
+[source,gsql]
 ----
 
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3,
@@ -146,7 +146,7 @@ POST-ACCUm @@cnt += x3.@cnt;
 
 *Example 1.* Find Viktor Akhiezer's liked messages (100+ days after their creation) whose author's last name begin with letter S. Output the message's forum.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -187,7 +187,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 2.* Find any authors who wrote posts that Viktor Akhiezer's liked and whose last name begins with S. Find the country for each of these authors and report on the countries.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -228,7 +228,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 3.* Given a TagClass and a Country, find all the Forums created in the given Country, containing at least one Post with Tags belonging directly to the given TagClass. The location of a Forum is identified by the location of the Forum's moderator.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -253,7 +253,7 @@ CREATE QUERY bi_4(string tcName, string cName) for graph ldbc_snb syntax v2 {
 }
 ----
 
-[source,sql]
+[source,gsql]
 ----
 INSTALL QUERY bi_4
 
@@ -314,7 +314,7 @@ RUN QUERY bi_4("MusicalArtist", "Burma")
 
 Distinct means that if a certain 3 vertices appear once in the results, it will not be repeated: it will appear only once. KNOWS is an undirected relationship, so it doesn't matter in what order we list the 3 vertices.
 
-[source,sql]
+[source,gsql]
 ----
 
 USE GRAPH ldbc_snb
@@ -364,7 +364,7 @@ As mentioned when we first described pattern matching, in xref:../one-hop-patter
 
 *Example 1*. Find Viktor Akhiezer's favorite messages' creators whose last name begins with letter S. Count them.
 
-[source,sql]
+[source,gsql]
 ----
 
 USE GRAPH ldbc_snb
@@ -398,7 +398,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 2.* Same query as example 1, but without beginning with vertex types. GSQL compiler can infer the types of :s.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -430,7 +430,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 3.* Count the LIKES edge.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 

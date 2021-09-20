@@ -6,15 +6,16 @@ You now have a graph with data!  You can run some  queries using the built-in RE
 
 Below we call two functions, stat_vertex_number and stat_edge_number to return the cardinality of each vertex and edge type.
 
-{% hint style="info" %}
+[NOTE]
+====
 REST endpoints return results in JSON format. JSON data are used for various purposes. But JSON data can't be read easily from JSON file by using bash script like other normal files. *jq* tool is used to solve this problem
 
 We recommend you install jq and redirect the REST call result to jq before it is output. +
-{% endhint %}
+====
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
 #get vertex cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
@@ -22,7 +23,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 {% endcode %}
 
-[,sql]
+[,gsql]
 ----
 #results
 {
@@ -44,7 +45,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
 #get edge cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
@@ -52,7 +53,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 
 {% endcode %}
 
-[,sql]
+[,gsql]
 ----
 #results
 {
@@ -78,7 +79,7 @@ If you want to lookup the details about a vertex with its primary_id, you can us
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
 ----
@@ -89,14 +90,14 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
  curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom" | jq .
 ----
 
 {% endcode %}
 
-[,sql]
+[,gsql]
 ----
  #result
  {
@@ -128,7 +129,7 @@ In similar fashion, we can see details about edges.  To describe an edge, you na
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
 #two parts
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
@@ -143,14 +144,14 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 
 {% code title="Linux Shell" %}
 
-[,sql]
+[,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | jq .
 ----
 
 {% endcode %}
 
-[,sql]
+[,gsql]
 ----
 #result
 {

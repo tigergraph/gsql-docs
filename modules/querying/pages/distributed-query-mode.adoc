@@ -17,7 +17,7 @@ TigerGraph Enterprise Edition offers a Distributed Query mode which provides a m
 
 To invoke Distributed Query Mode, insert the keyword `DISTRIBUTED` before `QUERY` in the query definition:
 
-[source,erlang]
+[source,gsql]
 ----
 createQuery :=
     CREATE [OR REPLACE][DISTRIBUTED] QUERY queryName "(" [parameterList] ")"
@@ -39,9 +39,10 @@ In general, Distributed Query Mode is likely to improve the performance of a que
 
 For example, algorithms that compute a value for every vertex or one value for the entire graph should use Distributed Query Mode. This includes PageRank, Centrality, and Connected Component algorithms.
 
-{% hint style="info" %}
+[NOTE]
+====
 For applications where the same query (queries with the same logic but different input parameters) will be run many times in production, the application designer is encouraged to try both modes during development and choose the one which works better for their use case and data.
-{% endhint %}
+====
 
 == Unsupported Features
 

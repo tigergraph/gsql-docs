@@ -4,17 +4,18 @@
 
 The PRINT statement specifies output data. Each execution of a PRINT statement adds a JSON object to the results array which will be part of the query output. A PRINT statement can appear anywhere that query-body statements are permitted.
 
-{% hint style="warning" %}
+[CAUTION]
+====
  A PRINT statement does not trigger immediate output.  The full set of data from all PRINT statements is delivered at one time, when the query concludes.
 
 A query can print a maximum of 2GB of data.
 
 If the output is to a FILE object, then the size limit does not apply.
-{% endhint %}
+====
 
 {% code title="EBNF" %}
 
-[source,erlang]
+[source,gsql]
 ----
 printStmt := PRINT printExpr ("," printExpr)* [WHERE condition] [TO_CSV (filePath | fileVar)]
 printExpr := (expr | vExprSet) [ AS jsonKey]
@@ -30,13 +31,14 @@ Each PRINT statement contains a list of expressions for output data. The optiona
 
 Each `printExpr` __contributes one key-value pair to the PRINT statement's JSON object result.  The optional AS clause sets the JSON key for the expression, overriding the default key (explained below).
 
-{% hint style="info" %}
+[NOTE]
+====
 If the query includes one more tabular SELECT statements, the PRINT statement can include table names. Both tabular and non-tabular `printExpr` expressions can be including in one PRINT statement.
-{% endhint %}
+====
 
 {% code title="Simple Example Showing JSON Output Format" %}
 
-[source,sql]
+[source,gsql]
 ----
 STRING str = "first statement";
 INT number = 5;
@@ -112,12 +114,13 @@ Each data type has a distinct output format.
  ** `MapAccum`: map
  ** `HeapAccum`, `GroupByAccum`: list of tuples
 
-{% hint style="danger" %}
+[WARNING]
+====
 Full details of vertices are printed only when part of a vertex set variable or vertex expression set. When a single vertex is printed (from a variable or accumulator whose data type happens to be VERTEX), only the vertex id is printed.
 
 {% code title="Cases where only the vertex id will be printed" %}
 
-[source,erlang]
+[source,gsql]
 ----
 ListAccum<VERTEX> @@vList;  // not a vertex set variable
 VERTEX v;                   // not a vertex set variable
@@ -126,7 +129,7 @@ PRINT @@vList, v;           // output will contain only vertex ids
 ----
 
 {% endcode %}
-{% endhint %}
+====
 
 *Vertex (when not part of a vertex set variable)*
 
@@ -134,7 +137,7 @@ The output is just the vertex id as a string:
 
 {% code title="Output Format for a Value which is a Vertex, not part of a Vertex Set Variable" %}
 
-[source,sql]
+[source,gsql]
 ----
 "<vertex_id>"
 ----
@@ -186,7 +189,7 @@ The output is just the vertex id as a string:
 
 {% code title="Output format for a Value which is a List, Set, or Bag" %}
 
-[source,sql]
+[source,gsql]
 ----
 [
   <value1>,
@@ -202,7 +205,7 @@ The output is just the vertex id as a string:
 
 {% code title="Output Format for a Value which is a Map" %}
 
-[source,sql]
+[source,gsql]
 ----
 {
   <key1>: <value1>,
@@ -218,7 +221,7 @@ The output is just the vertex id as a string:
 
 {% code title="Output Format for a Value which is a Tuple" %}
 
-[source,sql]
+[source,gsql]
 ----
 {
   <fieldName1>: <value1>,
@@ -234,7 +237,7 @@ The output is just the vertex id as a string:
 
 {% code title="Output Format for a Value which is a Vertex Set Variable" %}
 
-[source,sql]
+[source,gsql]
 ----
 [
   <vertex1>,
@@ -254,7 +257,7 @@ The easiest way to understand this is to consider examples containing only one t
 
 {% code title="Example Query for Vertex Expression Set" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
 
@@ -282,7 +285,7 @@ The last example illustrates the general format for a vertex expression set:
 
 {% code title="Syntax for Vertex Expression Set" %}
 
-[source,sql]
+[source,gsql]
 ----
 vExprSet  := expr "[" vSetProj {, vSetProj} "]"
 vSetProj  := expr [ AS name]
@@ -300,7 +303,7 @@ An example which shows all of the cases described above, in combination, is show
 
 {% code title="Print Basic Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
 
@@ -346,7 +349,8 @@ CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
 
 {% endcode %}
 
-{% hint style="info" %}
+[NOTE]
+====
 Note how the results of the six PRINT statements are grouped in the JSON "results" field below:
 
 . Each of the six PRINT statements is represented as one JSON object with the "results" array.
@@ -355,11 +359,11 @@ Note how the results of the six PRINT statements are grouped in the JSON "result
 . The 3rd and 4th PRINT statements show a set of vertices (different than a vertex set variable) and a map, respectively.
 . The 5th PRINT statement shows the vertex set variable A, including its vertex-attached accumulators (PRINT A).
 . The 6th PRINT statement shows a vertex set expression for A, customized to include only one static attribute plus a newly computed attribute.
-{% endhint %}
+====
 
 {% code title="Results from Query printExampleV2 (WITH COMMENTS ADDED)" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY printExampleV2("person1")
 {
@@ -494,7 +498,7 @@ Instead of printing output in JSON format, output can be written to a FILE objec
 {% tabs %}
 {% tab title="PRINT to CSV FILE syntax example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 PRINT @@setOfVertices TO_CSV file1;
 ----
@@ -504,7 +508,8 @@ PRINT @@setOfVertices TO_CSV file1;
 
 Each execution of the `PRINT` statement appends one line to the `FILE`. If the `PRINT` statement includes multiple expressions, then each printed value is separated from its neighbor by a comma. If an expression evaluates to a set or list, then the collection's values are delimited by single spaces. Due to the simpler format of CSV vs. JSON, the `TO_CSV` feature only supports data with a simple one- or two-dimension structure.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Limitations of PRINT > File
 
 * Printing a full Vertex set variable is not supported.
@@ -513,18 +518,19 @@ Limitations of PRINT > File
 * The syntax for printing a vertex set expression is currently different when printing to a file than when printing to standard output. Compare:
  ** PRINT A[A.gender]; # with brackets
  ** PRINT A.gender TO_CSV file1; # without brackets
-{% endhint %}
+====
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Writing to FILE objects is optimized for parallel processing. Consequently, the order in which data is written to the FILE is not guaranteed.  Therefore, it is strongly recommended that the user design their queries such that one of these conditions is satisfied:
 
 . The query prints only one set of data, and the order of the set is not important.
 . Each line of data to print to a file includes a label which can be used to identify the data.
-{% endhint %}
+====
 
 {% code title="PRINT WHERE and PRINT TO_CSV FILE Object Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY printExampleFile() FOR GRAPH socialNet {
   SetAccum<VERTEX> @@testSet, @@testSet2;
@@ -558,7 +564,7 @@ The `FILE println` statement writes data to a `FILE` object. Unlike the `PRINT` 
 
 {% code title="EBNF for FILE println statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 printlnStmt := fileVar".println" "(" expr ("," expr)* ")"
 ----
@@ -571,16 +577,17 @@ The `println` function can print any expression that can be printed by a `PRINT`
 
 If the `println` statement has a list of expressions to print, it will produce a comma-separated list of values. If an expression refers to a list or set, then the output will be a list of values separated by spaces.
 
-{% hint style="danger" %}
+[WARNING]
+====
 The data from query-body level `FILE` print statements (either `TO_CSV` or `println`) will appear in their original order. However, due to the parallel processing of statements in an ACCUM block, the order in which `println` statements at the DML-sub-statement level are processed cannot be guaranteed.
-{% endhint %}
+====
 
 [discrete]
 ==== Example
 
 {% code title="File object query example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY fileEx (STRING fileLocation) FOR GRAPH workNet {
 
@@ -605,7 +612,7 @@ All of the `PRINT` statements in this example use the `TO_CSV` option, so there 
 
 {% code title="Results from Query fileEx" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY fileEx("/home/tigergraph/fileEx.txt")
 {
@@ -626,7 +633,7 @@ All the output in this case goes to the `FILE` object. In the query definition, 
 
 {% code title="File contents produced by fileEx example" %}
 
-[source,sql]
+[source,gsql]
 ----
 [tigergraph@localhost]$ more /home/tigergraph/fileEx.txt
 header
@@ -648,7 +655,7 @@ A FILE Object can be passed from one query to a subquery.  The subquery can then
 
 {% code title="Example: query passing a FILE object to another query" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY fileParamSub(FILE f, STRING label, INT num) FOR GRAPH socialNet {
     f.println(label, "header");
@@ -697,7 +704,7 @@ The LOG statement is another means to output data.  It works as a function that 
 
 {% code title="EBNF for LOG statement" %}
 
-[source,sql]
+[source,gsql]
 ----
 logStmt := LOG "(" condition "," argList ")"
 ----
@@ -712,7 +719,7 @@ The values will be recorded in the GPE log. To find the log file after the query
 
 {% code title="Examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 BOOLEAN debug = TRUE;
 INT x = 10;
@@ -727,7 +734,7 @@ LOG(debug, 10, x);
 
 {% code title="EBNF for RETURN statement" %}
 
-[source,sql]
+[source,gsql]
 ----
 returnStmt := RETURN expr
 ----

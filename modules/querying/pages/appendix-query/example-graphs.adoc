@@ -9,7 +9,7 @@ gsql graph_create.gsql
 
 {% code title="graph_create.gsql for workNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Updated 5/1/18 for v2.0
 DROP ALL
@@ -48,7 +48,7 @@ RUN LOADING JOB loadMemberCompany USING f="./person_company"
 
 {% code title="file: persons (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,us,1|2|3,management|financial
 person2,chn,2|3|5|6,engineering
@@ -68,7 +68,7 @@ person12,jp,1|5|2|2|2,music|engineering|teaching|teaching|teaching
 
 {% code title="file: company (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 company1,us
 company2,chn
@@ -81,7 +81,7 @@ company5,can
 
 {% code title="file: person_company (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,company1,2016,1,1
 person1,company2,2014,3,0
@@ -108,7 +108,7 @@ person12,company4,2014,1,1
 
 {% code title="graph_create.gsql for socialNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Updated 5/1/18 for v2.0
 DROP ALL
@@ -156,7 +156,7 @@ RUN LOADING JOB loadLiked USING f="./liked"
 
 {% code title="file: persons (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,Male
 person2,Female
@@ -172,7 +172,7 @@ person8,Male
 
 {% code title="file: friends (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,person2
 person2,person3
@@ -189,7 +189,7 @@ person8,person1
 
 {% code title="file: posts (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 0,Graphs,2010-01-12 11:22:05
 1,tigergraph,2011-03-03 23:02:00
@@ -209,7 +209,7 @@ person8,person1
 
 {% code title="file: posted (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,0
 person2,1
@@ -229,7 +229,7 @@ person8,8
 
 {% code title="file: liked (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,0,2010-01-11 11:32:00
 person2,0,2010-01-12 10:52:15
@@ -248,7 +248,7 @@ person8,4,2010-01-11 03:26:05
 
 {% code title="graph_create.gsql for friendNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Updated 5/1/18 for v2.0
 DROP ALL
@@ -282,7 +282,7 @@ RUN LOADING JOB loadCoworker USING f="./coworkers"
 
 {% code title="file: persons (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1
 person2
@@ -302,7 +302,7 @@ person12
 
 {% code title="file: friends (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,person2
 person1,person3
@@ -325,7 +325,7 @@ person12,person9
 
 {% code title="file: coworkers (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,person4
 person1,person5
@@ -354,7 +354,7 @@ person12,person7
 
 {% code title="graph_create.gsql for computerNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Updated 5/1/18 for v2.0
 DROP ALL
@@ -380,7 +380,7 @@ RUN LOADING JOB loadConnection USING f="./connections"
 
 {% code title="file: computers (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 c1
 c2
@@ -419,7 +419,7 @@ c31
 
 {% code title="file: connections (edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 c1,c2,16.0,3
 c1,c3,64.0,3
@@ -472,7 +472,7 @@ c4,c23,3,2
 
 {% code title="graph_create.gsql for minimalNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 DROP ALL
 CREATE VERTEX testV(PRIMARY_ID id STRING)
@@ -488,7 +488,7 @@ There is no loading job or data for minimalNet (hence, "minimal.")
 
 {% code title="graph_create.gsql for investmentNet" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Updated 5/1/18 for v2.0
 DROP ALL
@@ -520,7 +520,7 @@ RUN LOADING JOB loadOrder USING f="./orders"
 
 {% code title="file: persons (vertices)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,AAPL:3142.24;G:6112.23;MS:5000.00,25,JAMES
 person2,A:5242.62;GCI:5331.21;BAH:3200.00,67,SMITH
@@ -532,7 +532,7 @@ person4,ACH:3542.62;S:6521.55;BABA:4030.52,51,ANTHONY
 
 {% code title="file: orders (vertices and edges)" %}
 
-[source,sql]
+[source,gsql]
 ----
 person1,0,1488566548,AAPL,500,34.42
 person1,1,1488566549,A,210,50.55

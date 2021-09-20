@@ -6,11 +6,12 @@ The GSQL Query Language includes a comprehensive set of control flow statements 
 
 Note that any of these statements can be used as a query-body statement or as a DML-sub level statement.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 If the control flow statement is at the query-body level, then its block(s) of statements are query-body statements ( _queryBodyStmts_ ). In a _queryBodyStmts_ block _,_ each individual statement ends with a semicolon, so there is always a semicolon at the end.
 
 If the control flow statement is at the DML-sub level, then its block(s) of statements are DML-sub statements ( _dmlSubStmtList_ ). In a _dmlSubStmtList_ block, a comma separates statements, but there is no punctuation at the end.
-{% endhint %}
+====
 
 The "Statement Types" subsection in the Chapter on "CREATE / INSTALL / RUN / SHOW / DROP QUERY" has a more detailed general example of the difference between queryBodyStmts and dmlSubStmts.
 
@@ -20,7 +21,7 @@ The IF statement provides conditional branching: execute a block of statements (
 
 {% code title="IF syntax" %}
 
-[source,erlang]
+[source,gsql]
 ----
 queryBodyIfStmt := IF condition THEN queryBodyStmts
                  [ELSE IF condition THEN queryBodyStmts ]*
@@ -36,7 +37,7 @@ If a particular IF condition is not true, then the flow proceeds to the next ELS
 
 {% code title="IF semantics" %}
 
-[source,sql]
+[source,gsql]
 ----
 # if then
 IF x == 5 THEN y = 10; END;      # y is assigned to 10 only if x is 5.
@@ -55,7 +56,7 @@ ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
 
 {% code title="Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # count the number of friends a person has, and optionally include coworkers in that count
 CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRAPH friendNet
@@ -78,7 +79,7 @@ CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRA
 
 {% code title="Example 1 Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY countFriendsOf2("person2", true)
 {
@@ -114,7 +115,7 @@ GSQL > RUN QUERY countFriendsOf2("person2", false)
 
 {% code title="Example 2. IF-ELSE IF-ELSE at query-body level" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # determine if a user is active in terms of social networking (i.e., posts frequently)
 CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
@@ -138,7 +139,7 @@ CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
 
 {% code title="Example 2 Results for Query calculateActivity" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY calculateActivity("person1")
 {
@@ -168,7 +169,7 @@ GSQL > RUN QUERY calculateActivity("person5")
 
 {% code title="Example 3. Nested IF at query-body level" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # use a more advanced activity calculation, taking into account number of posts
 # and number of likes that a user made
@@ -204,7 +205,7 @@ CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
 
 {% code title="Example 3 Results for Query calculateInDepthActivity" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY calculateInDepthActivity("person1")
 {
@@ -223,7 +224,7 @@ GSQL > RUN QUERY calculateInDepthActivity("person1")
 
 {% code title="Example 4. Nested IF at DML-sub level" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # give each user post an accumulated rating based on the subject and how many likes it has
 # This query is equivalent to the query ratePosts shown above
@@ -253,7 +254,7 @@ CREATE QUERY ratePosts2() FOR GRAPH socialNet {
 
 {% code title="Example 4 Results for Query ratePosts2" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY ratePosts2()
 {
@@ -322,7 +323,7 @@ The CASE statement provides conditional branching: execute a block of statements
 
 {% code title="CASE syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 queryBodyCaseStmt := CASE  (WHEN condition THEN queryBodyStmts)+ [ELSE queryBodyStmts] END
                | CASE expr (WHEN constant  THEN queryBodyStmts)+ [ELSE queryBodyStmts] END
@@ -340,7 +341,7 @@ The switch version evaluates the expression following the keyword WHEN and compa
 
 {% code title="CASE Semantics" %}
 
-[source,erlang]
+[source,gsql]
 ----
 STRING drink = "Juice";
 
@@ -367,7 +368,7 @@ END
 
 {% code title="Example 1. CASE as IF-ELSE" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Display the total number times connected users posted about a certain subject
 CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR GRAPH socialNet {
@@ -393,7 +394,7 @@ CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR 
 
 {% code title="Example 1 Results for Query userNetworkPosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
 {
@@ -412,7 +413,7 @@ GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
 
 {% code title="Example 2. CASE as switch" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # tally male and female friends of the starting vertex
 CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
@@ -435,7 +436,7 @@ CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
 
 {% code title="Example 2 Results for Query countGenderOfFriends" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY countGenderOfFriends("person4")
 {
@@ -458,7 +459,7 @@ GSQL > RUN QUERY countGenderOfFriends("person4")
 
 {% code title="Example 3. Multiple CASE statements" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # give each social network user a social impact score which accumulates
 # based on how many friends and posts they have
@@ -479,7 +480,7 @@ CREATE QUERY scoreSocialImpact() FOR GRAPH socialNet api("v2") {
 
 {% code title="Example 3 Results for Query scoreSocialImpact" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY scoreSocialImpact()
 {
@@ -539,7 +540,7 @@ GSQL > RUN QUERY scoreSocialImpact()
 
 {% code title="Example 4. Nested CASE statements" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # give each user post a rating based on the subject and how many likes it has
 CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
@@ -565,7 +566,7 @@ CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
 
 {% code title="Example 4 Results for Query ratePosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY ratePosts()
 {
@@ -649,7 +650,7 @@ The WHILE statement provides unbounded iteration over a block of statements. WHI
 
 {% code title="WHILE syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 queryBodyWhileStmt := WHILE condition [LIMIT simpleSize] DO queryBodyStmts END
 dmlSubWhileStmt :=    WHILE condition [LIMIT simpleSize] DO dmlSubStmtList END
@@ -662,13 +663,14 @@ The WHILE statement iterates over its body ( _queryBodyStmts_ or _dmlSubStmtList
 
 A WHILE statement may have an optional LIMIT clause.  LIMIT clauses has a constant positive integer value or integer variable to constrain the maximum number of loop iterations.  The example below demonstrates how the LIMIT behaves.
 
-{% hint style="warning" %}
+[CAUTION]
+====
  If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
-{% endhint %}
+====
 
 {% code title="WHILE LIMIT semantics" %}
 
-[source,sql]
+[source,gsql]
 ----
 # These three WHILE statements behave the same.  Each terminates when
 # (v.size == 0) or after 5 iterations of the loop.
@@ -696,7 +698,7 @@ Below are a number of examples that demonstrate the use of WHILE statements.
 
 {% code title="Example 1. Simple WHILE loop" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
 CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
@@ -720,7 +722,7 @@ CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
 
 {% code title="reachable Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY reachable("person1")
 {
@@ -897,7 +899,7 @@ GSQL > RUN QUERY reachable("person1")
 
 {% code title="Example 2. WHILE loop using a LIMIT" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all vertices which are reachable within two hops from a starting seed vertex (i.e., breadth-first search)
 CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
@@ -921,7 +923,7 @@ CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
 
 {% code title="reachableWithinTwo Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY reachableWithinTwo("person1")
 {
@@ -1093,7 +1095,7 @@ The FOREACH statement provides bounded iteration over a block of statements. FOR
 
 {% code title="FOREACH syntax" %}
 
-[source,erlang]
+[source,gsql]
 ----
 queryBodyForEachStmt := FOREACH forEachControl DO queryBodyStmts END
 dmlSubForEachStmt :=    FOREACH forEachControl DO dmlSubStmtList END
@@ -1116,7 +1118,8 @@ The formal syntax for forEachControl appears complex.  It can be broken down int
 
 Note that setBagExpr includes container accumulators and explicit sets.
 
-{% hint style="info" %}
+[NOTE]
+====
 The FOREACH statement has the following restrictions:
 
 * In a DML-sub level FOREACH, it is never permissible to update the loop variable (the variable declared before IN, e.g., var in "FOREACH var IN setBagExpr").
@@ -1125,7 +1128,7 @@ The FOREACH statement has the following restrictions:
  ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
 * A query-body-level FOREACH cannot iterate over a set or bag of constants. For example, FOREACH i in (1,2,3) is not supported. However, DML-sub FOREACH does support this.
-{% endhint %}
+====
 
 === FOREACH ... IN RANGE
 
@@ -1141,7 +1144,7 @@ If the .STEP method is not given, then the step size c = 1.
 
 {% code title="Nested FOREACH IN RANGE with MapAccum" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
   ListAccum<INT> @@t;
@@ -1165,7 +1168,7 @@ CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
 
 {% code title="Results for Query foreachRangeEx" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY foreachRangeEx()
 {
@@ -1184,7 +1187,7 @@ GSQL > RUN QUERY foreachRangeEx()
 
 {% code title="FOREACH IN RANGE with step" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
   ListAccum<INT> @@t;
@@ -1201,7 +1204,7 @@ The step value can be positive for an ascending range or negative for a descendi
 
 {% code title="foreachRangeStep.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY foreachRangeStep(100,0,-9)
 {
@@ -1246,7 +1249,7 @@ GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
 
 {% code title="Example 1 - FOREACH with ListAccum" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Count the number of companies whose country matches the provided string
 CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
@@ -1272,7 +1275,7 @@ CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
 
 {% code title="companyCount Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY companyCount("us")
 {
@@ -1302,7 +1305,7 @@ GSQL > RUN QUERY companyCount("can")
 
 {% code title="Example 2 - FOREACH with a seed set" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #Find all company person who live in a given country
 CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
@@ -1329,7 +1332,7 @@ CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
 
 {% code title="employeesByCompany Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY employeesByCompany("us")
 {
@@ -1470,7 +1473,7 @@ GSQL > RUN QUERY employeesByCompany("us")
 
 {% code title="Example 3 - Nested FOREACH with MapAccum" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Count the number of employees from a given country and list their ids
 CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
@@ -1504,7 +1507,7 @@ CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
 
 {% code title="employeeByCountry Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY employeeByCountry("us")
 {
@@ -1532,7 +1535,7 @@ GSQL > RUN QUERY employeeByCountry("us")
 
 {% code title="ACCUM FOREACH" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Show post topics liked by users and show total likes per topic
 CREATE QUERY topicLikes() FOR GRAPH socialNet {
@@ -1568,7 +1571,7 @@ CREATE QUERY topicLikes() FOR GRAPH socialNet {
 
 {% code title="Results for Query topicLikes" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY topicLikes()
 {
@@ -1592,7 +1595,7 @@ GSQL > RUN QUERY topicLikes()
 
 {% code title="Example 1 - POST-ACCUM FOREACH" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #Show a summary of the number of friends all persons have by gender
 CREATE QUERY friendGender() FOR GRAPH socialNet {
@@ -1624,7 +1627,7 @@ CREATE QUERY friendGender() FOR GRAPH socialNet {
 
 {% code title="Results for Query friendGender" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY friendGender()
 {
@@ -1654,7 +1657,7 @@ Below are a number of examples that demonstrate the use of BREAK and CONTINUE.
 
 {% code title="Continue and Break Semantics" %}
 
-[source,sql]
+[source,gsql]
 ----
 # While with a continue
 INT i = 0;
@@ -1679,7 +1682,7 @@ END;
 
 {% code title="Example 1. Break" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find posts of a given person, and post of friends of that person, friends of friends, etc
 # until a post about cats is found. The number of friend-hops to reach is the 'degree' of cats
@@ -1711,7 +1714,7 @@ CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
 
 {% code title="Results of Query findDegreeOfCats" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY findDegreeOfCats("person2")
 {
@@ -1741,7 +1744,7 @@ GSQL > RUN QUERY findDegreeOfCats("person4")
 
 {% code title="Example 2. findEnoughFriends.gsql: While loop using continue statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all 3-hop friends of a starting vertex. count coworkers as friends
 # if there are not enough friends
@@ -1779,7 +1782,7 @@ CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
 
 {% code title="findEnoughFriends.json Example 2 Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY findEnoughFriends("person1")
 {
@@ -1907,7 +1910,7 @@ GSQL > RUN QUERY findEnoughFriends("person1")
 
 {% code title="Example 3. While loop using break statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find at least the top-k companies closest to a given seed vertex, if they exist
 CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
@@ -1938,7 +1941,7 @@ CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
 
 {% code title="Example 3. topkCompanies Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY topkCompanies("person1", 2)
 {
@@ -1975,7 +1978,7 @@ GSQL > RUN QUERY topkCompanies("person2", 3)
 
 {% code title="Example 4 - Usage of CONTINUE in FOREACH" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #List out all companies from a given country
 CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
@@ -2006,7 +2009,7 @@ CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
 
 {% code title="companyByCountry Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY companyByCountry("us")
 {
@@ -2029,7 +2032,7 @@ GSQL > RUN QUERY companyByCountry("us")
 
 {% code title="Example 5 - Usage of BREAK in FOREACH" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #List all the persons located in the specified country
 CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
@@ -2060,7 +2063,7 @@ CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
 
 {% code title="employmentByCountry Result" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY employmentByCountry("us")
 {

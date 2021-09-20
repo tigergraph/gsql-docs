@@ -4,7 +4,7 @@ The SQL-like SELECT statement defines a tabular output. It introduces the GROUP 
 
 {% code title="EBNF for SQL-Like Select Statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 sqlSelectBlock := sqlSelectClause
                fromClause
@@ -26,9 +26,10 @@ tableName := name
 
 Just as in SQL, the SELECT keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.  The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query. A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
 
-{% hint style="warning" %}
+[CAUTION]
+====
 If some columns are aggregated, the non-aggregated (grouping) columns must come first.
-{% endhint %}
+====
 
 Unlike the classic GSQL SELECT statement which assigns its output to a vertex set variable, the SQL-like form uses `INTO tableName` to store the results in a table. `tableName` can be any identifier that has not been used in the query before.
 
@@ -36,9 +37,10 @@ Unlike the classic GSQL SELECT statement which assigns its output to a vertex se
 
 The SQL-like form may use the link:sql-like-select-statement.md#group-by-clause[GROUP  BY clause] but may not use the ACCUM and POST-ACCUM clauses.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header. +
-{% endhint %}
+====
 
 [discrete]
 ==== Example:
@@ -48,7 +50,7 @@ In the example graph `socialNet`, which has vertex types `person` and `post`, an
 {% tabs %}
 {% tab title="Query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
     SELECT l.actionTime, pt.subject, p INTO T
@@ -124,7 +126,7 @@ The optional GROUP BY clause acts just as it does in basic SQL: it groups and me
 
 {% code title="EBNF for GROUP BY clause" %}
 
-[source,erlang]
+[source,gsql]
 ----
 groupByClause := GROUP BY groupExpr ("," groupExpr)*
 groupExpr = expr
@@ -141,7 +143,7 @@ The SELECT clause and GROUP BY clause must be coordinated. Each expression `grou
 `FROM person:p -(worksFor:w)- company:c` +
 and if we want columns for company's country, whether working full time or not, and employees, with no grouping we could have
 
-[source,sql]
+[source,gsql]
 ----
 SELECT c.country, w.fulltime, p INTO T
 FROM person:p -(worksFor:w)- company:c
@@ -149,7 +151,7 @@ FROM person:p -(worksFor:w)- company:c
 
 The non-grouped output would look like this:
 
-[source,sql]
+[source,gsql]
 ----
 [{"T": [
       {"country": "us","fullTime": true,"p": "person3"},
@@ -162,7 +164,7 @@ If we want to group by country and then by work status, we could have this:
 
 {% code title="Coordination between SELECT columns and GROUP BY expressions" %}
 
-[source,sql]
+[source,gsql]
 ----
 SELECT c.country, w.fulltime, COUNT(p) AS numEmployees INTO T
 FROM person:p -(worksFor:w)- company:c
@@ -173,7 +175,7 @@ GROUP BY c.country, w.fulltime
 
 Then the grouped output would look like this:
 
-[source,sql]
+[source,gsql]
 ----
 [{"T": [
       {"country": "us","fullTime": true,"numEmployees": 7},
@@ -195,7 +197,7 @@ Example 1 (grouping and aggregation): For each employee, find the number of its 
 {% tabs %}
 {% tab title="Query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY tabularEx1() FOR GRAPH workNet SYNTAX v2 {
   SELECT    p AS employee, count(c) AS employerCount INTO T
@@ -239,7 +241,7 @@ Example 2 (HAVING clause): Find persons with at least 2 employers.
 {% tabs %}
 {% tab title="Query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
   SELECT    p AS employee, count(c) AS employerCount INTO T
@@ -279,7 +281,7 @@ CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
 
 Example 2a (implicit grouping): Same as Example 2, but with implicit grouping from the SELECT clause.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY tabularEx2a() FOR GRAPH workNet SYNTAX v2 {
   SELECT    p AS employee, count(c) AS employerCount INTO T
@@ -297,7 +299,7 @@ Example 3 (grouping, aggregation, order by and limit): Group employees by countr
 {% tabs %}
 {% tab title="Query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY tabularEx3() SYNTAX v2 {
   SELECT    c.country, w.fullTime, COUNT(p) AS numEmployees INTO T

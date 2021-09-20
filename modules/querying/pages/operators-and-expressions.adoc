@@ -4,7 +4,7 @@ An _expression_ is a combination of fixed values, variables, operators, function
 
 {% code title="EBNF for Operations, Functions, and Expressions" %}
 
-[source,erlang]
+[source,gsql]
 ----
 constant := numeric | stringLiteral | TRUE | FALSE | GSQL_UINT_MAX
           | GSQL_INT_MAX | GSQL_INT_MIN | TO_DATETIME "(" stringLiteral ")"
@@ -109,9 +109,10 @@ Each primitive data type supports constant values:
 
 An operator is a keyword token that performs a specific computational function to return a resulting value, using the adjacent expressions (its operands) as input values.  An operator is similar to a function in that both compute a result from inputs, but syntactically they are different. The most familiar operators are the mathematical operators for addition  `+`  and subtraction  `-` .
 
-{% hint style="success" %}
+[NOTE]
+====
  Tip: The operators listed in this section are designed to behave like the operators in MySQL.
-{% endhint %}
+====
 
 === Mathematical Operators and Expressions
 
@@ -126,7 +127,7 @@ Operator precedences are shown in the following list, from the highest precedenc
 
 {% code title="Operator Precedence, highest to lowest" %}
 
-[source,sql]
+[source,gsql]
 ----
 *, /, %
 -, +
@@ -140,7 +141,7 @@ Operator precedences are shown in the following list, from the highest precedenc
 
 {% code title="Example 1. Math Operators + - * /" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
 {
@@ -171,7 +172,7 @@ CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
 
 {% code title="mathOperators.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY mathOperators()
 {
@@ -216,7 +217,7 @@ Bit operators (<<, >>, &, and |) operate on integers and return an integer.
 
 {% code title="Bit Operators" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
   PRINT 80 >> 2;     # 20
@@ -243,7 +244,7 @@ The fields of the tuple can be accessed using the dot operator.
 
 A condition is an expression that evaluates to a boolean value of either true or false. One type of condition uses the familiar comparison operators. A comparison operator compares two numeric or string values.
 
-[source,erlang]
+[source,gsql]
 ----
 comparisonOperator := "<" | "<=" | ">" | ">=" | "==" | "!="
 
@@ -262,9 +263,10 @@ condition := expr
 Strings are compared based on standard lexicographical ordering: +
 (space) < (digit) < (uppercase_letter) < (lowercase_letter).
 
-{% hint style="info" %}
+[NOTE]
+====
 The comparison operators treat the STRING COMPRESS type as though it is STRING type.
-{% endhint %}
+====
 
 === BETWEEN expr AND expr
 
@@ -274,7 +276,7 @@ The expression expr1 BETWEEN expr2 AND expr3 is true if the value expr1 is in th
 
 {% code title="BETWEEN AND example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY mathOperatorBetween() FOR GRAPH minimalNet
 {
@@ -295,7 +297,7 @@ IS NULL and IS NOT NULL can be used for checking whether an optional parameter i
 
 {% code title="IS NULL example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
   IF p IS NULL THEN
@@ -310,7 +312,7 @@ CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
 
 {% code title="parameterIsNULL.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY parameterIsNULL(_)
 {
@@ -338,13 +340,14 @@ GSQL > RUN QUERY parameterIsNULL(3)
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 Every attribute value stored in GSQL is a valid value, so IS NULL and IS NOT NULL is only effective for query parameters.
-{% endhint %}
+====
 
 === LIKE
 
-[source,erlang]
+[source,gsql]
 ----
 expr [NOT] LIKE expr [ESCAPE escape_char]
 ----
@@ -401,7 +404,7 @@ The first `"%"` has its usual pattern-matching meaning "zero or more characters"
 
 {% code title="Example query using LIKE operator " %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
   /* Write query logic here */
@@ -471,7 +474,7 @@ Attributes on vertices or edges are defined in the graph schema. Additionally, e
 
 {% code title="Accessing attributes with a known name." %}
 
-[source,sql]
+[source,gsql]
 ----
 name ".type"   // read only. Returns vertexType or edgeType of name
 name "." attrName // read/write. Accesses attribute called attrName
@@ -479,17 +482,18 @@ name "." attrName // read/write. Accesses attribute called attrName
 
 {% endcode %}
 
-{% hint style="info" %}
+[NOTE]
+====
 *DYNAMIC Query Support*
 
 The name of the attribute can be parameterized using the *getAttr* and *setAttr* link:operators-and-expressions.md#vertex-functions[vertex functions], described later in this section. This allows you to write link:query-operations.md#dynamic-gsql-queries[dynamic query] procedures where the attribute names are specified when you run the query.
-{% endhint %}
+====
 
 For example, the following code snippet shows two different SELECT statements which produce equivalent results. The first uses the dot operator on the vertex variable *v* to access the "subject" attribute, which is defined in the graph schema. The FROM clause in the first SELECT statement necessitates that any target vertices will be of type "post" (also defined in the graph schema). The second SELECT schema checks that the vertex variable v's type is a "post" vertex by using the dot operator to access the built-in *type* attribute.
 
 {% code title="Accessing vertex variable attributes" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
 {
@@ -505,7 +509,7 @@ CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
 
 {% code title="Results for Query coffeeRelatedPosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY coffeeRelatedPosts()
 {
@@ -547,7 +551,7 @@ This section describes functions that apply to all or most accumulators. Other a
 
 The tick operator ( ' ) can be used to read the value of an accumulator as it was at the start an ACCUM clause, before any changes that took place within the ACCUM clause. It can only be used in the POST-ACCUM clause. A typical use is to compare the value of the accumulator before and after the ACCUM clause.  The PageRank algorithm provides a good example:
 
-[source,sql]
+[source,gsql]
 ----
 v = SELECT s
     FROM start:s - (e_type:e) -> :t
@@ -565,7 +569,7 @@ SELECT blocks take an input vertex set and perform various selection and filteri
 
 {% code title="EBNF" %}
 
-[source,sql]
+[source,gsql]
 ----
 setBagExpr := name
         | globalAccumName
@@ -587,7 +591,7 @@ The operators are straightforward, when two operands are both sets, the result e
 
 {% code title="Set/Bag Operator Examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Demonstrate Set & Bag operators
 CREATE QUERY setOperatorsEx() FOR GRAPH minimalNet   {
@@ -622,7 +626,7 @@ CREATE QUERY setOperatorsEx() FOR GRAPH minimalNet   {
 
 {% code title="setOperatorsEx Query Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY setOperatorsEx()
 {
@@ -677,7 +681,7 @@ The following example uses NOT IN to exclude neighbors that are on a blocked lis
 
 {% code title="Set Membership example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> blockedList) FOR GRAPH socialNet `{
   Start = {seed};
@@ -692,7 +696,7 @@ CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> b
 
 {% code title="Results for Query friendsNotInblockedlist" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
 {
@@ -724,7 +728,7 @@ A subquery must be created before the query that calls the subquery. A subquery 
 
 {% code title="Main Components of a Subquery" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY <query_name>() FOR GRAPH <graph_name> // Parameters are optional
 RETURNS (INT) /* A subquery has a RETURNS header specifying
@@ -760,14 +764,15 @@ A subquery's return value can be any base type or accumulator type with the foll
 
 Recursion is supported for subqueries and a subquery can call itself. Here is an example of a recursive subquery: The following subquery takes a set of persons as starting points, and returns all the friends within a given distance.
 
-{% hint style="info" %}
+[NOTE]
+====
 While recursive subqueries may look simpler in writing, they are usually not as efficient as iterative subqueries in GSQL.
-{% endhint %}
+====
 
 {% tabs %}
 {% tab title="Recursive Query Example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY subFindFriendsInDistance(SET<VERTEX> seeds, INT distance)
 FOR GRAPH friendNet RETURNS (SET<VERTEX>)
@@ -833,7 +838,7 @@ Below is a list of examples of expressions. Note that ( argList ) is a set/bag e
 
 {% code title="Expression Examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 #Show various types of expressions
 CREATE QUERY expressionEx() FOR GRAPH workNet {
@@ -929,7 +934,7 @@ CREATE QUERY expressionEx() FOR GRAPH workNet {
 
 {% code title="expressionEx.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY expressionEx()
 {
@@ -1252,7 +1257,7 @@ GSQL > RUN QUERY expressionEx()
 
 {% code title="Expression Statement Examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 #Show various types of expression statements
 CREATE QUERY expressionStmntEx() FOR GRAPH workNet {

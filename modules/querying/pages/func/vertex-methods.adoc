@@ -278,9 +278,10 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 | `STRING`, `SET<STRING>`, `SetAccum<STRING>`, `BagAccum<STRING>`, `ListAccum<STRING>`
 |===
 
-{% hint style="warning" %}
+[CAUTION]
+====
 *Note on outdegree()*: This function reads a metadata value stored with each vertex, to avoid traversing the graph and thus have a fast response. The snapshot transaction semantics means that outdegree() may sometimes read an old value if there are concurrent write transactions. To guarantee an accurate count, traverse the neighboring edges and count them with a SumAccum, or use a function like neighbors() and then use size() on the set.
-{% endhint %}
+====
 
 === `setAttr()`
 
@@ -344,7 +345,7 @@ No return value.
 
 ==== Example:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY addTagsToPerson() {
   Seed = { any };
@@ -394,7 +395,7 @@ Returns the difference in tags between the vertex and another vertex as a set.
 
 ==== Example:
 
-[source,sql]
+[source,gsql]
 ----
 // return the difference set of tags between two vertices
 CREATE QUERY exampleDifferencetags() {
@@ -428,7 +429,7 @@ None.
 
 ==== Example:
 
-[source,erlang]
+[source,gsql]
 ----
 //print the tags of each vertices, in 2 different ways.
 CREATE QUERY exampleGettags() {
@@ -442,12 +443,13 @@ CREATE QUERY exampleGettags() {
 }
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 Tip: `getTags()` can be used within a `PRINT` statement:
 
 * `PRINT R [R.getTags()];`
 * or `PRINT R WITH TAGS` which is syntax sugar, except that it won't print `"R.getTags()": []` for non-taggable vertices.
-{% endhint %}
+====
 
 === `hasTags()`
 
@@ -475,7 +477,7 @@ Returns `true` if the vertex has every tag provided in the argument list and ret
 
 ==== Example:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -496,7 +498,7 @@ RUN QUERY findVertexWithTag("vip")
 
 The output of the query would be:
 
-[source,erlang]
+[source,gsql]
 ----
 {
   "error": false,
@@ -564,7 +566,7 @@ None
 
 ==== Example:
 
-[source,erlang]
+[source,gsql]
 ----
 //count the number of taggable vertices in the graph.
 CREATE QUERY countIstaggable() for graph poc_graph_tag {
@@ -594,7 +596,7 @@ Returns the common tags between the vertex and another vertex as a set.
 
 ==== Example:
 
-[source,erlang]
+[source,gsql]
 ----
 //return the intersect set of tags between two vertices.
 CREATE QUERY exampleIntersecttags() {
@@ -628,7 +630,7 @@ None
 
 ==== Example:
 
-[source,erlang]
+[source,gsql]
 ----
 //remove all tags from all person vertices.
 CREATE QUERY removealltagsFromPerson() {
@@ -666,7 +668,7 @@ No return value.
 
 ==== Example
 
-[source,erlang]
+[source,gsql]
 ----
 //remove tag “vip” and “public” from all person vertices.
 CREATE QUERY removetagsFromPerson() {
@@ -769,7 +771,7 @@ Amily,person
 
 {% code title="Example query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY selectVertexEx(STRING filename) FOR GRAPH socialNet {
   S1 = {SelectVertex(filename, $"c1", $1, ",", true)};
@@ -858,12 +860,13 @@ RUN QUERY selectVertex("/home/tigergraph/mydata/selectVertex.csv")
 
 === `to_vertex()`
 
-{% hint style="danger" %}
+[WARNING]
+====
 Running `to_vertex() and to_vertex_set()` requires real-time conversion of an external ID to a GSQL internal ID, which is a relatively slow process. Therefore,
 
 * If the user can always know the id before running the query, define the query with `VERTEX` or `SET<VERTEX>` parameters instead of `STRING` or `SET<STRING>` parameters, and avoid calling `to_vertex()` or `to_vertex_set()`.
 * Calling `to_vertex_set()` one time is much faster than calling `to_vertex()` multiple times. Use `to_vertex_set()` instead of `to_vertex()` as much as possible.
-{% endhint %}
+====
 
 ==== Syntax
 

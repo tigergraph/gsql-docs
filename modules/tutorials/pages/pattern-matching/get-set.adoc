@@ -6,9 +6,10 @@ In this tutorial, we will show you how to write and run Pattern Matching queries
 
 We assume you have finished link:../gsql-101/[GSQL 101]. If not, please complete GSQL 101 first.
 
-{% hint style="info" %}
+[NOTE]
+====
 This tutorial was updated for TigerGraph 3.0. If you are using an older version, please change to the documentation for that version.
-{% endhint %}
+====
 
 === What is a Graph Pattern?
 

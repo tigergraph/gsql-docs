@@ -10,7 +10,7 @@ This section covers the following subset of the EBNF language definitions:
 
 {% code title="EBNF for Data Types" %}
 
-[source,erlang]
+[source,gsql]
 ----
 lowercase          := [a-z]
 uppercase          := [A-Z]
@@ -69,7 +69,7 @@ An identifier is the name for an instance of a language element. In the GSQL que
 
 {% code title="name (identifier)" %}
 
-[source,sql]
+[source,gsql]
 ----
 name := (letter | "_") [letter | digit | "_"]*
 ----
@@ -127,7 +127,7 @@ The query language supports the following _base types_, which can be declared an
 
 {% code title="EBNF" %}
 
-[source,erlang]
+[source,gsql]
 ----
 baseType := INT
           | UINT
@@ -196,11 +196,12 @@ The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `
 | No literal. Can be converted from a correctly formatted string with link:func/type-conversion-functions.md#parse_json_array[`parse_json_array()`].
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
 `FLOAT` and `DOUBLE` input values must be in fixed point `d.dddd` __**__format, where `d` is a digit. Output values will be printed in either fixed point for exponential notation, whichever is more compact.
 
 The GSQL Loader can read FLOAT and DOUBLE values with exponential notation (e.g., 1.25 E-7).
-{% endhint %}
+====
 
 === Vertex and edge
 
@@ -208,7 +209,7 @@ Vertex and edge are the two types of objects which form a graph. A query paramet
 
 {% code title="Examples of generic and typed VERTEX and EDGE declarations" %}
 
-[source,sql]
+[source,gsql]
 ----
 VERTEX anyVertex;
 VERTEX<person> owner;
@@ -271,9 +272,10 @@ list_literal := "[" expr ("," expr)* "]"
 expr := INT | UINT | FLOAT | DOUBLE | BOOL | STRING | UDT | DATETIME
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 Currently, GSQL query language syntax does not support `MAP` literals. +
-{% endhint %}
+====
 
 === `JSONOBJECT` and `JSONARRAY`
 
@@ -281,9 +283,10 @@ These two base types allow users to pass a complex data object or to write outpu
 
 More details are introduced in the Section link:operators-and-expressions.md#jsonobject-and-jsonarray-functions[JSONOBJECT and JSONARRAY Functions].
 
-{% hint style="danger" %}
+[WARNING]
+====
  A `JSONOBJECT` or `JSONARRAY` value is immutable. No operator is allowed to modify its value.
-{% endhint %}
+====
 
 == Tuple
 
@@ -291,7 +294,7 @@ A tuple is a user-defined data structure consisting of a fixed sequence of base 
 
 {% code title="ENBF for tuples" %}
 
-[source,sql]
+[source,gsql]
 ----
 typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
 
@@ -310,7 +313,7 @@ The vertex type `person` contains two complex attributes:
 
 {% code title="investmentNet schema" %}
 
-[source,sql]
+[source,gsql]
 ----
 TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
 CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
@@ -325,7 +328,7 @@ The query below reads both the `SECRET_INFO` tuple and the portfolio MAP. The tu
 
 {% code title="tupleEx query" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
   #TYPEDEF TUPLE <UINT age, STRING mothersName> SECRET_INFO;       # already defined in schema
@@ -356,7 +359,7 @@ CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
 
 {% code title="tupleEx.json" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY tupleEx("person1")
 {
@@ -406,11 +409,12 @@ GSQL > RUN QUERY tupleEx("person1")
 
 `STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`. The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally. A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Using `STRING COMPRESS` instead of `STRING` is a trade-off: smaller storage vs. slower access times. The storage space will only be smaller if (1) the original strings are long, and (2) there are only a small number of different strings.  Performance will always be slower; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
 
 We recommend performing comparison tests for both performance and memory usage before settling on `STRING COMPRESS`.
-{% endhint %}
+====
 
 `STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times. In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
 
@@ -418,13 +422,14 @@ An accumulator containing `STRING COMPRESS` stores the dictionary when it is ass
 
 When a `STRING COMPRESS` value is output (e.g. by a link:output-statements-and-file-objects.md#print-statement-api-v-2[`PRINT` statement]), it is shown as a `STRING`.
 
-{% hint style="danger" %}
+[WARNING]
+====
  `STRING COMPRESS` is not a base type.
-{% endhint %}
+====
 
 {% code title="STRING COMPRESS example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
   ListAccum<STRING COMPRESS> @@strCompressList, @@strCompressList2;
@@ -459,7 +464,7 @@ CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
 
 {% code title="stringCompressEx.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY stringCompressEx("person12")
 {
@@ -518,9 +523,10 @@ GSQL > RUN QUERY stringCompressEx("person12")
 
 A `FILE` object is a sequential data storage object, associated with a text file on the local machine.
 
-{% hint style="info" %}
+[NOTE]
+====
 When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
-{% endhint %}
+====
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to the `FILE` will be appended to the `FILE`. When the query where the `FILE` was declared finishes running, the `FILE` contents are saved to the text file.
 
@@ -530,15 +536,16 @@ A `FILE` object can be passed as a parameter to another query. When a query rece
 
 Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`). A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter. Within the query, `SET` and `BAG` are converted to link:accumulators.md#setaccum[`SetAccum`] and link:accumulators.md#bagaccum[`BagAccum`], respectively.
 
-{% hint style="danger" %}
+[WARNING]
+====
 A query parameter is immutable. It cannot be assigned a new value within the query.
 
 The `FILE` object is a special case.  It is passed by reference, meaning that the receiving query gets a link to the original `FILE` object.  The receiving query can write to the `FILE` object.
-{% endhint %}
+====
 
 {% code title="EBNF" %}
 
-[source,sql]
+[source,gsql]
 ----
 parameterType := INT
                | UINT
@@ -556,7 +563,7 @@ parameterType := INT
 
 {% code title="Examples of collection type parameters" %}
 
-[source,sql]
+[source,gsql]
 ----
 (SET<VERTEX<person> p1, BAG<INT> ids, FILE f1)
 ----

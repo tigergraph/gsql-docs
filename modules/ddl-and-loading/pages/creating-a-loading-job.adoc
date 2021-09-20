@@ -14,9 +14,10 @@ CREATE LOADING JOB, which may contain a set of DEFINE and LOAD statements
 * DEFINE statements
 * LOAD statements, which can have several clauses
 
-{% hint style="info" %}
+[NOTE]
+====
 *All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (link:creating-a-loading-job.md#built-in-loader-token-functions[Built-in Loader Token Functions]).
-{% endhint %}
+====
 
 == Loading job capabilities
 
@@ -33,15 +34,17 @@ Among its several duties, the RESTPP component manages loading jobs. There can b
 
 Furthermore, if the TigerGraph graph is distributed (partitioned) across multiple machine nodes, each machine's RESTPP-LOADER(s) can be put into action. Each RESTPP-LOADER only reads local input data files, but the resulting graph data can be stored on any machine in the cluster.
 
-{% hint style="success" %}
+[NOTE]
+====
  To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
-{% endhint %}
+====
 
 A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a link:../../restpp-api/built-in-endpoints.md#run-a-loading-job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
 
-{% hint style="success" %}
+[NOTE]
+====
 Example loading jobs and data files for the `book_rating` schema defined earlier in the document are available in the `$(gadmin config get System.AppRoot)/document/examples` folder in your TigerGraph platform installation.
-{% endhint %}
+====
 
 == *CREATE LOADING JOB*
 
@@ -50,7 +53,7 @@ The CREATE LOADING JOB statement is used to define a block of DEFINE, LOAD, and 
 {% tabs %}
 {% tab title="CREATE LOADING JOB syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB job_name FOR GRAPH graph_name {
    [zero or more DEFINE statements;]
@@ -61,11 +64,12 @@ CREATE LOADING JOB job_name FOR GRAPH graph_name {
 {% endtab %}
 {% endtabs %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 *LOAD or DELETE Statements* +
 A loading job may contain either `LOAD` or `DELETE` statements but not both. +
 A loading job that includes both will be rejected when the `CREATE` statement is executed.
-{% endhint %}
+====
 
 [discrete]
 ==== Example:
@@ -73,7 +77,7 @@ A loading job that includes both will be rejected when the `CREATE` statement is
 {% tabs %}
 {% tab title="Loading Job Example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB job1 FOR GRAPH graph1 {
    # File path specified at complile time
@@ -95,15 +99,16 @@ RUN LOADING JOB job1 USING file1="m1:/data/v1_1.csv", file2="m2:/data/e2.csv"
 
 To drop (remove) a job, run `DROP JOB job_name`. The job will be removed from GSQL. To drop all jobs, run either of the following commands:
 
-[source,erlang]
+[source,gsql]
 ----
 DROP JOB ALL
 DROP JOB *
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 The scope of `ALL` depends on the user's current scope. If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph. If a superuser has set their scope to be global, then `DROP ALL` removes all jobs across all graph spaces.
-{% endhint %}
+====
 
 == `DEFINE` statements
 
@@ -113,7 +118,7 @@ A `DEFINE` statement is used to define a local variable or expression to be used
 
 The `DEFINE FILENAME` statement defines a filename variable. The variable can then be used later in the `JOB` block by a `LOAD` statement to identify its data source. Every concurrent loading job must have at least one `DEFINE FILENAME` statement.
 
-[source,sql]
+[source,gsql]
 ----
 DEFINE FILENAME filevar ["=" filepath_string ];
 filepath_string = ( path | " all :" path | " any :" path | mach_aliases " :" path ["," mach_aliases ":" path ]* )
@@ -131,7 +136,7 @@ There are four options for _filepath_string_ :
 {% tabs %}
 {% tab title="path examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 "/data/graph.csv"
 ----
@@ -139,16 +144,17 @@ There are four options for _filepath_string_ :
 {% endtab %}
 {% endtabs %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 If this path is not valid when CREATE LOADING JOB is executed, GSQL will report an error.
-{% endhint %}
+====
 
 An absolute path may begin with the session variable $sys.data_root.
 
 {% tabs %}
 {% tab title="Example: using sys.data_root in a loading job" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB filePathEx FOR GRAPH gsql_demo {
   LOAD "$sys.data_root/persons.csv" TO ...
@@ -163,7 +169,7 @@ Then, when running this loading job, first set a value for the parameter, and th
 {% tabs %}
 {% tab title="Example: Setting sys.data_root session parameter" %}
 
-[source,sql]
+[source,gsql]
 ----
 SET sys.data_root="/data/mydata"
 RUN JOB filePathEx
@@ -179,7 +185,7 @@ As the name implies, session parameters only retain their value for the duration
 {% tabs %}
 {% tab title="ALL:path examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 "ALL:/data/graph.csv"
 ----
@@ -192,7 +198,7 @@ As the name implies, session parameters only retain their value for the duration
 {% tabs %}
 {% tab title="ANY:path examples" %}
 
-[source,sql]
+[source,gsql]
 ----
 "ANY:/data/graph.csv"
 ----
@@ -205,7 +211,7 @@ As the name implies, session parameters only retain their value for the duration
 {% tabs %}
 {% tab title="machine-specific path example" %}
 
-[source,sql]
+[source,gsql]
 ----
 "m1:/data1.csv, m2|m3|m5:/data/data2.csv"
 ----
@@ -217,7 +223,7 @@ As the name implies, session parameters only retain their value for the duration
 
 The DEFINE HEADER statement defines a sequence of column names for an input data file. The first column name maps to the first column, the second column name maps to the second column, etc.
 
-[source,sql]
+[source,gsql]
 ----
 DEFINE HEADER header_name = " column_name "[," column_name "]*;
 ----
@@ -226,7 +232,7 @@ DEFINE HEADER header_name = " column_name "[," column_name "]*;
 
 The DEFINE INPUT_LINE_FILTER statement defines a named Boolean expression whose value depends on column attributes from a row of input data. When combined with a USING reject_line_rule clause in a LOAD statement, the filter determines whether an input line is ignored or not.
 
-[source,sql]
+[source,gsql]
 ----
 DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables ;
 ----
@@ -241,7 +247,7 @@ Different `LOAD` statement types have different rules for the link:creating-a-lo
 
 === Syntax
 
-[source,sql]
+[source,gsql]
 ----
 LOAD [filepath_string|filevar|TEMP_TABLE table_name ]
      Destination_Clause [, Destination_Clause ]*
@@ -260,7 +266,7 @@ A _Destination clause_ ***describes how the tokens from a data source should be 
 {% tabs %}
 {% tab title="Vertex Destination Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
     [WHERE conditions] [OPTION (options)]
@@ -272,7 +278,7 @@ TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
 {% tabs %}
 {% tab title="Edge Destination Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
                                target_id_expr [target_type_expr]
@@ -293,7 +299,7 @@ For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for i
 {% tabs %}
 {% tab title="TEMP_TABLE Destination Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 TO TEMP_TABLE table_name (id_name [, attr_name]*)
     VALUES (id_expr [, attr_expr]*)
@@ -305,16 +311,17 @@ TO TEMP_TABLE table_name (id_name [, attr_name]*)
 
 The `TO TEMP_TABLE` clause defines a new, temporary data structure. Its unique characteristics will be described in a separate subsection. For now, we focus on `TO VERTEX` and `TO EDGE`.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 *For fast loading of edge data, referential integrity checking is disabled by default.* +
 For an edge to be valid, it must refer to endpoint vertices that exist. To support fast, out-of-order loading, *if one or both of the endpoint vertices do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.* Due to the loader's UPSERT semantics, if the vertex data is loaded later, it will be automatically merged with the dummy vertices. The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST=true` option.
-{% endhint %}
+====
 
 === Examples
 
 Suppose we have the following vertex and edge types:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX Person (pid STRING PRIMARY KEY, birthdate DATETIME)
 CREATE VERTEX Company (cid INT PRIMARY KEY, industry STRING)
@@ -324,7 +331,7 @@ CREATE DIRECTED EDGE Visit (FROM Person, TO Person
 
 A `Visit` edge can connect two `Person` vertices or a `Person` to a `Company`. A `Person` has a string ID, while a Company has an `INT` ID. Then suppose the `Visit` edge source data comes from a single CSV file, containing both variants of edges. Note that the 2nd column ($1) contains either `Person` or `Company`, and that the 3rd column ($2) contains either a string or an integer.
 
-[source,sql]
+[source,gsql]
 ----
 Sam,Person,Joe,2012
 Sam,Company,4057,2017
@@ -334,14 +341,15 @@ Pat,Person,Taylor,2020
 
 Using the optional _`target_type_expr`_ field, we can load both variants of the `Visit` edge with a single clause.
 
-[source,sql]
+[source,gsql]
 ----
 LOAD file1 TO EDGE Visit VALUES ($0, $2 $1, $3) USING separator=",";
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 Known issue: you must include a `USING clause` when loading data into edge types with different `FROM-TO` vertex pairs, even if all options are default.
-{% endhint %}
+====
 
 == *Attributes and Attribute Expressions*
 
@@ -358,7 +366,7 @@ In a simple case, a token value is copied directly to an attribute. For example,
 {% tabs %}
 {% tab title="Example: using $sys.file_name in an attribute expression" %}
 
-[source,sql]
+[source,gsql]
 ----
 LOAD "xx/yy/a.csv" TO VERTEX person VALUES ($0, $1, $sys.file_name)
 ----
@@ -370,9 +378,10 @@ LOAD "xx/yy/a.csv" TO VERTEX person VALUES ($0, $1, $sys.file_name)
 * The next attribute of a person vertex comes from column `$1`.
 * The next attribute of a person vertex is given the value "xx/y/a.csv" (the filename itself).
 
-{% hint style="info" %}
+[NOTE]
+====
 Users do not need to explicitly define a primary ID. Given the attributes, one will be selected as the primary key.
-{% endhint %}
+====
 
 === Cumulative Loading
 
@@ -394,13 +403,14 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 . The attribute values of the new object overwrite the attribute values of the existing data object.
 . *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.
 
-{% hint style="danger" %}
+[WARNING]
+====
  A STRING token is never considered missing; if there are no characters, then the string is the empty string
-{% endhint %}
+====
 
 * *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).  For example,
 
-[source,sql]
+[source,gsql]
 ----
 LOAD TO VERTEX person VALUES ($0, $1, _, $2)
 ----
@@ -425,7 +435,7 @@ The subsections below describe details about loading particular data types.
 
 A floating point value has the basic format
 
-[source,sql]
+[source,gsql]
 ----
 [sign][digits].[digits](e|E)[sign][digits]
 ----
@@ -437,7 +447,7 @@ In both cases, the leading sign ( "+" or "-") is optional. The exponent, using "
 {% tabs %}
 {% tab title="Examples of valid and invalid floating point values" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Valid floating point values
 -198256.03
@@ -492,7 +502,7 @@ To load a UDT attribute, state the name of the UDT type, followed by the list of
 {% tabs %}
 {% tab title="Load UDT example" %}
 
-[source,sql]
+[source,gsql]
 ----
 TYPEDEF TUPLE <f1 INT (1), f2 UINT, f3 STRING (10), f4 DOUBLE > myTuple   # define a UDT
 CREATE VERTEX v_udt  (id STRING PRIMARY KEY, att_udt myTuple)
@@ -517,7 +527,7 @@ The first method is to load multiple rows of data that share the same ID values 
 {% tabs %}
 {% tab title="Example: Cumulative loading of multiple rows to a SET/LIST" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX test_vertex (PRIMARY_ID id STRING, iset SET<INT>, ilist LIST<INT>)
 CREATE UNDIRECTED EDGE test_edge(FROM test_vertex, TO test_vertex)
@@ -538,7 +548,7 @@ RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"
 {% tabs %}
 {% tab title="list_set_vertex.csv" %}
 
-[source,sql]
+[source,gsql]
 ----
 1,10
 3,30
@@ -553,16 +563,17 @@ RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"
 
 The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file. Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`. Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`. Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Because GSQL loading is multi-threaded, the order of values loaded into a LIST might not match the input order.
-{% endhint %}
+====
 
 If the input file contains multiple columns which should be all added to the LIST or SET, then a second method is available. Use the LIST() or SET() function as in the example below:
 
 {% tabs %}
 {% tab title="Example: loading multiple columns to a SET/LIST" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX v_set  (PRIMARY_ID id STRING, nick_names SET<STRING>)
 CREATE VERTEX v_list (PRIMARY_ID id STRING, lucky_nums LIST<INT>)
@@ -582,7 +593,7 @@ The third method is to use the *`SPLIT()`* function to read a compound token and
 {% tabs %}
 {% tab title="Example: SET/LIST loading by SPLIT() example" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX test_vertex (PRIMARY_ID id STRING, ustrset SET<STRING>, ilist LIST<INT>)
 CREATE UNDIRECTED EDGE test_edge(FROM test_vertex, TO test_vertex)
@@ -613,9 +624,10 @@ v2,john, 5 # 4 # 8
 {% endtab %}
 {% endtabs %}
 
-{% hint style="danger" %}
+[WARNING]
+====
  The `SPLIT()` function cannot be used for UDT type elements.
-{% endhint %}
+====
 
 === Loading a MAP Attribute
 
@@ -623,16 +635,17 @@ There are three methods to load a `MAP`.
 
 The first method is to load multiple rows of data that share the same id values. The maps are formed incrementally by reading one key-value pair from each eligible data line. When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not. If the id value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair. If the id(s) has been used before, then the loading job checks whether the key exists in the map or not. If the key doesn't exist in the map, the new key-value pair is inserted. Otherwise, the value will be replaced by the new value.
 
-{% hint style="danger" %}
+[WARNING]
+====
  The loading order might not be the same as the order in the raw data. If a data file contains multiple lines with the same id and same key but different values, loading them together results in a nondeterministic final value for that key.
-{% endhint %}
+====
 
 *Method 1*: Below is the syntax to load a `MAP` by the first method: Use an arrow (->)  to separate the map's key and value.
 
 {% tabs %}
 {% tab title="Loading a MAP by method 1: \-> separator" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
 CREATE GRAPH test_graph (*)
@@ -650,7 +663,7 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 {% tabs %}
 {% tab title="Loading a MAP by method 2: MAP() function" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
 CREATE GRAPH test_graph (*)
@@ -713,9 +726,10 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 {% endtab %}
 {% endtabs %}
 
-{% hint style="danger" %}
+[WARNING]
+====
  The SPLIT() function cannot be used for UDT type elements.
-{% endhint %}
+====
 
 === Loading Composite Key Attributes
 
@@ -788,7 +802,7 @@ To use a token function, replace the attribute in the destination clause of the 
 [discrete]
 ==== Example
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB loadOrders {
     DEFINE FILENAME f;
@@ -921,12 +935,13 @@ The following token functions can be used in an id or attribute expression+++<ta
 
 ==== Timestamp Input Format
 
-{% hint style="info" %}
+[NOTE]
+====
 The timestamp parameter should be in one of the following formats: +
 `"%Y-%m-%d %H:%M:%S"
 "%Y/%m/%d %H:%M:%S"
 "%Y-%m-%dT%H:%M:%S.000z" // text after the dot . is ignored`
-{% endhint %}
+====
 
 === Reducer Functions
 
@@ -934,7 +949,7 @@ A reducer function aggregates multiple values of a non-id attribute into one att
 
 To reduce and load aggregate data to an attribute, the attribute expression has the form
 
-[source,sql]
+[source,gsql]
 ----
 REDUCE( reducer_function ( input_expr ) )
 ----
@@ -968,9 +983,10 @@ Each reducer function is overloaded so that one function can be used for several
 | Any: If an attribute value already exists, return(retain) the existing value. Otherwise, return(load) _arg_ .
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
  Each function supports a certain set of attribute types. Calling a reducer function with an incompatible type crashes the service. In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
-{% endhint %}
+====
 
 == *WHERE Clause*
 
@@ -982,7 +998,8 @@ The GSQL Loader language supports most of the standard arithmetic, relational, a
 
 * *Arithmetic Operators: +, -, *, /, {caret}*  Numeric operators can be used to express complex operations between numeric types. Just as in ordinary mathematical expressions, parentheses can be used to define a group and to modify the order of precedence.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Because computers necessarily can only store approximations for most `DOUBLE` and `FLOAT` type values, it is not recommended to test these data types for exact equality or inequality. Instead, one should allow for an acceptable amount of error. The following example checks if `$0 = 5`, with an error of 0.00001 permitted:
 
 [source,text]
@@ -990,7 +1007,7 @@ Because computers necessarily can only store approximations for most `DOUBLE` an
 WHERE to_float($0) BETWEEN 5-0.00001 AND 5+0.00001
 ----
 
-{% endhint %}
+====
 
 * *Relational Operators: <, >, ==, !=, <=, >=*  Comparisons can be performed between two numeric values or between two string values.
 * *Predicate Operators:*
@@ -1044,19 +1061,21 @@ The GSQL loading language provides several built-in functions for the WHERE clau
 | Returns true if _main_string_ is either "f" or "false" (case insensitive). Returns false otherwise.
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
  The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
-{% endhint %}
+====
 
 == *User-Defined Token Functions*
 
 Users can write their own token functions in C{pp} and install them in the GSQL system. The system installation already contains a source code file containing sample functions. Users simply add their customized token functions to this file. The file for user-defined token functions for attribute expressions or `WHERE` clauses is at `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 With TigerGraph Version 3.1, GSQL server runs in HA mode by default. Please follow the instructions in the link below to keep all User Sources files in sync across all GSQL servers.
 
 https://docs.tigergraph.com/admin/admin-guide/installation-and-configuration/high-availability-support-for-gsql-server#user-source-code-maintenance
-{% endhint %}
+====
 
 There are a few examples in this file, and details are presented below.
 
@@ -1064,14 +1083,14 @@ Testing your functions is simple. In the same directory with the `TokenBank.cpp`
 
 . To test that your function compiles:
 
-[source,sql]
+[source,gsql]
 ----
 ./compile
 ----
 
 . To test that your function works correctly, write your own test and add it to the `main()` procedure in the `TokenBank.cpp`. Then, compile the file and run it. Note that files located in `../TokenLib` need to be included:
 
-[source,sql]
+[source,gsql]
 ----
 g++ -I../TokenLib TokenBank.cpp
 ./a.out
@@ -1130,12 +1149,13 @@ extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], ui
 
 User-defined token functions (described above) can also be used to construct the boolean conditional expression in the `WHERE` clause. However, there are some restrictions in the `WHERE` clause:
 
-{% hint style="danger" %}
+[WARNING]
+====
 In the clause "WHERE _conditions_ ",
 
 * The only type of user-defined token function allowed are those that return a boolean value.
 * If a user-defined token function is used in a WHERE Clause, then it must constitute the entire condition; it cannot be combined with another function or operator to produce a subsequent value. However, the arguments of the UDF can include other functions.
-{% endhint %}
+====
 
 The source code for the built-in token function gsql_token_equal is used as an example for how to write a user-defined token function.
 
@@ -1173,7 +1193,7 @@ There are no supported options for the OPTION clause at this time.
 
 The `TAGS` clause specifies the tags to be applied to the vertices loaded by the `LOAD` statement.
 
-[source,erlang]
+[source,gsql]
 ----
 TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
 ----
@@ -1189,14 +1209,15 @@ Users have two options when it comes to how to merge tags if the target vertices
 
 A `USING` clause contains one or more optional parameter value pairs:
 
-[source,sql]
+[source,gsql]
 ----
 USING parameter=value [,parameter=value]*
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
 If multiple LOAD statements use the same source (the same file path, the same TEMP_TABLE, or the same file variable), the USING clauses in these LOAD statements must be the same. Therefore, we recommend that if multiple destination clauses share the same source, put all of these destination clauses into the same LOAD statement.
-{% endhint %}+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Parameter+++</b>++++++</th>+++
+====+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Parameter+++</b>++++++</th>+++
       +++<th style="text-align:left">++++++<b>+++Meaning of Value+++</b>++++++</th>+++
       +++<th style="text-align:left">++++++<b>+++Allowed Values+++</b>++++++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">+++SEPARATOR+++</td>+++
@@ -1261,9 +1282,10 @@ _**_
 * Only the string inside the first pair of quote (from left to right) marks are loaded. For example QUOTE="double", the string a"b"c"d"e will be loaded as b.
 * There is no escape character in the loader, so the only way to include quotation marks within a string is for the string body to use one type of quote (single or double) and to declare the other type as the string boundary marker.
 
-{% hint style="info" %}
+[NOTE]
+====
 Previously, ill-formatted strings such as *a"a,b"ac,d* would be parsed as a,b,d ignoring a,a,c. The expected input string should be *a,"a,b",ac,d*. In v2.4, incorrectly formatted strings such as this example will be parsed normally, giving you this result: *a"a,b"ac* and *d.*
-{% endhint %}
+====
 
 === *Loading JSON Data*
 
@@ -1274,7 +1296,7 @@ An example is shown below:
 {% tabs %}
 {% tab title="USING JSON_FILE test schema and loading job" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
 CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
@@ -1295,7 +1317,7 @@ To specify an end-of-line character other than the standard one, use the EOL opt
 {% tabs %}
 {% tab title="JSON loading using EOL" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
 
@@ -1352,7 +1374,7 @@ You will probably want to add `USING EOF="true"` to your RUN LOADING JOB stateme
 
 An example of a Parquet loading setup is shown below:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE DATA_SOURCE S3 s3ds = "{\"file.reader.settings.fs.s3a.access.key\":\"myaccesskey\",\"file.reader.settings.fs.s3a.secret.key\":\"mysecretkey\"}" FOR GRAPH companyGraph
 
@@ -1371,7 +1393,7 @@ RUN LOADING JOB parquet_load USING EOF="true"
 
 Normally, if vertices do not exist when loading data to edges, a vertex will be created for the connecting edge, using default values for all attributes. Using the VERTEX_MUST_EXIST="true" option will load data only if the vertices on both sides of an edge already exist, therefore no longer creating extra vertices.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB load_edge FOR GRAPH MyGraph {
     DEFINE FILENAME f;
@@ -1387,7 +1409,7 @@ The keyword `TEMP_TABLE` triggers the use of a temporary data table which is use
 {% tabs %}
 {% tab title="TEMP_TABLE Destination Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 TO TEMP_TABLE table_name (id_name [, attr_name]*) VALUES (id_expr [, attr_expr]*)
     [WHERE conditions] [OPTION (options)]
@@ -1409,7 +1431,7 @@ There are two versions of the flatten function: One parses single-level groups a
 {% tabs %}
 {% tab title="book1.dat" %}
 
-[source,sql]
+[source,gsql]
 ----
 101|"Harry Potter and the Philosopher's Stone"|"fiction,fantasy,young adult"
 102|"The Three-Body Problem"|"fiction,science fiction,Chinese"
@@ -1423,7 +1445,7 @@ The following loading job contains two `LOAD` statements. The first one loads in
 {% tabs %}
 {% tab title="One-level Flatten Function loading (load_book_flatten1.gsql)" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB load_books_flatten1 FOR GRAPH Book_rating {
   DEFINE FILENAME f;
@@ -1548,7 +1570,7 @@ flatten( _column_to_be_split, group_separator, sub_field_separator, number_of_su
 {% tabs %}
 {% tab title="book2.dat" %}
 
-[source,sql]
+[source,gsql]
 ----
 101|"Harry Potter and the Philosopher's Stone"|"FIC:fiction,FTS:fantasy,YA:young adult"
 102|"The Three-Body Problem"|"FIC:fiction,SF:science fiction,CHN:Chinese"
@@ -1562,7 +1584,7 @@ The flatten function now has four parameters instead of three.  The additional p
 {% tabs %}
 {% tab title="Two-level Flatten Function loading (book_flatten2_load.gsql)" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB load_books_flatten2 FOR GRAPH Book_rating {
   DEFINE FILENAME f;
@@ -1618,7 +1640,7 @@ flatten_json_array($" _array_name_ ") parses a JSON array of primitive (string, 
 {% tabs %}
 {% tab title="flatten_json_array_values loading" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
 CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
@@ -1684,7 +1706,7 @@ flatten_json_array ( _$"array_name", $"sub_obj_1", $"sub_obj_2", ..., $"sub_obj_
 {% tabs %}
 {% tab title="json_flatten_array_test.gsql" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX encoding3 (PRIMARY_ID id STRING, score FLOAT default -1.0, age STRING default "Unknown", length INT default -1)
 CREATE UNDIRECTED EDGE encoding3_edge (FROM encoding3, TO encoding3)
@@ -1748,7 +1770,7 @@ When splitting a JSON array of JSON objects, the primitive values are skipped an
 {% tabs %}
 {% tab title="encoding.csv" %}
 
-[source,sql]
+[source,gsql]
 ----
 golang|{"prop":{"age":"noidea"}}
 pascal|{"score":"1.0", "prop":{"age":"old"}}
@@ -1766,7 +1788,7 @@ The second column in the csv file is a JSON array which we want to split. flatte
 {% tabs %}
 {% tab title="json_flatten_cvs.gsql" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX encoding3 (PRIMARY_ID id STRING, score FLOAT default -1.0, age STRING default "Unknown", length INT default -1)
 CREATE UNDIRECTED EDGE encoding3_edge (FROM encoding3, TO encoding3)
@@ -1821,26 +1843,28 @@ The above example generates the temporary table shown below:
 | -1 (default)
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
 flatten_json_array in csv
 
 flatten_json_array() does not work if the separator appears also within the json array column. For example, if the separator is comma, the csv loader will erroneously divide the json array into multiple columns. Therefore, it is recommended that the csv file use a special column separator, such as "|" in the above example .
-{% endhint %}
+====
 
 == *DELETE statement*
 
 In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement. DELETE cannot be used in offline loading. Just as a LOAD statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a DELETE statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
 
-{% hint style="danger" %}
+[WARNING]
+====
  In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
-{% endhint %}
+====
 
 There are four variations of the DELETE statement. The syntax of the four cases is shown below.
 
 {% tabs %}
 {% tab title="DELETE VERTEX | EDGE Syntax" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB abc FOR GRAPH graph_name {
   DEFINE FILENAME f;
@@ -1866,7 +1890,7 @@ An example using book_rating data is shown below:
 {% tabs %}
 {% tab title="DELETE example" %}
 
-[source,sql]
+[source,gsql]
 ----
 # Delete all user occupation edges if the user is in the new files, then load the new files
 CREATE LOADING JOB clean_user_occupation FOR GRAPH Book_rating {
@@ -1884,6 +1908,7 @@ RUN LOADING JOB load_user_occupation USING f="./data/user_occupation_update.dat"
 {% endtab %}
 {% endtabs %}
 
-{% hint style="info" %}
+[NOTE]
+====
  There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete. In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
-{% endhint %}
+====

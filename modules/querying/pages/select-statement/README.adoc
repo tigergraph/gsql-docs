@@ -2,7 +2,8 @@
 
 == GSQL Syntax Versions
 
-{% hint style="warning" %}
+[CAUTION]
+====
 NOTE: Starting with TigerGraph 2.6, there are now two versions of the GSQL Query Language. Both are available in the product. The original version is called GSQL Syntax V1. GSQL Syntax V2 was introduced to provide more flexible and powerful link:../../../../start/gsql-102/[Pattern Matching]. A query indicates which grammar to use in the SYNTAX clause of the CREATE QUERY header. V1 is the default.
 
 As new features are being added to GSQL, some are available only V2. In the future, we plan to transition so that Syntax V2 will be the default.
@@ -21,13 +22,13 @@ The key differences between the two grammars:
  ** In V1 (default), each SELECT statement can traverse one hop (from a set of vertices to their adjacent vertices).
   *** To write a multi-hop query, you write a sequence of SELECT statements.
   *** The traversal action is from left to right, and the notation uses "ASCII art" to depict a connection, either with a rightward facing arrowhead or no arrowhead: `+Start:s -( Edges:e )-> Target:t+` or  `Start:s -( Edges:e )- Target:t`
-{% endhint %}
+====
 
 This section discusses the SELECT statement in-depth and covers the following EBNF syntax. Note that there are now two forms for a SELECT statement, the classic GSQL form `gsqlSelectBlock`, and the new SQL-like form `sqlSelectBlock`. Since GSQL has always been similar to SQL in many ways, there are only a few differences to know about.
 
 {% code title="EBNF for Select Statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 selectStmt  := gsqlSelectBlock
              | sqlSelectBlock
@@ -148,17 +149,18 @@ limitClause := LIMIT ( expr | expr "," expr | expr OFFSET expr )
 
 The SELECT block uses a _step_ _pattern_ or _path_ _pattern_ to select some of the graph's vertices and edges. There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set. The final output of a query is either a vertex set known as the _result set_ or a table.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Size limitation
 
 There is a maximum size limit of 2GB for the result set of a SELECT block . If the result of the SELECT block is larger than 2GB, the system will return no data. NO error message is produced.
-{% endhint %}
+====
 
 == GSQL SELECT Statement
 
 {% code title="EBNF for GSQL Select Statement" %}
 
-[source,erlang]
+[source,gsql]
 ----
 gsqlSelectBlock := gsqlSelectClause
                fromClause
@@ -189,7 +191,7 @@ In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. 
 
 {% code title="FROM clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
@@ -206,30 +208,31 @@ Notice that the edge set and target set are optional: a step can be just source 
 
 {% code title="EBNF for source-only pattern (SYNTAX v1)" %}
 
-[source,erlang]
+[source,gsql]
 ----
 step   :=  stepSourceSet ["-" "(" stepEdgeSet ")" ("-"|"->") stepVertexSet]
 ----
 
 {% endcode %}
 
-{% hint style="info" %}
+[NOTE]
+====
 Rules for Source Vertex Set in Syntax V1:
 
 . The source set may only be a vertexSetName. If this the first SELECT statement in the query, then the vertexSetName is generally created as a seedsSet:
 . The vertexSetName is optionally followed by an alias, which used in subsequent clauses to refer to the source set:
 +
-[source,sql]
+[source,gsql]
 ----
 stepSourceSet := vertexSetName [":" vertexAlias]
 vertexAlias := name
 ----
 +
-{% endhint %}
+====
 
 For example:
 
-[source,sql]
+[source,gsql]
 ----
 resultSet = SELECT s FROM Source:s;
 ----
@@ -371,14 +374,14 @@ GSQL > RUN QUERY printAllPosts()
 
 Usually, a FROM clause has a full 1-hop step.
 
-[source,erlang]
+[source,gsql]
 ----
 step   :=  stepSourceSet ["-" "(" stepEdgeSet ")" ("-"|"->") stepVertexSet]
 ----
 
 The symbols `-(` and `)-` enclose the stepEdgeSet and separate the three parts. Each of the three parts may also define an alias, which makes a convenient way to refer to each of the three sets of entities.
 
-[source,erlang]
+[source,gsql]
 ----
 stepSourceSet := vertexSetName [":" vertexAlias]
 stepEdgeSet := [setEdgeTypes] [":" edgeAlias]
@@ -387,21 +390,23 @@ stepVertexSet := [setVertexTypes] [":" vertexAlias]
 
 Below is a simple example:
 
-[source,sql]
+[source,gsql]
 ----
 Person:s -( (Bought|Rented):e )- (Product|Service):t
 ----
 
 The Source set is all Persons, but the pattern will not include all Persons. It will only include those Persons who Bought or Rented a Product or Service. Moreover, the result will be a set of matched triples: (s, e, t). For example, if Sam bought a TV and Andy rented a car, the results will include (Sam, Bought, TV) and (Andy, Rented, Car). However, these two facts do not imply (Sam, Rented, Car) or (Andy, Rented, TV).
 
-{% hint style="warning" %}
+[CAUTION]
+====
 NOTE: The GSQL grammar allows the righthand enclosure to be either `)-` or +
 `+)->+`. Previously, we recommended the arrowhead `+)->+` . However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-` Syntax v2 has a specific semantic meaning for the arrowheads.
-{% endhint %}
+====
 
 === Edge Set and Target Vertex Set Options
 
-{% hint style="info" %}
+[NOTE]
+====
 *Rules for Edge Set and Target Set in Syntax V1:*
 
 . The edge set (*`stepEdgeSet`*) and target vertex set (*`stepVertexSet`*) obey very similar rules. Each may be a set specifier (*`stepEdgeTypes`* or *`stepVertexTypes`*) followed optionally by an alias.
@@ -413,7 +418,7 @@ NOTE: The GSQL grammar allows the righthand enclosure to be either `)-` or +
  ** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
  ** The list of types must contain the same type of specifiers.
 +
-[source,erlang]
+[source,gsql]
 ----
 stepEdgeSet := [setEdgeTypes] [":" edgeAlias]
 stepVertexSet := [setVertexTypes] [":" vertexAlias]
@@ -432,7 +437,7 @@ atomicVertexType := "_" | ANY | vertexSetType
 vertexSetType := vertexType | paramName | globalAccumName
 ----
 +
-{% endhint %}
+====
 
 |===
 | notation | accepted vertex/edge types
@@ -459,7 +464,8 @@ vertexSetType := vertexType | paramName | globalAccumName
 | UNION of two or more collections
 |===
 
-{% hint style="info" %}
+[NOTE]
+====
 Parentheses are always needed around the edge type in a FROM clause: +
 FROM Source:s -(eType:e)- Target:t
 
@@ -468,13 +474,13 @@ FROM Source:s -((eType1 | eType2):e) - Target:t
 
 Note the double set of parentheses for the edge specifier. If these is an edge alias, these parentheses are needed. If however there is no edge alias, it is legal to have just a single set of parentheses: +
 FROM Source:s -(eType1 | eType2) - Target:t
-{% endhint %}
+====
 
 Either the source vertex set ( s ) or target vertex set ( t ) can be used as the SELECT argument, which determines the result of the SELECT statement. Note the small difference in the two SELECT statements below.
 
 {% code title="Selecting source or target vertices from edge-induced selection" %}
 
-[source,sql]
+[source,gsql]
 ----
 resultSet1 = SELECT s FROM source:s-(eType:e)-tType:t;   //select from the source set
 resultSet2 = SELECT t FROM source:s-(eType:e)-tType:t;   //select from the target set
@@ -484,15 +490,16 @@ resultSet2 = SELECT t FROM source:s-(eType:e)-tType:t;   //select from the targe
 
 resultSet1 is based on the source end of the edges. resultSet2 is based on the target end of the selected edges. However, resultSet1 is NOT identical to the Source vertex set. It is only those members of Source which connect to an eType edge and then to a tType vertex. Other clauses (presented later in this "SELECT Statement" section, can do additional filtering of the Source set.
 
-{% hint style="danger" %}
+[WARNING]
+====
  We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features which are only available to vertex and edge aliases.
-{% endhint %}
+====
 
 If is legal to declare an alias without explicitly stating an edge/target type. See the examples below.
 
 {% code title="Target vertex type inference" %}
 
-[source,sql]
+[source,gsql]
 ----
 resultSet3 = SELECT v FROM Source:v-(eType:e)->(V1|V2):t;
 resultSet4 = SELECT v FROM Source:v-(eType:e)->:t;
@@ -504,7 +511,7 @@ resultSet6 = SELECT v FROM Source:v-(eType:e)->_:t;
 
 {% code title="Edge type inference" %}
 
-[source,sql]
+[source,gsql]
 ----
 resultSet7 = SELECT v FROM Source:v-((E1|E2|E3):e)->tType:t;
 resultSet8 = SELECT v FROM Source:v-(:e)->tType:t;
@@ -518,7 +525,7 @@ The following are a set of queries that demonstrate edge-induced SELECT blocks. 
 
 {% code title="Edge induced SELECT example" %}
 
-[source,sql]
+[source,gsql]
 ----
 # uses various SELECT statements (some of which are equivalent) to print out
 # either the posts made by the given user, the posts liked by the given
@@ -581,7 +588,7 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
 
 {% code title="Results of Query printAllPosts2" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY printAllPosts2("person2")
 {
@@ -719,7 +726,7 @@ This example is another edge selection that uses the "|" operator to select edge
 
 {% code title="Edge induced SELECT example" %}
 
-[source,sql]
+[source,gsql]
 ----
 # uses a SELECT statement to print out everything related to a given user
 # 	this includes posts that the user liked, posts that the user made, and friends
@@ -749,7 +756,7 @@ CREATE QUERY printAllRelatedItems(vertex<person> seed) FOR GRAPH socialNet
 
 {% code title="Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY printAllRelatedItems("person2")
 {
@@ -867,7 +874,7 @@ For example, the following code snippets show two different SELECT statements. T
 
 {% code title="Vertex variables" %}
 
-[source,erlang]
+[source,gsql]
 ----
 results = SELECT v FROM allVertices:v;
 results = SELECT t FROM allVertices:s -()-> :t;
@@ -879,7 +886,7 @@ The following example shows an edge-based SELECT statement, declaring aliases fo
 
 {% code title="Edge variables" %}
 
-[source,erlang]
+[source,gsql]
 ----
 results = SELECT v
           FROM allVertices:s -(:e)-> :t
@@ -888,9 +895,10 @@ results = SELECT v
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features only available to vertex and edge aliases.
-{% endhint %}
+====
 
 === Pattern Matching (SYNTAX v2)
 
@@ -898,7 +906,7 @@ We give a brief overview of Pattern Matching syntax and semantics in the FROM cl
 
 There are three options for the syntax of the pattern in a FROM clause:
 
-[source,erlang]
+[source,gsql]
 ----
 fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
@@ -911,14 +919,14 @@ fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 
 A pathPattern begins with a `stepVertexSet` and then has one or more hops across and edge set to a target set: `-(pathEdgePattern)-setVertexSet.`
 
-[source,sql]
+[source,gsql]
 ----
 pathPattern := stepVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
 ----
 
 We have already studied stepVertexSet. Now we will look at the options for `pathEdgePattern` and their meanings.
 
-[source,erlang]
+[source,gsql]
 ----
 pathEdgePattern := atomicEdgePattern
                  | "(" pathEdgePattern ")"
@@ -953,7 +961,7 @@ Looking at the remaining options for pathEdgePattern, we see that we can have pa
 
 *disjPattern* is how we write "either this edge pattern or that edge pattern""
 
-[source,erlang]
+[source,gsql]
 ----
 disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
 ----
@@ -962,7 +970,7 @@ For example, we can combine the three direction-specfic examples from above: `(A
 
 **starPatter**n explains how the Kleene star and min..max range specifiers can be used to say "repeat this edge pattern from min to max times."
 
-[source,erlang]
+[source,gsql]
 ----
 starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
 
@@ -981,7 +989,7 @@ For example,`(A> | <B | C)*2..4` means "a series of 2 to 4 adjacent edges, where
 
 The optional repeating phrase `["," pathPattern]*` allows you to have multiple pathPatterns. They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
 
-[source,erlang]
+[source,gsql]
 ----
 fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
@@ -994,13 +1002,14 @@ This explains all of the syntax for the FROM clause with SYNTAX v2 (Pattern Matc
 
 The SAMPLE clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the FROM argument.
 
-{% hint style="info" %}
+[NOTE]
+====
 If you want to sample from a set of vertices directly, not from edges or from neighboring (target) vertices, then the following technique is simpler and faster:
-{% endhint %}
+====
 
 {% code title="Select k random vertices from a vertex set S" %}
 
-[source,erlang]
+[source,gsql]
 ----
 random = SELECT s
          FROM S:s
@@ -1013,7 +1022,7 @@ The SAMPLE clause draws from the edge population consisting of those edges which
 
 {% code title="EBNF for Sample Clause" %}
 
-[source,erlang]
+[source,gsql]
 ----
 sampleClause := SAMPLE ( expr | expr "%" ) EDGE WHEN condition # sample an absolute number (or a percentage) of edges for each source vertex.
               | SAMPLE expr TARGET WHEN condition              # sample an absolute number of edges incident to each target vertex.
@@ -1024,9 +1033,10 @@ sampleClause := SAMPLE ( expr | expr "%" ) EDGE WHEN condition # sample an absol
 
 The expression following SAMPLE specifies the sample size, either an absolute number or a percentage of the population. The expression in sampleClause must evaluate to a positive integer. There are two sampling methods. One is sampling based on edge id. The other is based on target vertex id: if a target vertex id is sampled, all edges from this source vertex to the sampled target vertex are sampled.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Note: Currently, the WHEN condition that can be used with a SAMPLE clause is limited strictly to checking if the result of a function call on a vertex is greater than or greater than/equal to some number.
-{% endhint %}
+====
 
 Given that the sampling is random, some of the details of each of the example queries may change each time they are run.
 
@@ -1034,7 +1044,7 @@ The following query displays two modes of sampling: an absolute number of edges 
 
 {% code title="sampleEx3: SAMPLE based on edges per source vertex" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY sampleEx3() FOR GRAPH computerNet
 {
@@ -1064,7 +1074,7 @@ CREATE QUERY sampleEx3() FOR GRAPH computerNet
 
 {% code title="sampleEx3.json" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY sampleEx3()
 {
@@ -1124,7 +1134,7 @@ Below is an example of using SELECT to only traverse one edge for each source ve
 
 {% code title="example of SAMPLE using an absolute number of edges" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY sampleEx1() FOR GRAPH workNet
 {
@@ -1156,7 +1166,7 @@ CREATE QUERY sampleEx1() FOR GRAPH workNet
 
 {% code title="sampleEx1.json" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY sampleEx1()
 {
@@ -1278,9 +1288,10 @@ GSQL > RUN QUERY sampleEx1()
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
  Since the PRINT statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators@timesTraversedNoSample and @timesTraversedWithSample. There is one difference: company3 is not included in afterSample because none of the sample-selected edges reached company3.
-{% endhint %}
+====
 
 == WHERE Clause
 
@@ -1288,7 +1299,7 @@ The WHERE clause is an optional clause that constrains edges and vertices specif
 
 {% code title="EBNF for Where Clause" %}
 
-[source,erlang]
+[source,gsql]
 ----
 whereClause := WHERE condition
 ----
@@ -1303,7 +1314,7 @@ Using built-in vertex and edge attributes and functions, such as .type and .neig
 
 {% code title="WHERE used as a filter" %}
 
-[source,sql]
+[source,gsql]
 ----
 resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)->(V1|V2):t;
 resultSet2 = SELECT v FROM S:v-(:e)->:t
@@ -1317,7 +1328,7 @@ The following examples demonstrate using the WHERE clause to limit the resulting
 
 {% code title="Basic SELECT WHERE" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY printCatPosts() FOR GRAPH socialNet {
 	posts = {post.*};
@@ -1331,7 +1342,7 @@ CREATE QUERY printCatPosts() FOR GRAPH socialNet {
 
 {% code title="Results for Query printCatPosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY printCatPosts()
 {
@@ -1391,7 +1402,7 @@ GSQL > RUN QUERY printCatPosts()
 
 {% code title="SELECT WHERE using IN operator" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
 {
@@ -1406,7 +1417,7 @@ CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
 
 {% code title="Results for Query findGraphFocusedPosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY findGraphFocusedPosts()
 {
@@ -1448,17 +1459,18 @@ GSQL > RUN QUERY findGraphFocusedPosts()
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 WHERE NOT limitations
 
 The NOT operator may not be used in combination with the .type attribute selector. To check if an edge or vertex type is not equal to a given type, use the != operator. See the example below.
-{% endhint %}
+====
 
 The following example shows the equivalence of using WHERE as a type filter as well as its limitations.
 
 {% code title="SELECT WHERE using AND/OR" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # finds female person in the social network. all of the following statements
 # are equivalent (i.e., produce the same results)
@@ -1512,7 +1524,7 @@ CREATE QUERY findFemaleMembers() FOR GRAPH socialNet
 
 {% code title="Results for Query findFemaleMembers" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY findFemaleMembers()
 {
@@ -1558,7 +1570,7 @@ The following example uses edge attributes to determine which workers are regist
 
 {% code title="WHERE using edge attributes" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all workers who are full time at some company
 CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
@@ -1575,7 +1587,7 @@ CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
 
 {% code title="fullTimeWorkers Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY fullTimeWorkers()
 {
@@ -1719,12 +1731,13 @@ GSQL > RUN QUERY fullTimeWorkers()
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 If multiple edge types are specified in edge-induced selection, the WHERE clause should use OR to separate each edge type or each target vertex type. For example,
 
 {% code title="Multiple Edge Type WHERE clause" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
   allUser = {m1};
@@ -1741,7 +1754,7 @@ CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
 {% endcode %}
 
 The above query is compilable. However, if we use line 5 as the WHERE clause instead, the query is not compilable. The edge-type conflict checking detects an error, because i t uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
-{% endhint %}
+====
 
 == ACCUM and POST-ACCUM Clauses
 
@@ -1749,27 +1762,30 @@ The optional ACCUM and POST-ACCUM clauses enable sophisticated aggregation and o
 
 If there is more than one statement in the ACCUM clause, the statements are separated by commas and executed sequentially for each selected element. However, the TigerGraph system uses parallelism to improve performance. Within an ACCUM clause, each edge is handled by a separate process. As such, there is no fixed order in which the edges are processed within the ACCUM clause and the edges should not be treated as executing sequentially. The accumulators are mutex variables shared among each of these processes. The results of any accumulation within the ACCUM clause is not complete until all edges are traversed. Any inspection of an intermediate result within the ACCUM is incomplete and may not be that meaningful.
 
-{% hint style="danger" %}
+[WARNING]
+====
  The statements within the ACCUM clause are executed sequentially for a given vertex or edge.  However, there is no fixed order in which a vertex set or edge set is processed.
-{% endhint %}
+====
 
 The optional POST-ACCUM clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses. POST-ACCUM can be used without ACCUM. If it is preceded by an ACCUM clause, then it can be used for 2-stage accumulative computation: a first stage in ACCUM followed by a second stage in POST-ACCUM.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Each statement within the POST-ACCUM clause can refer to either source vertices or target vertices but not both.
-{% endhint %}
+====
 
 Since the ACCUM clause iterates over edges, and often two edges will connect to the same source vertex or to the same target vertex, the ACCUM clause can be repeated multiple times for one vertex.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Operations that are to be performed exactly once per vertex should be performed in the POST-ACCUM clause.
-{% endhint %}
+====
 
 The primary purpose of the ACCUM or POST-ACCUM clause is to collect information about the graph by updating accumulators (via += or =). See the "Accumulator" section for details on the += operation. However, other kinds of statements (e.g., branching, iteration, local assignments) are permitted to support more complex computations or to log activity. The EBNF syntax below defines the allowable kinds of statements that can occur within an ACCUM or POST-ACCUM.  The *dmlSubStmt* list is similar to the *queryBodyStmt* list which applies to statements outside of a SELECT block; it is important to note the differences.  Each of these statement types is discussed in one of the main sections of this reference document.
 
 {% code title="EBNF for ACCUM and POST-ACCUM Clauses" %}
 
-[source,erlang]
+[source,gsql]
 ----
 accumClause := [perClauseV2] ACCUM dmlSubStmtList
 
@@ -1800,16 +1816,18 @@ dmlSubStmt := assignStmt           // Assignment
 
 {% endcode %}
 
-{% hint style="danger" %}
+[WARNING]
+====
  Note that dml-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt). Global accumulators may perform accumulation += but not assignment "=" within these clauses.
-{% endhint %}
+====
 
-{% hint style="danger" %}
+[WARNING]
+====
 There are additional restrictions on dml-sub level statements:
 
 * Global variable assignment is permitted in ACCUM or POST-ACCUM clauses, but the change in value will not take place until the query completes. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
 * Vertex attribute assignment "=" is not permitted in an ACCUM clause. However, edge attribute assignment is permitted. This is because the ACCUM clause iterates over an edge set. Vertex attribute attribute assignment is permitted in the POST-ACCUM clause. Like all updates, the change in value does not take place until the query completes.
-{% endhint %}
+====
 
 === Aliases and ACCUM/POST-ACCUM Iteration Model
 
@@ -1817,7 +1835,7 @@ To reference each element of the selected set, use the aliases defined in the FR
 
 {% code title="Example of vertex and edge aliases" %}
 
-[source,erlang]
+[source,gsql]
 ----
 FROM source:s -(edgeTypes:e)-> targetTypes:t # edge-induced selection
 FROM source:v                                # vertex-induced selection
@@ -1829,7 +1847,7 @@ Let  (V1, V2,... Vn) be the vertices in the vertex-induced selection . The follo
 
 {% code title="Model for ACCUM behavior in vertex-induced selection" %}
 
-[source,erlang]
+[source,gsql]
 ----
 FOREACH v in (V1,V2,...Vn) DO # iterations may occur in parallel, in unknown order
   dmlSubStmts referencing v
@@ -1842,7 +1860,7 @@ Let E = (E1, E2,... En) be the edges in the edge-induced selected set. Further, 
 
 {% code title="Model for ACCUM behavior in edge-induced selection" %}
 
-[source,erlang]
+[source,gsql]
 ----
 FOREACH i in (1..n) DO # iterations may occur in parallel, in unknown order
   dmlSubStmts referencing e, s, t, which really means e_i, s_i, t_i
@@ -1869,7 +1887,7 @@ If multiple edge types are specified in edge-induced selection, each ACCUM state
 
 {% code title="Multiple Edge Type ACCUM statement check" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
   ListAccum<STRING> @@testList1, @@testList2, @@testList3;
@@ -1888,12 +1906,13 @@ CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
 
 In the above example, line 6 is only executed on "liked" edges, because "actionTime" is the attribute of "liked" edge only. Similarly, line 7 is only executed on "friend" edges, because "gender" is the attribute of "person" only, and only "friend" edge uses "person" as target vertex. However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., "liked" edges doesn't have t.gender, "friend" edges doesn't have e.actionTime.
 
-{% hint style="danger" %}
+[WARNING]
+====
 We strongly suggest that if multiple edge types are specified in edge-induced selection, ACCUM clauses should uses CASE statement (see Section "Control Flow Statements" for more details) to separate the operation on each edge type or each target vertex type (or combination of target vertex type and edge type). The edge-type conflict checking then checks the ACCUM statement inside each THEN/ELSE blocks based on the condition. For example,
 
 {% code title="Multiple Edge Type ACCUM statement check 2" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
   ListAccum<STRING> @@testList1;
@@ -1916,13 +1935,14 @@ CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
 {% endcode %}
 
 The above query is compilable. However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because "liked" edges doesn't support t.gender and "friend" edges doesn't support e.actionTime.
-{% endhint %}
+====
 
 Similar to the ACCUM clause, if multiple source/target vertex types are specified in edge-induced selection and the POST-ACCUM clauses accesses source/target vertex, each ACCUM statement in POST-ACCUM clause checks whether source/target vertex types are conflicted. If only a subset of source/target vertex types are effective in a POST-ACCUM statement, this statement is not executed on other source/target vertex types.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Similar to ACCUM clause, we strongly suggest that if multiple source/target vertex types are specified in edge-induced selection and the POST-ACCUM clauses accesses source/target vertex, POST-ACCUM clauses should uses CASE statement (see Section "Control Flow Statements" for more details) to separate the operation on each source/target vertex type. The vertex type conflict checking then checks the ACCUM statement inside each THEN/ELSE blocks based on the condition.
-{% endhint %}
+====
 
 === Rules for Updating Vertex-Attached Accumulators
 
@@ -1938,7 +1958,7 @@ Beginning in v1.0, there are additional circumstances where a vertex-attached ac
 * Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
  ** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
 
-[source,erlang]
+[source,gsql]
 ----
 ACCUM
   VERTEX<person> mx = tgt.@maxV,   # assign to local variable
@@ -1947,7 +1967,7 @@ ACCUM
 
 * A FOREACH loop can iterate on a vertex-holding collection accumulator. The vertices can now be updated through the loop variable.
 
-[source,erlang]
+[source,gsql]
 ----
 ACCUM
   FOREACH vtx IN src.@setIds DO   # iterate on collection accumulator
@@ -1955,7 +1975,8 @@ ACCUM
   END
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
  The following uses are NOT supported by the new rules:
 
 * Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside of a SELECT statement.
@@ -1963,13 +1984,13 @@ ACCUM
 * Using a global vertex-holding accumulator is not a route to activation.
 * If a vertex is being indirectly activated by assigning it to a local variable (e.g., a variable declaring in ACCUM or POST-ACCUM), note the following rule, which always applies to all local variables:
  ** A local variable can be declared and initialized in an ACCUM block once.  It cannot be redeclared or reassigned later in the ACCUM block.
-{% endhint %}
+====
 
 The following query demonstrates updates to indirectly activated vertices.
 
 {% code title="Updating an Indirectly-Referenced Vertex" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
 
@@ -2001,7 +2022,7 @@ CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
 
 {% code title="Results from Query vUpdateIndirectAccums" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY vUpdateIndirectAccess()
 {
@@ -2068,7 +2089,7 @@ We now show several examples. This example demonstrates how ACCUM or POST-ACCUM 
 
 {% code title="Accum and PostAccum Semantics" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #Show Accum PostAccum Behavior
 CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
@@ -2139,7 +2160,7 @@ CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
 
 {% code title="accumPostAccumSemantics Result" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY accumPostAccumSemantics()
 {
@@ -2169,7 +2190,7 @@ This example uses ACCUM to find all the subjects a user posted about.
 
 {% code title="Vertex ACCUM Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # For each person, make a list of all their post subjects
 CREATE QUERY userPosts() FOR GRAPH socialNet {
@@ -2188,7 +2209,7 @@ CREATE QUERY userPosts() FOR GRAPH socialNet {
 
 {% code title="Results for Query userPosts" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY userPosts()
 {
@@ -2247,7 +2268,7 @@ This example shows each person's posted vertices and each person's like behavior
 
 {% code title="ACCUM+++<VERTEX>+++and ACCUM+++<EDGE>+++Example" %}+++</EDGE>++++++</VERTEX>+++
 
-[source,erlang]
+[source,gsql]
 ----
 # Show each user's post and liked post time
 CREATE QUERY userPosts2() FOR GRAPH socialNet {
@@ -2270,7 +2291,7 @@ CREATE QUERY userPosts2() FOR GRAPH socialNet {
 
 {% code title="Results from Query userPosts2" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY userPosts2()
 {
@@ -2347,7 +2368,7 @@ This example counts the total number of times each topic is used.
 
 {% code title="Global ACCUM Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Show number of total posts by topic
 CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
@@ -2366,7 +2387,7 @@ CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
 
 {% code title="Results for Query userPostsByTopic" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY userPostsByTopic()
 {
@@ -2393,7 +2414,7 @@ This is an example of using ACCUM and POST-ACCUM in conjunction. The ACCUM trave
 
 {% code title="Vertex POST-ACCUM Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #Show all person who both work and live in the same country
 CREATE QUERY residentEmployees() FOR GRAPH workNet {
@@ -2426,7 +2447,7 @@ CREATE QUERY residentEmployees() FOR GRAPH workNet {
 
 {% code title="residentEmployees Result" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY residentEmployees()
 {
@@ -2507,7 +2528,7 @@ This is an example of a POST-ACCUM only that counts the number people with a par
 
 {% code title="Global POST-ACCUM Example" %}
 
-[source,erlang]
+[source,gsql]
 ----
 #Count the number of person of	a given	gender
 CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
@@ -2532,7 +2553,7 @@ CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
 
 {% code title="Results for Query personGender" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY personGender("Female")
 {
@@ -2555,7 +2576,7 @@ The optional HAVING clause provides constraints on the result set of the SELECT.
 
 {% code title="EBNF for HAVING Clause" %}
 
-[source,erlang]
+[source,gsql]
 ----
 havingClause := HAVING condition
 ----
@@ -2568,7 +2589,7 @@ The following example demonstrates using the HAVING clause to constrain a result
 
 {% code title="Example 1. HAVING" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all persons meeting a given activityThreshold, based on how many posts or likes a person has made
 CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
@@ -2588,7 +2609,7 @@ If the activityThreshold parameter is set to 3, the query returns 5 vertices:
 
 {% code title="Example 1 Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY activeMembers(3)
 {
@@ -2657,7 +2678,7 @@ The following example demonstrates the equivalence of a SELECT statement in whic
 
 {% code title="Example 2. HAVING with literal condition" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all person meeting a given activityThreshold, based on how many posts or likes a person has made
 CREATE QUERY printMemberActivity() FOR GRAPH socialNet
@@ -2682,7 +2703,7 @@ CREATE QUERY printMemberActivity() FOR GRAPH socialNet
 
 {% code title=" Results from Query printMemberActivity" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY printMemberActivity()
 {
@@ -2776,7 +2797,7 @@ The following shows an example of equivalent result sets from using WHERE vs. HA
 
 {% code title="Example 3. HAVING vs. WHERE" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # Compute the total post activity for each male person.
 # Because the gender of the vertex does not change, evaluating whether the person vertex
@@ -2807,7 +2828,7 @@ CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
 
 {% code title="Results from Query ActiveMaleMembers" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY activeMaleMembers()
 {
@@ -2883,7 +2904,7 @@ The following example has a compilation error because the result set is taken fr
 
 {% code title="Example 4. HAVING the wrong vertex set" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find all person having a post subject about cats
 # This query is illegal because the having condition is testing the wrong vertex set
@@ -2916,7 +2937,7 @@ The optional ORDER BY clause sorts the result set.
 
 {% code title="EBNF for ORDER BY Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 orderClause := ORDER BY expr [ASC | DESC] ["," expr [ASC | DESC]]*
 ----
@@ -2925,15 +2946,16 @@ orderClause := ORDER BY expr [ASC | DESC] ["," expr [ASC | DESC]]*
 
 ASC specifies ascending order (least value first), and DESC specifies descending order (greatest value first). If neither is specified, then ascending order is used. Each expr must refer to the attributes or accumulators of a member of the result set, and the expr must evaluate to a sortable value (e.g., a number or a string). ORDER BY offers hierarchical sorting by allowing a comma-separated list of expressions, sorting first by the leftmost expr.  It uses the next expression only to sort items where the current sort expr results in identical values. Any items in the result set which cannot be sorted (because the sort expressions do not pertain to them) will appear at the end of the set, after the sorted items.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 In tabular SELECT queries, the ORDER BY expressions may only be SELECT column aliases.
-{% endhint %}
+====
 
 The following example demonstrates the use of ORDER BY with multiple expressions. The returned vertex set is first ordered by the number of friends of the vertex, and then ordered by the number of coworkers of that vertex.
 
 {% code title="topPopular.gsql: ORDER BY Descending" %}
 
-[source,erlang]
+[source,gsql]
 ----
 # find the most popular people, sorting first based on the number as friends
 # and then in case of a tie by the number of coworkers
@@ -2957,7 +2979,7 @@ CREATE QUERY topPopular() FOR GRAPH friendNet
 
 {% code title="topPopular.json" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY topPopular()
 {
@@ -3089,7 +3111,7 @@ The optional LIMIT clause sets constraints on the number and ranking of items in
 
 {% code title="EBNF for LIMIT Clause" %}
 
-[source,sql]
+[source,gsql]
 ----
 limitClause := LIMIT ( expr | expr "," expr | expr OFFSET expr )
 ----
@@ -3102,7 +3124,7 @@ There are three forms:
 
 {% code title="LIMIT scenarios" %}
 
-[source,erlang]
+[source,gsql]
 ----
 result = SELECT v FROM S -(:e)-> :v LIMIT k;		  # case 1: k = Count
 result = SELECT v FROM S -(:e)-> :v LIMIT j, k; 	  # case 2: j = Offset from the start of the list, k = Count
@@ -3125,9 +3147,10 @@ Case 3: LIMIT k OFFSET j
 
 If any of the expressions evaluate to a negative integer, the results are undefined.
 
-{% hint style="info" %}
+[NOTE]
+====
  OFFSET is intended for result sets which are in a known order. It is a compile time error to use OFFSET without the ORDER BY clause.
-{% endhint %}
+====
 
 The following examples demonstrate the various forms of the LIMIT clause.
 
@@ -3135,7 +3158,7 @@ The first example shows the LIMIT clause when used as an upper limit. It returns
 
 {% code title="limitEx1.gsql: LIMIT by some number" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
 {
@@ -3153,7 +3176,7 @@ CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
 
 {% code title="limit1Ex.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY limitEx1(4)
 {
@@ -3195,7 +3218,7 @@ The following example shows how to use the LIMIT clause with an offset.
 
 {% code title="limit2Ex.gsql: LIMIT with lower-bound and size" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
 {
@@ -3212,7 +3235,7 @@ CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
 
 {% code title=" limit2Ex.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY limitEx2(2,3)
 {
@@ -3249,7 +3272,7 @@ The following example shows the alternative syntax for a result size limit with 
 
 {% code title="limit3Ex.gsql: LIMIT with OFFSET" %}
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
 {
@@ -3267,7 +3290,7 @@ CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
 
 {% code title="limit3Ex.json Results" %}
 
-[source,sql]
+[source,gsql]
 ----
 GSQL > RUN QUERY limitEx3(5,20)
 {

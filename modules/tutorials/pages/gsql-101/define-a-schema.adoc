@@ -10,7 +10,7 @@ Use CREATE VERTEX command to define a vertex type named *person.* Here, PRIMARY_
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 CREATE VERTEX person (
     PRIMARY_ID name STRING,
@@ -21,15 +21,16 @@ CREATE VERTEX person (
 
 {% endcode %}
 
-{% hint style="info" %}
+[NOTE]
+====
 We show GSQL keywords in ALL CAPS to highlight them, but they are case-insensitive.
-{% endhint %}
+====
 
 GSQL will confirm the creation of the vertex type.
 
 {% code title="GSQL shell" %}
 
-[,sql]
+[,gsql]
 ----
 GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
 The vertex type person is created.
@@ -46,7 +47,7 @@ Next, use the CREATE ... EDGE command to create an edge type named *friendship*.
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
 ----
@@ -57,7 +58,7 @@ GSQL will confirm the creation of the edge type.
 
 {% code title="GSQL shell" %}
 
-[,sql]
+[,gsql]
 ----
 GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
 The edge type friendship is created.
@@ -74,7 +75,7 @@ Next, use the CREATE GRAPH command to create a graph named *social.* Here, we ju
 
 {% code title="GSQL command" %}
 
-[,sql]
+[,gsql]
 ----
 CREATE GRAPH social (person, friendship)
 ----
@@ -85,7 +86,7 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 
 {% code title="GSQL shell" %}
 
-[,sql]
+[,gsql]
 ----
 GSQL > CREATE GRAPH social (person, friendship)
 

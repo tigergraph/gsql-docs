@@ -4,7 +4,7 @@
 
 Repeating the same hop is useful sometimes, but the real power of pattern matching comes from expressing multi-hop patterns, with specific characteristics for each hop. For example, the well-known product recommendation phrase "People who bought this product also bought this other product", is expressed by the following 2-hop pattern:
 
-[source,sql]
+[source,gsql]
 ----
 FROM This_Product:p -(<Bought:b1)- Customer:c -(Bought>:b2)- Product:p2
 WHERE p2 != p
@@ -15,7 +15,7 @@ As you see, a 2-hop pattern is a simple concatenation and merging of two 1-hop p
 [discrete]
 ==== 2-hop pattern
 
-[source,sql]
+[source,gsql]
 ----
 FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z
 ----
@@ -25,7 +25,7 @@ Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each p
 [discrete]
 ==== 3-hop pattern
 
-[source,sql]
+[source,gsql]
 ----
 FROM X:x - (E2>:e2) - Y:y - (<E3:e3) - Z:z - (E4:e4) - U:u
 ----
@@ -37,14 +37,15 @@ In general, we can connect N 1-hop patterns into a N-hop pattern. The database w
 
 A multi-hop pattern has two endpoint vertex sets and one or more intermediate vertex sets. If the query does not need to express any conditions for an intermediate vertex set, then the vertex set can be omitted and the two surrounding edge sets can be joined with a simple ".". For example, in the 2-hop pattern example above, if we do not need to specify the type of the intermediate vertex Y, nor need to refer to it in any of the query's other clauses (such as WHERE or ACCUM), then the pattern can be reduced as follows:
 
-[source,sql]
+[source,gsql]
 ----
 FROM X:x - (E1.E2>) - Z:z
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Note that when we abbreviate that path in this way, we do not support aliases for the edges or intermediate vertices in the abbreviated section.
-{% endhint %}
+====
 
 [discrete]
 ==== Shortest Paths Only for Variable Length Patterns
@@ -68,9 +69,10 @@ For the pattern `1 - (_*) - 5` in Figure 3 above, you can see the following:
 
 == Additional Details about Pattern Matching
 
-{% hint style="success" %}
+[NOTE]
+====
 In the early version of Pattern Matching (TigerGraph v2.4 to v2.6), there were a number of restrictions on the WHERE, ACCUM and POST-ACCUM clauses In TigerGraph 3.0, most of these restrictions are lifted.
-{% endhint %}
+====
 
 Each vertex set or edge set in a pattern (except edges with Kleene stars) can have an alias variable associated with it. When the query runs and finds matches, it associates, or binds, each alias to the matching vertices or edges in the graph.
 
@@ -80,7 +82,7 @@ The SELECT clause specifies the output vertex set of a SELECT statement. For a m
 
 {% code title="SELECT Clause Can Select Any Vertex Alias" %}
 
-[source,sql]
+[source,gsql]
 ----
 #select starting end point x
 SELECT x
@@ -107,7 +109,7 @@ For a multiple-hop pattern, if you don't need to refer to the intermediate verte
 
 {% code title="Omitting intermediate vertex y and z." %}
 
-[source,sql]
+[source,gsql]
 ----
 #select starting end point x
 SELECT x
@@ -124,14 +126,14 @@ FROM X:x-(E2>.<E3.E4)-U:u;
 
 Beginning with TigerGraph v3.0, each predicate (simple true/false condition) can refer to any of the aliases in the path. As with any database query, more complex conditions may not be as performant as simpler queries with simpler, more local predicate conditions. Consider the pattern and query below:
 
-[source,sql]
+[source,gsql]
 ----
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 ----
 
 {% code title="WHERE Clause Support both Local Predicate and Cross-hop predicates." %}
 
-[source,sql]
+[source,gsql]
 ----
 # (x1, e1, x2) belongs to the 1st-hop
 # (x2, e2, x3) belongs to the 2nd-hop
@@ -160,28 +162,30 @@ The point of pattern matching is to identity sets of graph entities that match y
 
 === ACCUM Clause
 
-{% hint style="success" %}
+[NOTE]
+====
 TigerGraph 3.0 removes the Pattern Matching (SYNTAX v2)-related restrictions on the ACCUM and POST-ACCUM clause.
-{% endhint %}
+====
 
 Just as in classic GSQL syntax, the ACCUM clause it executed once (in parallel) for each set of vertices and edges in the graph which match the pattern and constraints given in the FROM and WHERE clauses. You can think of FROM-WHERE as producing a virtual table. The columns of this matching table are the alias variables from the FROM clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
 
 A simple pattern 1-hop pattern, which could be syntax v1 or v2, like this:
 
-[source,sql]
+[source,gsql]
 ----
 FROM Person:A -(IS_LOCATED_IN:B)- City:C
 ----
 
 produces a match table with 3 columns: A, B, and C. Each row is a tuple (A,B,C) where there is a `has_lived_in` edge B from a `Person` vertex A to a `City` vertex C. We say that the match table provides a _binding_ between the pattern aliases and graph's vertices and edges. A multi-hop pattern simply has more columns than a 1-hop pattern.
 
-{% hint style="info" %}
+[NOTE]
+====
  The ACCUM clause iterates through ALL matches. If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than that number of matches.
-{% endhint %}
+====
 
 For, example, consider
 
-[source,sql]
+[source,gsql]
 ----
 FROM Person:A -(KNOWS.KNOWS)- Person.C
 WHERE C.email = "Andy@www.com"
@@ -192,9 +196,10 @@ This asks who are the friends of friends of Andy@www.com. Suppose Andy knows 3 p
 
 === POST-ACCUM Clause
 
-{% hint style="info" %}
+[NOTE]
+====
 As of TigerGraph 3.0, Pattern Matching (V2) syntax supports multiple POST-ACCUM clauses.
-{% endhint %}
+====
 
 At the end of the ACCUM clause, all the requested accumulation (+=) operators are processed in bulk, and the updated values are now visible.  You can now use POST-ACCUM clauses to perform a second, different round of computation on the results of your pattern matching.
 
@@ -202,7 +207,7 @@ The *ACCUM* clause executes *for* *each full path* that matches the pattern in t
 
 For example, below we have two POST-ACCUM clauses. The first one iterates through s, and for each s, we do `s.@cnt2 += s.@cnt1`. The second POST-ACCUM iterations through t.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -225,7 +230,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 which produces the result
 
-[source,sql]
+[source,gsql]
 ----
 Using graph 'ldbc_snb'
 {
@@ -253,7 +258,7 @@ Using graph 'ldbc_snb'
 
 However, the following is not allowed, since it involves two aliases (t and s) in one POST-ACCUM clause.
 
-[source,sql]
+[source,gsql]
 ----
  POST-ACCUM t.@cnt1 += 1,
             s.@cnt1 += 1
@@ -261,7 +266,7 @@ However, the following is not allowed, since it involves two aliases (t and s) i
 
 Also, you may not use more than one alias in a single assignment. The following is not allowed:
 
-[source,sql]
+[source,gsql]
 ----
  POST-ACCUM t.@cnt1 += s.@cnt + 1
 ----
@@ -272,7 +277,7 @@ Also, you may not use more than one alias in a single assignment. The following 
 
 {% code title="Example1. Succinct Representation Of Multiple-hop Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -331,7 +336,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example1. Disjunction In A Succinct Representation Of Multiple-hop Pattern" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -429,7 +434,7 @@ Using graph 'ldbc_snb'
 
 {% code title="Example 3. Multiple-hop Pattern With Accumulator Applied To All Matched Paths" %}
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -521,7 +526,7 @@ For example, if Set1, Set2, and Set3 were the outputs of three previous SELECT b
 
 *Example 1.* Find Viktor Akhiezer's liked messages' authors, whose last name starts with letter S. Find these authors alumni count.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -560,7 +565,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the common universities that both A and B have members studied at.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -604,7 +609,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 3.* Find Viktor Akhiezer's liked posts' authors A. See how many pair of persons in A that one person likes a message authored by another person.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 
@@ -643,7 +648,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
 *Example 4.* Find how many messages are created and liked by the same person whose first name begins with letter T.
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH ldbc_snb
 

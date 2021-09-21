@@ -187,7 +187,7 @@ image::../../../../.gitbook/assets/select_statement_data_flow_v1.1.png[Basic dat
 
 == FROM Clause
 
-In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. In xref:tutorials:pattern-matching/[Pattern Matching] (Syntax v2), the pattern can be multiple hops long. Path patterns also have many other options for finer control and greater flexibility.
+In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. In xref:tutorials:pattern-matching/README.adoc[Pattern Matching] (Syntax v2), the pattern can be multiple hops long. Path patterns also have many other options for finer control and greater flexibility.
 
 .FROM clause
 
@@ -397,7 +397,7 @@ The Source set is all Persons, but the pattern will not include all Persons. It 
 
 [CAUTION]
 ====
-NOTE: The GSQL grammar allows the righthand enclosure to be either `)-` or +
+The GSQL grammar allows the righthand enclosure to be either `)-` or +
 `+)->+`. Previously, we recommended the arrowhead `+)->+` . However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-` Syntax v2 has a specific semantic meaning for the arrowheads.
 ====
 

@@ -2,16 +2,14 @@
 
 The following words are reserved for use by the GSQL query language. That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local TUPLE type.
 
-[discrete]
 === History:
 
 * v3.1: Added `TAGS`, `RESET_COLLECTION_ACCUM`, `WITH`
 
-There is a separate list for xref:../../ddl-and-loading/appendix-language-ref/keywords-and-reserved-words.adoc[Reserved Words for the *GSQL DDL Language*]. +
+There is a separate list for xref:ddl-and-loading:appendix:keywords-and-reserved-words.adoc[Reserved Words for the *GSQL DDL Language*]. +
 The compiler will reject the use of a Reserved Word as a user-defined identifier.
 
-{% code title="Query Language Reserved Words" %}
-
+.Query Language Reserved Words
 [source,gsql]
 ----
 ACCUM               AND                 ANY                 API
@@ -47,4 +45,3 @@ UNION               UPDATE              VALUES              VERTEX
 WHEN                WHERE               WHILE               WITH
 ----
 
-{% endcode %}

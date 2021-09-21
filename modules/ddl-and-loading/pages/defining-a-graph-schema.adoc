@@ -39,7 +39,7 @@ CREATE VERTEX vertex_type_name (id_and_attribute_list) [ vertex_options ]
 
 More specifically, the syntax is as follows, assuming that the vertex ID is listed first:
 
-{% code title="CREATE VERTEX Syntax" %}
+.CREATE VERTEX Syntax
 
 [source,ruby]
 ----
@@ -48,7 +48,7 @@ CREATE VERTEX vertex_type_name "(" primary_id_name_type
     [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
 ----
 
-{% endcode %}
+
 
 === Keys and Attributes
 
@@ -142,7 +142,7 @@ primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section link:system-and-language-basics.md#attribute-data-types[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section link:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 . Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type, DATETIME, or STRING COMPRESS attributes only)
@@ -151,7 +151,7 @@ Example:
 
 * Create vertex types for the graph schema of Figure 1.
 
-{% code title="Vertex definitions for User-Book-Rating graph" %}
+.Vertex definitions for User-Book-Rating graph
 
 [source,gsql]
 ----
@@ -163,7 +163,7 @@ CREATE VERTEX Book  (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT)
 CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
 ----
 
-{% endcode %}
+
 
 Unlike the tables in a relational database, vertex types do not need to have a foreign key attribute for one vertex type to have a relationship to another vertex type.  Such relationships are handled by edge types.
 
@@ -195,7 +195,7 @@ Available to superuser and globaldesigner roles only.
 
 The CREATE EDGE statement defines a new global edge type. There are two forms of the CREATE EDGE statement, one for directed edges and one for undirected edges.  Each edge type must specify that it connects FROM one vertex type TO another vertex type.  Additional pairs of FROM,To vertex types may be added. Then additional attributes may be added.  Each attribute follows the same requirements as described in the Attribute List subsection for the "CREATE VERTEX" section.
 
-{% code title="CREATE UNDIRECTED EDGE" %}
+.CREATE UNDIRECTED EDGE
 
 [source,gsql]
 ----
@@ -205,9 +205,9 @@ CREATE UNDIRECTED EDGE edge_type_name "("
    ["," attribute_name type [DEFAULT default_value]]* ")"
 ----
 
-{% endcode %}
 
-{% code title="CREATE DIRECTED EDGE" %}
+
+.CREATE DIRECTED EDGE
 
 [source,gsql]
 ----
@@ -218,7 +218,7 @@ CREATE DIRECTED EDGE edge_type_name "("
    [WITH REVERSE_EDGE="rev_name"]
 ----
 
-{% endcode %}
+
 
 As of v3.0, a single edge type can be defined between multiple pairs of vertex types, e.g.
 
@@ -234,14 +234,14 @@ Note that edges do not have a PRIMARY_ID field. Instead, each edge is uniquely i
 
 An edge type can be defined which connects FROM and/or TO any of the currently defined types of vertices.  Use the wildcard symbol * to indicate "any vertex type". For example, the any_edge type below can connect from any vertex to any other vertex:
 
-{% code title="Wildcard edge type" %}
+.Wildcard edge type
 
 [source,gsql]
 ----
 CREATE DIRECTED EDGE any_edge (FROM *, TO *, label STRING)
 ----
 
-{% endcode %}
+
 
 [CAUTION]
 ====
@@ -258,7 +258,7 @@ In a TigerGraph system, reverse edges provide the most efficient way to perform 
 
 Create undirected edges for the three edge types in Figure 1.
 
-{% code title="Edge definitions for User-Book-Rating graph" %}
+.Edge definitions for User-Book-Rating graph
 
 [source,gsql]
 ----
@@ -267,7 +267,7 @@ CREATE UNDIRECTED EDGE book_genre (FROM Book, TO Genre)
 CREATE UNDIRECTED EDGE user_book_rating (FROM User, TO Book, rating UINT, date_time UINT)
 ----
 
-{% endcode %}
+
 
 The *`user_occupation`* and *`book_genre`* edges have no attributes. A *`user_book_rating`* edge symbolizes that a user has assigned a rating to a book. Therefore it  includes an additional attribute *`rating`* . In this case the *`rating`* attribute is defined to be an integer, but it could just as easily have been set to be a float attribute.
 
@@ -275,7 +275,7 @@ The *`user_occupation`* and *`book_genre`* edges have no attributes. A *`user_bo
 
 Create the additional edges depicted in Figure 2.
 
-{% code title="Additional Edge definitions for Expanded-User-Book-Rating graph" %}
+.Additional Edge definitions for Expanded-User-Book-Rating graph
 
 [source,gsql]
 ----
@@ -284,13 +284,13 @@ CREATE UNDIRECTED EDGE user_book_read (FROM User, To Book, on_date UINT)
 CREATE DIRECTED EDGE sequel_of (FROM Book, TO Book) WITH REVERSE_EDGE="preceded_by"
 ----
 
-{% endcode %}
+
 
 Every time the GSQL loader creates a *`sequel_of`* edge, it will also automatically create a *`preceded_by`* edge, pointing in the opposite direction.
 
 == Catalog-level `TYPEDEF`
 
-User-defined tuple types defined in a query cannot be used outside of its query or across queries. To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a link:../querying/operators-and-expressions.md#subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema. User-defined types at the catalog level can only be used for query return value types, and cannot be used as an link:system-and-language-basics.md#attribute-data-types[attribute data type].
+User-defined tuple types defined in a query cannot be used outside of its query or across queries. To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema. User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
 
 `TYPEDEF` statements can be used outside of a query to define tuple types, GroupBy accumulator types, and heap accumulator types. Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.
 
@@ -328,7 +328,7 @@ The STRING COMPRESS  data type achieves compression by mapping each unique attri
 
 When a STRING COMPRESS attribute is declared in a vertex or edge, the user can optionally provide a name for the dictionary. Any attributes which share the same dictionary name will share the same dictionary. For example, v1.attr1, v1.attr2, and e.attr1 below share the same dictionary named "e1".
 
-{% code title="Shared STRING COMPRESS dictionaries" %}
+.Shared STRING COMPRESS dictionaries
 
 [source,gsql]
 ----
@@ -336,7 +336,7 @@ CREATE VERTEX v1 (PRIMARY_ID main_id STRING, att1 STRING COMPRESS e1, att2 STRIN
 CREATE UNDIRECTED EDGE e (FROM v1, TO v2, att1 STRING COMPRESS e1)
 ----
 
-{% endcode %}
+
 
 == *CREATE INDEX*
 
@@ -384,7 +384,7 @@ If the optional MultiGraph service is enabled, CREATE GRAPH can be invoked multi
 
 After all the required vertex and edge types are created, the CREATE GRAPH command defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data. The vertex types and edge types may be listed in any order.
 
-{% code title="CREATE GRAPH syntax" %}
+.CREATE GRAPH syntax
 
 [source,gsql]
 ----
@@ -395,7 +395,7 @@ CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...)
 //     want to include in the graph
 ----
 
-{% endcode %}
+
 
 The optional WITH ADMIN clause sets the named user to be the admin for the new graph.
 
@@ -403,7 +403,7 @@ As a convenience, executing CREATE GRAPH will set the new graph to be the workin
 
 Instead of providing a list of specific vertex types and edge types, it is also possible to define a graph type that includes all the available vertex types and edge types. It is also legal to create a graph with an empty domain.  A SCHEMA_CHANGE can be used later to add vertex and edge types.
 
-{% code title="Examples of CREATE GRAPH with all vertex & edge types and with an empty domain." %}
+.Examples of CREATE GRAPH with all vertex & edge types and with an empty domain.
 
 [source,gsql]
 ----
@@ -411,24 +411,24 @@ CREATE GRAPH everythingGraph (*)
 CREATE GRAPH emptyGraph ()
 ----
 
-{% endcode %}
+
 
 Examples :
 
 Create graph Book_rating for the edge and vertex types defined for Figure 1:
 
-{% code title="Graph definition for User-Book-Rating graph" %}
+.Graph definition for User-Book-Rating graph
 
 [source,gsql]
 ----
 CREATE GRAPH Book_rating (*)
 ----
 
-{% endcode %}
+
 
 The following code example shows the full set of statements to define the expanded user-book-rating graph:
 
-{% code title="Full definition for the Expanded User-Book-Rating graph" %}
+.Full definition for the Expanded User-Book-Rating graph
 
 [source,gsql]
 ----
@@ -447,7 +447,7 @@ CREATE DIRECTED EDGE sequel_of (FROM Book, TO Book) WITH REVERSE_EDGE="preceded_
 CREATE GRAPH Book_rating (*)
 ----
 
-{% endcode %}
+
 
 === `+CREATE GRAPH ... AS+` (Beta)
 
@@ -455,7 +455,7 @@ CREATE GRAPH Book_rating (*)
 
 This command can only be run on the base graph and requires the user to have the schema-editing privilege on the base graph.
 
-{% code title="Synopsis" %}
+.Synopsis
 
 [source,gsql]
 ----
@@ -470,7 +470,7 @@ This command can only be run on the base graph and requires the user to have the
 <tag_expr> := <tag> ("&" <tag_expr>)*
 ----
 
-{% endcode %}
+
 
 The syntax for creating tag-based graphs is the same as creating a regular graph except that a base graph must be specified with the `AS` clause after the `CREATE GRAPH` command, and the definition of the graph must include at least one tagged vertex type. Edges are not tagged in a tag-based graph, but edges with either a source or a target outside of the tag-based graph are not visible to users of the tag-based graph.
 
@@ -502,16 +502,16 @@ New requirement for MultiGraph support. Applies even if only one graph exists.
 
 Before a user can make use of a graph, first the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The USE GRAPH command sets or changes the user's working graph, for the current session.
 
-For more about roles and privileges, see the document link:[Managing User Privileges and Authentication].
+For more about roles and privileges, see the document xref:3.2@tigergraph-server:user-access:README.adoc[Managing User Privileges and Authentication].
 
-{% code title="USE GRAPH syntax" %}
+.USE GRAPH syntax
 
 [source,gsql]
 ----
 USE GRAPH gname
 ----
 
-{% endcode %}
+
 
 Instead of the USE GRAPH command, gsql can be invoked with the -g <graph_name> option.
 
@@ -522,16 +522,16 @@ Instead of the USE GRAPH command, gsql can be invoked with the -g <graph_name> o
 Available to _superuser_ and _globaldesigner_ roles only. The effect of this command takes into account shared domains.
 ====
 
-{% code title="DROP GRAPH syntax" %}
+.DROP GRAPH syntax
 
 [source,gsql]
 ----
 DROP GRAPH gname
 ----
 
-{% endcode %}
 
-The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an link:modifying-a-graph-schema.md#add-vertex-or-edge-local[ADD VERTEX/EDGE] statement within a link:modifying-a-graph-schema.md#create-schema_change-job[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
+
+The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an link:modifying-a-graph-schema.adoc#_add_vertex_edge_local_[ADD VERTEX/EDGE] statement within a link:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
 == DROP ALL
 

@@ -46,7 +46,7 @@ The two types of schema change jobs are described below.
 
 The CREATE SCHEMA_CHANGE JOB block defines a sequence of ADD, ALTER, and DROP statements for changing a particular graph. It does not perform the schema change.
 
-{% code title="CREATE SCHEMA_CHANGE JOB syntax" %}
+.CREATE SCHEMA_CHANGE JOB syntax
 
 [source,gsql]
 ----
@@ -55,7 +55,7 @@ CREATE SCHEMA_CHANGE JOB job_name FOR GRAPH graph_name {
 }
 ----
 
-{% endcode %}
+
 
 One use of CREATE SCHEMA_CHANGE JOB is to define an additional vertex type and edge type to be the structure for a secondary index. For example, if you wanted to index the postalCode attribute of the User vertex, you could create a postalCode_idx (PRIMARY_ID id string, code string) vertex type and hasPostalCode (FROM User, TO postalCode_idx) edge type. Then create an index structure having one edge from each User to a postalCode_idx vertex.
 
@@ -72,7 +72,7 @@ If a SCHEMA_CHANGE JOB defines a new edge type which connects to a new vertex ty
 
 The ADD statement defines a new type of vertex or edge and automatically adds it to a graph schema. The syntax for the ADD VERTEX | EDGE statement is analogous to that of the CREATE VERTEX | EDGE | GRAPH statements.  It may only be used within a SCHEMA_CHANGE JOB.
 
-{% code title="ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE" %}
+.ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE
 
 [source,gsql]
 ----
@@ -82,20 +82,20 @@ ADD DIRECTED EDGE e_type_name (FROM v_type_name',' TO v_type_name [',' edge_attr
     [WITH REVERSE_EDGE '=' "rev_name"];
 ----
 
-{% endcode %}
+
 
 === *`ALTER VERTEX | EDGE`*
 
 The `ALTER` statement adds attributes to or removes attributes from an existing vertex type or edge type. It may only be used within a `SCHEMA_CHANGE JOB`.  The basic format is as follows:
 
-{% code title="ALTER VERTEX / EDGE" %}
+.ALTER VERTEX / EDGE
 
 [source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 ----
 
-{% endcode %}
+
 
 ==== *`+ALTER ... ADD+`*
 
@@ -167,7 +167,7 @@ CREATE SCHEMA_CHANGE JOB job2 FOR GRAPH example_graph {
 
 The syntax for ALTER ... DROP is analogous to that of ALTER ... ADD.
 
-{% code title="ALTER ... DROP" %}
+.ALTER ... DROP
 
 [source,gsql]
 ----
@@ -175,26 +175,26 @@ ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
       attribute_name [',' attribute_name]* );
 ----
 
-{% endcode %}
+
 
 ==== `+ALTER VERTEX ... WITH+`  (Beta)
 
-`The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to link:defining-a-graph-schema.md#create-graph-as-beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
+`The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to link:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
 
-{% code title="ALTER VERTEX WITH TAGGABLE" %}
+.ALTER VERTEX WITH TAGGABLE
 
 [source,gsql]
 ----
 ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 ----
 
-{% endcode %}
+
 
 === `DROP VERTEX | EDGE` (local)
 
 The DROP statement removes the specified vertex type or edge type from the database dictionary. The DROP statement should only be used when graph operations are not in progress.
 
-{% code title="drop vertex / edge" %}
+.drop vertex / edge
 
 [source,gsql]
 ----
@@ -202,46 +202,46 @@ DROP VERTEX v_type_name [',' v_type_name]*
 DROP EDGE e_type_name [',' e_type_name]*
 ----
 
-{% endcode %}
+
 
 === *`DROP TUPLE`*
 
 For tuples that are defined within a graph schema, you can drop them by using the following command.
 
-{% code title="drop tuple" %}
+.drop tuple
 
 [source,text]
 ----
 DROP TUPLE tuple_name [',' tuple_name]*
 ----
 
-{% endcode %}
+
 
 === `ADD TAG`
 
 `ADD TAG` defines a tag for the graph. Tags can be used to create tag-based graphs, allowing for finer grain access control.
 
-{% code title="Syntax for ADD TAG" %}
+.Syntax for ADD TAG
 
 [source,gsql]
 ----
 ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 ----
 
-{% endcode %}
+
 
 === `DROP TAG`
 
 `DROP TAG` drops a tag or multiple tags from the schema, and deletes the tag from each vertex to which it is attached. `DROP TAG` cannot be run if the tag to be dropped is used in the definition of a tag-based graph; the graph must be dropped first.
 
-{% code title="Syntax for DROP TAG" %}
+.Syntax for DROP TAG
 
 [source,gsql]
 ----
 DROP TAG <tag_name> ["," <tag_name>]*
 ----
 
-{% endcode %}
+
 
 == *`RUN SCHEMA_CHANGE JOB`*
 
@@ -249,7 +249,7 @@ DROP TAG <tag_name> ["," <tag_name>]*
 
 Below is an example. The schema change job add_reviews adds a Review vertex type and two edge types to connect reviews to users and books, respectively.
 
-{% code title="SCHEMA_CHANGE JOB example" %}
+.SCHEMA_CHANGE JOB example
 
 [source,gsql]
 ----
@@ -262,11 +262,11 @@ CREATE SCHEMA_CHANGE JOB add_reviews FOR GRAPH Book_rating {
 RUN SCHEMA_CHANGE JOB add_reviews
 ----
 
-{% endcode %}
+
 
 == `DROP SCHEMA_CHANGE JOB`
 
-To drop (remove) a schema change job, run `DROP JOB schema_change_job` name from the GSQL shell. The specific schema change job will be removed from GSQL. Refer to the link:creating-a-loading-job.md#drop-job-statement[Creating a Loading Job page] for more information about dropping jobs.
+To drop (remove) a schema change job, run `DROP JOB schema_change_job` name from the GSQL shell. The specific schema change job will be removed from GSQL. Refer to the link:creating-a-loading-job.adoc#_drop_job_statement[Creating a Loading Job page] for more information about dropping jobs.
 
 [source,gsql]
 ----
@@ -286,7 +286,7 @@ The USE GLOBAL command changes a superuser's mode to Global mode.  In global mod
 
 The `CREATE GLOBAL SCHEMA_CHANGE JOB` block defines a sequence of `ADD`, `ALTER`, and `DROP` statements that modify either the attributes or the graph membership of global vertex or edge types. Unlike the non-global schema change job, the header does not include a graph name. However, the `ADD`/`ALTER`/`DROP` statements in the body do mention graphs.
 
-{% code title="CREATE GLOBAL SCHEMA_CHANGE JOB syntax" %}
+.CREATE GLOBAL SCHEMA_CHANGE JOB syntax
 
 [source,gsql]
 ----
@@ -295,7 +295,7 @@ CREATE GLOBAL SCHEMA_CHANGE JOB job_name {
 }
 ----
 
-{% endcode %}
+
 
 Although both global and local schema change jobs have `ADD` and `DROP` statements, they have different meanings. The table below outlines the differences.
 
@@ -327,7 +327,7 @@ Remember to include a semicolon at the end of each `DROP`, `ALTER`, or `ADD` sta
  The ADD statement adds existing global vertex or edge types to one of the graphs.
 ====
 
-{% code title="ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE (Global)" %}
+.ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE (Global)
 
 [source,gsql]
 ----
@@ -335,7 +335,7 @@ ADD VERTEX v_type_name [',' v_type_name...] TO GRAPH gname;
 ADD EDGE e_type_name [',' e_type_name...] TO GRAPH gname;
 ----
 
-{% endcode %}
+
 
 === *`ALTER VERTEX | EDGE`*
 
@@ -346,14 +346,14 @@ The `ALTER` statement is used to add attributes to or remove attributes from an 
 
 The ALTER statement is used to add attributes to or remove attributes from an existing vertex type or edge type. It can also be used to add or remove source (FROM) vertex types or destination (TO) vertex types of an edge type.  It may only be used within a SCHEMA_CHANGE JOB.  The basic format is as follows:
 
-{% code title="ALTER VERTEX / EDGE" %}
+.ALTER VERTEX / EDGE
 
 [source,gsql]
 ----
 ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 ----
 
-{% endcode %}
+
 
 ==== *`+ALTER ... ADD+`*
 
@@ -432,7 +432,7 @@ CREATE GLOBAL SCHEMA_CHANGE JOB job2 FOR GRAPH example_graph {
 
 The syntax for `+ALTER ... DROP+` is analogous to that of `+ALTER ... ADD+`.
 
-{% code title="ALTER ... DROP" %}
+.ALTER ... DROP
 
 [source,gsql]
 ----
@@ -440,20 +440,20 @@ ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
       attribute_name [',' attribute_name]* );
 ----
 
-{% endcode %}
+
 
 ==== `+ALTER VERTEX ... WITH+` (Beta)
 
-The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to link:defining-a-graph-schema.md#create-graph-as-beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
+The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to link:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
 
-{% code title="ALTER VERTEX WITH TAGGABLE" %}
+.ALTER VERTEX WITH TAGGABLE
 
 [source,gsql]
 ----
 ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 ----
 
-{% endcode %}
+
 
 === *`DROP VERTEX | EDGE` (global)*
 
@@ -462,7 +462,7 @@ ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
  The DROP statement removes specified global vertex or edge types from one of the graphs. The command does not delete any data.
 ====
 
-{% code title="drop vertex / edge" %}
+.drop vertex / edge
 
 [source,gsql]
 ----
@@ -470,7 +470,7 @@ DROP VERTEX v_type_name [',' v_type_name...] FROM GRAPH gname;
 DROP EDGE e_type_name   [',' e_type_name...] FROM GRAPH gname;
 ----
 
-{% endcode %}
+
 
 == *`RUN GLOBAL SCHEMA_CHANGE JOB`*
 
@@ -481,7 +481,7 @@ DROP EDGE e_type_name   [',' e_type_name...] FROM GRAPH gname;
 
 Below is an example. The schema change alter_friendship_make_library drops the on_date attribute from the friend_of edge and adds Book type to the library graph.
 
-{% code title="GLOBAL SCHEMA_CHANGE JOB example" %}
+.GLOBAL SCHEMA_CHANGE JOB example
 
 [source,gsql]
 ----
@@ -494,13 +494,13 @@ CREATE GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library {
 RUN GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library
 ----
 
-{% endcode %}
+
 
 == `DROP GLOBAL SCHEMA_CHANGE JOB`
 
 Global schema change jobs can be dropped by using the DROP JOB command. Refer to the xref:creating-a-loading-job.adoc[Creating a Loading Job page] for more information about dropping jobs.
 
-{% code title="DROP GLOBAL SCHEMA_CHANGE JOB example" %}
+.DROP GLOBAL SCHEMA_CHANGE JOB example
 
 [source,gsql]
 ----
@@ -508,7 +508,7 @@ USE GLOBAL
 DROP JOB alter_friendship_make_library
 ----
 
-{% endcode %}
+
 
 == `DROP ALL`
 

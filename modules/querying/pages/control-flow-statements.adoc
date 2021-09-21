@@ -19,7 +19,7 @@ The "Statement Types" subsection in the Chapter on "CREATE / INSTALL / RUN / SHO
 
 The IF statement provides conditional branching: execute a block of statements ( _queryBodyStmts_ or _dmlSubStmtList_ ) only if a given _condition_ is true. The IF statement allows for zero or more ELSE-IF clauses, followed by an optional ELSE clause. The IF statement can be used either at the query-body level or at the DML-sub-statement level. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
 
-{% code title="IF syntax" %}
+.IF syntax
 
 [source,gsql]
 ----
@@ -31,11 +31,11 @@ dmlSubIfStmt :=    IF condition THEN dmlSubStmtList
                  [ELSE dmlSubStmtList ] END
 ----
 
-{% endcode %}
+
 
 If a particular IF condition is not true, then the flow proceeds to the next ELSE IF condition.  When a true condition is encountered, its corresponding block of statements is executed, and then the IF statement terminates (skipping any remaining ELSE-IF or ELSE clauses). If an ELSE-clause is present, its block of statements are executed if none of the preceding conditions are true. Overall, the functionality can be summarized as "execute the first block of statements whose conditional test is true."
 
-{% code title="IF semantics" %}
+.IF semantics
 
 [source,gsql]
 ----
@@ -52,9 +52,9 @@ ELSE IF x == 7 THEN y = 5;   # y is 5  only if x is 7.
 ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
 ----
 
-{% endcode %}
 
-{% code title="Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level" %}
+
+.Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level
 
 [source,gsql]
 ----
@@ -75,9 +75,9 @@ CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRA
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 1 Results" %}
+
+.Example 1 Results
 
 [source,gsql]
 ----
@@ -111,9 +111,9 @@ GSQL > RUN QUERY countFriendsOf2("person2", false)
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2. IF-ELSE IF-ELSE at query-body level" %}
+
+.Example 2. IF-ELSE IF-ELSE at query-body level
 
 [source,gsql]
 ----
@@ -135,9 +135,9 @@ CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2 Results for Query calculateActivity" %}
+
+.Example 2 Results for Query calculateActivity
 
 [source,gsql]
 ----
@@ -165,9 +165,9 @@ GSQL > RUN QUERY calculateActivity("person5")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3. Nested IF at query-body level" %}
+
+.Example 3. Nested IF at query-body level
 
 [source,gsql]
 ----
@@ -201,9 +201,9 @@ CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3 Results for Query calculateInDepthActivity" %}
+
+.Example 3 Results for Query calculateInDepthActivity
 
 [source,gsql]
 ----
@@ -220,9 +220,9 @@ GSQL > RUN QUERY calculateInDepthActivity("person1")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 4. Nested IF at DML-sub level" %}
+
+.Example 4. Nested IF at DML-sub level
 
 [source,gsql]
 ----
@@ -250,9 +250,9 @@ CREATE QUERY ratePosts2() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 4 Results for Query ratePosts2" %}
+
+.Example 4 Results for Query ratePosts2
 
 [source,gsql]
 ----
@@ -315,13 +315,13 @@ GSQL > RUN QUERY ratePosts2()
 }
 ----
 
-{% endcode %}
+
 
 == CASE Statement
 
 The CASE statement provides conditional branching: execute a block of statements only if a given condition is true. CASE statements can be used as query-body statements or DML-sub-statements. (See the https://doc.tigergraph.com/2.1.3/GSQL-Language-Reference-Part-2---Querying.html#GSQLLanguageReferencePart2-Querying-queryBlock_vs_DMLSub_warning[note about differences in block syntax].)
 
-{% code title="CASE syntax" %}
+.CASE syntax
 
 [source,gsql]
 ----
@@ -331,7 +331,7 @@ dmlSubCaseStmt := CASE     (WHEN condition THEN dmlSubStmtList)+ [ELSE dmlSubStm
                | CASE expr (WHEN constant  THEN dmlSubStmtList)+ [ELSE dmlSubStmtList] END
 ----
 
-{% endcode %}
+
 
 One CASE statement contains one or more WHEN-THEN clauses, each WHEN presenting one expression. The CASE statement may also have one ELSE clause whose statements are executed if none of the preceding conditions are true.
 
@@ -339,7 +339,7 @@ There are two syntaxes of the CASE statement: one equivalent to an if-else state
 
 The switch version evaluates the expression following the keyword WHEN and compares its value to the expression immediately following the keyword CASE. These expressions do not need to be boolean; the CASE statement compares pairs of expressions to see if their values are equal. The first WHEN-THEN clause to have an expression value equal to the CASE expression value is executed; the remaining clauses are skipped. The optional ELSE-clause is executed only if no WHEN-clause expression has a value matching the CASE value.
 
-{% code title="CASE Semantics" %}
+.CASE Semantics
 
 [source,gsql]
 ----
@@ -364,9 +364,9 @@ END
 # Since drink = "Juice", 50 will be added to calories
 ----
 
-{% endcode %}
 
-{% code title="Example 1. CASE as IF-ELSE" %}
+
+.Example 1. CASE as IF-ELSE
 
 [source,gsql]
 ----
@@ -390,9 +390,9 @@ CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR 
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 1 Results for Query userNetworkPosts" %}
+
+.Example 1 Results for Query userNetworkPosts
 
 [source,gsql]
 ----
@@ -409,9 +409,9 @@ GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2. CASE as switch" %}
+
+.Example 2. CASE as switch
 
 [source,gsql]
 ----
@@ -432,9 +432,9 @@ CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2 Results for Query countGenderOfFriends" %}
+
+.Example 2 Results for Query countGenderOfFriends
 
 [source,gsql]
 ----
@@ -455,9 +455,9 @@ GSQL > RUN QUERY countGenderOfFriends("person4")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3. Multiple CASE statements" %}
+
+.Example 3. Multiple CASE statements
 
 [source,gsql]
 ----
@@ -476,9 +476,9 @@ CREATE QUERY scoreSocialImpact() FOR GRAPH socialNet api("v2") {
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3 Results for Query scoreSocialImpact" %}
+
+.Example 3 Results for Query scoreSocialImpact
 
 [source,gsql]
 ----
@@ -536,9 +536,9 @@ GSQL > RUN QUERY scoreSocialImpact()
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 4. Nested CASE statements" %}
+
+.Example 4. Nested CASE statements
 
 [source,gsql]
 ----
@@ -562,9 +562,9 @@ CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 4 Results for Query ratePosts" %}
+
+.Example 4 Results for Query ratePosts
 
 [source,gsql]
 ----
@@ -642,13 +642,13 @@ GSQL > RUN QUERY ratePosts()
 }
 ----
 
-{% endcode %}
+
 
 == WHILE Statement
 
 The WHILE statement provides unbounded iteration over a block of statements. WHILE statements can be used as query-body statements or DML-sub-statements. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
 
-{% code title="WHILE syntax" %}
+.WHILE syntax
 
 [source,gsql]
 ----
@@ -657,7 +657,7 @@ dmlSubWhileStmt :=    WHILE condition [LIMIT simpleSize] DO dmlSubStmtList END
 simpleSize := integer | varName | paramName
 ----
 
-{% endcode %}
+
 
 The WHILE statement iterates over its body ( _queryBodyStmts_ or _dmlSubStmtList_ ) until the _condition_ evaluates to false or until the iteration limit is met.  A _condition_ is any expression that evaluates to a boolean.  The condition is evaluated before each iteration. `CONTINUE` statements can be used to change the control flow within the while block. `BREAK` statements can be used to exit the while loop.
 
@@ -668,7 +668,7 @@ A WHILE statement may have an optional LIMIT clause.  LIMIT clauses has a consta
  If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
 ====
 
-{% code title="WHILE LIMIT semantics" %}
+.WHILE LIMIT semantics
 
 [source,gsql]
 ----
@@ -692,11 +692,11 @@ WHILE v.size() !=0 DO
 END;
 ----
 
-{% endcode %}
+
 
 Below are a number of examples that demonstrate the use of WHILE statements.
 
-{% code title="Example 1. Simple WHILE loop" %}
+.Example 1. Simple WHILE loop
 
 [source,gsql]
 ----
@@ -718,9 +718,9 @@ CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
 }
 ----
 
-{% endcode %}
 
-{% code title="reachable Results" %}
+
+.reachable Results
 
 [source,gsql]
 ----
@@ -895,9 +895,9 @@ GSQL > RUN QUERY reachable("person1")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2. WHILE loop using a LIMIT" %}
+
+.Example 2. WHILE loop using a LIMIT
 
 [source,gsql]
 ----
@@ -919,9 +919,9 @@ CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
 }
 ----
 
-{% endcode %}
 
-{% code title="reachableWithinTwo Results" %}
+
+.reachableWithinTwo Results
 
 [source,gsql]
 ----
@@ -1087,13 +1087,13 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
 }
 ----
 
-{% endcode %}
+
 
 == FOREACH Statement
 
 The FOREACH statement provides bounded iteration over a block of statements. FOREACH statements can be used as query-body statements or DML-sub-statements. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
 
-{% code title="FOREACH syntax" %}
+.FOREACH syntax
 
 [source,gsql]
 ----
@@ -1107,7 +1107,7 @@ keyVar := name
 valueVar := name
 ----
 
-{% endcode %}
+
 
 The formal syntax for forEachControl appears complex.  It can be broken down into the following cases:
 
@@ -1142,7 +1142,7 @@ The clause RANGE[a,b].STEP(c)  produces the sequence of integers from a to b, in
 
 If the .STEP method is not given, then the step size c = 1.
 
-{% code title="Nested FOREACH IN RANGE with MapAccum" %}
+.Nested FOREACH IN RANGE with MapAccum
 
 [source,gsql]
 ----
@@ -1164,9 +1164,9 @@ CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Results for Query foreachRangeEx" %}
+
+.Results for Query foreachRangeEx
 
 [source,gsql]
 ----
@@ -1183,9 +1183,9 @@ GSQL > RUN QUERY foreachRangeEx()
 }
 ----
 
-{% endcode %}
 
-{% code title="FOREACH IN RANGE with step" %}
+
+.FOREACH IN RANGE with step
 
 [source,gsql]
 ----
@@ -1198,11 +1198,11 @@ CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
 }
 ----
 
-{% endcode %}
+
 
 The step value can be positive for an ascending range or negative for a descending range.  If the step has the wrong polarity, then the loop has zero iterations; that is, the exit condition is already satisfied.
 
-{% code title="foreachRangeStep.json Results" %}
+.foreachRangeStep.json Results
 
 [source,gsql]
 ----
@@ -1243,11 +1243,11 @@ GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
 }
 ----
 
-{% endcode %}
+
 
 === Query-body-level FOREACH Examples
 
-{% code title="Example 1 - FOREACH with ListAccum" %}
+.Example 1 - FOREACH with ListAccum
 
 [source,gsql]
 ----
@@ -1271,9 +1271,9 @@ CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="companyCount Results" %}
+
+.companyCount Results
 
 [source,gsql]
 ----
@@ -1301,9 +1301,9 @@ GSQL > RUN QUERY companyCount("can")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2 - FOREACH with a seed set" %}
+
+.Example 2 - FOREACH with a seed set
 
 [source,gsql]
 ----
@@ -1328,9 +1328,9 @@ CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="employeesByCompany Results" %}
+
+.employeesByCompany Results
 
 [source,gsql]
 ----
@@ -1469,9 +1469,9 @@ GSQL > RUN QUERY employeesByCompany("us")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3 - Nested FOREACH with MapAccum" %}
+
+.Example 3 - Nested FOREACH with MapAccum
 
 [source,gsql]
 ----
@@ -1503,9 +1503,9 @@ CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="employeeByCountry Results" %}
+
+.employeeByCountry Results
 
 [source,gsql]
 ----
@@ -1529,11 +1529,11 @@ GSQL > RUN QUERY employeeByCountry("us")
 }
 ----
 
-{% endcode %}
+
 
 === DML-sub FOREACH Examples
 
-{% code title="ACCUM FOREACH" %}
+.ACCUM FOREACH
 
 [source,gsql]
 ----
@@ -1567,9 +1567,9 @@ CREATE QUERY topicLikes() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Results for Query topicLikes" %}
+
+.Results for Query topicLikes
 
 [source,gsql]
 ----
@@ -1591,9 +1591,9 @@ GSQL > RUN QUERY topicLikes()
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 1 - POST-ACCUM FOREACH" %}
+
+.Example 1 - POST-ACCUM FOREACH
 
 [source,gsql]
 ----
@@ -1623,9 +1623,9 @@ CREATE QUERY friendGender() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Results for Query friendGender" %}
+
+.Results for Query friendGender
 
 [source,gsql]
 ----
@@ -1645,7 +1645,7 @@ GSQL > RUN QUERY friendGender()
 }
 ----
 
-{% endcode %}
+
 
 == CONTINUE and BREAK Statements
 
@@ -1655,7 +1655,7 @@ The BREAK statement branches control flow out of the loop, i.e., it will exit th
 
 Below are a number of examples that demonstrate the use of BREAK and CONTINUE.
 
-{% code title="Continue and Break Semantics" %}
+.Continue and Break Semantics
 
 [source,gsql]
 ----
@@ -1678,9 +1678,9 @@ END;
 # i is now 5
 ----
 
-{% endcode %}
 
-{% code title="Example 1. Break" %}
+
+.Example 1. Break
 
 [source,gsql]
 ----
@@ -1710,9 +1710,9 @@ CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
 }
 ----
 
-{% endcode %}
 
-{% code title="Results of Query findDegreeOfCats" %}
+
+.Results of Query findDegreeOfCats
 
 [source,gsql]
 ----
@@ -1740,9 +1740,9 @@ GSQL > RUN QUERY findDegreeOfCats("person4")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 2. findEnoughFriends.gsql: While loop using continue statement" %}
+
+.Example 2. findEnoughFriends.gsql: While loop using continue statement
 
 [source,gsql]
 ----
@@ -1778,9 +1778,9 @@ CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
 }
 ----
 
-{% endcode %}
 
-{% code title="findEnoughFriends.json Example 2 Results" %}
+
+.findEnoughFriends.json Example 2 Results
 
 [source,gsql]
 ----
@@ -1906,9 +1906,9 @@ GSQL > RUN QUERY findEnoughFriends("person1")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3. While loop using break statement" %}
+
+.Example 3. While loop using break statement
 
 [source,gsql]
 ----
@@ -1937,9 +1937,9 @@ CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 3. topkCompanies Results" %}
+
+.Example 3. topkCompanies Results
 
 [source,gsql]
 ----
@@ -1974,9 +1974,9 @@ GSQL > RUN QUERY topkCompanies("person2", 3)
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 4 - Usage of CONTINUE in FOREACH" %}
+
+.Example 4 - Usage of CONTINUE in FOREACH
 
 [source,gsql]
 ----
@@ -2005,9 +2005,9 @@ CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="companyByCountry Results" %}
+
+.companyByCountry Results
 
 [source,gsql]
 ----
@@ -2028,9 +2028,9 @@ GSQL > RUN QUERY companyByCountry("us")
 }
 ----
 
-{% endcode %}
 
-{% code title="Example 5 - Usage of BREAK in FOREACH" %}
+
+.Example 5 - Usage of BREAK in FOREACH
 
 [source,gsql]
 ----
@@ -2059,9 +2059,9 @@ CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="employmentByCountry Result" %}
+
+.employmentByCountry Result
 
 [source,gsql]
 ----
@@ -2085,4 +2085,4 @@ GSQL > RUN QUERY employmentByCountry("us")
 }
 ----
 
-{% endcode %}
+

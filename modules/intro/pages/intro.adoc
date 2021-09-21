@@ -2,12 +2,10 @@
 
 The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.  In short, TigerGraph users do most of their work via the GSQL program. This document presents the syntax and features of the GSQL language.
 
-This document is a reference manual, not a tutorial. The user should read the  link:../../start/get-started/[GET STARTED Tutorial] prior to using this document. There are also User Guides or Tutorials for particular aspects of the GSQL environment. This document is best used when the reader already has some basic familiarity with running GSQL and then wants a more detailed understanding of a particular topic.
-
 The GSQL Language Reference is divided into two major parts:
 
-* link:ddl-and-loading/[Part 1]describes system basics, defining a graph schema, and loading data.
-* link:querying/[Part 2] describes querying.
+* xref:ddl-and-loading:system-and-language-basics.adoc[Part 1] describes system basics, defining a graph schema, and loading data.
+* xref:querying:README.adoc[Part 2] describes querying.
 
 Each of the two parts also has appendices, with the formal grammar, reference data models for examples, lists of reserved words, and more.
 
@@ -24,18 +22,18 @@ This guide uses conventional notation for software documentation.  In particular
 For more convenient display, long statements in this guide may sometimes be displayed on multiple lines.  This is for display purposes only; the actual code must be entered as a single line (unless the multi-line mode is used).  When necessary, the examples may show a shell prompt before the start of a statement, to clearly mark where each statement begins. +
 Example: A SELECT query is grammatically a single statement, so GSQL requires that it be entered as a single line.
 
-{% code title="Long statement displayed as one line" %}
+.Long statement displayed as one line
 
 [source,gsql]
 ----
 SELECT *|attribute_name FROM vertex_type_name [WHERE conditions] [ORDER BY attribute1,attribute2,...] [LIMIT k]
 ----
 
-{% endcode %}
+
 
 However, the statement is easier to read and to understand when displayed one clause per line:
 
-{% code title="Long statement displayed on multiple lines but with only one prompt" %}
+.Long statement displayed on multiple lines but with only one prompt
 
 [source,gsql]
 ----
@@ -46,7 +44,7 @@ SELECT *|attribute_name
     [LIMIT k]
 ----
 
-{% endcode %}
+
 
 * *Repeated zero or more times*  In template code, it is sometimes desirable to show that a term is repeated an arbitrary number of times. For example, a vertex definition contains zero or more user-defined attributes. A loading job contains one or more LOAD statements. In formal template code, if an asterisk (Kleene star) immediately follows option brackets, then the bracketed term can be repeated zero or more times.  For example:
 

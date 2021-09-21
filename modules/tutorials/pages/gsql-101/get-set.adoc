@@ -24,7 +24,7 @@ The friendship loop shows that a friendship is between a person and another pers
 
 For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
 
-{% code title="person.csv" %}
+.person.csv
 
 [,coffeescript]
 ----
@@ -38,9 +38,9 @@ Nancy,female,20,ky
 Jack,male,26,fl
 ----
 
-{% endcode %}
 
-{% code title="friendship.csv" %}
+
+.friendship.csv
 
 [,coffeescript]
 ----
@@ -54,7 +54,7 @@ Nancy,Jack,2017-03-02
 Dan,Kevin,2015-12-30
 ----
 
-{% endcode %}
+
 
 === Prepare Your TigerGraph Environment +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
 
@@ -63,7 +63,7 @@ First, let's check that you can access GSQL.
 . Open a Linux shell.
 . Type gsql as below. A GSQL shell prompt should appear as below.
 +
-{% code title="Linux Shell" %}
+.Linux Shell
 +
 [,bash]
 ----
@@ -71,13 +71,13 @@ $ gsql
 GSQL >
 ----
 +
-{% endcode %}
+
 
 . If the GSQL shell does not launch, try resetting the system with "gadmin start all". If you need further help, please see https://docs.tigergraph.com/admin/admin-guide/system-management/management-with-gadmin#gadmin-start[manage TigerGraph with gadmin] and   xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs].
 
 If this is your first time using GSQL, the TigerGraph data store is probably empty.  However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
 
-{% code title="GSQL shell - an empty database catalog" %}
+.GSQL shell - an empty database catalog
 
 [,text]
 ----
@@ -92,11 +92,11 @@ Jobs:
 Json API version: v2
 ----
 
-{% endcode %}
+
 
 If the data catalog is not empty, you will need to empty it to start this tutorial. We'll assume you have your coworkers' permission.  Use the command DROP ALL to delete all the database data, its schema, and all related definitions. This command takes about a minute to run.
 
-{% code title="GSQL shell - DROP ALL" %}
+.GSQL shell - DROP ALL
 
 [,text]
 ----
@@ -111,7 +111,7 @@ Graph store /usr/local/tigergraph/gstore/0/ has been cleared!
 Everything is dropped.
 ----
 
-{% endcode %}
+
 
 [CAUTION]
 ====
@@ -119,7 +119,7 @@ Everything is dropped.
 
 If you need to restart TigerGraph for any reason, use the following command sequence:
 
-{% code title="Linux Shell - Restarting TigerGraph services" %}
+.Linux Shell - Restarting TigerGraph services
 
 [,bash]
 ----
@@ -132,7 +132,7 @@ Password:tigergraph
 $ gadmin restart -y
 ----
 
-{% endcode %}
+
 ====
 
 [NOTE]
@@ -141,7 +141,7 @@ $ gadmin restart -y
 
 You can also run GSQL commands from a Linux shell. To run a single command, just use "gsql" followed by the command line enclosed in single quotes. (The quotes aren't necessary if there is no parsing ambiguity; it's safer to just use them.)  For example,
 
-{% code title="Linux shell - GSQL commands from a Linux shell" %}
+.Linux shell - GSQL commands from a Linux shell
 
 [,bash]
 ----
@@ -151,7 +151,7 @@ gsql 'drop all'
 gsql 'ls'
 ----
 
-{% endcode %}
+
 
 You can also execute a series of commands which you have stored in a file, by simply invoking "gsql" following by the name of the file.
 ====

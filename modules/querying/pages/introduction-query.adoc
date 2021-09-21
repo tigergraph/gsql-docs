@@ -8,7 +8,7 @@ This document focuses on the formal specification for the GSQL Query Language. I
 
 == Schemas for Example Graphs
 
-{% code title="Graph Schema: socialNet" %}
+.Graph Schema: socialNet
 
 [source,gsql]
 ----
@@ -19,9 +19,9 @@ CREATE DIRECTED EDGE posted(FROM person, TO post)
 CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
 ----
 
-{% endcode %}
 
-{% code title="Graph Schema: workNet" %}
+
+.Graph Schema: workNet
 
 [source,gsql]
 ----
@@ -30,9 +30,9 @@ CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
 CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
 ----
 
-{% endcode %}
 
-{% code title="Graph Schema: friendNet" %}
+
+.Graph Schema: friendNet
 
 [source,gsql]
 ----
@@ -41,9 +41,9 @@ CREATE UNDIRECTED EDGE friend(FROM person, TO person)
 CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
 ----
 
-{% endcode %}
 
-{% code title="Graph Schema: computerNet" %}
+
+.Graph Schema: computerNet
 
 [source,gsql]
 ----
@@ -51,9 +51,9 @@ CREATE VERTEX computer(PRIMARY_ID compID STRING, id STRING)
 CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed INT)
 ----
 
-{% endcode %}
 
-{% code title="Graph Schema: minimalNet" %}
+
+.Graph Schema: minimalNet
 
 [source,gsql]
 ----
@@ -61,9 +61,9 @@ CREATE VERTEX testV(PRIMARY_ID id STRING)
 CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
 ----
 
-{% endcode %}
 
-{% code title="Graph Schema: investmentNet" %}
+
+.Graph Schema: investmentNet
 
 [source,gsql]
 ----
@@ -73,4 +73,4 @@ CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UIN
 CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
 ----
 
-{% endcode %}
+

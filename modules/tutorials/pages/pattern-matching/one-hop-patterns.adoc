@@ -51,7 +51,7 @@ The empty parentheses `()` means any edge, directed or undirected.
 
 Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined as an explicit set, prior to the SELECT statement.  A typical approach is shown here.
 
-{% code title="Seed set definition required in classic GSQL" %}
+.Seed set definition required in classic GSQL
 
 [source,gsql]
 ----
@@ -62,7 +62,7 @@ CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
 }
 ----
 
-{% endcode %}
+
 
 Beginning in TigerGraph 3.0, SYNTAX V2 treats the source vertex set the same as the target vertex set.  That is, the source or the target vertex set may be:
 
@@ -110,20 +110,20 @@ To use pattern matching, you need to either set a session parameter or specify i
 
 You can use the SET command to assign a value to the _syntax_version_ session parameter: v1 for classic syntax; v2 for pattern matching. If the parameter is never set, the classic v1 syntax is enabled. Once set, the selection remains valid for the duration of the GSQL client session, or until it is changed with another SET command.
 
-{% code title="GSQL: Set Syntax Version By A Session Parameter" %}
+.GSQL: Set Syntax Version By A Session Parameter
 
 [source,gsql]
 ----
 SET syntax_version="v2"
 ----
 
-{% endcode %}
+
 
 === Query-Level SYNTAX option
 
 You can also select the syntax by using the SYNTAX clause in the CREATE QUERY statement: v1 for classic syntax (default); v2 for pattern matching. The query-level SYNTAX option overrides the syntax_version session parameter.
 
-{% code title="GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query " %}
+.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query 
 
 [source,gsql]
 ----
@@ -133,7 +133,7 @@ CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
 }
 ----
 
-{% endcode %}
+
 
 == Running Anonymous Queries Without Installing
 
@@ -152,7 +152,7 @@ Recommendation: Increase the query timeout threshold.
 
 Interpreted queries may run slower than installed queries, so we recommend increasing the query timeout threshold:
 
-{% code title="GSQL: Set Longer Timeout" %}
+.GSQL: Set Longer Timeout
 
 [source,coffeescript]
 ----
@@ -161,14 +161,14 @@ Interpreted queries may run slower than installed queries, so we recommend incre
 SET query_timeout = 60000
 ----
 
-{% endcode %}
+
 ====
 
 == Examples of 1-Hop Fixed Length Query
 
 *Example 1*. Find persons who know the person named "Viktor Akhiezer" and return the top 3 oldest such persons.
 
-{% code title="Example 1. Left Directed Edge Pattern" %}
+.Example 1. Left Directed Edge Pattern
 
 [source,gsql]
 ----
@@ -186,7 +186,7 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 [NOTE]
 ====
@@ -198,16 +198,16 @@ Syntax Enhancement in TigerGraph 3.0+
 
 You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example1.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 1" %}
+
+. Output of Example 1
 
 [source,coffeescript]
 ----
@@ -251,11 +251,11 @@ gsql example1.gsql
 }
 ----
 
-{% endcode %}
+
 
 *Example 2*. Find the total number of comments and total number of posts liked by Viktor. A Person can reach Comments or Posts via a directed edge LIKES.
 
-{% code title="Example 2. Right-directed Edge Pattern" %}
+.Example 2. Right-directed Edge Pattern
 
 [source,gsql]
 ----
@@ -279,20 +279,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in Linux.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example2.gsql
 ----
 
-{% endcode %}
 
-{% code title="Output of Example 2." %}
+
+.Output of Example 2.
 
 [source,coffeescript]
 ----
@@ -316,13 +316,13 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 3*. Solve the same problem as in Example 2, but use a left-directed edge pattern.
 
 Note below (line 8) that the source vertex set are now Comment and Post, and the target is Person.
 
-{% code title="Example 3. Left-directed Edge Pattern" %}
+.Example 3. Left-directed Edge Pattern
 
 [source,gsql]
 ----
@@ -345,13 +345,13 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in linux command line. The output should be the same as in Example 2.
 
 *Example 4*. Find Viktor Akhiezer's total number of related comments and total number of related posts. That is, a comment or post is either created by Viktor or is liked by Viktor. Note that the HAS_CREATOR edge type starts from Comment|Post, and the LIKES edge type starts from Person.
 
-{% code title="Example 4. Disjunctive 1-hop edge pattern." %}
+.Example 4. Disjunctive 1-hop edge pattern.
 
 [source,gsql]
 ----
@@ -375,20 +375,20 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in Linux:
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,coffeescript]
 ----
 gsql example4.gsql
 ----
 
-{% endcode %}
 
-{% code title="Output of Example 4." %}
+
+.Output of Example 4.
 
 [source,coffeescript]
 ----
@@ -412,11 +412,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use wildcard "_" to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
 
-{% code title="Example 5. Disjunctive 1-hop edge pattern." %}
+.Example 5. Disjunctive 1-hop edge pattern.
 
 [source,gsql]
 ----
@@ -434,20 +434,20 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in Linux:
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example5.gsql
 ----
 
-{% endcode %}
 
-{% code title="Output of Example 5." %}
+
+.Output of Example 5.
 
 [source,coffeescript]
 ----
@@ -464,4 +464,4 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+

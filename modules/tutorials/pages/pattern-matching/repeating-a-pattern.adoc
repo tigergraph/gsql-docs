@@ -53,7 +53,7 @@ In this tutorial, we will use the Interpreted Mode for GSQL, introduced in Tiger
 
 *Example 1*. Find the direct or indirect superclass (including the self class) of the TagClass whose name is "TennisPlayer".
 
-{% code title="Example 1.  Directed Edge Pattern Unconstrained Repetition " %}
+.Example 1.  Directed Edge Pattern Unconstrained Repetition 
 
 [source,gsql]
 ----
@@ -69,22 +69,22 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example1.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example1.gsql
 ----
 
-{% endcode %}
+
 
 Note below that the starting vertex s, whose name is TennisPlayer, is also a match, using a path with zero hops.
 
-{% code title=" Output of Example 1" %}
+. Output of Example 1
 
 [source,coffeescript]
 ----
@@ -147,11 +147,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 2*. Find the immediate superclass of the TagClass whose name is "TennisPlayer". (This is equivalent to a 1-hop non-repeating pattern.)
 
-{% code title="Exmaple 2. Exactly 1 Repetition of A Directed Edge" %}
+.Exmaple 2. Exactly 1 Repetition of A Directed Edge
 
 [source,gsql]
 ----
@@ -167,20 +167,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example2.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 2" %}
+
+. Output of Example 2
 
 [source,coffeescript]
 ----
@@ -205,11 +205,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 3*. Find the 1 to 2 hops direct and indirect superclasses of the TagClass whose name is "TennisPlayer".
 
-{% code title="Example 3.  1 to 2 Repetition Of A Directed Edge. " %}
+.Example 3.  1 to 2 Repetition Of A Directed Edge. 
 
 [source,gsql]
 ----
@@ -225,20 +225,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example3.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 3" %}
+
+. Output of Example 3
 
 [source,coffeescript]
 ----
@@ -274,11 +274,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 4*. Find the superclasses within 2 hops of the TagClass whose name is "TennisPlayer".
 
-{% code title="Example 4.  Up-to 2 Repetition Of A Directed Edge. " %}
+.Example 4.  Up-to 2 Repetition Of A Directed Edge. 
 
 [source,gsql]
 ----
@@ -294,20 +294,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example4.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 4" %}
+
+. Output of Example 4
 
 [source,coffeescript]
 ----
@@ -352,11 +352,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 5*. Find the superclasses at least one hop from the TagClass whose name is "TennisPlayer".
 
-{% code title="Example 5.  At Least 1 Repetition  Of A Directed Edge. " %}
+.Example 5.  At Least 1 Repetition  Of A Directed Edge. 
 
 [source,gsql]
 ----
@@ -372,20 +372,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example5.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 5" %}
+
+. Output of Example 5
 
 [source,coffeescript]
 ----
@@ -439,11 +439,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 6*. Find the 3 most recent comments that are liked or created by Viktor Akhiezer, and the total number of comments related to (created or liked by) Viktor Akhiezer.
 
-{% code title="Example 6.  Disjunctive 1-Repetition Directed Edge. " %}
+.Example 6.  Disjunctive 1-Repetition Directed Edge. 
 
 [source,gsql]
 ----
@@ -467,20 +467,20 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example6.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example6.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 6" %}
+
+. Output of Example 6
 
 [source,coffeescript]
 ----
@@ -537,4 +537,4 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+

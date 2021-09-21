@@ -2,7 +2,7 @@
 
 The SQL-like SELECT statement defines a tabular output. It introduces the GROUP BY clause, as well as internal table structures which can be printed.
 
-{% code title="EBNF for SQL-Like Select Statement" %}
+.EBNF for SQL-Like Select Statement
 
 [source,gsql]
 ----
@@ -22,7 +22,7 @@ columnName := name
 tableName := name
 ----
 
-{% endcode %}
+
 
 Just as in SQL, the SELECT keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.  The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query. A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
 
@@ -124,7 +124,7 @@ CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
 
 The optional GROUP BY clause acts just as it does in basic SQL: it groups and merge rows of data together, so that the output table summarizes the data, rather than showing every individual tuple which matches the SELECT and FROM clauses.
 
-{% code title="EBNF for GROUP BY clause" %}
+.EBNF for GROUP BY clause
 
 [source,gsql]
 ----
@@ -132,7 +132,7 @@ groupByClause := GROUP BY groupExpr ("," groupExpr)*
 groupExpr = expr
 ----
 
-{% endcode %}
+
 
 The SELECT clause's list of column expressions defines a set of tuples or rows. All the tuples which have the same value for `groupExpr` are grouped together. If there is a second `groupExpr`, then this is used to subdivide each group into subgroups, and so on through the list of `groupExpr` from left to right.
 
@@ -162,7 +162,7 @@ The non-grouped output would look like this:
 
 If we want to group by country and then by work status, we could have this:
 
-{% code title="Coordination between SELECT columns and GROUP BY expressions" %}
+.Coordination between SELECT columns and GROUP BY expressions
 
 [source,gsql]
 ----
@@ -171,7 +171,7 @@ FROM person:p -(worksFor:w)- company:c
 GROUP BY c.country, w.fulltime
 ----
 
-{% endcode %}
+
 
 Then the grouped output would look like this:
 

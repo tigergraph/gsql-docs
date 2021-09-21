@@ -13,7 +13,7 @@ A GSQL parameterized query has three steps.
 
 Now, let's write our first GSQL query. We'll display all the direct (1-hop) neighbors of a person, given as an input parameter.
 
-{% code title="GSQL command" %}
+.GSQL command
 
 [,gsql]
 ----
@@ -26,7 +26,7 @@ CREATE QUERY hello(VERTEX<person> p) {
 }
 ----
 
-{% endcode %}
+
 
 This query features one SELECT statement.  The SELECT statements here are much more powerful than the ones in built-in queries. Here you can do the following:The query starts by seeding a vertex set "Start" with the person vertex identified by parameter _p_ passed in from the query call. The curly braces tell GSQL to construct a set containing the enclosed items.
 
@@ -44,7 +44,7 @@ Last, we print out the Result vertex set, in JSON format.
 
 Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the @filename syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using @hello.qsql ( Note that if you are not in the /home/tigergraph folder when you start gsql, then you can use the absolute path to invoke a gsql file. e.g., `@/home/tigergraph/hello.gsql` *``*) Then run the "ls" command to see that the query is now in the catalog.
 
-{% code title="GSQL shell" %}
+.GSQL shell
 
 [,gsql]
 ----
@@ -73,22 +73,22 @@ Queries:
   - hello(vertex<person> p)
 ----
 
-{% endcode %}
+
 
 == Install a Query
 
 However, the query is not installed yet; it is not ready to run. In the GSQL shell, type the following command to installed the just added query "hello".
 
-{% code title="GSQL command" %}
+.GSQL command
 
 [,gsql]
 ----
 INSTALL QUERY hello
 ----
 
-{% endcode %}
 
-{% code title="GSQL shell" %}
+
+.GSQL shell
 
 [,coffeescript]
 ----
@@ -99,7 +99,7 @@ hello query: curl -X GET 'http://127.0.0.1:9000/query/social/hello?p=VALUE'. Add
 [========================================================================================================] 100% (1/1)
 ----
 
-{% endcode %}
+
 
 It takes about 1 minute for the database to install this new query. Be patient! For queries on large datasets, this small investment pays off many times over in faster query execution, particularly if you will run the query many times, with different parameters. The installation will generate machine instructions and a REST endpoint. After the progress bar reaches 100%, we are ready to run this query.
 
@@ -107,18 +107,18 @@ It takes about 1 minute for the database to install this new query. Be patient! 
 
 To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of parameter values.
 
-{% code title="GSQL command - run query examples" %}
+.GSQL command - run query examples
 
 [,coffeescript]
 ----
 RUN QUERY hello("Tom")
 ----
 
-{% endcode %}
+
 
 The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan and Jenny.
 
-{% code title="GSQL shell" %}
+.GSQL shell
 
 [,coffeescript]
 ----
@@ -156,24 +156,24 @@ GSQL > RUN QUERY hello("Tom")
 }
 ----
 
-{% endcode %}
+
 
 == Run a Query as a REST Endpoint
 
 Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the curl command is the most popular way to submit an http request. In the example below, the portion that is standard for all queries is shown in bold _**_; the portion in normal weight pertains to this particular query and parameter value. The JSON result will be returned to the Linux shell's standard output. So, our parameterized query becomes a http service!
 
-{% code title="Linux shell" %}
+.Linux shell
 
 [,bash]
 ----
 curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 ----
 
-{% endcode %}
+
 
 Finally, to see the GSQL text of a query in the catalog, you can use
 
-{% code title="GSQL command - show query example" %}
+.GSQL command - show query example
 
 [,coffeescript]
 ----
@@ -181,7 +181,7 @@ Finally, to see the GSQL text of a query in the catalog, you can use
 SHOW QUERY hello
 ----
 
-{% endcode %}
+
 
 Congratulations! At this point, you have gone through the whole process of defining, installing, and running a query.
 
@@ -195,7 +195,7 @@ The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INS
 
 Now, let's do a more advanced query. This time, we are going to learn to use the powerful built-in accumulators, which serves as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.  Runtime means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
 
-{% code title="GSQL command file - hello2.gsql" %}
+.GSQL command file - hello2.gsql
 
 [,gsql]
 ----
@@ -221,7 +221,7 @@ INSTALL QUERY hello2
 RUN QUERY hello2("Tom")
 ----
 
-{% endcode %}
+
 
 In this query we will find all the persons which are exactly 2 hops away from the parameterized input person. Just for fun, let's also compute the average age of those 2-hop neighbors.
 
@@ -250,14 +250,14 @@ We can execute this full set of commands _without_ entering the GSQL shell. Plea
 
 In a Linux shell, under /home/tigergraph, type the following:
 
-{% code title="Linux shell" %}
+.Linux shell
 
 [,bash]
 ----
 gsql hello2.gsql
 ----
 
-{% endcode %}
+
 
 [discrete]
 ==== GSQL Query Summary:

@@ -33,7 +33,7 @@ If the function requires a user-defined struct or helper function, define it in 
 
 Below is an example of a query UDF definition:
 
-{% code title="New code in ExprFunctions.hpp" %}
+.New code in ExprFunctions.hpp
 
 [source,cpp]
 ----
@@ -47,7 +47,7 @@ inline string reverse(string str){
 }
 ----
 
-{% endcode %}
+
 
 [CAUTION]
 ====
@@ -59,7 +59,7 @@ ____
 You might need to remove the include header ``#include <gle/engine/cpplib/headers.hpp>`` in ``ExprFunctions.hpp`` and ``ExprUtil.hpp` in order to compile.
 ____
 
-{% code title="test.cpp" %}
+.test.cpp
 
 [source,gsql]
 ----
@@ -72,7 +72,7 @@ int main () {
 }
 ----
 
-{% endcode %}
+
 ====
 
 === Step 3: Upload files
@@ -89,7 +89,7 @@ PUT ExprUtil successfully.
 
 The `PUT` command will automatically upload the files to all nodes in a cluster. Once the files are uploaded, you will be able to call the query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or executing GSQL scripts from a bash shell.
 
-{% code title="Example of a GSQL query that uses the UDF" %}
+.Example of a GSQL query that uses the UDF
 
 [source,gsql]
 ----
@@ -106,7 +106,7 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
 }
 ----
 
-{% endcode %}
+
 
 == Example
 
@@ -121,7 +121,7 @@ GSQL > GET ExprFunctions TO "/home/tigergraph/documents/udf.hpp"
 
 In the downloaded file, add the function definition for function `rng` and add the necessary include directives at the top:
 
-{% code title="udf.hpp" %}
+.udf.hpp
 
 [source,cpp]
 ----
@@ -166,7 +166,7 @@ namespace UDIMPL {
 #endif /* EXPRFUNCTIONS_HPP_ */
 ----
 
-{% endcode %}
+
 
 Lastly, use the `PUT` command to upload the file. This will uploaded the file to all nodes in a cluster:
 

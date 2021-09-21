@@ -6,7 +6,7 @@ So far, we have described pattern matching as one path pattern in a FROM clause.
 
 In general, a CPM query block consists of multiple patterns in the FROM clause. It has a structure illustrated below.
 
-{% code title="# Conjunctive Pattern Matching Syntax" %}
+.# Conjunctive Pattern Matching Syntax
 
 [source,gsql]
 ----
@@ -22,7 +22,7 @@ pattern := vertexPattern | edgePattern | (pathPattern ["," pathPattern])
 # vertexPattern and edgePattern are from classic GSQL
 ----
 
-{% endcode %}
+
 
 We elaborate on each of the clause.
 
@@ -109,7 +109,7 @@ You can ACCUM to any vertex variable in a CPM block.
 
 The ACCUM clause by default will execute _*as many times*_ _*as*_ the row (match) count of the CPM match table; each execution uses one row from the match table.
 
-{% code title="ACCUM To The Three Vertex Variables of A CPM Pattern" %}
+.ACCUM To The Three Vertex Variables of A CPM Pattern
 
 [source,gsql]
 ----
@@ -119,7 +119,7 @@ FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3,
 ACCUM x1.@cnt +=1, x2.@cnt += x3.quantity, x4.@cnt += x3.quantity
 ----
 
-{% endcode %}
+
 
 === POST-ACCUM Clause
 
@@ -127,7 +127,7 @@ POST-ACCUM for CPM behaves the same as POST-ACCUM for single path patterns. That
 
 For example, below we have three POST-ACCUM clauses. The first one iterates through``x1``, and for each x1, we do `@@cnt += x1.@cnt`. The second and third POST-ACCUMs iterate through `x2` and `x3` respectively, and accumulates their `@cnt` accumulator value into `@@cnt`.
 
-{% code title="POST-ACCUM to a global accumulator @@cnt, using three CPM Vertex Variables " %}
+.POST-ACCUM to a global accumulator @@cnt, using three CPM Vertex Variables 
 
 [source,gsql]
 ----
@@ -140,7 +140,7 @@ POST-ACCUM @@cnt += x2.@cnt
 POST-ACCUm @@cnt += x3.@cnt;
 ----
 
-{% endcode %}
+
 
 == Examples
 

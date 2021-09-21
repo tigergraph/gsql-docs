@@ -12,18 +12,18 @@
 
 To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A user name, password, and a graph name may also be provided on the command line.
 
-{% code title="GSQL command syntax for entering interactive mode" %}
+.GSQL command syntax for entering interactive mode
 
 [source,gsql]
 ----
 gsql [-u username] [-p password] [-g gname]
 ----
 
-{% endcode %}
+
 
 If a user name is provided but not a password, the GSQL system will then ask for the user's password:
 
-{% code title="Login example with user name" %}
+.Login example with user name
 
 [source,gsql]
 ----
@@ -32,11 +32,11 @@ Password for victor : ***
 GSQL >
 ----
 
-{% endcode %}
+
 
 If a user name is not given, then GSQL will assume that you are attempting to log in as the default tigergraph user:
 
-{% code title="Login example without user name" %}
+.Login example without user name
 
 [source,gsql]
 ----
@@ -45,7 +45,7 @@ Password for tigergraph : *****
 GSQL >
 ----
 
-{% endcode %}
+
 
 To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
 
@@ -78,7 +78,7 @@ Multi-line mode allows the user to enter several lines of text without triggerin
 
 To enter multi-line mode, use the command BEGIN.  The end-of-line character is now disabled from triggering execution.  The shell remains in multi-line mode until the command END is entered.  The END command also triggers the execution of the multi-line block.  In the example below, BEGIN and END are used to allow the SELECT statement to be split into several lines:
 
-{% code title="Example: BEGIN and END defining a multi-line block" %}
+.Example: BEGIN and END defining a multi-line block
 
 [source,gsql]
 ----
@@ -90,7 +90,7 @@ SELECT member_id, last_name, first_name,  date_joined, status
 END
 ----
 
-{% endcode %}
+
 
 Alternately, the ABORT command exits multi-line mode and discards the multi-line block.
 
@@ -106,18 +106,18 @@ os$ *gsql file.gsql*
 
 Similarly, a single GSQL command can be run by enclosing the command string in quotation marks and placing it at the end of the GSQL statement.  Either single or double quotation marks.  It is recommended to use single quotation marks to enclose the entire command and double quotation marks to enclose any strings within the command.
 
-{% code title="Login example with inline command or command file" %}
+.Login example with inline command or command file
 
 [source,gsql]
 ----
 gsql [-u username] [-g graphname] ['command_string' | command_file]
 ----
 
-{% endcode %}
+
 
 In the example below, the file name_query.gsql contains the multi-line CREATE QUERY block to define the query namesSimilar.
 
-{% code title="Example using command files and inline commands" %}
+.Example using command files and inline commands
 
 [source,gsql]
 ----
@@ -126,7 +126,7 @@ os$ gsql 'INSTALL QUERY namesSimilar'
 os$ gsql 'RUN QUERY namesSimilar (0,"michael","jackson",100)'
 ----
 
-{% endcode %}
+
 
 === *Help and Information*
 
@@ -237,7 +237,7 @@ does not exit on any error.This session parameter does not affect
 syntactic errors: GSQL will always exit on a syntactic error.
 |===
 
-{% code title="Example of exit_on_error = FALSE" %}
+.Example of exit_on_error = FALSE
 
 [source,gsql]
 ----
@@ -254,9 +254,9 @@ CREATE GRAPH g(v) #error 3: no graph definition has no edge type
 CREATE GRAPH g2(*)
 ----
 
-{% endcode %}
 
-{% code title="Results" %}
+
+.Results
 
 [source,gsql]
 ----
@@ -277,7 +277,7 @@ Finish restarting services in 11.955 seconds!
 The graph g2 is created.
 ----
 
-{% endcode %}
+
 
 == *Attribute Data Types*
 

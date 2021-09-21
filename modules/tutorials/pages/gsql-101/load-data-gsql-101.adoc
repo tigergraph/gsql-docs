@@ -10,7 +10,7 @@ If you need to exit the GSQL shell for any reason, you can do so by typing "quit
 
 The loading job below assumes that your data files are in the folder `/home/tigergraph`. If they are elsewhere, then in the loading job script below replace `/home/tigergraph/person.csv` and `/home/tigergraph/friendship.csv` with their corresponding file path respectively. Assuming you're (back) in the GSQL shell, enter the following set of commands.
 
-{% code title="GSQL commands to define a loading job" %}
+.GSQL commands to define a loading job
 
 [,gsql]
 ----
@@ -26,7 +26,7 @@ CREATE LOADING JOB load_social FOR GRAPH social {
 END
 ----
 
-{% endcode %}
+
 
 Let's walk through the commands:
 
@@ -39,7 +39,7 @@ Let's walk through the commands:
 
 When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
 
-{% code title="GSQL shell" %}
+.GSQL shell
 
 [,gsql]
 ----
@@ -57,24 +57,24 @@ GSQL > END
 The job load_social is created.
 ----
 
-{% endcode %}
+
 
 == Run a Loading Job
 
 You can now run your loading job to load data into your graph:
 
-{% code title="GSQL command" %}
+.GSQL command
 
 [,gsql]
 ----
 RUN LOADING JOB load_social
 ----
 
-{% endcode %}
+
 
 The result is shown below.
 
-{% code title="GSQL shell" %}
+.GSQL shell
 
 [,bash]
 ----
@@ -95,6 +95,6 @@ Job "social_m1.1528095850854" loading status
   +---------------------------------------------------------------------------+
 ----
 
-{% endcode %}
+
 
 Notice the location of the loading log file.  The example assumes that you installed TigerGraph in the default location, `/home/tigergraph/`. In your installation folder is the main product folder, tigergraph.  Within the tigergraph folder are several subfolders, such as logs, document, config, bin, and gstore. If you installed in a different location, say `/usr/local/`, then you would find the product folder at `/usr/local/tigergraph`.

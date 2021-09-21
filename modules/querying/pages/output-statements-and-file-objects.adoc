@@ -13,7 +13,7 @@ A query can print a maximum of 2GB of data.
 If the output is to a FILE object, then the size limit does not apply.
 ====
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -25,7 +25,7 @@ vSetProj  := expr [ AS jsonKey]
 jsonKey := name
 ----
 
-{% endcode %}
+
 
 Each PRINT statement contains a list of expressions for output data. The optional WHERE clause filters the output. If the _condition_ is false for any items, then those items are excluded from the output.
 
@@ -36,7 +36,7 @@ Each `printExpr` __contributes one key-value pair to the PRINT statement's JSON 
 If the query includes one more tabular SELECT statements, the PRINT statement can include table names. Both tabular and non-tabular `printExpr` expressions can be including in one PRINT statement.
 ====
 
-{% code title="Simple Example Showing JSON Output Format" %}
+.Simple Example Showing JSON Output Format
 
 [source,gsql]
 ----
@@ -66,7 +66,7 @@ PRINT str, number;
 }
 ----
 
-{% endcode %}
+
 
 === `PRINT` Expressions
 
@@ -118,7 +118,7 @@ Each data type has a distinct output format.
 ====
 Full details of vertices are printed only when part of a vertex set variable or vertex expression set. When a single vertex is printed (from a variable or accumulator whose data type happens to be VERTEX), only the vertex id is printed.
 
-{% code title="Cases where only the vertex id will be printed" %}
+.Cases where only the vertex id will be printed
 
 [source,gsql]
 ----
@@ -128,25 +128,25 @@ VERTEX v;                   // not a vertex set variable
 PRINT @@vList, v;           // output will contain only vertex ids
 ----
 
-{% endcode %}
+
 ====
 
 *Vertex (when not part of a vertex set variable)*
 
 The output is just the vertex id as a string:
 
-{% code title="Output Format for a Value which is a Vertex, not part of a Vertex Set Variable" %}
+.Output Format for a Value which is a Vertex, not part of a Vertex Set Variable
 
 [source,gsql]
 ----
 "<vertex_id>"
 ----
 
-{% endcode %}
+
 
 *Vertex (as part of a vertex set variable)*
 
-{% code title="Output Format for a Vertex as part of a Vertex Set Variable" %}
+.Output Format for a Vertex as part of a Vertex Set Variable
 
 [source,yaml]
 ----
@@ -161,11 +161,11 @@ The output is just the vertex id as a string:
 }
 ----
 
-{% endcode %}
+
 
 *Edge*
 
-{% code title="Output Format for a Value which is an Edge" %}
+.Output Format for a Value which is an Edge
 
 [source,yaml]
 ----
@@ -183,11 +183,11 @@ The output is just the vertex id as a string:
 }
 ----
 
-{% endcode %}
+
 
 *List, Set or Bag*
 
-{% code title="Output format for a Value which is a List, Set, or Bag" %}
+.Output format for a Value which is a List, Set, or Bag
 
 [source,gsql]
 ----
@@ -199,11 +199,11 @@ The output is just the vertex id as a string:
 ]
 ----
 
-{% endcode %}
+
 
 *Map*
 
-{% code title="Output Format for a Value which is a Map" %}
+.Output Format for a Value which is a Map
 
 [source,gsql]
 ----
@@ -215,11 +215,11 @@ The output is just the vertex id as a string:
 }
 ----
 
-{% endcode %}
+
 
 *Tuple*
 
-{% code title="Output Format for a Value which is a Tuple" %}
+.Output Format for a Value which is a Tuple
 
 [source,gsql]
 ----
@@ -231,11 +231,11 @@ The output is just the vertex id as a string:
 }
 ----
 
-{% endcode %}
+
 
 *Vertex Set Variable*
 
-{% code title="Output Format for a Value which is a Vertex Set Variable" %}
+.Output Format for a Value which is a Vertex Set Variable
 
 [source,gsql]
 ----
@@ -247,7 +247,7 @@ The output is just the vertex id as a string:
 ]
 ----
 
-{% endcode %}
+
 
 === Vertex Expression Set
 
@@ -255,7 +255,7 @@ A vertex expression set is a list of expressions which is applied to each vertex
 
 The easiest way to understand this is to consider examples containing only one term and then consider combinations. Consider the following example query. C is a vertex set variable containing the set of all company vertices. Furthermore, each vertex has a vertex-attached accumulator @count.
 
-{% code title="Example Query for Vertex Expression Set" %}
+.Example Query for Vertex Expression Set
 
 [source,gsql]
 ----
@@ -269,7 +269,7 @@ CREATE QUERY vExprSet () FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 If we print the full vertex set, the "attributes" field of each vertex will contain 3 fields: "id", "country", and "@count".  Now consider some simple vertex expression sets:
 
@@ -283,7 +283,7 @@ If we print the full vertex set, the "attributes" field of each vertex will cont
 
 The last example illustrates the general format for a vertex expression set:
 
-{% code title="Syntax for Vertex Expression Set" %}
+.Syntax for Vertex Expression Set
 
 [source,gsql]
 ----
@@ -291,7 +291,7 @@ vExprSet  := expr "[" vSetProj {, vSetProj} "]"
 vSetProj  := expr [ AS name]
 ----
 
-{% endcode %}
+
 
 The vertex expression set begins with the name of a vertex set variable.  It is followed by a list of attribute expressions, enclosed in square brackets. Each attribute expression follows the same rules described earlier in the Print Expressions section.  That is, each attribute expression may refer to one or more attributes or vertex-attached accumulators of the current vertices, as well as literals, local or global variables, and global accumulators. The allowed operators (for numeric, string, or set operations) are the same ones mentioned above.
 
@@ -301,7 +301,7 @@ The _value_ for the vertex expression set is a modified vertex set variable, whe
 
 An example which shows all of the cases described above, in combination, is shown below.
 
-{% code title="Print Basic Example" %}
+.Print Basic Example
 
 [source,gsql]
 ----
@@ -347,7 +347,7 @@ CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 [NOTE]
 ====
@@ -361,7 +361,7 @@ Note how the results of the six PRINT statements are grouped in the JSON "result
 . The 6th PRINT statement shows a vertex set expression for A, customized to include only one static attribute plus a newly computed attribute.
 ====
 
-{% code title="Results from Query printExampleV2 (WITH COMMENTS ADDED)" %}
+.Results from Query printExampleV2 (WITH COMMENTS ADDED)
 
 [source,gsql]
 ----
@@ -489,7 +489,7 @@ GSQL > RUN QUERY printExampleV2("person1")
 }
 ----
 
-{% endcode %}
+
 
 === Printing CSV to a FILE Object
 
@@ -528,7 +528,7 @@ Writing to FILE objects is optimized for parallel processing. Consequently, the 
 . Each line of data to print to a file includes a label which can be used to identify the data.
 ====
 
-{% code title="PRINT WHERE and PRINT TO_CSV FILE Object Example" %}
+.PRINT WHERE and PRINT TO_CSV FILE Object Example
 
 [source,gsql]
 ----
@@ -556,20 +556,20 @@ CREATE QUERY printExampleFile() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 == `FILE println` statement
 
 The `FILE println` statement writes data to a `FILE` object. Unlike the `PRINT` statement, which is a query-body level statement, the `FILE println` statement can be either a query-body level statement or a DML-sub-statement.
 
-{% code title="EBNF for FILE println statement" %}
+.EBNF for FILE println statement
 
 [source,gsql]
 ----
 printlnStmt := fileVar".println" "(" expr ("," expr)* ")"
 ----
 
-{% endcode %}
+
 
 `println` is a method of a FILE object variable. The `println` statement can be used either at the query-body level or a DML-sub-statement, e.g., within the ACCUM clause of a SELECT block. Each time `println` is called, it adds one new line of values to the `FILE` object, and then to the corresponding file.
 
@@ -585,7 +585,7 @@ The data from query-body level `FILE` print statements (either `TO_CSV` or `prin
 [discrete]
 ==== Example
 
-{% code title="File object query example" %}
+.File object query example
 
 [source,gsql]
 ----
@@ -606,11 +606,11 @@ INSTALL QUERY fileEx
 RUN QUERY fileEx("/home/tigergraph/files")
 ----
 
-{% endcode %}
+
 
 All of the `PRINT` statements in this example use the `TO_CSV` option, so there is no JSON output to the console.
 
-{% code title="Results from Query fileEx" %}
+.Results from Query fileEx
 
 [source,gsql]
 ----
@@ -627,11 +627,11 @@ GSQL > RUN QUERY fileEx("/home/tigergraph/fileEx.txt")
 }
 ----
 
-{% endcode %}
+
 
 All the output in this case goes to the `FILE` object. In the query definition, the line `"header"` is printed first, followed by the `println` statements in the `ACCUM` clause, and `"footer"` is printed last. The output in the file follows this order because the order of query-body level statements is maintained in the output.
 
-{% code title="File contents produced by fileEx example" %}
+.File contents produced by fileEx example
 
 [source,gsql]
 ----
@@ -645,7 +645,7 @@ person1,management financial
 footer
 ----
 
-{% endcode %}
+
 
 However, within the `ACCUM` clause itself, the order of the `println` statements is not guranteed.
 
@@ -653,7 +653,7 @@ However, within the `ACCUM` clause itself, the order of the `println` statements
 
 A FILE Object can be passed from one query to a subquery.  The subquery can then also write to the FILE object.
 
-{% code title="Example: query passing a FILE object to another query" %}
+.Example: query passing a FILE object to another query
 
 [source,gsql]
 ----
@@ -676,7 +676,7 @@ CREATE QUERY fileParamMain(STRING mainlabel) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 [source,text]
 ----
@@ -702,14 +702,14 @@ main,footer
 
 The LOG statement is another means to output data.  It works as a function that outputs information to a log file.
 
-{% code title="EBNF for LOG statement" %}
+.EBNF for LOG statement
 
 [source,gsql]
 ----
 logStmt := LOG "(" condition "," argList ")"
 ----
 
-{% endcode %}
+
 
 The first argument of the LOG statement is a boolean condition that enables or disables logging.  This allows logging to be easily turned on/off, for uses such as debugging.  After the condition, LOG takes one or more expressions (separated by commas).  These expressions are evaluated and output to the log file.
 
@@ -717,7 +717,7 @@ Unlike the PRINT statement, which can only be used as a query-body statement, th
 
 The values will be recorded in the GPE log. To find the log file after the query has completed, open a Linux shell and use the command  "gadmin log gpe".  It may show you more than one log file name; use the one ending in "INFO".  Search this file for "UDF_".
 
-{% code title="Examples" %}
+.Examples
 
 [source,gsql]
 ----
@@ -728,24 +728,24 @@ LOG(debug, 20);
 LOG(debug, 10, x);
 ----
 
-{% endcode %}
+
 
 == `RETURN` Statement
 
-{% code title="EBNF for RETURN statement" %}
+.EBNF for RETURN statement
 
 [source,gsql]
 ----
 returnStmt := RETURN expr
 ----
 
-{% endcode %}
+
 
 The RETURN statement specifies data that a link:operators-and-expressions.md#subquery[_subquery_] __passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
 
 For subqueries to return a link:accumulators.md#heapaccum[`HeapAccum`] or link:accumulators.md#groupbyaccum[`GroupByAccum`], the accumulators must be link:../ddl-and-loading/defining-a-graph-schema.md#catalog-level-typedef[defined at the catalog level]. See the example below:
 
-{% code title="Subquery Returning HeapAccum Example" %}
+.Subquery Returning HeapAccum Example
 
 [source,coffeescript]
 ----
@@ -767,4 +767,4 @@ CREATE QUERY query1() FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+

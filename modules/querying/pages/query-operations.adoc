@@ -16,7 +16,7 @@ To implement fine-grained control over which queries can be executed by which se
 . Create your queries, assigning each to its appropriate privilege group.
 ====
 
-{% code title="EBNF for CREATE QUERY" %}
+.EBNF for CREATE QUERY
 
 [source,coffeescript]
 ----
@@ -57,7 +57,7 @@ showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
 
-{% endcode %}
+
 
 A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation. Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data. A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing. A query can be run in one of three ways:
 
@@ -120,7 +120,7 @@ Typedefs allow the definition of custom types for use within the body.  The decl
 
 The query body may include calls to other queries. That is, the other queries are treated as subquery functions.  See the subsection on "link:operators-and-expressions.md#queries-as-functions[Queries as Functions]".
 
-{% code title="Example of a CREATE QUERY statement" %}
+.Example of a CREATE QUERY statement
 
 [source,coffeescript]
 ----
@@ -137,7 +137,7 @@ CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
 }
 ----
 
-{% endcode %}
+
 
 === Query parameter and return types
 
@@ -173,7 +173,7 @@ You can specify default values for parameters of primitive types when creating a
 
 To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
 
-{% code title="Example of a CREATE QUERY command with a default parameter value" %}
+.Example of a CREATE QUERY command with a default parameter value
 
 [source,coffeescript]
 ----
@@ -190,7 +190,7 @@ CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int
 }
 ----
 
-{% endcode %}
+
 
 === Dynamic querying
 
@@ -331,7 +331,7 @@ Guidelines for understanding statement type hierarchy:
 * The statements within a DML statement are DML-sub statements (comma-separated list).
 * The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
 
-{% code title="Schematic illustration of relationship between queryBodyStmt and DMLSubStmt" %}
+.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
 
 [source,coffeescript]
 ----
@@ -364,7 +364,7 @@ CREATE QUERY stmtTypes (parameterList) FOR GRAPH g [
 	other queryBodyStmt4;
 ----
 
-{% endcode %}
+
 
 Here is a descriptive list of query-body statements:
 
@@ -525,7 +525,7 @@ Here is a descriptive list of DML-sub-statements:
 
 There are two GSQL syntax options for Interpreted GSQL: link:query-operations.md#immediate-mode-define-and-interpret[Immediate mode] and link:query-operations.md#interpret-a-saved-query[Saved-query mode]. In addition there is also a predefined RESTful endpoint for running interpreted GSQL: `POST /gsqlserver/interpreted_query`.  The query body is sent as the payload of the request. The syntax is like the Immediate query option, except that it is possible to provide parameters, using the query string of the endpoint's request URL. The example below shows a parameterized query using the `POST /gsqlserver/interpreted_query` endpoint. For more details, see the link:../../restpp-api/[RESTPP API User Guide].
 
-{% code title="Interpreted GSQL REST Endpoint with Immediate Query" %}
+.Interpreted GSQL REST Endpoint with Immediate Query
 
 [source,csharp]
 ----
@@ -536,11 +536,11 @@ curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interprete
 '
 ----
 
-{% endcode %}
+
 
 === Immediate mode: define and interpret
 
-{% code title="interpret-anonymous-query syntax" %}
+.interpret-anonymous-query syntax
 
 [source,coffeescript]
 ----
@@ -550,7 +550,7 @@ interpretQuery := INTERPRET QUERY "(" ")"
                "{" queryBody "}"
 ----
 
-{% endcode %}
+
 
 This syntax is similar in concept to SQL queries. Queries are not named, do not accept parameters, and are not saved after being run. Syntax differences from compiled GSQL:
 
@@ -563,7 +563,7 @@ Compare the example below to the example in the `Create Query` section:
 * No query name, no parameters, no `RETURN` statement.
 * Because no parameter is allowed, the parameter `uid` is set within the query.
 
-{% code title="Example of Immediate Mode for INTERPRET QUERY" %}
+.Example of Immediate Mode for INTERPRET QUERY
 
 [source,coffeescript]
 ----
@@ -579,32 +579,32 @@ INTERPRET QUERY () FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 === Interpret a created query
 
-{% code title="interpret-saved-query syntax" %}
+.interpret-saved-query syntax
 
 [source,coffeescript]
 ----
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
 
-{% endcode %}
+
 
 This syntax is like `RUN` query, except
 
 . The keyword `RUN` is replaced with `INTERPRET`.
 . Some options may not be supported.
 
-{% code title="Example of Interpret-Only Mode for INTERPRET QUERY" %}
+.Example of Interpret-Only Mode for INTERPRET QUERY
 
 [source,coffeescript]
 ----
 INTERPRET QUERY createQueryEx ("Jane.Doe")
 ----
 
-{% endcode %}
+
 
 == `INSTALL QUERY`
 
@@ -674,7 +674,7 @@ You can also run an installed query through REST requests - see link:../../restp
 
 === Syntax
 
-{% code title="RUN QUERY syntax" %}
+.RUN QUERY syntax
 
 [source,bash]
 ----
@@ -686,7 +686,7 @@ parameterValueList := parameterValue ["," parameterValue]*
 parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
 ----
 
-{% endcode %}
+
 
 === Query parameters
 
@@ -922,7 +922,7 @@ Other top-level objects, such as "code" may appear in certain circumstances. Not
 
 Below is an example of the output of a successful query:
 
-{% code title="Top Level JSON of a Valid Query - Example" %}
+.Top Level JSON of a Valid Query - Example
 
 [source,coffeescript]
 ----
@@ -938,20 +938,20 @@ Below is an example of the output of a successful query:
 }
 ----
 
-{% endcode %}
+
 
 The value of the "results" key-value pair is a sequential list of the data objects specified by the PRINT statements of the query. The list order follows the order of PRINT execution. The detailed format of the PRINT statement results is described in  xref:output-statements-and-file-objects.adoc[Output Statements and FILE Objects].
 
 The following REST response misspells the name of the endpoint
 
-{% code title="GET echo/ Request and Response" %}
+.GET echo/ Request and Response
 
 [source,bash]
 ----
 curl -X GET "http://localhost:9000/eco"
 ----
 
-{% endcode %}
+
 
 and generates the following output:
 

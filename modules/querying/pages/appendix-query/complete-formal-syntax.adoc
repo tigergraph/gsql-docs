@@ -6,40 +6,40 @@ This is the definition for the GSQL Query Language syntax.  It is defined as a s
 
 This defines the EBNF notation used to describe the syntax.  Rules contains terminal and non-terminal symbols.  A terminal symbol is a base-level symbol which expresses literal output. All symbols in single or double quotes (e.g., '+', "=",  ")", "10") are terminal symbols. A non-terminal symbol is defined as some combination of terminal and non-terminal symbols. The left-hand side of a rule is always a non-terminal; this rule defines the non-terminal.  The example rule below defines assignmentStmt (that is, an Assignment Statement) to be a name followed by an equal sign followed by an expression, operator, and expression with a terminating semi-colon.   AssignmentStmt, name, and expr are all non-terminals.  Additionally, all KEYWORDS are in all-capitals and are terminal symbols.   The ":=" is part of EBNF and states the left hand side can be expanded to the right hand side.
 
-{% code title="EBNF Syntax example: A rule" %}
+.EBNF Syntax example: A rule
 
 [source,gsql]
 ----
 assignmentStmt := name "=" expr op expr ";"
 ----
 
-{% endcode %}
+
 
 A *vertical bar |* in EBNF indicates choice.  Choose either the symbol on the left or on the right.  A sequence of vertical bars means choose any one of the symbols in the sequence.
 
-{% code title="EBNF Syntax: vertical bar" %}
+.EBNF Syntax: vertical bar
 
 [source,gsql]
 ----
 op := "+" | "-" | "*" | "/"
 ----
 
-{% endcode %}
+
 
 *Square brackets [ ]* indicate an optional part or group of symbols. *Parentheses ( )* group symbols together.  The rule below defines a constant to be one, two, or three digits preceded by an optional plus or minus sign.
 
-{% code title="EBNF Syntax: Square brackets and parentheses" %}
+.EBNF Syntax: Square brackets and parentheses
 
 [source,gsql]
 ----
 constant := ["+" | "-"] (digit | (digit digit) | (digit digit digit))
 ----
 
-{% endcode %}
+
 
 *Star ** and *plus +* are symbols in EBNF for closure.  Star means zero or more occurrences, and plus means one or more occurrences.  The following defines intConstant to be an optional plus or minus followed by one or more digits.  It also defines floatConstant to be an optional plus or minus followed by zero or more digits followed by a decimal followed by one or more digits.  The star and plus also can be applied to groups of symbols as in the definition of list.  The non-terminal list is defined as a parenthesized list of comma-separated expressions (expr).  The list has at least one expression which can be followed by zero or more comma-expression pairs.
 
-{% code title="EBNF Syntax: square brackets and parentheses" %}
+.EBNF Syntax: square brackets and parentheses
 
 [source,gsql]
 ----
@@ -48,7 +48,7 @@ floatConstant := ["+" | "-"] digit* "." digit+
 list := "(" expr ["," expr]* ")"
 ----
 
-{% endcode %}
+
 
 == GSQL Query Language EBNF
 

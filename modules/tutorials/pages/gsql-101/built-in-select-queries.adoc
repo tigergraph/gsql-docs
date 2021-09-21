@@ -13,7 +13,7 @@ REST endpoints return results in JSON format. JSON data are used for various pur
 We recommend you install jq and redirect the REST call result to jq before it is output. +
 ====
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
@@ -21,7 +21,7 @@ We recommend you install jq and redirect the REST call result to jq before it is
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
-{% endcode %}
+
 
 [,gsql]
 ----
@@ -43,7 +43,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 }
 ----
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
@@ -51,7 +51,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
 ----
 
-{% endcode %}
+
 
 [,gsql]
 ----
@@ -77,25 +77,25 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 
 If you want to lookup the details about a vertex with its primary_id, you can use the following REST call.
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
 ----
 
-{% endcode %}
+
 
 *Example*. Find a person vertex whose primary_id is "Tom".
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
  curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom" | jq .
 ----
 
-{% endcode %}
+
 
 [,gsql]
 ----
@@ -127,7 +127,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 In similar fashion, we can see details about edges.  To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
@@ -138,18 +138,18 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}"
 ----
 
-{% endcode %}
+
 
 *Example*. Find all friendship edges whose source vertex's primary_id is "Tom".
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | jq .
 ----
 
-{% endcode %}
+
 
 [,gsql]
 ----

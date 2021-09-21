@@ -31,7 +31,7 @@ When an exception occurs during the execution of a query, the default response i
 * If the query was run using the RUN QUERY command, then an error message will be displayed.
 * If the query was run by invoking the GET /query REST{pp} endpoint, then the output will be a simple JSON object. Some errors have a error "code" field; others do no t:
 
-{% code title="Output of Unhandled Exception (query run as REST Endpoint)" %}
+.Output of Unhandled Exception (query run as REST Endpoint)
 
 [source,gsql]
 ----
@@ -42,11 +42,11 @@ When an exception occurs during the execution of a query, the default response i
 }
 ----
 
-{% endcode %}
+
 
 The example below show two common errors: wrong data type and divide-by-zero. First we define a simple query that divides 100.0 by the query's input parameter.
 
-{% code title="Example: query excpBuiltin" %}
+.Example: query excpBuiltin
 
 [source,gsql]
 ----
@@ -55,7 +55,7 @@ CREATE QUERY excpBuiltin(INT n1) FOR GRAPH minimalNet {
 }
 ----
 
-{% endcode %}
+
 
 We then test three cases:
 
@@ -65,7 +65,7 @@ We then test three cases:
 
 First we test using the GSQL interface. When the query runs without error, the output is in JSON format. Where there is a built-in exception, however, only an error message is displayed.
 
-{% code title="Exception response for RUN QUERY" %}
+.Exception response for RUN QUERY
 
 [source,gsql]
 ----
@@ -88,7 +88,7 @@ GSQL > RUN QUERY excpBuiltin(0)
 Runtime Error: divider is zero.
 ----
 
-{% endcode %}
+
 
 The situation is a little different when running the query as a REST{pp} endpoint. The output is always in JSON format.
 
@@ -98,7 +98,7 @@ The situation is a little different when running the query as a REST{pp} endpoin
 `+/query/{graph_name}/{query_name}+`
 ====
 
-{% code title="Exception response for GET /query request" %}
+.Exception response for GET /query request
 
 [source,gsql]
 ----
@@ -142,7 +142,7 @@ $ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=0"
 }
 ----
 
-{% endcode %}
+
 
 == *User-Defined Exception Behavior*
 
@@ -189,7 +189,7 @@ A RAISE statement itself does not include the conditions that define the excepti
 
 The example below defines and checks for two types of exceptions: an empty input set (40001) and no matching edges (40002). Remember that the minimum allowed code number is 40001.
 
-{% code title="Example: Unhandled User-Defined Exceptions" %}
+.Example: Unhandled User-Defined Exceptions
 
 [source,gsql]
 ----
@@ -218,9 +218,9 @@ CREATE QUERY excpCountActivity(SET<VERTEX<person>> vSet, STRING eType) FOR GRAPH
 }
 ----
 
-{% endcode %}
 
-{% code title="Results" %}
+
+.Results
 
 [source,gsql]
 ----
@@ -270,7 +270,7 @@ $ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vSet=pers
 }
 ----
 
-{% endcode %}
+
 
 === *TRY...EXCEPTION Statement for Custom Error Handling*
 
@@ -322,7 +322,7 @@ The following example is a modified shortest path query.  It looks for all paths
 
 Note that cases 1 and 2 do NOT mean that a negative or slow speed edge is actually on a shortest path, only that the query noticed a bad edge during its search. Also, because we cannot RAISE within the SELECT block, we use a workaround: set an integer variable with an error code.  Immediately after the SELECT block, test the integer variable and RAISE exceptions as needed.
 
-{% code title="Example: Path Search with Exceptions" %}
+.Example: Path Search with Exceptions
 
 [source,gsql]
 ----
@@ -382,7 +382,7 @@ FOR GRAPH computerNet {
 }
 ----
 
-{% endcode %}
+
 
 As the data in Appendix D show:
 
@@ -392,7 +392,7 @@ As the data in Appendix D show:
 
 The results for 5 cases are shown: 1 valid search plus each of the 3 exception conditions.  The 5th case is the same as the 4th, but exception handling is not enabled.
 
-{% code title="compPathValid.json" %}
+.compPathValid.json
 
 [source,gsql]
 ----
@@ -461,7 +461,7 @@ GSQL > RUN QUERY compPathValid("c24","c25",false)
 }
 ----
 
-{% endcode %}
+
 
 == Exception Handling Flowchart
 

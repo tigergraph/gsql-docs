@@ -25,7 +25,7 @@ However, this is too fine granularity, and we are overfitting the message level 
 This time, we create the query first, and interpret the query by calling the query name with parameters. +
 If we are satisfied with this query, we can use "install query queryName" to get the compiled query installed which has the best performance.
 
-{% code title="GSQL Recommendation Algorithm " %}
+.GSQL Recommendation Algorithm 
 
 [source,gsql]
 ----
@@ -68,20 +68,20 @@ INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
 INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql app1.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of App1" %}
+
+. Output of App1
 
 [source,coffeescript]
 ----
@@ -117,14 +117,14 @@ The query RecommendMessage has been added!
 }
 ----
 
-{% endcode %}
+
 
 [discrete]
 ==== Install the query
 
 When you are satisfied with your query  in the GSQL interpret mode,  you can now install it as a generic service which has a much faster speed.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, we can set the syntax version and install it.
 
-{% code title="GSQL Prepare Install Query" %}
+.GSQL Prepare Install Query
 
 [source,coffeescript]
 ----
@@ -136,9 +136,9 @@ USE GRAPH ldbc_snb
 INSTALL QUERY RecommendMessage
 ----
 
-{% endcode %}
 
-{% code title="GSQL Run the Installed Query" %}
+
+.GSQL Run the Installed Query
 
 [source,coffeescript]
 ----
@@ -177,9 +177,9 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
 }
 ----
 
-{% endcode %}
 
-{% code title="Linux Bash:  Shutdown The System" %}
+
+.Linux Bash:  Shutdown The System
 
 [source,coffeescript]
 ----
@@ -190,11 +190,11 @@ gadmin stop
 gadmin start
 ----
 
-{% endcode %}
+
 
 The above use log-cosine as a similarity measurement. We can also use cosine similarity by using two persons liked messages.
 
-{% code title="GSQL Recommendation Algorithm 2" %}
+.GSQL Recommendation Algorithm 2
 
 [source,gsql]
 ----
@@ -249,4 +249,4 @@ INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
 INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 
-{% endcode %}
+

@@ -41,7 +41,7 @@ First, let's check that you can access GSQL, and that your version is 3.0 or hig
 . Type `gsql` as below. A GSQL shell prompt should appear as below.
 . Type version in GSQL shell. It should show 2.4 or higher as below. If not, please download and install the latest version from https://www.tigergraph.com/download/
 +
-{% code title="Linux Shell" %}
+.Linux Shell
 +
 [source,bash]
 ----
@@ -50,7 +50,7 @@ GSQL > version
 GSQL version: 3.0
 ----
 +
-{% endcode %}
+
 
 . If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:../../admin/admin-guide/system-management/management-with-gadmin.adoc[manage TigerGraph with gadmin], and  xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs].
 . You need to start from an empty data catalog. If necessary, run `drop all` to clear the catalog first.

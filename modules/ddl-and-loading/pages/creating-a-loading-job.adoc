@@ -16,7 +16,7 @@ CREATE LOADING JOB, which may contain a set of DEFINE and LOAD statements
 
 [NOTE]
 ====
-*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (link:creating-a-loading-job.md#built-in-loader-token-functions[Built-in Loader Token Functions]).
+*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (link:creating-a-loading-job.adoc#_built_in_loader_token_functions[Built-in Loader Token Functions]).
 ====
 
 == Loading job capabilities
@@ -39,7 +39,7 @@ Furthermore, if the TigerGraph graph is distributed (partitioned) across multipl
  To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
 ====
 
-A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a link:../../restpp-api/built-in-endpoints.md#run-a-loading-job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
+A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
 
 [NOTE]
 ====
@@ -239,11 +239,14 @@ DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables
 
 == *`LOAD` statement*
 
-A `LOAD` statement describes how to parse a data line into column values (tokens), and then describes how the values should be used to create a new vertex or edge instance. One `LOAD` statement can be used to generate multiple vertices or edges, each vertex or edge having its own _destination clause_, as shown below. Additionally, two or more LOAD statements may refer to the same input data file. In this case, the GSQL loader will merge their operations so that both of their operations are executed in a single pass through the data file.
+A `LOAD` statement describes how to parse a data line into column values (tokens), and then describes how the values should be used to create a new vertex or edge instance.
 
-The `LOAD` statement has many options. This reference guide provides examples of key features and options. The xref:../../../faqs/knowledge-base-and-faqs.adoc[Knowledge Base and FAQs] ___**___and the tutorials, such as link:../../../start/gsql-101/[GSQL 101], provide additional solution- and application-oriented examples.
+One `LOAD` statement can be used to generate multiple vertices or edges, each vertex or edge having its own _destination clause_, as shown below.
+Additionally, two or more LOAD statements may refer to the same input data file. In this case, the GSQL loader will merge their operations so that both of their operations are executed in a single pass through the data file.
 
-Different `LOAD` statement types have different rules for the link:creating-a-loading-job.md#using-clause[`USING` clause]; see the `USING` clause section below for specifics.
+The `LOAD` statement has many options. This reference guide provides examples of key features and options. Tutorials such as xref:tutorials:gsql-101/[GSQL 101] provide additional solution- and application-oriented examples.
+
+Different `LOAD` statement types have different rules for the xref:creating-a-loading-job.adoc#_using_clause[`USING` clause]; see the `USING` clause section below for specifics.
 
 === Syntax
 
@@ -1198,7 +1201,7 @@ The `TAGS` clause specifies the tags to be applied to the vertices loaded by the
 TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
 ----
 
-If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be link:modifying-a-graph-schema.md#alter-vertex-or-edge[marked as taggable], and link:modifying-a-graph-schema.md#add-tag[the tags must be defined].
+If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and link:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
 
 Users have two options when it comes to how to merge tags if the target vertices exist in the graph:
 
@@ -1362,7 +1365,7 @@ In the above data encoding.json, the order of fields are not fixed and some fiel
 
 === Loading Parquet Data
 
-TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:../../data-loader-guides/s3-loader-user-guide.adoc[AWS S3 Loader User Guide]. In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the link:creating-a-loading-job.md#loading-json-data[JSON specific information] in the previous section applies.
+TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:3.2@tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide]. In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the link:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
 
 In order to load Parquet data, you need to:
 

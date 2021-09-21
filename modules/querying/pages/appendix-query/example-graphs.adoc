@@ -3,11 +3,11 @@
 Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: *workNet* , *socialNet* , *friendNet* , *computerNet* , *minimalNet* , and**investmentNet** .  The tar-gzip file *gsql_ref_examples_2.0.gz* contains all of these files. Each graph has its own folder. To create a particular graph, go in its folder and run the following command: +
 gsql graph_create.gsql
 
-{% file src="../../../../.gitbook/assets/gsql_ref_examples_2.0.gz" caption=" gsql_ref_examples_2.0.gz" %}
+link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Example Graph files]
 
 == *workNet*
 
-{% code title="graph_create.gsql for workNet" %}
+.graph_create.gsql for workNet
 
 [source,gsql]
 ----
@@ -44,9 +44,9 @@ RUN LOADING JOB loadCompany USING f="./companies"
 RUN LOADING JOB loadMemberCompany USING f="./person_company"
 ----
 
-{% endcode %}
 
-{% code title="file: persons (vertices)" %}
+
+.file: persons (vertices)
 
 [source,gsql]
 ----
@@ -64,9 +64,9 @@ person11,can,10,sport|football
 person12,jp,1|5|2|2|2,music|engineering|teaching|teaching|teaching
 ----
 
-{% endcode %}
 
-{% code title="file: company (vertices)" %}
+
+.file: company (vertices)
 
 [source,gsql]
 ----
@@ -77,9 +77,9 @@ company4,us
 company5,can
 ----
 
-{% endcode %}
 
-{% code title="file: person_company (edges)" %}
+
+.file: person_company (edges)
 
 [source,gsql]
 ----
@@ -102,11 +102,11 @@ person11,company5,2016,5,1
 person12,company4,2014,1,1
 ----
 
-{% endcode %}
+
 
 == *socialNet*
 
-{% code title="graph_create.gsql for socialNet" %}
+.graph_create.gsql for socialNet
 
 [source,gsql]
 ----
@@ -152,9 +152,9 @@ RUN LOADING JOB loadPosted USING f="./posted"
 RUN LOADING JOB loadLiked USING f="./liked"
 ----
 
-{% endcode %}
 
-{% code title="file: persons (vertices)" %}
+
+.file: persons (vertices)
 
 [source,gsql]
 ----
@@ -168,9 +168,9 @@ person7,Male
 person8,Male
 ----
 
-{% endcode %}
 
-{% code title="file: friends (edges)" %}
+
+.file: friends (edges)
 
 [source,gsql]
 ----
@@ -185,9 +185,9 @@ person7,person8
 person8,person1
 ----
 
-{% endcode %}
 
-{% code title="file: posts (vertices)" %}
+
+.file: posts (vertices)
 
 [source,gsql]
 ----
@@ -205,9 +205,9 @@ person8,person1
 11,cats,2011-02-03 01:02:21
 ----
 
-{% endcode %}
 
-{% code title="file: posted (edges)" %}
+
+.file: posted (edges)
 
 [source,gsql]
 ----
@@ -225,9 +225,9 @@ person8,7
 person8,8
 ----
 
-{% endcode %}
 
-{% code title="file: liked (edges)" %}
+
+.file: liked (edges)
 
 [source,gsql]
 ----
@@ -242,11 +242,11 @@ person7,10,2010-01-12 11:22:05
 person8,4,2010-01-11 03:26:05
 ----
 
-{% endcode %}
+
 
 == *friendNet*
 
-{% code title="graph_create.gsql for friendNet" %}
+.graph_create.gsql for friendNet
 
 [source,gsql]
 ----
@@ -278,9 +278,9 @@ RUN LOADING JOB loadFriend USING f="./friends"
 RUN LOADING JOB loadCoworker USING f="./coworkers"
 ----
 
-{% endcode %}
 
-{% code title="file: persons (vertices)" %}
+
+.file: persons (vertices)
 
 [source,gsql]
 ----
@@ -298,9 +298,9 @@ person11
 person12
 ----
 
-{% endcode %}
 
-{% code title="file: friends (edges)" %}
+
+.file: friends (edges)
 
 [source,gsql]
 ----
@@ -321,9 +321,9 @@ person12,person8
 person12,person9
 ----
 
-{% endcode %}
 
-{% code title="file: coworkers (edges)" %}
+
+.file: coworkers (edges)
 
 [source,gsql]
 ----
@@ -348,11 +348,11 @@ person11,person7
 person12,person7
 ----
 
-{% endcode %}
+
 
 == *computerNet*
 
-{% code title="graph_create.gsql for computerNet" %}
+.graph_create.gsql for computerNet
 
 [source,gsql]
 ----
@@ -376,9 +376,9 @@ RUN LOADING JOB loadComputer USING f="./computers"
 RUN LOADING JOB loadConnection USING f="./connections"
 ----
 
-{% endcode %}
 
-{% code title="file: computers (vertices)" %}
+
+.file: computers (vertices)
 
 [source,gsql]
 ----
@@ -415,9 +415,9 @@ c30
 c31
 ----
 
-{% endcode %}
 
-{% code title="file: connections (edges)" %}
+
+.file: connections (edges)
 
 [source,gsql]
 ----
@@ -466,11 +466,11 @@ c4,c23,64,2
 c4,c23,3,2
 ----
 
-{% endcode %}
+
 
 == *minimalNet*
 
-{% code title="graph_create.gsql for minimalNet" %}
+.graph_create.gsql for minimalNet
 
 [source,gsql]
 ----
@@ -480,13 +480,13 @@ CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
 CREATE GRAPH minimalNet(*)
 ----
 
-{% endcode %}
+
 
 There is no loading job or data for minimalNet (hence, "minimal.")
 
 == *investmentNet*
 
-{% code title="graph_create.gsql for investmentNet" %}
+.graph_create.gsql for investmentNet
 
 [source,gsql]
 ----
@@ -516,9 +516,9 @@ RUN LOADING JOB loadPerson USING f="./persons"
 RUN LOADING JOB loadOrder USING f="./orders"
 ----
 
-{% endcode %}
 
-{% code title="file: persons (vertices)" %}
+
+.file: persons (vertices)
 
 [source,gsql]
 ----
@@ -528,9 +528,9 @@ person3,AA:5223.73;P:7935.00;BAK:6923.52,45,WILLIAMS
 person4,ACH:3542.62;S:6521.55;BABA:4030.52,51,ANTHONY
 ----
 
-{% endcode %}
 
-{% code title="file: orders (vertices and edges)" %}
+
+.file: orders (vertices and edges)
 
 [source,gsql]
 ----
@@ -543,4 +543,4 @@ person4,5,1488566255,Z,2,62.34
 person4,6,1488566655,S,2,10.01
 ----
 
-{% endcode %}
+

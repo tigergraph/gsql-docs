@@ -2,7 +2,7 @@
 
 In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment. This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -65,7 +65,7 @@ funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
 argList := expr ["," expr]*
 ----
 
-{% endcode %}
+
 
 == Variable scopes
 
@@ -117,14 +117,14 @@ Accumulator declaration is discussed in link:accumulators.md#declaration-of-accu
 
 In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables. The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
 
-{% code title="EBNF for base type variable declaration" %}
+.EBNF for base type variable declaration
 
 [source,gsql]
 ----
 baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
 
-{% endcode %}
+
 
 A base type variable can be declared and accessed anywhere in the query. To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side. You can declare multiple variables of the same type in a single declaration statement.
 
@@ -167,20 +167,20 @@ Local base type variables are block-scoped and are accessible in the block where
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
 
-{% code title="EBNF for local base type variable declaration and initialization" %}
+.EBNF for local base type variable declaration and initialization
 
 [source,gsql]
 ----
 localVarDeclStmt := baseType varName "=" expr
 ----
 
-{% endcode %}
+
 
 Local base type variables are not subject to the assignment restrictions of regular base type variables. Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
 
 ==== Example:
 
-{% code title="Base type variable declaration in DML statements" %}
+.Base type variable declaration in DML statements
 
 [source,gsql]
 ----
@@ -202,9 +202,9 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="localVariable Query Results" %}
+
+.localVariable Query Results
 
 [source,gsql]
 ----
@@ -225,7 +225,7 @@ GSQL > RUN QUERY localVariable("person1")
 }
 ----
 
-{% endcode %}
+
 
 === Vertex Set Variable Declaration and Assignment
 
@@ -233,7 +233,7 @@ Variables that contain a set of one or more vertices are called vertex set varia
 
 Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
 
-{% code title="EBNF for Vertex Set Variable Declaration" %}
+.EBNF for Vertex Set Variable Declaration
 
 [source,gsql]
 ----
@@ -258,7 +258,7 @@ selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
 columnId := "$" (integer | stringLiteral)
 ----
 
-{% endcode %}
+
 
 The query below lists all ways of assigning a vertex set variable an initial set of vertices (that is, forming a seed set).
 
@@ -271,7 +271,7 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * A combination of individual vertices, vertex set parameters, or base type variables, enclosed in curly brackets
 * Union of vertex set variables
 
-{% code title="Seed Set Example" %}
+.Seed Set Example
 
 [source,gsql]
 ----
@@ -298,7 +298,7 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
 }
 ----
 
-{% endcode %}
+
 
 When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
 
@@ -314,7 +314,7 @@ This is different than a base type variable declaration, where the type specifie
 
 After a vertex set variable is declared, the vertex type of the vertex set variable is immutable. Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type. The following is an example in which we must declare the vertex set variable type.
 
-{% code title="Vertex set variable type" %}
+.Vertex set variable type
 
 [source,gsql]
 ----
@@ -331,7 +331,7 @@ CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet
 }
 ----
 
-{% endcode %}
+
 
 In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex. If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type. However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices. Therefore, `S` must be declared as an ANY-type vertex set variable.
 
@@ -339,7 +339,7 @@ In the above example, the query returns the set of vertices after a 5-step trave
 
 A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
 
-{% code title="EBNF for FILE object declaration" %}
+.EBNF for FILE object declaration
 
 [source,gsql]
 ----
@@ -347,13 +347,13 @@ fileDeclStmt := FILE fileVar "(" filePath ")"
 fileVar := name
 ----
 
-{% endcode %}
+
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.  When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
 
 ==== Example:
 
-{% code title="File object query example" %}
+.File object query example
 
 [source,gsql]
 ----
@@ -376,13 +376,13 @@ INSTALL QUERY getUSWorkers
 RUN QUERY getUSWorkerInterests("/home/tigergraph/fileEx.txt")
 ----
 
-{% endcode %}
+
 
 == Assignment and Accumulate Statements
 
 Assignment statements are used to set or update the value of a variable after it has been declared. This applies to base type variables, vertex set variables, and accumulators. Accumulators also have the special += accumulate statement, which was discussed in the Accumulator section.  Assignment statements can use expressions to define the new value of the variable.
 
-{% code title="EBNF for Assignment Statements" %}
+.EBNF for Assignment Statements
 
 [source,gsql]
 ----
@@ -400,7 +400,7 @@ loadAccumStmt := globalAccumName "=" "{" "LOADACCUM" loadAccumParam
                                   ["," "LOADACCUM" loadAccumParams]* "}"
 ----
 
-{% endcode %}
+
 
 [NOTE]
 ====
@@ -475,7 +475,7 @@ One assignment statement can have multiple `LOADACCUM()` function calls. However
 
 ==== Example:
 
-{% code title="loadAccumInput.csv" %}
+.loadAccumInput.csv
 
 [source,gsql]
 ----
@@ -484,9 +484,9 @@ person5,2,"test2",4
 person6,3,"test3",5
 ----
 
-{% endcode %}
 
-{% code title="LoadAccum example" %}
+
+.LoadAccum example
 
 [source,gsql]
 ----
@@ -502,9 +502,9 @@ CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="Results of Query loadAccumEx" %}
+
+.Results of Query loadAccumEx
 
 [source,gsql]
 ----
@@ -548,7 +548,7 @@ GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
 }
 ----
 
-{% endcode %}
+
 
 == Function Call Statements
 
@@ -563,7 +563,7 @@ argList := expr ["," expr]*
 
 Typically, a function call returns a value and so is part of an xref:operators-and-expressions.adoc[expression]. In some cases, however, the function does not return a value (i.e., returns `VOID`) or the return value can be ignored, so the function call can be used as an entire statement. This is a Function Call Statement.
 
-{% code title="Examples of Function Call statements" %}
+.Examples of Function Call statements
 
 [source,gsql]
 ----
@@ -575,7 +575,7 @@ BagAccum<INT> @@bagAcc;
 @@bagAcc.removeAll(0);
 ----
 
-{% endcode %}
+
 
 === Clear Collection Accumulators
 

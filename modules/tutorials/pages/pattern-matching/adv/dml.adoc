@@ -105,7 +105,7 @@ You can verify the result by running a simple built-in REST endpoint.
 
 Check the inserted vertex.
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [source,gsql]
 ----
@@ -142,11 +142,11 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 }
 ----
 
-{% endcode %}
+
 
 Check the inserted edges.
 
-{% code title="Linux file" %}
+.Linux file
 
 [source,gsql]
 ----
@@ -201,7 +201,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410" | jq .
 ----
 
-{% endcode %}
+
 
 == UPDATE
 
@@ -252,7 +252,7 @@ To verify the update, we can use REST calls.
 
 Check Tiger Woods' creationDate and language he speaks.
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [source,gsql]
 ----
@@ -290,11 +290,11 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 }
 ----
 
-{% endcode %}
+
 
 Check KNOWS edges whose source is tiger woods.
 
-{% code title="Linux Shell" %}
+.Linux Shell
 
 [source,gsql]
 ----
@@ -347,7 +347,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
 }
 ----
 
-{% endcode %}
+
 
 == DELETE
 

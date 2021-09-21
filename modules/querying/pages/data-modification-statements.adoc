@@ -13,7 +13,7 @@ The query-body DELETE statement deletes a given set of edges or vertices. This s
  The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
 ====
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -21,11 +21,11 @@ queryBodyDeleteStmt := DELETE alias FROM pattern [whereClause]
 pattern := (vertexPattern | edgePattern)
 ----
 
-{% endcode %}
+
 
 The vertexPattern and edgePattern terms in the FROM clause follow the same rules as those in the FROM clause in a SELECT statement. The WHERE clause can filter the items in the vertexPattern or edgePattern. Below are two examples, one for deleting vertices and one for deleting edges.
 
-{% code title="DELETE statement example" %}
+.DELETE statement example
 
 [source,gsql]
 ----
@@ -37,9 +37,9 @@ CREATE QUERY deleteEx() FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="DELETE statement example 2" %}
+
+.DELETE statement example 2
 
 [source,gsql]
 ----
@@ -51,11 +51,11 @@ CREATE QUERY deleteEx2() FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 The following query can be used to observe the effect of the delete statements. This query counts the person vertices who work in the US ("us") and the worksFor edges for persons in the US.  When the initial workNet test data loaded, there are 5 persons and 9 worksFor edges for locationId = "us".  If query deleteEx2 is run, the worksAtUS query will then find the 5 persons but 0 worksFor edges.  Next, if the deleteEx query is run, the worksAtUS query will then find 0 persons and 0 worksFor edges.
 
-{% code title="Query to check the results of deleteEx and deleteEx2" %}
+.Query to check the results of deleteEx and deleteEx2
 
 [source,gsql]
 ----
@@ -74,11 +74,11 @@ CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 For example, the following sequence of countAtLocation, deleteEx2, and deleteEx queries
 
-{% code title="deleteEx.run" %}
+.deleteEx.run
 
 [source,gsql]
 ----
@@ -89,11 +89,11 @@ RUN QUERY deleteEx()
 RUN QUERY countAtLocation("us")
 ----
 
-{% endcode %}
+
 
 will produce the following result:
 
-{% code title="Results from DeleteEx Example" %}
+.Results from DeleteEx Example
 
 [source,gsql]
 ----
@@ -163,7 +163,7 @@ will produce the following result:
 }
 ----
 
-{% endcode %}
+
 
 == DML-sub DELETE Statement
 
@@ -179,18 +179,18 @@ DML-sub DELETE is a DML-substatement which deletes one vertex or edge each time 
  The ACCUM clause iterates over an edge set, which can encounter the same vertex multiple times. If you wish to delete a vertex, it is best practice to place the DML-sub DELETE statement in the POST-ACCUM clause rather than in the ACCUM clause.
 ====
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
 dmlSubDeleteStmt := DELETE "(" alias ")"
 ----
 
-{% endcode %}
+
 
 The following example uses and modifies the graph data for socialNet.
 
-{% code title="DELETE within ACCUM vs. POST-ACCUM" %}
+.DELETE within ACCUM vs. POST-ACCUM
 
 [source,gsql]
 ----
@@ -219,11 +219,11 @@ CREATE QUERY selectUserPosts(vertex<person> seed) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 For example, the following sequence of selectUserPosts and deletePosts queries
 
-{% code title="deletePosts.run" %}
+.deletePosts.run
 
 [source,gsql]
 ----
@@ -232,11 +232,11 @@ RUN QUERY deletePosts("person3")
 RUN QUERY selectUserPosts("person3")
 ----
 
-{% endcode %}
+
 
 will produce the following result:
 
-{% code title="Results from DeletePosts Example" %}
+.Results from DeletePosts Example
 
 [source,gsql]
 ----
@@ -282,7 +282,7 @@ will produce the following result:
 }
 ----
 
-{% endcode %}
+
 
 == `INSERT INTO` Statement
 
@@ -290,7 +290,7 @@ The `INSERT INTO` statement adds edges or vertices to the graph. When the ID val
 
 Like any other data modification in a query, the insertion does not take effect until the entire query is completed.
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -305,7 +305,7 @@ insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)
                  ["," ( "_" | expr ) [vertexType] ["," ("_" | expr)]*] ")"
 ----
 
-{% endcode %}
+
 
 [NOTE]
 ====
@@ -320,18 +320,18 @@ There are two options for specifying the attributes of the vertex or edge type f
 
 * Provide a value for the ID(s) and then each attribute, in the canonical order for the vertex or edge type. In this case, it is not necessary to explicitly name the attributes, since it is assumed that every attribute is being referenced, in order.
 +
-{% code title="INSERT with implicit attribute names" %}
+.INSERT with implicit attribute names
 +
 [source,gsql]
 ----
 INSERT INTO vertex_or_edge_type VALUES (full_list_of_parameter_values)
 ----
 +
-{% endcode %}
+
 
 * Name the specific attributes to be set, and then provide a corresponding list of values. The attributes can be in any order, with the exception that the IDs must come first.  That is, to insert a vertex, the first attribute name must be `PRIMARY_ID`.  To insert an edge, the first two attribute names must be `FROM` and `TO`.
 +
-{% code title="INSERT with explicit attribute names" %}
+.INSERT with explicit attribute names
 +
 [source,gsql]
 ----
@@ -342,7 +342,7 @@ INSERT INTO edge_type (FROM, TO, specified_attributes)
 VALUES (
 ----
 +
-{% endcode %}
+
 
 For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type. The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
@@ -350,7 +350,7 @@ For each attribute value, provide either an expression _expr_ or `_`, which mean
 
 The query `insertEx` illustrates query-body level `INSERT` statements: insert new `company` vertices and `worksFor` edges into the `workNet` graph.
 
-{% code title="INSERT statement" %}
+.INSERT statement
 
 [source,gsql]
 ----
@@ -379,11 +379,11 @@ CREATE QUERY insertEx(STRING name, STRING name2, STRING name3, STRING comp) FOR 
 }
 ----
 
-{% endcode %}
+
 
 The query `whoWorksForCompany` can be used to check the effect of query `insertEx`. Prior to running `insertEx`, running `whoWorksForCompany("gsql")` will find 0 `companies` called `"gsql"` and 0 `worksFor` edges for company `"gsql"`.  If we then run the query `insertEx("tic", "tac", "toe", "gsql")`, then `insertEx("gsql")` will find a company called `"gsql"` and another one called `"gsql_jp"`.  Moreover, it will find 3 edges, tic, tac, and toe, with different values for the `startMonth`, `startYear`, and fullTime parameters.
 
-{% code title="Query to check the results of insertEx" %}
+.Query to check the results of insertEx
 
 [source,gsql]
 ----
@@ -402,13 +402,13 @@ CREATE QUERY whoWorksForCompany(STRING comp) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 === DML-sub INSERT
 
 The following example shows a DML-sub level INSERT. Because the statement applies to all companies, several vertices will be inserted.
 
-{% code title="DML-sub INSERT statement" %}
+.DML-sub INSERT statement
 
 [source,gsql]
 ----
@@ -433,11 +433,11 @@ CREATE QUERY listCompanyNames(STRING countryFilter) FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 Example: Add a child company in Japan to the US-based company `company3`.  List all the Japan-based companies before and after the insertion.
 
-{% code title="addNewChildCompany.run" %}
+.addNewChildCompany.run
 
 [source,gsql]
 ----
@@ -446,9 +446,9 @@ RUN QUERY addNewChildCompany("company4")
 RUN QUERY listCompanyNames("jp")
 ----
 
-{% endcode %}
 
-{% code title="Results from addNewChildCompany Example" %}
+
+.Results from addNewChildCompany Example
 
 [source,gsql]
 ----
@@ -517,13 +517,13 @@ RUN QUERY listCompanyNames("jp")
 }
 ----
 
-{% endcode %}
+
 
 == UPDATE Statement
 
 The `UPDATE` statement updates the attributes of vertices or edges.
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -531,11 +531,11 @@ updateStmt := UPDATE alias FROM pattern SET dmlSubStmtList [whereClause]
 pattern := (vertexPattern | edgePattern)
 ----
 
-{% endcode %}
+
 
 The set of vertices or edges to update is described in the `FROM` clause, following the same rules as the `FROM` clause in a `SELECT` statement. In the `SET` clause, the `dmlSubStmtList` contains assignment statements to update the attributes of a vertex or edge. Both simple base type attributes and collection type attributes can be updated. These assignment statements use the vertex or edge aliases declared in the `FROM` clause. The optional `WHERE` clause supports boolean conditions to filter the items in the vertex set or edge set.
 
-{% code title="UPDATE statement example" %}
+.UPDATE statement example
 
 [source,gsql]
 ----
@@ -553,7 +553,7 @@ CREATE QUERY updateEx() FOR GRAPH workNet  {
 }
 ----
 
-{% endcode %}
+
 
 The `UPDATE` statement can only be used as a query-body-level statement. However, DML-sub level updates are still possible by using other statement types. A vertex attribute's value can be updated within the `POST-ACCUM` clause of a `SELECT` block by using the assignment operator (`=`); An edge attribute's value can be updated within the `ACCUM` clause of a `SELECT` block by using the assignment operator. In fact, the `UPDATE` statement is equivalent to a `SELECT` statement with `ACCUM` and/or `POST-ACCUM` to update the vertex or edge attribute values.
 
@@ -564,7 +564,7 @@ The `UPDATE` statement can only be used as a query-body-level statement. However
 
 The query below uses a `SELECT` statement instead of an `UPDATE` statement and performs the same update as the query above. Query `updateEx2` reverses the `locationId` change made by `updateEx` .
 
-{% code title="UPDATE statement example 2" %}
+.UPDATE statement example 2
 
 [source,gsql]
 ----
@@ -581,11 +581,11 @@ CREATE QUERY updateEx2() FOR GRAPH workNet  {
 }
 ----
 
-{% endcode %}
+
 
 Below is an example of an edge update with two attribute changes, including an incremental change:
 
-{% code title="UPDATE statement example 3" %}
+.UPDATE statement example 3
 
 [source,gsql]
 ----
@@ -602,13 +602,13 @@ CREATE QUERY updateEx3() FOR GRAPH workNet{
 }
 ----
 
-{% endcode %}
+
 
 == Other Update Methods
 
 In addition to `UPDATE` statements and `SELECT` statements, a simple assignment statement at the query-body level can be used to update the attribute value of a single vertex or edge, if the vertex or edge has been assigned to a variable or parameter.
 
-{% code title="update by assignment" %}
+.update by assignment
 
 [source,gsql]
 ----
@@ -618,4 +618,4 @@ CREATE QUERY updateByAssignment(VERTEX<person> v, STRING newLocation) FOR GRAPH 
 }
 ----
 
-{% endcode %}
+

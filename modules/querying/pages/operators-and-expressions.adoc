@@ -2,7 +2,7 @@
 
 An _expression_ is a combination of fixed values, variables, operators, function calls, and groupings that specify a computation, resulting in a data value. This section of the specification describes the literals (fixed values), operators, and functions available in the GSQL query language. It covers the subset of the EBNF definitions shown below. However, more so than in other sections of the specification, syntax alone is not an adequate description. The semantics (functionality) of the particular operators and functions are an essential complement to the syntax.
 
-{% code title="EBNF for Operations, Functions, and Expressions" %}
+.EBNF for Operations, Functions, and Expressions
 
 [source,gsql]
 ----
@@ -63,7 +63,7 @@ setBagExpr := name
 argList := expr ["," expr]*
 ----
 
-{% endcode %}
+
 
 == Constants
 
@@ -125,7 +125,7 @@ mathOperator := "*" | "/" | "%" | "+" | "-" | "<<" | ">>" | "&" | "|"
 
 Operator precedences are shown in the following list, from the highest precedence to the lowest. Operators that are shown together on a line have the same precedence:
 
-{% code title="Operator Precedence, highest to lowest" %}
+.Operator Precedence, highest to lowest
 
 [source,gsql]
 ----
@@ -137,9 +137,9 @@ Operator precedences are shown in the following list, from the highest precedenc
 ==, >=, >, <=, <, !=
 ----
 
-{% endcode %}
 
-{% code title="Example 1. Math Operators + - * /" %}
+
+.Example 1. Math Operators + - * /
 
 [source,gsql]
 ----
@@ -168,9 +168,9 @@ CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
 }
 ----
 
-{% endcode %}
 
-{% code title="mathOperators.json Results" %}
+
+.mathOperators.json Results
 
 [source,gsql]
 ----
@@ -205,7 +205,7 @@ GSQL > RUN QUERY mathOperators()
 }
 ----
 
-{% endcode %}
+
 
 === Boolean Operators
 
@@ -215,7 +215,7 @@ We support the standard Boolean operators and standard order of precedence: AND,
 
 Bit operators (<<, >>, &, and |) operate on integers and return an integer.
 
-{% code title="Bit Operators" %}
+.Bit Operators
 
 [source,gsql]
 ----
@@ -230,7 +230,7 @@ CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
 }
 ----
 
-{% endcode %}
+
 
 === String Operators
 
@@ -274,7 +274,7 @@ The expression expr1 BETWEEN expr2 AND expr3 is true if the value expr1 is in th
 
 " expr1 BETWEEN expr2 AND expr3 " is equivalent to " expr1 <= expr3 AND expr1 >= expr2".
 
-{% code title="BETWEEN AND example" %}
+.BETWEEN AND example
 
 [source,gsql]
 ----
@@ -289,13 +289,13 @@ CREATE QUERY mathOperatorBetween() FOR GRAPH minimalNet
 }
 ----
 
-{% endcode %}
+
 
 === IS NULL, IS NOT NULL
 
 IS NULL and IS NOT NULL can be used for checking whether an optional parameter is given any value.
 
-{% code title="IS NULL example" %}
+.IS NULL example
 
 [source,gsql]
 ----
@@ -308,9 +308,9 @@ CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="parameterIsNULL.json Results" %}
+
+.parameterIsNULL.json Results
 
 [source,gsql]
 ----
@@ -338,7 +338,7 @@ GSQL > RUN QUERY parameterIsNULL(3)
 }
 ----
 
-{% endcode %}
+
 
 [WARNING]
 ====
@@ -402,7 +402,7 @@ The first `"%"` has its usual pattern-matching meaning "zero or more characters"
 
 ==== Example
 
-{% code title="Example query using LIKE operator " %}
+.Example query using LIKE operator 
 
 [source,gsql]
 ----
@@ -416,7 +416,7 @@ CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
 }
 ----
 
-{% endcode %}
+
 
 [source,bash]
 ----
@@ -472,7 +472,7 @@ Results
 
 Attributes on vertices or edges are defined in the graph schema. Additionally, each vertex and edge has a built-in STRING attribute called *type* which represents the user-defined type of that edge or vertex. These attributes, including *type,* can be accessed for a particular edge or vertex with the dot operator:
 
-{% code title="Accessing attributes with a known name." %}
+.Accessing attributes with a known name.
 
 [source,gsql]
 ----
@@ -480,7 +480,7 @@ name ".type"   // read only. Returns vertexType or edgeType of name
 name "." attrName // read/write. Accesses attribute called attrName
 ----
 
-{% endcode %}
+
 
 [NOTE]
 ====
@@ -491,7 +491,7 @@ The name of the attribute can be parameterized using the *getAttr* and *setAttr*
 
 For example, the following code snippet shows two different SELECT statements which produce equivalent results. The first uses the dot operator on the vertex variable *v* to access the "subject" attribute, which is defined in the graph schema. The FROM clause in the first SELECT statement necessitates that any target vertices will be of type "post" (also defined in the graph schema). The second SELECT schema checks that the vertex variable v's type is a "post" vertex by using the dot operator to access the built-in *type* attribute.
 
-{% code title="Accessing vertex variable attributes" %}
+.Accessing vertex variable attributes
 
 [source,gsql]
 ----
@@ -505,9 +505,9 @@ CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
 }
 ----
 
-{% endcode %}
 
-{% code title="Results for Query coffeeRelatedPosts" %}
+
+.Results for Query coffeeRelatedPosts
 
 [source,gsql]
 ----
@@ -541,7 +541,7 @@ GSQL > RUN QUERY coffeeRelatedPosts()
 }
 ----
 
-{% endcode %}
+
 
 === Accumulator Functions
 
@@ -567,7 +567,7 @@ In the last line, we compute `@@max_diff` as the absolute value of the differenc
 
 SELECT blocks take an input vertex set and perform various selection and filtering operations to produce an output set. Therefore, _set/bag expressions_ and their operators are a useful and powerful part of the GSQL query language. A set/bag expression can use either SetAccum or BagAccum.
 
-{% code title="EBNF" %}
+.EBNF
 
 [source,gsql]
 ----
@@ -583,13 +583,13 @@ setBagExpr := name
 		    | "(" setBagExpr ")"
 ----
 
-{% endcode %}
+
 
 === Set/Bag Expression Operators - UNION, INTERSECT, MINUS
 
 The operators are straightforward, when two operands are both sets, the result expression is a set. When at least one operand is a bag, the result expression is a bag. If one operand is a bag and the other is a set, the operator treats the set operant as a bag containing one of each value.
 
-{% code title="Set/Bag Operator Examples" %}
+.Set/Bag Operator Examples
 
 [source,gsql]
 ----
@@ -622,9 +622,9 @@ CREATE QUERY setOperatorsEx() FOR GRAPH minimalNet   {
 }
 ----
 
-{% endcode %}
 
-{% code title="setOperatorsEx Query Results" %}
+
+.setOperatorsEx Query Results
 
 [source,gsql]
 ----
@@ -654,7 +654,7 @@ GSQL > RUN QUERY setOperatorsEx()
 }
 ----
 
-{% endcode %}
+
 
 The result of these operators is another set or bag, so these operations can be nested and chained to form more complex expressions, such as
 
@@ -679,7 +679,7 @@ The IN and NOT IN operators support all base types on the left-hand side, and an
 
 The following example uses NOT IN to exclude neighbors that are on a blocked list.
 
-{% code title="Set Membership example" %}
+.Set Membership example
 
 [source,gsql]
 ----
@@ -692,9 +692,9 @@ CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> b
 }
 ----
 
-{% endcode %}
 
-{% code title="Results for Query friendsNotInblockedlist" %}
+
+.Results for Query friendsNotInblockedlist
 
 [source,gsql]
 ----
@@ -718,7 +718,7 @@ GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
 }
 ----
 
-{% endcode %}
+
 
 == Subqueries
 
@@ -726,7 +726,7 @@ A query defined with a `RETURNS` header following its `CREATE` statement is call
 
 A subquery must be created before the query that calls the subquery. A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
-{% code title="Main Components of a Subquery" %}
+.Main Components of a Subquery
 
 [source,gsql]
 ----
@@ -743,7 +743,7 @@ RETURNS (INT) /* A subquery has a RETURNS header specifying
 }
 ----
 
-{% endcode %}
+
 
 === Parameter types
 
@@ -836,7 +836,7 @@ GSQL> RUN QUERY findFriendsInDistance("person1", 2)
 
 Below is a list of examples of expressions. Note that ( argList ) is a set/bag expression, while [ argList ] is a list expression.
 
-{% code title="Expression Examples" %}
+.Expression Examples
 
 [source,gsql]
 ----
@@ -930,9 +930,9 @@ CREATE QUERY expressionEx() FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
 
-{% code title="expressionEx.json Results" %}
+
+.expressionEx.json Results
 
 [source,gsql]
 ----
@@ -1251,11 +1251,11 @@ GSQL > RUN QUERY expressionEx()
 }
 ----
 
-{% endcode %}
+
 
 == Examples of Expression Statements
 
-{% code title="Expression Statement Examples" %}
+.Expression Statement Examples
 
 [source,gsql]
 ----
@@ -1297,7 +1297,7 @@ CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
 }
 ----
 
-{% endcode %}
+
 
 [source,bash]
 ----

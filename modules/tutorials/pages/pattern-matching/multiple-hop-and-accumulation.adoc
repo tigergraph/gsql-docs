@@ -80,7 +80,7 @@ Each vertex set or edge set in a pattern (except edges with Kleene stars) can ha
 
 The SELECT clause specifies the output vertex set of a SELECT statement. For a multiple-hop pattern, we can select any vertex alias in the pattern. The example below shows the 4 possible choices for the given pattern:
 
-{% code title="SELECT Clause Can Select Any Vertex Alias" %}
+.SELECT Clause Can Select Any Vertex Alias
 
 [source,gsql]
 ----
@@ -101,13 +101,13 @@ SELECT u
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 ----
 
-{% endcode %}
+
 
 === FROM Clause
 
 For a multiple-hop pattern, if you don't need to refer to the intermediate vertex points, you can just use "." to connect the edge patterns, giving a more succinct representation. For example, below we remove y and z, and connect E2>, <E3 and E4 using the period symbol. Note that you cannot have an alias for a multi-hop sequence like E2>.<E3.E4.
 
-{% code title="Omitting intermediate vertex y and z." %}
+.Omitting intermediate vertex y and z.
 
 [source,gsql]
 ----
@@ -120,7 +120,7 @@ SELECT u
 FROM X:x-(E2>.<E3.E4)-U:u;
 ----
 
-{% endcode %}
+
 
 === WHERE Clause
 
@@ -131,7 +131,7 @@ Beginning with TigerGraph v3.0, each predicate (simple true/false condition) can
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 ----
 
-{% code title="WHERE Clause Support both Local Predicate and Cross-hop predicates." %}
+.WHERE Clause Support both Local Predicate and Cross-hop predicates.
 
 [source,gsql]
 ----
@@ -146,7 +146,7 @@ FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 ----
 
-{% endcode %}
+
 
 == Path Patterns as a Regular Expression Language
 
@@ -275,7 +275,7 @@ Also, you may not use more than one alias in a single assignment. The following 
 
 *Example 1.* Find the 3rd superclass of the Tag class whose name is "TennisPlayer".
 
-{% code title="Example1. Succinct Representation Of Multiple-hop Pattern" %}
+.Example1. Succinct Representation Of Multiple-hop Pattern
 
 [source,gsql]
 ----
@@ -292,20 +292,20 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example1.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example1.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 1" %}
+
+. Output of Example 1
 
 [source,coffeescript]
 ----
@@ -330,11 +330,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 2.* Find in which continents were the 3 most recent messages in Jan 2011 created.
 
-{% code title="Example1. Disjunction In A Succinct Representation Of Multiple-hop Pattern" %}
+.Example1. Disjunction In A Succinct Representation Of Multiple-hop Pattern
 
 [source,gsql]
 ----
@@ -356,20 +356,20 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example2.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 2" %}
+
+. Output of Example 2
 
 [source,coffeescript]
 ----
@@ -428,11 +428,11 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 *Example 3.* Find Viktor Akhiezer's favorite author of 2012 whose last name begins with character 'S'. Also find how many LIKES Viktor has given to the author's post or comment.
 
-{% code title="Example 3. Multiple-hop Pattern With Accumulator Applied To All Matched Paths" %}
+.Example 3. Multiple-hop Pattern With Accumulator Applied To All Matched Paths
 
 [source,gsql]
 ----
@@ -452,20 +452,20 @@ INTERPRET QUERY () SYNTAX v2{
 }
 ----
 
-{% endcode %}
+
 
 You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in a Linux shell.
 
-{% code title="Linux Bash" %}
+.Linux Bash
 
 [source,bash]
 ----
 gsql example3.gsql
 ----
 
-{% endcode %}
 
-{% code title=" Output of Example 3" %}
+
+. Output of Example 3
 
 [source,coffeescript]
 ----
@@ -510,7 +510,7 @@ Using graph 'ldbc_snb'
 }
 ----
 
-{% endcode %}
+
 
 == Multi-Block Queries
 

@@ -769,8 +769,7 @@ Recursion is supported for subqueries and a subquery can call itself. Here is an
 While recursive subqueries may look simpler in writing, they are usually not as efficient as iterative subqueries in GSQL.
 ====
 
-{% tabs %}
-{% tab title="Recursive Query Example" %}
+.Recursive Query Example
 
 [source,gsql]
 ----
@@ -798,8 +797,6 @@ CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH fri
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Test cases: Starting from `person1`, search to a distance of 1 and a distance of 2.
 

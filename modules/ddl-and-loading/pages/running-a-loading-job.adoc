@@ -37,8 +37,7 @@ Running a loading job executes a previously installed loading job.  The job read
 
 === RUN LOADING JOB
 
-{% tabs %}
-{% tab title="RUN LOADING JOB syntax for concurrent loading" %}
+.RUN LOADING JOB syntax for concurrent loading
 
 [source,gsql]
 ----
@@ -48,8 +47,6 @@ RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname [
 ]
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Note that the keyword LOADING is included. This makes it more clear to users and to GSQL that the job is a loading job and not some other type of job ( such as a SCHEMA_CHANGE JOB).
 

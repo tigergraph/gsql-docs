@@ -50,8 +50,7 @@ Example loading jobs and data files for the `book_rating` schema defined earlier
 
 The CREATE LOADING JOB statement is used to define a block of DEFINE, LOAD, and DELETE statements for loading data to or removing data from a particular graph. The sequence of statements is enclosed in curly braces. Each statement in the block, including the last one, should end with a semicolon.
 
-{% tabs %}
-{% tab title="CREATE LOADING JOB syntax" %}
+.CREATE LOADING JOB syntax
 
 [source,gsql]
 ----
@@ -61,8 +60,6 @@ CREATE LOADING JOB job_name FOR GRAPH graph_name {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [WARNING]
 ====
@@ -74,8 +71,7 @@ A loading job that includes both will be rejected when the `CREATE` statement is
 [discrete]
 ==== Example:
 
-{% tabs %}
-{% tab title="Loading Job Example" %}
+.Loading Job Example
 
 [source,gsql]
 ----
@@ -92,8 +88,6 @@ CREATE LOADING JOB job1 FOR GRAPH graph1 {
 RUN LOADING JOB job1 USING file1="m1:/data/v1_1.csv", file2="m2:/data/e2.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 == *DROP JOB statement*
 
@@ -133,16 +127,13 @@ There are four options for _filepath_string_ :
 
 * `path`_:_ either an absolute path or relative path for either a file or a folder on the machine where the job is run. If it is a folder, then the loader will attempt to load each non-hidden file in the folder.
 
-{% tabs %}
-{% tab title="path examples" %}
+.path examples
 
 [source,gsql]
 ----
 "/data/graph.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [WARNING]
 ====
@@ -151,8 +142,7 @@ If this path is not valid when CREATE LOADING JOB is executed, GSQL will report 
 
 An absolute path may begin with the session variable $sys.data_root.
 
-{% tabs %}
-{% tab title="Example: using sys.data_root in a loading job" %}
+.Example: using sys.data_root in a loading job
 
 [source,gsql]
 ----
@@ -161,13 +151,10 @@ CREATE LOADING JOB filePathEx FOR GRAPH gsql_demo {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Then, when running this loading job, first set a value for the parameter, and then run the job:
 
-{% tabs %}
-{% tab title="Example: Setting sys.data_root session parameter" %}
+.Example: Setting sys.data_root session parameter
 
 [source,gsql]
 ----
@@ -175,49 +162,38 @@ SET sys.data_root="/data/mydata"
 RUN JOB filePathEx
 ----
 
-{% endtab %}
-{% endtabs %}
 
 As the name implies, session parameters only retain their value for the duration of the current GSQL session.  If the user exits GSQL, the settings are lost.
 
 * `"all:" path`: If the path is prefixed with `all:`, then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at _path_. *If the path is invalid on any of the machines, the job will be aborted*.  Also, the session parameter $sys.data_root may not be used.
 
-{% tabs %}
-{% tab title="ALL:path examples" %}
+.ALL:path examples
 
 [source,gsql]
 ----
 "ALL:/data/graph.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 * `"any:" path`: If the path is prefixed with `any:` , then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at the specified path. *If the path is invalid on any of the machines, those machines where the path is not valid are skipped.* Also, the session parameter $sys.data_root may not be used.
 
-{% tabs %}
-{% tab title="ANY:path examples" %}
+.ANY:path examples
 
 [source,gsql]
 ----
 "ANY:/data/graph.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 * *A list of machine-specific paths*: A machine_alias is a name such as m1, m2, etc. which is defined when the cluster configuration is set.  For this option, the _filepath_string_ may include a list of paths, separated by commas. If several machines have the same path, the paths can be grouped together by using a list of machine aliases, with the vertical bar "|" as a separator. The loading job will run on whichever machines are named; each RESTPP-LOADER will work on its local files.
 
-{% tabs %}
-{% tab title="machine-specific path example" %}
+.machine-specific path example
 
 [source,gsql]
 ----
 "m1:/data1.csv, m2|m3|m5:/data/data2.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === DEFINE HEADER
 
@@ -266,8 +242,7 @@ LOAD [filepath_string|filevar|TEMP_TABLE table_name ]
 
 A _Destination clause_ ***describes how the tokens from a data source should be used to construct one of three types of **data objects*: a vertex, an edge, or a row in a temporary table (`TEMP_TABLE`). The destination clause formats for the three types are very similar, but we show them separately for clarity:
 
-{% tabs %}
-{% tab title="Vertex Destination Clause" %}
+.Vertex Destination Clause
 
 [source,gsql]
 ----
@@ -275,11 +250,8 @@ TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
     [WHERE conditions] [OPTION (options)]
 ----
 
-{% endtab %}
-{% endtabs %}
 
-{% tabs %}
-{% tab title="Edge Destination Clause" %}
+.Edge Destination Clause
 
 [source,gsql]
 ----
@@ -289,8 +261,6 @@ TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
     [WHERE conditions] [OPTION (options)]
 ----
 
-{% endtab %}
-{% endtabs %}
 
 For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for its parameters apply:
 
@@ -299,8 +269,7 @@ For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for i
 * _`id_expr`_ obeys the same attribute rules as _`attr_expr`_, except that _only `attr_expr`_ can use the reducer function, which is introduced later.
 * For edge clauses, the _`source_id_expr`_ and _`target_id_expr`_ can each optionally be followed by a _`source_type_expr`_ and _`target_type_expr`_, respectively. The _`source_type_expr`_ and _`target_type_expr`_ must evaluate to one of the allowed endpoint vertex types for the given edge type. By specifying the vertex type, this tells the loader what id types to expect. This may be important when the edge type is defined to accept more than one type of source/target vertex.
 
-{% tabs %}
-{% tab title="TEMP_TABLE Destination Clause" %}
+.TEMP_TABLE Destination Clause
 
 [source,gsql]
 ----
@@ -309,8 +278,6 @@ TO TEMP_TABLE table_name (id_name [, attr_name]*)
     [WHERE conditions] [OPTION (options)]
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The `TO TEMP_TABLE` clause defines a new, temporary data structure. Its unique characteristics will be described in a separate subsection. For now, we focus on `TO VERTEX` and `TO EDGE`.
 
@@ -366,16 +333,13 @@ A `LOAD` statement processes each line of an input file, splitting each line (ac
 
 In a simple case, a token value is copied directly to an attribute. For example, in the following `LOAD` statement,
 
-{% tabs %}
-{% tab title="Example: using $sys.file_name in an attribute expression" %}
+.Example: using $sys.file_name in an attribute expression
 
 [source,gsql]
 ----
 LOAD "xx/yy/a.csv" TO VERTEX person VALUES ($0, $1, $sys.file_name)
 ----
 
-{% endtab %}
-{% endtabs %}
 
 * The `PRIMARY_ID` of a person vertex comes from column `$0` of the file "xx/yy/a.csv".
 * The next attribute of a person vertex comes from column `$1`.
@@ -447,8 +411,7 @@ In the first case, the decimal point and following digits are required. In the s
 
 In both cases, the leading sign ( "+" or "-") is optional. The exponent, using "e" or "E", is optional. Commas and extra spaces are not allowed.
 
-{% tabs %}
-{% tab title="Examples of valid and invalid floating point values" %}
+.Examples of valid and invalid floating point values
 
 [source,gsql]
 ----
@@ -465,8 +428,6 @@ In both cases, the leading sign ( "+" or "-") is optional. The exponent, using "
 9.99 E-22
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === Loading a `DATETIME` Attribute
 
@@ -502,8 +463,7 @@ When loading data from JSON documents, the valid BOOL values are `true` and `fal
 
 To load a UDT attribute, state the name of the UDT type, followed by the list of attribute expressions for the UDT's fields, in parentheses. See the example below.
 
-{% tabs %}
-{% tab title="Load UDT example" %}
+.Load UDT example
 
 [source,gsql]
 ----
@@ -518,8 +478,6 @@ CREATE LOADING JOB load_udt FOR GRAPH test_graph {
 RUN LOADING JOB load_udt USING f="./udt.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === Loading a LIST or SET Attribute
 
@@ -527,8 +485,7 @@ There are three methods to load a `LIST` or a `SET`.
 
 The first method is to load multiple rows of data that share the same ID values and append the individual attribute values to form a collection of values. The collections are formed incrementally by reading one value from each eligible data line and appending the new value into the collection. When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not. If the id value(s) is new, then a new vertex or edge is created with a new list/set containing the single value. If the id(s) has been used before, then the value from the new line is appended to the existing list/set. Below shows an example:
 
-{% tabs %}
-{% tab title="Example: Cumulative loading of multiple rows to a SET/LIST" %}
+.Example: Cumulative loading of multiple rows to a SET/LIST
 
 [source,gsql]
 ----
@@ -543,13 +500,10 @@ CREATE LOADING JOB load_set_list FOR GRAPH test_set_list {
 RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 {% file src="../../../.gitbook/assets/list_set_vertex.csv" caption="list_set_vertex.csv" %}
 
-{% tabs %}
-{% tab title="list_set_vertex.csv" %}
+.list_set_vertex.csv
 
 [source,gsql]
 ----
@@ -561,8 +515,6 @@ RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"
 1,20
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file. Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`. Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`. Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
 
@@ -573,8 +525,7 @@ The job `load_set_list`  will load two `test_vertex` vertices because there are 
 
 If the input file contains multiple columns which should be all added to the LIST or SET, then a second method is available. Use the LIST() or SET() function as in the example below:
 
-{% tabs %}
-{% tab title="Example: loading multiple columns to a SET/LIST" %}
+.Example: loading multiple columns to a SET/LIST
 
 [source,gsql]
 ----
@@ -588,13 +539,10 @@ CREATE LOADING JOB load_set_list FOR GRAPH test_graph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The third method is to use the *`SPLIT()`* function to read a compound token and split it into a collection of elements, to form a `LIST` or `SET` collection. The `SPLIT()` function takes two arguments: the column index and the element separator. The element separator should be distinct from the separator throughout the whole file. Below shows an example:
 
-{% tabs %}
-{% tab title="Example: SET/LIST loading by SPLIT() example" %}
+.Example: SET/LIST loading by SPLIT() example
 
 [source,gsql]
 ----
@@ -609,13 +557,10 @@ CREATE LOADING JOB set_list_job FOR GRAPH test_split {
 RUN LOADING JOB set_list_job USING f="./split_list_set.csv"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 {% file src="../../../.gitbook/assets/split_list_set.csv" caption=" split_list_set.csv" %}
 
-{% tabs %}
-{% tab title="split_list_set.csv" %}
+.split_list_set.csv
 
 [source,text]
 ----
@@ -624,8 +569,6 @@ v1,mike|tom|jack, 1 # 2 # 3
 v2,john, 5 # 4 # 8
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [WARNING]
 ====
@@ -645,8 +588,7 @@ The first method is to load multiple rows of data that share the same id values.
 
 *Method 1*: Below is the syntax to load a `MAP` by the first method: Use an arrow (->)  to separate the map's key and value.
 
-{% tabs %}
-{% tab title="Loading a MAP by method 1: \-> separator" %}
+.Loading a MAP by method 1: \-> separator
 
 [source,gsql]
 ----
@@ -658,13 +600,10 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 *Method 2*: The second method is to use the `MAP()` function. If there are multiple key-value pairs among multiple columns, `MAP()` can load them together. Below is an example:
 
-{% tabs %}
-{% tab title="Loading a MAP by method 2: MAP() function" %}
+.Loading a MAP by method 2: MAP() function
 
 [source,gsql]
 ----
@@ -676,15 +615,12 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 *Method 3*: The third method is to use the `SPLIT()` function. Similar to the `SPLIT()` in loading `LIST` or `SET`, the `SPLIT()` function can be used when the key-value pair is in one column and separated by a key-value separator, or multiple key-value pairs are in one column and separated by element separators and key-value separators. `SPLIT()` here has three parameters: The first is the column index, the second is the key-value separator, and the third is the element separator. The third parameter is optional. If one row of raw data only has one key-value pair, the third parameter can be skipped. Below are the examples without and with the given element separator.
 
 {% file src="../../../.gitbook/assets/one_key_value.csv" caption="one_key_value.csv" %}
 
-{% tabs %}
-{% tab title="example data with one key-value pair per line" %}
+.example data with one key-value pair per line
 
 [source,text]
 ----
@@ -694,13 +630,10 @@ v2,2:tom
 v1,3:lucy
 ----
 
-{% endtab %}
-{% endtabs %}
 
 {% file src="../../../.gitbook/assets/multi_key_value.csv" caption="multi_key_value.csv" %}
 
-{% tabs %}
-{% tab title="example data with multiple key-value pairs per line" %}
+.example data with multiple key-value pairs per line
 
 [source,text]
 ----
@@ -710,11 +643,8 @@ v2,2:tom
 v1,3:lucy#1:john#6:jack
 ----
 
-{% endtab %}
-{% endtabs %}
 
-{% tabs %}
-{% tab title="Loading a MAP by method 3: SPLIT() function" %}
+.Loading a MAP by method 3: SPLIT() function
 
 [source,coffeescript]
 ----
@@ -726,8 +656,6 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [WARNING]
 ====
@@ -740,8 +668,7 @@ Loading a Composite Key for a vertex works no differently than normal loading. S
 
 When loading to an edge where either `TO_VERTEX` or `FROM_VERTEX` contains a composite key, the composite set of attributes must be enclosed in parentheses. See the example below.
 
-{% tabs %}
-{% tab title="Example: loading composite key to vertex and edge" %}
+.Example: loading composite key to vertex and edge
 
 [source,coffeescript]
 ----
@@ -765,15 +692,12 @@ CREATE LOADING JOB composite_load FOR GRAPH MyGraph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === Loading Wildcard Type Edges
 
 If an edge has been defined using a wildcard vertex type, a vertex type name must be specified, following the vertex id, in a `LOAD` statement for the edge. An example is shown below:
 
-{% tabs %}
-{% tab title="Example: explicit vertex typing for an untyped edge" %}
+.Example: explicit vertex typing for an untyped edge
 
 [source,coffeescript]
 ----
@@ -793,8 +717,6 @@ CREATE LOADING JOB test2 FOR GRAPH test_graph {
   }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 == *Built-in Loader Token Functions*
 
@@ -1129,8 +1051,7 @@ If the attribute type is not string nor string compress, the return type should 
 
 The built-in token function `gsql_concat` is used as an example below. It takes multiple token parameters and returns a string.
 
-{% tabs %}
-{% tab title="gsql_concat" %}
+.gsql_concat
 
 [source,c]
 ----
@@ -1145,8 +1066,6 @@ extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], ui
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === User-defined Token Functions for WHERE Clause
 
@@ -1162,8 +1081,7 @@ In the clause "WHERE _conditions_ ",
 
 The source code for the built-in token function gsql_token_equal is used as an example for how to write a user-defined token function.
 
-{% tabs %}
-{% tab title="gsql_token_equal" %}
+.gsql_token_equal
 
 [source,c]
 ----
@@ -1183,8 +1101,6 @@ extern "C" bool gsql_token_equal(const char* const iToken[], uint32_t iTokenLen[
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 == *Other Optional LOAD Clauses*
 
@@ -1220,7 +1136,9 @@ USING parameter=value [,parameter=value]*
 [WARNING]
 ====
 If multiple LOAD statements use the same source (the same file path, the same TEMP_TABLE, or the same file variable), the USING clauses in these LOAD statements must be the same. Therefore, we recommend that if multiple destination clauses share the same source, put all of these destination clauses into the same LOAD statement.
-====+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Parameter+++</b>++++++</th>+++
+====
+
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Parameter+++</b>++++++</th>+++
       +++<th style="text-align:left">++++++<b>+++Meaning of Value+++</b>++++++</th>+++
       +++<th style="text-align:left">++++++<b>+++Allowed Values+++</b>++++++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">+++SEPARATOR+++</td>+++
@@ -1296,8 +1214,7 @@ When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects 
 
 An example is shown below:
 
-{% tabs %}
-{% tab title="USING JSON_FILE test schema and loading job" %}
+.USING JSON_FILE test schema and loading job
 
 [source,gsql]
 ----
@@ -1312,13 +1229,10 @@ CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
 RUN JOB json_load
 ----
 
-{% endtab %}
-{% endtabs %}
 
 To specify an end-of-line character other than the standard one, use the EOL option, as shown below.
 
-{% tabs %}
-{% tab title="JSON loading using EOL" %}
+.JSON loading using EOL
 
 [source,gsql]
 ----
@@ -1330,13 +1244,10 @@ CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 {% file src="../../../.gitbook/assets/encoding.json" caption="encoding.json - Download" %}
 
-{% tabs %}
-{% tab title="encoding.json" %}
+.encoding.json
 
 [source,javascript]
 ----
@@ -1345,8 +1256,6 @@ CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
 {"plug-ins":["C","c++"],"indent":{"length" : 3, "use_space": false},"encoding":"UTF-6"}
 ----
 
-{% endtab %}
-{% endtabs %}
 
 In the above data encoding.json, the order of fields are not fixed and some fields are missing. The JSON loader ignores the order and accesses the fields by the nested key names. The missing fields are loaded with default values. The result vertices are:
 
@@ -1409,8 +1318,7 @@ CREATE LOADING JOB load_edge FOR GRAPH MyGraph {
 
 The keyword `TEMP_TABLE` triggers the use of a temporary data table which is used to store data generated by one `LOAD` statement, for use by a later `LOAD` statement. Earlier we introduced the syntax for loading data to a `TEMP_TABLE`:
 
-{% tabs %}
-{% tab title="TEMP_TABLE Destination Clause" %}
+.TEMP_TABLE Destination Clause
 
 [source,gsql]
 ----
@@ -1418,8 +1326,6 @@ TO TEMP_TABLE table_name (id_name [, attr_name]*) VALUES (id_expr [, attr_expr]*
     [WHERE conditions] [OPTION (options)]
 ----
 
-{% endtab %}
-{% endtabs %}
 
 This clause is designed to be used in conjunction with the `flatten` or `flatten_json_array` function in one of the `attr_expr` expressions. The flatten function splits a multi-value field into a set of records. Those records can first be stored in a temporary table, and then the temporary table can be loaded into vertices and/or edges. Only one flatten function is allowed in one temp table destination clause.
 
@@ -1431,8 +1337,7 @@ There are two versions of the flatten function: One parses single-level groups a
 
 {% file src="../../../.gitbook/assets/book1.dat" caption="book1.dat" %}
 
-{% tabs %}
-{% tab title="book1.dat" %}
+.book1.dat
 
 [source,gsql]
 ----
@@ -1440,13 +1345,10 @@ There are two versions of the flatten function: One parses single-level groups a
 102|"The Three-Body Problem"|"fiction,science fiction,Chinese"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The following loading job contains two `LOAD` statements. The first one loads input data to `Book` vertices and to a `TEMP_TABLE`. The second one loads the `TEMP_TABLE` data to `Genre` vertices and `book_genre` edges.
 
-{% tabs %}
-{% tab title="One-level Flatten Function loading (load_book_flatten1.gsql)" %}
+.One-level Flatten Function loading (load_book_flatten1.gsql)
 
 [source,gsql]
 ----
@@ -1464,8 +1366,6 @@ CREATE LOADING JOB load_books_flatten1 FOR GRAPH Book_rating {
 RUN LOADING JOB load_books_flatten1 USING f="../data/book1.dat"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Line 5 says that the third column (`$2`) of each input line should be split into separate tokens, with comma (`,`) as the separator. Each token will have its own row in table `t1`. The first column is labeled `bookcode` with value `$0` and the second column is `genre` with one of the `$2` tokens. The contents of `TEMP_TABLE t1` are shown below:
 
@@ -1498,8 +1398,7 @@ Then, lines 8 to 10 say to read `TEMP_TABLE t1` and to do the following for each
 
 The final graph will contain two `Book` vertices (101 and 102), five Genre vertices, and six `book_genre` edges.
 
-{% tabs %}
-{% tab title="List of all book_genre edges after loading" %}
+.List of all book_genre edges after loading
 
 [source,javascript]
 ----
@@ -1563,15 +1462,12 @@ The final graph will contain two `Book` vertices (101 and 102), five Genre verti
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === Two-Level Flatten Function
 
 flatten( _column_to_be_split, group_separator, sub_field_separator, number_of_sub_fields_in_one_group_ ) is used for parse a two-level group into individual elements. Each token in the main group may itself be a group, so there are two separators: one for the top level and one for the second level. An example is shown below.
 
-{% tabs %}
-{% tab title="book2.dat" %}
+.book2.dat
 
 [source,gsql]
 ----
@@ -1579,13 +1475,10 @@ flatten( _column_to_be_split, group_separator, sub_field_separator, number_of_su
 102|"The Three-Body Problem"|"FIC:fiction,SF:science fiction,CHN:Chinese"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The flatten function now has four parameters instead of three.  The additional parameter is used to record the genre_name in the Genre vertices.
 
-{% tabs %}
-{% tab title="Two-level Flatten Function loading (book_flatten2_load.gsql)" %}
+.Two-level Flatten Function loading (book_flatten2_load.gsql)
 
 [source,gsql]
 ----
@@ -1603,8 +1496,6 @@ CREATE LOADING JOB load_books_flatten2 FOR GRAPH Book_rating {
 RUN LOADING JOB load_books_flatten2 USING f="book2.dat"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 In this example, in the genres column ($2), there are multiple groups, and each group has two sub-fields, genre_id and genre_name. After running the loading job, the file book2.dat will be loaded into the TEMP_TABLE t2 as shown below.
 
@@ -1640,8 +1531,7 @@ In this example, in the genres column ($2), there are multiple groups, and each 
 
 flatten_json_array($" _array_name_ ") parses a JSON array of primitive (string, numberic, or bool) values, where "array_name" is the name of the array. Each value in the array creates a record. Below is an example:
 
-{% tabs %}
-{% tab title="flatten_json_array_values loading" %}
+.flatten_json_array_values loading
 
 [source,gsql]
 ----
@@ -1658,21 +1548,16 @@ CREATE LOADING JOB json_flatten FOR GRAPH encoding_graph {
 RUN LOADING JOB json_flatten
 ----
 
-{% endtab %}
-{% endtabs %}
 
 {% file src="../../../.gitbook/assets/encoding2.json" caption="encoding2.json - Download" %}
 
-{% tabs %}
-{% tab title="encoding2.json" %}
+.encoding2.json
 
 [source,javascript]
 ----
 {"plug-ins" : ["C", "c++"],"encoding" : "UTF-6","indent" : { "length" : 3, "use_space": false}}
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The above data and loading job creates the following temporary table:
 
@@ -1692,8 +1577,7 @@ flatten_json_array ( _$"array_name", $"sub_obj_1", $"sub_obj_2", ..., $"sub_obj_
 
 {% file src="../../../.gitbook/assets/encoding3.json" caption="encoding3.json - Download" %}
 
-{% tabs %}
-{% tab title="encoding3.json" %}
+.encoding3.json
 
 [source,javascript]
 ----
@@ -1703,11 +1587,8 @@ flatten_json_array ( _$"array_name", $"sub_obj_1", $"sub_obj_2", ..., $"sub_obj_
 {"plug-ins" : ["C", "c++"],"encoding" : "UTF-6","indent" : { "length" : 3, "use_space": false}}
 ----
 
-{% endtab %}
-{% endtabs %}
 
-{% tabs %}
-{% tab title="json_flatten_array_test.gsql" %}
+.json_flatten_array_test.gsql
 
 [source,gsql]
 ----
@@ -1725,8 +1606,6 @@ CREATE LOADING JOB json_flatten_array FOR GRAPH encoding_graph {
 RUN LOADING JOB json_flatten_array
 ----
 
-{% endtab %}
-{% endtabs %}
 
 When splitting a JSON array of JSON objects, the primitive values are skipped and only JSON objects are processed. As in the example above, the 4th line's "plug-ins" field will not generate any record because its "plug-ins" array doesn't contain any JSON object. Any field which does not exist in the object will be loaded with default value. The above example generates the temporary table shown below:
 
@@ -1770,8 +1649,7 @@ When splitting a JSON array of JSON objects, the primitive values are skipped an
 
 {% file src="../../../.gitbook/assets/encoding.csv" caption="encoding.csv" %}
 
-{% tabs %}
-{% tab title="encoding.csv" %}
+.encoding.csv
 
 [source,gsql]
 ----
@@ -1783,13 +1661,10 @@ python|{ "prop":{"compiled":"false"}, "indent":{"length":4}, "score":3.0}
 go|{"score":4.0, "prop":{"age":"new"}}
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The second column in the csv file is a JSON array which we want to split. flatten_json_array() can be used in this case without  the USING JSON_FILE="true" clause:
 
-{% tabs %}
-{% tab title="json_flatten_cvs.gsql" %}
+.json_flatten_cvs.gsql
 
 [source,gsql]
 ----
@@ -1807,8 +1682,6 @@ CREATE LOADING JOB json_flatten_cvs FOR GRAPH encoding_graph {
 RUN LOADING JOB json_flatten_cvs
 ----
 
-{% endtab %}
-{% endtabs %}
 
 The above example generates the temporary table shown below:
 
@@ -1864,8 +1737,7 @@ In addition to loading data, a LOADING JOB can be used to perform the opposite o
 
 There are four variations of the DELETE statement. The syntax of the four cases is shown below.
 
-{% tabs %}
-{% tab title="DELETE VERTEX | EDGE Syntax" %}
+.DELETE VERTEX | EDGE Syntax
 
 [source,gsql]
 ----
@@ -1885,13 +1757,10 @@ CREATE LOADING JOB abc FOR GRAPH graph_name {
 }
 ----
 
-{% endtab %}
-{% endtabs %}
 
 An example using book_rating data is shown below:
 
-{% tabs %}
-{% tab title="DELETE example" %}
+.DELETE example
 
 [source,gsql]
 ----
@@ -1908,8 +1777,6 @@ RUN LOADING JOB clean_user_occupation USING f="./data/user_occupation_update.dat
 RUN LOADING JOB load_user_occupation USING f="./data/user_occupation_update.dat"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [NOTE]
 ====

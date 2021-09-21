@@ -385,8 +385,7 @@ Due to multithreaded GSQL loading, the initial order of elements loaded into a L
 
 A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields of the same or different types. The supported field types are listed below. Each field in a UDT has a fixed size. A `STRING` field must be given a size in characters, and the loader will only load the first given number of characters. An `INT` or `UINT` field can optionally be given a size in bytes.
 
-{% tabs %}
-{% tab title="TYPEDEF TUPLE syntax" %}
+.TYPEDEF TUPLE syntax
 
 [source,gsql]
 ----
@@ -394,8 +393,6 @@ TYPEDEF TUPLE "<" fieldName fieldType ["(" fieldSize ")"]
                   ( "," fieldName fieldType ["(" fieldSize ")"] )* ">" tupleName
 ----
 
-{% endtab %}
-{% endtabs %}
 
 |===
 | Field type | User-specified size | Size | Range (N is size)
@@ -438,15 +435,12 @@ TYPEDEF TUPLE "<" fieldName fieldType ["(" fieldSize ")"]
 
 A UDT must be defined before being used as a field in a vertex type or edge type. To define a UDT, use the `TYPEDEF TUPLE` statement. Below is an example of a `TYPEDEF TUPLE` statement:
 
-{% tabs %}
-{% tab title="Example: UDT Definition " %}
+.Example: UDT Definition 
 
 [source,gsql]
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
 ----
 
-{% endtab %}
-{% endtabs %}
 
 In the above example, `myTuple` is the name of the UDT. It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.

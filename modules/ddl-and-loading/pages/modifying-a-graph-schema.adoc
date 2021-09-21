@@ -103,8 +103,7 @@ ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 
 Added attributes are appended to the end of the schema. The new attributes may include DEFAULT fields. To add attributes to a vertex type, the syntax is as follows:
 
-{% tabs %}
-{% tab title="ALTER VERTEX ... ADD" %}
+.ALTER VERTEX ... ADD
 
 [source,gsql]
 ----
@@ -113,8 +112,6 @@ ALTER VERTEX vertex_type_name ADD
     [',' attribute_name type [DEFAULT default_value]]* );
 ----
 
-{% endtab %}
-{% endtabs %}
 
 For example:
 
@@ -126,8 +123,7 @@ STRING, marketcap DOUBLE)
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:
 
-{% tabs %}
-{% tab title="ALTER EDGE... ADD" %}
+.ALTER EDGE... ADD
 
 [source,gsql]
 ----
@@ -136,8 +132,6 @@ ALTER EDGE edge_type_name ADD
     [',' attribute_name type [DEFAULT default_value]]* )];
 ----
 
-{% endtab %}
-{% endtabs %}
 
 ==== `ALTER EDGE .. ADD PAIR`
 
@@ -359,8 +353,7 @@ ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
 
 Added attributes are appended to the end of the schema.  The new attributes may include DEFAULT fields. To add attributes to a vertex type, the syntax is as follows:
 
-{% tabs %}
-{% tab title="ALTER VERTEX ... ADD" %}
+.ALTER VERTEX ... ADD
 
 [source,gsql]
 ----
@@ -369,8 +362,6 @@ ALTER VERTEX vertex_type_name ADD
     [',' attribute_name type [DEFAULT default_value]]* );
 ----
 
-{% endtab %}
-{% endtabs %}
 
 For example:
 
@@ -382,8 +373,7 @@ STRING, marketcap DOUBLE)
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:
 
-{% tabs %}
-{% tab title="ALTER EDGE... ADD" %}
+.ALTER EDGE... ADD
 
 [source,gsql]
 ----
@@ -394,8 +384,6 @@ ALTER EDGE edge_type_name ADD
     [',' attribute_name type [DEFAULT default_value]]* )];
 ----
 
-{% endtab %}
-{% endtabs %}
 
 For example:
 

@@ -495,16 +495,13 @@ GSQL > RUN QUERY printExampleV2("person1")
 
 Instead of printing output in JSON format, output can be written to a FILE object in comma-separated values (CSV) format. To select this option, at the end of the PRINT statement, include the keyword `TO_CSV` followed by the `FILE` object name:
 
-{% tabs %}
-{% tab title="PRINT to CSV FILE syntax example" %}
+.PRINT to CSV FILE syntax example
 
 [source,gsql]
 ----
 PRINT @@setOfVertices TO_CSV file1;
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Each execution of the `PRINT` statement appends one line to the `FILE`. If the `PRINT` statement includes multiple expressions, then each printed value is separated from its neighbor by a comma. If an expression evaluates to a set or list, then the collection's values are delimited by single spaces. Due to the simpler format of CSV vs. JSON, the `TO_CSV` feature only supports data with a simple one- or two-dimension structure.
 

@@ -36,7 +36,7 @@ Furthermore, if the TigerGraph graph is distributed (partitioned) across multipl
 
 [NOTE]
 ====
- To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
+To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
 ====
 
 A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
@@ -910,7 +910,7 @@ Each reducer function is overloaded so that one function can be used for several
 
 [WARNING]
 ====
- Each function supports a certain set of attribute types. Calling a reducer function with an incompatible type crashes the service. In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
+Each function supports a certain set of attribute types. Calling a reducer function with an incompatible type crashes the service. In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
 ====
 
 == *WHERE Clause*
@@ -988,7 +988,7 @@ The GSQL loading language provides several built-in functions for the WHERE clau
 
 [WARNING]
 ====
- The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
+The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
 ====
 
 == *User-Defined Token Functions*
@@ -1732,7 +1732,7 @@ In addition to loading data, a LOADING JOB can be used to perform the opposite o
 
 [WARNING]
 ====
- In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
+In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
 ====
 
 There are four variations of the DELETE statement. The syntax of the four cases is shown below.
@@ -1780,5 +1780,5 @@ RUN LOADING JOB load_user_occupation USING f="./data/user_occupation_update.dat"
 
 [NOTE]
 ====
- There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete. In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
+There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete. In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
 ====

@@ -4,7 +4,7 @@
 
 In this tutorial, we will show you how to write and run Pattern Matching queries. Pattern Matching is available in TigerGraph v2.4+.
 
-We assume you have finished link:../gsql-101/[GSQL 101]. If not, please complete GSQL 101 first.
+We assume you have finished xref:tutorials:gsql-101/README.adoc[GSQL 101]. If not, please complete GSQL 101 first.
 
 [NOTE]
 ====
@@ -52,15 +52,17 @@ GSQL version: 3.0
 +
 
 
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:../../admin/admin-guide/system-management/management-with-gadmin.adoc[manage TigerGraph with gadmin], and  xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs].
+. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
 . You need to start from an empty data catalog. If necessary, run `drop all` to clear the catalog first.
 
 === Cheatsheet
 
-The following general use commands were introduced in link:../gsql-101/[GSQL 101].
+The following general use commands were introduced in xref:tutorials:gsql-101/README.adoc[GSQL 101].
 
 * The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privilege to run most gadmin commands.
-* The *`GSQL>`* prefix indicates GSQL shell commands.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Command+++</th>+++
+* The *`GSQL>`* prefix indicates GSQL shell commands.
+
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Command+++</th>+++
       +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">+++% gsql+++</td>+++
       +++<td style="text-align:left">+++Enter the GSQL shell in interactive mode+++</td>++++++</tr>+++

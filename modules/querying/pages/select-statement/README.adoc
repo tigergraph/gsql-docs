@@ -4,9 +4,9 @@
 
 [CAUTION]
 ====
-NOTE: Starting with TigerGraph 2.6, there are now two versions of the GSQL Query Language. Both are available in the product. The original version is called GSQL Syntax V1. GSQL Syntax V2 was introduced to provide more flexible and powerful link:../../../../start/gsql-102/[Pattern Matching]. A query indicates which grammar to use in the SYNTAX clause of the CREATE QUERY header. V1 is the default.
+Starting with TigerGraph 2.6, there are now two versions of the GSQL Query Language. Both are available in the product. The original version is called GSQL Syntax V1. GSQL Syntax V2 was introduced to provide more flexible and powerful xref:tutorials:pattern-matching/README.adoc[Pattern matching]. A query indicates which grammar to use in the SYNTAX clause of the CREATE QUERY header. V1 is the default.
 
-As new features are being added to GSQL, some are available only V2. In the future, we plan to transition so that Syntax V2 will be the default.
+As new features are being added to GSQL, some are available only in V2. In the future, we plan to transition so that Syntax V2 will be the default.
 
 The key differences between the two grammars:
 
@@ -177,17 +177,17 @@ gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
 
 
 
-In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports link:./#sql-like-select-statement[SQL-like SELECT statements] with tabular output.
+In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports xref:querying:select-statement/sql-like-select-statement.adoc\[SQL-like SELECT statements] with tabular output.
 
-The link:./#from-clause-vertex-and-edge-sets[fromClause] defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertexAlias name. Thus, the SELECT clause picks the set of vertices at one of these points in the pattern -- the source vertices, the target vertices, or those from an interior point in a multi-hop path -- to be the output vertices.
+The <<_from_clause>> defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertexAlias name. Thus, the SELECT clause picks the set of vertices at one of these points in the pattern -- the source vertices, the target vertices, or those from an interior point in a multi-hop path -- to be the output vertices.
 
 The SELECT block has many optional clauses, which fit together in a logical flow. Overall, the SELECT block starts from a source set of vertices and returns a result set that is either a subset of the source vertices or a subset of their neighboring vertices. Along the way, computations can be performed on the selected vertices and edges. The figure below graphically depicts the overall SELECT data flow. While the ACCUM and POST-ACCUM clauses do not directly affect which vertices are included in the result set, they affect the data (accumulators) which are attached to those vertices.
 
 image::../../../../.gitbook/assets/select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop GSQL SELECT statement]
 
-== FROM Clause: Vertex and Edge Sets
+== FROM Clause
 
-In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. In link:./#pattern-matching-syntax-v-2[Pattern Matching] (Syntax v2), the pattern can be multiple hops long. Path patterns also have many other options for finer control and greater flexibility.
+In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. In xref:tutorials:pattern-matching/[Pattern Matching] (Syntax v2), the pattern can be multiple hops long. Path patterns also have many other options for finer control and greater flexibility.
 
 .FROM clause
 
@@ -195,8 +195,6 @@ In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. 
 ----
 fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
-
-
 
 A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices. We typically use the names Source and Target for the starting and ending vertex sets: `+Source -(Edges)-> Target+`
 
@@ -414,7 +412,7 @@ NOTE: The GSQL grammar allows the righthand enclosure to be either `)-` or +
  ** *`"_"`* or *`"ANY"`* or <blank>, which means any edge/vertex.
  ** a named type (*`edgeType`* or *`vertexType`*)
  ** a global SetAcum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
- ** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of link:../query-operations.md#dynamic-querying[*Dynamic Querying*].
+ ** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:query-operations.adoc[*Dynamic Querying*].
  ** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
  ** The list of types must contain the same type of specifiers.
 +
@@ -902,7 +900,7 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 
 === Pattern Matching (SYNTAX v2)
 
-We give a brief overview of Pattern Matching syntax and semantics in the FROM clause, from the perspective of the formal notation and how the rules can be inferred from that. For a more practical explanation of Pattern Matching, we recommend the link:../../../../start/gsql-102/[GSQL102 Pattern Matching] tutorial.
+We give a brief overview of Pattern Matching syntax and semantics in the FROM clause, from the perspective of the formal notation and how the rules can be inferred from that. For a more practical explanation of Pattern Matching, we recommend the xref:tutorials:pattern-matching/README.adoc[].
 
 There are three options for the syntax of the pattern in a FROM clause:
 
@@ -912,7 +910,7 @@ fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
 
 . `step` pattern, SYNTAX v1. This is the default syntax from classic GSQL.
-. `stepV2` pattern, SYNTAX v2. The query or the GSQL session must link:../../../../start/gsql-102/[specify that SYNTAX v2 is to be used]. This is still a 1-Hop query, but there are two differences:
+. `stepV2` pattern, SYNTAX v2. The query or the GSQL session must xref:tutorials:pattern-matching/README.adoc[specify that SYNTAX v2 is to be used]. This is still a 1-Hop query, but there are two differences:
  ** The source vertex set now has the same flexibility as the target vertex. It is not necessary to create a seedSet. Instead, the source can be one or more vertex types, given either statically or dynamically as string parameters, or the special symbol `ANY` or `_`.
  ** The arrowhead `+-( )->+` should not be used between the edge set and the target set. Simple use a dash `-( )-`.
 . One or more `pathPattern` s.
@@ -1877,9 +1875,9 @@ Similarly, the POST-ACCUM clause acts like a FOREACH loop on the vertex result s
 
 In Pattern Matching (SYNTAX v2), we may have a multi-step pattern, with several vertex and edge aliases. Each statement (dml-sub-statement) can refer to one or more aliases. There are no restrictions, though complex expressions and accessing multiple aliases may degrade performance.
 
-*The PER clause* is available only in SYNTAX v2. It is an optional prefix to the ACCUM clause, affecting only that clause. The PER clause allows the user to specify that they wish to aggregate the match table, so that there is one row PER <alias>. For more information see the xref:../../../../start/gsql-102/adv/per-clause.adoc[PER Clause section in the Pattern Matching tutorial].
+*The PER clause* is available only in SYNTAX v2. It is an optional prefix to the ACCUM clause, affecting only that clause. The PER clause allows the user to specify that they wish to aggregate the match table, so that there is one row PER <alias>. For more information see xref:tutorials:pattern-matching/adv/per-clause.adoc[PER Clause section in the Pattern Matching tutorial].
 
-*Multiple POST-ACCUM clauses* are supported in TG 3.0+. In SYNTAX v2, Each POST-ACCUM may refer to only one vertex alias. See the link:../../../../start/gsql-102/multiple-hop-and-accumulation.md#post-accum-clause[POST-ACCUM section in the Pattern Matching]tutorial.
+*Multiple POST-ACCUM clauses* are supported in TG 3.0+. In SYNTAX v2, Each POST-ACCUM may refer to only one vertex alias. See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[POST-ACCUM section in the Pattern Matching] tutorial.
 
 === Edge/Vertex Type Inference and Conflict
 

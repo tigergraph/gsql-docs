@@ -10,11 +10,8 @@ With just the knowledge from GSQL 101 and a little practice, you should be able 
 
 Want to learn more?
 
-* To learn to do the same types of operations using the GraphStudio Visual SDK and UI, see the link:../../ui/graphstudio/[TigerGraph GraphStudio UI Guide].
-* Continue learning xref:../accumulators-tutorial.adoc[Accumulators] and link:../gsql-102/[Pattern Matching].
-* To see more GSQL examples, see https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_short[IS],  https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_complex[IC], and https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/business_intelligence[BI] workloads based on http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC] benchmark https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/load_scripts/setup_schema.gsql[schema], and link:../gsql-examples/[GSQL Demo Examples .]
-* To get answers to common questions, see the xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs .]
-* To see the full GSQL specification (whose table of contents with give you and idea of what is available) see
- ** link:../../dev/gsql-ref/ddl-and-loading/[GSQL Language Reference Part 1 - Defining Graphs and Loading Data]
- ** link:../../dev/gsql-ref/querying/[GSQL Language Reference Part 2 - Querying]
+* To learn to do the same types of operations using the GraphStudio Visual SDK and UI, see the xref:3.2@gui:graphstudio:overview.adoc[TigerGraph GraphStudio UI Guide].
+* Continue learning xref:pattern-matching/README.adoc[Pattern Matching].
+* To see more GSQL examples, see https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_short[IS],  https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_complex[IC], and https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/business_intelligence[BI] workloads based on http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC] benchmark https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/load_scripts/setup_schema.gsql[schema].
+
 * To discuss and get help with fellow GSQL users and GSQL developers,  join https://community.tigergraph.com/[GSQL community forum].

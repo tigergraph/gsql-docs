@@ -71,8 +71,8 @@ argList := expr ["," expr]*
 
 Different types of variable declarations use different scoping rules. There are two types of scoping rules in a GSQL query:
 
-* link:declaration-and-assignment-statements.md#block-scoping[Block scoping]
-* link:declaration-and-assignment-statements.md#global-scoping[Global scoping]
+* xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[Block scoping]
+* xref:querying:declaration-and-assignment-statements.adoc#_global_scoping[Global scoping]
 
 === Block scoping
 
@@ -82,11 +82,11 @@ Additionally, variables declared in a lower scope can use the same name as a var
 
 The following types of variables use block scoping:
 
-* xref:accumulators.adoc[Accumulators]
-* link:declaration-and-assignment-statements.md#base-type-variables[Base type variables]
-* link:declaration-and-assignment-statements.md#local-base-type-variables[Local base type variables]
-* link:declaration-and-assignment-statements.md#file-object-declaration[File objects]
-* link:select-statement/#aliases-and-accum-post-accum-iteration-model[Vertex or edge aliases]
+* xref:querying:accumulators.adoc[Accumulators]
+* xref:querying:declaration-and-assignment-statements.adoc#_base_type_variables[Base type variables]
+* xref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[Local base type variables]
+* xref:querying:declaration-and-assignment-statements.adoc#_file_object_declaration[File objects]
+* xref:querying:select-statement/README.adoc/#_aliases_and_accumpost_accum_iteration_model[Vertex or edge aliases]
 
 === Global scoping
 
@@ -94,7 +94,7 @@ A global-scoped variable is always accessible anywhere in the query once it has 
 
 The following types of variables use global scoping:
 
-* link:declaration-and-assignment-statements.md#vertex-set-variable-declaration-and-assignment[Vertex set variables]
+* xref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variable_declaration_and_assignment[Vertex set variables]
 
 == Declaration Statements
 
@@ -111,7 +111,7 @@ The first five types each have their own declaration statement syntax and are co
 
 === Accumulators
 
-Accumulator declaration is discussed in link:accumulators.md#declaration-of-accumulators[Accumulators].
+Accumulator declaration is discussed in xref:querying:accumulators.adoc#_declaration_of_accumulators[Accumulators].
 
 === Base type variables
 
@@ -561,7 +561,7 @@ funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
 argList := expr ["," expr]*
 ----
 
-Typically, a function call returns a value and so is part of an xref:operators-and-expressions.adoc[expression]. In some cases, however, the function does not return a value (i.e., returns `VOID`) or the return value can be ignored, so the function call can be used as an entire statement. This is a Function Call Statement.
+Typically, a function call returns a value and so is part of an xref:querying:operators-and-expressions.adoc[expression]. In some cases, however, the function does not return a value (i.e., returns `VOID`) or the return value can be ignored, so the function call can be used as an entire statement. This is a Function Call Statement.
 
 .Examples of Function Call statements
 

@@ -50,7 +50,7 @@ More technically, accumulators are mutable mutex variables shared among all the 
 
 == Declaration of Accumulators
 
-Global accumulators can be declared anywhere in the query. Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop. Accumulators are link:declaration-and-assignment-statements.md#block-scoping[block-scoped] and can only be accessed in the block where they are declared.
+Global accumulators can be declared anywhere in the query. Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop. Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
 
 The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`. Additionally, a global accumulator may be declared to be static.
 
@@ -2325,7 +2325,7 @@ MapAccum<SetAccum<INT>, INT> # illegal
 GroupByAccum<INT a, STRING b, MaxAccum<INT> maxs, ListAccum<ListAccum<INT>> lists>
 ----
 
-. ArrayAccum: Unlike the other accumulators in this list, where nesting is optional, nesting is mandatory for ArrayAccum. See the link:accumulators.md#arrayaccum[ArrayAccum] section above.
+. ArrayAccum: Unlike the other accumulators in this list, where nesting is optional, nesting is mandatory for ArrayAccum. See the xref:querying:accumulators.adoc#_arrayaccum[ArrayAccum] section.
 
 It is legal to define nested ListAccums to form a multi-dimensional array. Note the declaration statements and the nested [ bracket ] notation in the example below:
 

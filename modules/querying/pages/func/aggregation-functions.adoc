@@ -1,32 +1,27 @@
 = Aggregation Functions
 
-This page lists the aggregation functions available in the GSQL query language. These functions take a single `SET/BAG` or `SetAccum/BagAccum` as the parameter and return an aggregated value from all members of the set or bag.
+This page lists the aggregation functions available in the GSQL query language. These functions take a single `SET/BAG`, `SetAccum/BagAccum`, or `ListAccum` as the parameter and return an aggregated value from all members of the set or bag.
 
 [NOTE]
 ====
-The ``DISTINCT``keyword can be used to include repeated values only once when aggregating.
+The ``DISTINCT`` keyword can be used to include repeated values only once when aggregating.
 ====
 
-[discrete]
-=== avg()
+== avg()
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `avg( [DISTINCT] setExp )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the average of all elements in a set or bag. The function can only take set/bag expressions whose members are numeric types.
 
-[discrete]
-==== Return type
+=== Return type
 
 A numeric type. If all members of the set/bag expression are integers, the return value will also be rounded down to be an integer.
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -36,8 +31,7 @@ A numeric type. If all members of the set/bag expression are integers, the retur
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
-[discrete]
-==== Example
+=== Example
 
 [source,coffeescript]
 ----
@@ -45,26 +39,21 @@ avg([5, 4, 1, 0, 0, 0]) -> 1
 avg([3, 2, 1]) -> 2
 ----
 
-[discrete]
-=== count()
+== count()
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `count( [DISTINCT] setExp )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the size of the set or bag.
 
-[discrete]
-==== Return type
+=== Return type
 
 `INT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -74,26 +63,21 @@ Returns the size of the set or bag.
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
-[discrete]
-=== max()
+== max()
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `max( [DISTINCT] setExp )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the member with the maximum value in a set or bag. The function can only take set/bag expressions whose members are numeric types.
 
-[discrete]
-==== Return type
+=== Return type
 
 A numeric type.
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -103,26 +87,21 @@ A numeric type.
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
-[discrete]
-=== min()
+== min()
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `min( [DISTINCT] setExp )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the member with the minimum value in a set or bag. The function can only take set/bag expressions whose members are numeric types.
 
-[discrete]
-==== Return type
+=== Return type
 
 A numberic type.
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -132,26 +111,21 @@ A numberic type.
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
-[discrete]
-=== sum()
+== sum()
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `sum( [DISTINCT] setExp )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the sum of all members in a set or bag. The function can only take set/bag expressions whose members are numeric types.
 
-[discrete]
-==== Return type
+=== Return type
 
 A numeric type.
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type

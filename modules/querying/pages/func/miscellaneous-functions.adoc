@@ -2,33 +2,27 @@
 
 This page lists the functions in the GSQL query language that are not tied to any single data type.
 
-[discrete]
-=== `coalesce()`
+== `coalesce()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `+coalesce( exp [, exp ...] )+`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the first expression that isn't `NULL`.
 
 This function requires all its arguments have the same data type (`BOOL`, `INT`,  `FLOAT,` `DOUBLE`, `STRING`, or `VERTEX`). The only exception is that different numeric types can be used together. In this case, all values are converted into the first argument type.
 
-[discrete]
-==== Return type
+=== Return type
 
 `BOOL`, `INT`,  `FLOAT,` `DOUBLE`, `STRING`, or `VERTEX`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 The function takes a number of parameters and returns the first one that does not evaluate to `NULL`
 
-[discrete]
-==== Example
+=== Example
 
 [source,gsql]
 ----
@@ -68,16 +62,13 @@ GSQL > RUN QUERY coalesceFuncEx(1,2)
 
 
 
-[discrete]
-=== `evaluate()`
+== `evaluate()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `evaluate( expressionStr, typeStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Takes a string argument and interprets it as an expression which is evaluated during run-time. This enables users to create a general purpose query instead of separate queries for each specific computation.
 
@@ -98,13 +89,11 @@ If any of the following conditions occur, the query may continue running, but th
 . The expression uses an operator for non-compatible operation. For example, 123 == "xyz".
 ====
 
-[discrete]
-==== Return type
+=== Return type
 
 Tyep indicated by `typeStr`
 
-[discrete]
-==== Parameters+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
+=== Parameters+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
       +++<th style="text-align:left">+++Description+++</th>+++
       +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++expressionStr+++</code>++++++</td>+++
@@ -127,8 +116,7 @@ Tyep indicated by `typeStr`
         +++<br>++++++</br>+++The default value is +++<code>+++&quot;bool&quot;+++</code>+++.+++</td>+++
       +++<td style="text-align:left">++++++<code>+++STRING+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
 
-[discrete]
-==== Example
+=== Example
 
 .Example query
 

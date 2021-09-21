@@ -2,26 +2,21 @@
 
 This page lists the methods of a JSON object variable. Methods can be accessed using the dot(`.`) operator.
 
-[discrete]
-=== `containsKey()`
+== `containsKey()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.containsKey( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns a boolean value indicating whether the JSON object contains a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `BOOL`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -31,26 +26,21 @@ Returns a boolean value indicating whether the JSON object contains a specified 
 | `STRING`
 |===
 
-[discrete]
-=== `getBool()`
+== `getBool()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getBool( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the boolean value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `BOOL`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -60,26 +50,21 @@ Returns the boolean value associated with a specified key.
 | `STRING`
 |===
 
-[discrete]
-=== `getDouble()`
+== `getDouble()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getDouble( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the double value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `DOUBLE`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -89,26 +74,21 @@ Returns the double value associated with a specified key.
 | `STRING`
 |===
 
-[discrete]
-=== `getInt()`
+== `getInt()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getInt( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the integer value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `INT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -118,26 +98,21 @@ Returns the integer value associated with a specified key.
 | `STRING`
 |===
 
-[discrete]
-=== `getJsonArray()`
+== `getJsonArray()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getJsonArray( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the JSON array value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `JSONARRAY`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -147,26 +122,21 @@ Returns the JSON array value associated with a specified key.
 | `STRING`
 |===
 
-[discrete]
-=== `getJsonObject()`
+== `getJsonObject()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getJsonObject( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `JSONOBJECT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -176,26 +146,21 @@ Returns the value associated with a specified key.
 | `STRING`
 |===
 
-[discrete]
-=== `getString()`
+== `getString()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonobject.getString( keyStr )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the string value associated with a specified key.
 
-[discrete]
-==== Return type
+=== Return type
 
 `STRING`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type

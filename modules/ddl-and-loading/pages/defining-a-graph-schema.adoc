@@ -54,16 +54,12 @@ CREATE VERTEX vertex_type_name "(" primary_id_name_type
 
 [NOTE]
 ====
-
-[NOTE]
-====
 Beginning with v2.3, there are two syntaxes for specifying the primary id/key:
 
 Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additional options and additional flexibility:
 
 . PRIMARY_ID and WITH primary_id_as attribute
 . PRIMARY KEY syntax.  This syntax is modeled after SQL.
-====
 ====
 
 ==== *PRIMARY_ID  and WITH primary_id_as_attribute*
@@ -142,7 +138,7 @@ primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section link:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 . Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type, DATETIME, or STRING COMPRESS attributes only)
@@ -531,7 +527,7 @@ DROP GRAPH gname
 
 
 
-The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an link:modifying-a-graph-schema.adoc#_add_vertex_edge_local_[ADD VERTEX/EDGE] statement within a link:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
+The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an xref:modifying-a-graph-schema.adoc#_add_vertex_edge_local[ADD VERTEX/EDGE] statement within a xref:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
 == DROP ALL
 

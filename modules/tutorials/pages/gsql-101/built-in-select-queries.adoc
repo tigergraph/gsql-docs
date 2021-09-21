@@ -189,4 +189,4 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 }
 ----
 
-For more built-in REST endpoints, you can refer toxref:../../dev/restpp-api/built-in-endpoints.adoc[]the xref:../../dev/restpp-api/built-in-endpoints.adoc[Built-in Endpoints page].
+For more built-in REST endpoints, you can the xref:3.2@tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].

@@ -2,26 +2,21 @@
 
 This page lists the methods of a JSONARRAY object. Methods can be accessed via the dot(`.`) operator.
 
-[discrete]
-=== `getBool()`
+== `getBool()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getBool( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the boolean value at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `BOOL`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -31,26 +26,21 @@ Returns the boolean value at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `getDouble()`
+== `getDouble()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getDouble( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the double at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `DOUBLE`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -60,26 +50,21 @@ Returns the double at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `getInt()`
+== `getInt()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getInt( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the integer value at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `INT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -89,26 +74,21 @@ Returns the integer value at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `getJsonArray()`
+== `getJsonArray()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getJSONArray( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the JSONArray value at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `BOOL`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -118,26 +98,21 @@ Returns the JSONArray value at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `getJsonObject()`
+== `getJsonObject()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getJsonObject( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the JSONOBJECT value at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `JSONOBJECT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -147,26 +122,21 @@ Returns the JSONOBJECT value at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `getString()`
+== `getString()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.getString( idx )`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the boolean value at a specified index.
 
-[discrete]
-==== Return value
+=== Return value
 
 `STRING`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -176,25 +146,20 @@ Returns the boolean value at a specified index.
 | `INT`
 |===
 
-[discrete]
-=== `size()`
+== `size()`
 
-[discrete]
-==== Syntax
+=== Syntax
 
 `jsonarray.size()`
 
-[discrete]
-==== Description
+=== Description
 
 Returns the size of the array.
 
-[discrete]
-==== Return value
+=== Return value
 
 `INT`
 
-[discrete]
-==== Parameters
+=== Parameters
 
 None.

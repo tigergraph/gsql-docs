@@ -189,7 +189,7 @@ Congratulations! At this point, you have gone through the whole process of defin
 
 Installing query will give the fastest query speed, but user needs to wait for the installation overhead.
 
-The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL. Please refer to link:../gsql-102/[GSQL 102] for this mode.
+The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL. Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 
 == A More Advanced Query
 

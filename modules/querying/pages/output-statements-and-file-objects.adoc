@@ -94,7 +94,7 @@ Each _`printExpr`_ may be one of the following:
 Parentheses can be used for controlling order of precedence.
 
 . A vertex set variable
-. A vertex expression set _`vExprSet`_ (only available if the output API is set to `"v2"`. Vertex expression sets are explained in a link:output-statements-and-file-objects.md#vertex-expression-set[separate section below].
+. A vertex expression set `vExprSet` (only available if the output API is set to `"v2"`. Vertex expression sets are explained in <<_vertex_expression_set>>.
 
 === JSON Format: Keys
 
@@ -736,15 +736,12 @@ LOG(debug, 10, x);
 returnStmt := RETURN expr
 ----
 
+The RETURN statement specifies data that a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
 
-
-The RETURN statement specifies data that a link:operators-and-expressions.md#subquery[_subquery_] __passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
-
-For subqueries to return a link:accumulators.md#heapaccum[`HeapAccum`] or link:accumulators.md#groupbyaccum[`GroupByAccum`], the accumulators must be link:../ddl-and-loading/defining-a-graph-schema.md#catalog-level-typedef[defined at the catalog level]. See the example below:
+For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] or xref:querying:accumulators.adoc#_groupbyaccum[`GroupByAccum`], the accumulators must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level]. See the example below:
 
 .Subquery Returning HeapAccum Example
-
-[source,coffeescript]
+[source,gsql]
 ----
 TYPEDEF tuple<name string, friends int> myTuple
 TYPEDEF HeapAccum<myTuple>(3, friends DESC) myHeap

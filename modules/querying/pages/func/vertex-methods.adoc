@@ -54,7 +54,7 @@ v.edgeAttribute().filter( condition )
 
 ==== Description
 
-This function is appended to link:vertex-methods.md#neighbors[`neighbors()`], link:vertex-methods.md#neighborattribute[`neighborAttribute()`], or link:vertex-methods.md#edgeattribute[`edgeAttribute()`] to filter the output set according to a filter condition. Only elements that satisfy the condition will be returned.
+This function is appended to <<_neighbors>>, <<_neighborattribute>>, or <<_edgeattribute>> to filter the output set according to a filter condition. Only elements that satisfy the condition will be returned.
 
 ==== Return type
 

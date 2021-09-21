@@ -20,7 +20,7 @@ image::../../.gitbook/assets/friendship-social-graph-schema.png[Friendship Socia
 
 The friendship loop shows that a friendship is between a person and another person.
 
-=== Data Set +++<a id="GSQL101-DataSet">++++++</a>+++
+=== Data Set
 
 For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
 
@@ -73,7 +73,7 @@ GSQL >
 +
 
 
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". If you need further help, please see https://docs.tigergraph.com/admin/admin-guide/system-management/management-with-gadmin#gadmin-start[manage TigerGraph with gadmin] and   xref:../../faqs/knowledge-base-and-faqs.adoc[TigerGraph Knowledge Base and FAQs].
+. If the GSQL shell does not launch, try resetting the system with "gadmin start all". If you need further help, please see xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
 
 If this is your first time using GSQL, the TigerGraph data store is probably empty.  However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
 

@@ -310,7 +310,7 @@ insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)
 [NOTE]
 ====
 *Dynamic Query Support* +
-As of TigerGraph 3.0, the vertex or edge type in an `INSERT` statement can either be set statically (`vertexType` or `edgeType`), or it can be written as a string variable (`name`), with the value being set at run time, to make alink:query-operations.md#dynamic-querying[Dynamic DML query]. +
+As of TigerGraph 3.0, the vertex or edge type in an `INSERT` statement can either be set statically (`vertexType` or `edgeType`), or it can be written as a string variable (`name`), with the value being set at run time, to make a xref:querying:query-operations.adoc#_dynamic_querying[Dynamic DML query].
 *`INSERT INTO`* `+(vertexType | name) ...+` +
 Note that to INSERT an edge type dynamically, the keyword EDGE is required: +
 *`INSERT INTO`* `(edgeType |` *`EDGE`* `+name) ...+`

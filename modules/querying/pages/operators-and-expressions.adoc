@@ -486,7 +486,7 @@ name "." attrName // read/write. Accesses attribute called attrName
 ====
 *DYNAMIC Query Support*
 
-The name of the attribute can be parameterized using the *getAttr* and *setAttr* link:operators-and-expressions.md#vertex-functions[vertex functions], described later in this section. This allows you to write link:query-operations.md#dynamic-gsql-queries[dynamic query] procedures where the attribute names are specified when you run the query.
+The name of the attribute can be parameterized using the *getAttr* and *setAttr* xref:querying:func/vertex-methods.adoc[vertex functions], described later in this section. This allows you to write xref:querying:query-operations.adoc#_dynamic_querying[dynamic query] procedures where the attribute names are specified when you run the query.
 ====
 
 For example, the following code snippet shows two different SELECT statements which produce equivalent results. The first uses the dot operator on the vertex variable *v* to access the "subject" attribute, which is defined in the graph schema. The FROM clause in the first SELECT statement necessitates that any target vertices will be of type "post" (also defined in the graph schema). The second SELECT schema checks that the vertex variable v's type is a "post" vertex by using the dot operator to access the built-in *type* attribute.
@@ -722,7 +722,7 @@ GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
 
 == Subqueries
 
-A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery. A subquery acts as a callable function in GSQL. They take parameters, perform a set of actions, and return a value at the end. A subquery must end with a link:output-statements-and-file-objects.md#return-statement[return statement] to pass its output value to a query. Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
+A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery. A subquery acts as a callable function in GSQL. They take parameters, perform a set of actions, and return a value at the end. A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query. Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
 
 A subquery must be created before the query that calls the subquery. A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
@@ -757,7 +757,7 @@ A subquery parameter can only be one of the following types:
 
 A subquery's return value can be any base type or accumulator type with the following exceptions.
 
-* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be link:../ddl-and-loading/defining-a-graph-schema.md#catalog-level-typedef[defined at the catalog level].
+* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level].
 * If the return type is a `BagAccum`. `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
 
 === *Recursive subqueries*

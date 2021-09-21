@@ -67,7 +67,7 @@ A GSQL query is a sequence of data retrieval-and-computation statements executed
 +
 Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
 `POST /gsqlserver/interpreted_query` +
-See the link:../../restpp-api/[RESTPP API User Guide] for details.
+See the xref:tigergraph-server:API:intro.adoc[RESTPP API User Guide] for details.
 . Define a named query and then run it.
  .. `CREATE QUERY`: define the functionality of the query
  .. `INTERPRET QUERY`: execute the query with input values
@@ -76,7 +76,7 @@ See the link:../../restpp-api/[RESTPP API User Guide] for details.
  .. `INSTALL QUERY`: compile the query
  .. `RUN QUERY`: execute the query with input values
 
-There are some limitations to Interpreted Mode. See the section on link:query-operations.md#interpret-query[`INTERPRET QUERY`] and the appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
+There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
 == `CREATE QUERY`
 
@@ -95,7 +95,7 @@ queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
 
 `CREATE QUERY` defines the functionality of a query on a given graph schema.
 
-A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "link:output-statements-and-file-objects.md#return-statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body. The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
+A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body. The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
 
 [NOTE]
 ====
@@ -104,7 +104,7 @@ A query has a name, a parameter list, the name of the graph being queried, an op
 As of TigerGraph 3.0+, *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: +
 *`GSQL -g graphName [<gsql_command>]`* +
 or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command. +
-This is one aspect of link:query-operations.md#dynamic-querying[Dynamic Querying].
+This is one aspect of xref:querying:query-operations.adoc#_dynamic_querying[Dynamic Querying].
 ====
 
 If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name. The new query will not be installed.  That is, +
@@ -118,7 +118,7 @@ The `DISTRIBUTED` option applies only to installations where the graph has been 
 
 Typedefs allow the definition of custom types for use within the body.  The declarations support the definition of _accumulators_ (see Chapter  "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.  All accumulators and global variables must be declared before any statements. There are various types of statements that can be used within the body.  Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements. The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`. It also supports calling functions, assigning variables, printing, and modifying the graph data.
 
-The query body may include calls to other queries. That is, the other queries are treated as subquery functions.  See the subsection on "link:operators-and-expressions.md#queries-as-functions[Queries as Functions]".
+The query body may include calls to other queries. That is, the other queries are treated as subquery functions.  See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
 
 .Example of a CREATE QUERY statement
 
@@ -198,10 +198,10 @@ TigerGraph 3.0+ supports Dynamic Querying. This means the query can be written a
 
 Here are the ingredients for a dynamic query:
 
-* *Graph name:* When link:query-operations.md#create-query-statement[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
-* *Vertex type and edge type in `SELECT` statements*.  Typically, the link:select-statement/#from-clause-vertex-and-edge-sets[`FROM` clause] mentions the name of specific vertex types and edge types.  String or string set parameters can be used for edge and target types instead.
-* *Attribute names*. Thelink:operators-and-expressions.md#vertex-functions[`getAttr` and setAttr functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
-* `INSERT` *statements*: If you are using link:data-modification-statements.md#insert-into-statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add. This can also be parameterized.
+* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
+* *Vertex type and edge type in `SELECT` statements*.  Typically, the xref:querying:select-statement/README.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types. String or string set parameters can be used for edge and target types instead.
+* *Attribute names*. The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
+* `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add. This can also be parameterized.
 
 Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniques. Here is the PageRank algorithm from our GSQL Graph Algorithm library. Here is it written with schema information embedded statically in the query:
 
@@ -523,7 +523,7 @@ Here is a descriptive list of DML-sub-statements:
  ** Runs faster than `INTERPRET`, from only a few percent faster to twice as fast.
  ** Should always be used for production environments with fixed queries.
 
-There are two GSQL syntax options for Interpreted GSQL: link:query-operations.md#immediate-mode-define-and-interpret[Immediate mode] and link:query-operations.md#interpret-a-saved-query[Saved-query mode]. In addition there is also a predefined RESTful endpoint for running interpreted GSQL: `POST /gsqlserver/interpreted_query`.  The query body is sent as the payload of the request. The syntax is like the Immediate query option, except that it is possible to provide parameters, using the query string of the endpoint's request URL. The example below shows a parameterized query using the `POST /gsqlserver/interpreted_query` endpoint. For more details, see the link:../../restpp-api/[RESTPP API User Guide].
+There are two GSQL syntax options for Interpreted GSQL: xref:querying:query-operations.adoc#_immediate_mode_define_and_interpret[Immediate mode] and xref:querying:query-operations.adoc#_interpret_a_created_query[Saved-query mode]. In addition there is also a predefined RESTful endpoint for running interpreted GSQL: `POST /gsqlserver/interpreted_query`.  The query body is sent as the payload of the request. The syntax is like the Immediate query option, except that it is possible to provide parameters, using the query string of the endpoint's request URL. The example below shows a parameterized query using the `POST /gsqlserver/interpreted_query` endpoint. For more details, see the xref:tigergraph-server:API:intro.adoc[RESTPP API User Guide].
 
 .Interpreted GSQL REST Endpoint with Immediate Query
 
@@ -613,11 +613,11 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
 ----
 
-`INSTALL QUERY` installs a query or multiple queries on a graph. Installing a query compiles the procedures described by the query as well as generates a link:../../restpp-api/built-in-endpoints.md#run-an-installed-query-get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph. Installing a query compiles the procedures described by the query as well as generates a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command. The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
 
-If a query calls a link:operators-and-expressions.md#subqueries[subquery], the query can only be installed after one of the following conditions is met:
+If a query calls a xref:querying:operators-and-expressions.adoc#_subqueries[subquery], the query can only be installed after one of the following conditions is met:
 
 * The subquery has already been installed
 * The subquery is being installed in the same `INSTALL QUERY` command as the query itself
@@ -670,7 +670,7 @@ Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The n
 
 The `RUN QUERY` command runs an installed query. To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses. Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
-You can also run an installed query through REST requests - see link:../../restpp-api/built-in-endpoints.md#run-an-installed-query-get[Run an installed query].
+You can also run an installed query through REST requests - see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 
 === Syntax
 
@@ -692,8 +692,8 @@ parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":
 
 There are two ways of passing parameters to a query in a `RUN QUERY` command:
 
-* link:query-operations.md#parameter-list[Pass parameters as an ordered list separated by commas]
-* link:query-operations.md#parameter-json-object[Pass parameters by name in JSON]
+* link:#_parameter_list[Pass parameters as an ordered list separated by commas]
+* link:#_parameter_json_object[Pass parameters by name in JSON]
 
 ==== Parameter list
 
@@ -780,9 +780,10 @@ RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
 
 === Complex type parameter passing
 
-This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`. More details about all parameter types are described in Section "link:data-types.md#query-parameter-types[Query Parameter Types]".
+This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`. More details about all parameter types are described in Section "xref:data-types.adoc#_query_parameter_types[Query Parameter Types]".
 
-==== Parameter list+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
+==== Parameter list
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
       +++<th style="text-align:left">+++Syntax+++</th>+++
       +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
@@ -815,7 +816,8 @@ This subsection describes how to format the complex type parameter values when e
         +++<br>++++++</br>++++++</td>+++
       +++<td style="text-align:left">++++++<code>+++[ (&quot;person1&quot;,&quot;person&quot;),(&quot;11&quot;,&quot;post&quot;) ]+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
 
-==== Parameter JSON object+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
+==== Parameter JSON object
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
       +++<th style="text-align:left">+++Syntax+++</th>+++
       +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
@@ -853,7 +855,7 @@ Some queries run with all or almost all vertices in a SELECT statement s, e.g. P
 * Filtering with the HAVING clause.
 * Assigning designated vertex or designated type of vertexes. E.g. X = { _vertex_type_ .*}
 
-To run the query in all-vertex mode, use the -av option in shell mode or include `__GQUERY__USING_ALL_ACTIVE_MODE=true` in the query string of an HTTP request.
+To run the query in all-vertex mode, use the -av option in shell mode or include `\__GQUERY__USING_ALL_ACTIVE_MODE=true` in the query string of an HTTP request.
 
 [source,coffeescript]
 ----
@@ -867,7 +869,7 @@ curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL
 
 Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries. Starting with TigerGraph 3.1, you can run queries in Detached Mode to enable background execution of long-running queries.
 
-Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using thelink:../../restpp-api/intro.md#gsql-query-timeout[`GSQL-TIMEOUT`] header.
+Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:3.2@tigergraph-server:API:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
 
@@ -894,7 +896,7 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
-To check the status and results of the queries executed in Detached Mode, use the link:../../restpp-api/built-in-endpoints.md#check-query-status-detached-mode-query_status[*`/query_status`*] and the link:../../restpp-api/built-in-endpoints.md#check-query-results-detached-mode-query_result[*`/query_result`*] __**__RESTPP endpoints.
+To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
 
 == GSQL Query output format
 
@@ -902,7 +904,9 @@ The standard output of GSQL queries is in industry-standard JSON format. A JSON 
 
 At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code"). If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query. If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
 
-Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Field+++</th>+++
+Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:
+
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Field+++</th>+++
       +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++api+++</code>++++++</td>+++
       +++<td style="text-align:left">++++++<p>+++String specifying the output API version. Values are specified as follows:+++</p>+++
@@ -985,7 +989,7 @@ As of TigerGraph v3.0, the only supported JSON API is "v2".
 showQuery := SHOW QUERY queryName
 ----
 
-To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`. See  link:../ddl-and-loading/defining-a-graph-schema.md#show-view-parts-of-the-catalog[SHOW: View Parts of the Catalog]
+To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`. See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
 
 Additionally, the `ls` GSQL command lists all created queries and identifies which queries have been installed.
 

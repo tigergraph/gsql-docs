@@ -17,7 +17,7 @@ The "Statement Types" subsection in the Chapter on "CREATE / INSTALL / RUN / SHO
 
 == IF Statement
 
-The IF statement provides conditional branching: execute a block of statements ( _queryBodyStmts_ or _dmlSubStmtList_ ) only if a given _condition_ is true. The IF statement allows for zero or more ELSE-IF clauses, followed by an optional ELSE clause. The IF statement can be used either at the query-body level or at the DML-sub-statement level. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
+The IF statement provides conditional branching: execute a block of statements ( _queryBodyStmts_ or _dmlSubStmtList_ ) only if a given _condition_ is true. The IF statement allows for zero or more ELSE-IF clauses, followed by an optional ELSE clause. The IF statement can be used either at the query-body level or at the DML-sub-statement level. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
 .IF syntax
 
@@ -646,7 +646,7 @@ GSQL > RUN QUERY ratePosts()
 
 == WHILE Statement
 
-The WHILE statement provides unbounded iteration over a block of statements. WHILE statements can be used as query-body statements or DML-sub-statements. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
+The WHILE statement provides unbounded iteration over a block of statements. WHILE statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
 .WHILE syntax
 
@@ -1091,7 +1091,7 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
 
 == FOREACH Statement
 
-The FOREACH statement provides bounded iteration over a block of statements. FOREACH statements can be used as query-body statements or DML-sub-statements. (See the link:control-flow-statements.md#differences-in-block-syntax[note about differences in block syntax].)
+The FOREACH statement provides bounded iteration over a block of statements. FOREACH statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
 .FOREACH syntax
 

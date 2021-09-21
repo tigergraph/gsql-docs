@@ -35,11 +35,11 @@ Unlike the classic GSQL SELECT statement which assigns its output to a vertex se
 
 `DISTINCT` has the same meaning as it does in SQL: values that appear more than once in the raw data should only be used once. It can be used either individually for aggregated columns (e.g., count how many unique values there are) or collectively so that there are no repeated rows in the table.
 
-The SQL-like form may use the link:sql-like-select-statement.md#group-by-clause[GROUP  BY clause] but may not use the ACCUM and POST-ACCUM clauses.
+The SQL-like form may use the xref:select-statement/sql-like-select-statement.adoc[GROUP  BY clause] but may not use the ACCUM and POST-ACCUM clauses.
 
 [CAUTION]
 ====
-This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header. +
+This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header. 
 ====
 
 [discrete]

@@ -177,7 +177,7 @@ gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
 
 
 
-In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports xref:querying:select-statement/sql-like-select-statement.adoc\[SQL-like SELECT statements] with tabular output.
+In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports xref:querying:select-statement/sql-like-select-statement.adoc[SQL-like SELECT statements] with tabular output.
 
 The <<_from_clause>> defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertexAlias name. Thus, the SELECT clause picks the set of vertices at one of these points in the pattern -- the source vertices, the target vertices, or those from an interior point in a multi-hop path -- to be the output vertices.
 

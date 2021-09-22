@@ -360,7 +360,7 @@ RUN QUERY bi_17("Spain")
 
 == Source Vertex Set Flexibility
 
-As mentioned when we first described pattern matching, in xref:../one-hop-patterns.adoc[One-hop patterns], the source (leftmost) vertex set can be a vertex type, an alternation of types, or even omitted.
+As mentioned when we first described pattern matching, in xref:tutorials:pattern-matching/one-hop-patterns.adoc[One-hop patterns], the source (leftmost) vertex set can be a vertex type, an alternation of types, or even omitted.
 
 *Example 1*. Find Viktor Akhiezer's favorite messages' creators whose last name begins with letter S. Count them.
 

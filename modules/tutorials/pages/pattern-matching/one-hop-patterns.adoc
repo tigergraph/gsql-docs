@@ -2,7 +2,7 @@
 
 == Introduction
 
-‌Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.‌
+Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.‌
 
 A pattern usually appears in the FROM clause, the most fundamental part of the query structure. The pattern specifies sets of vertex types and how they are connected by edge types. A pattern can be refined further with conditions in the WHERE clause. In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
 

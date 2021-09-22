@@ -141,22 +141,28 @@ CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
 
 === Query parameter and return types
 
-This table lists the supported data types for input parameters and return values.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:center">+++Type+++</th>+++
-      +++<th style="text-align:left">+++Supported Data Types+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:center">+++Parameter Types+++</td>+++
-      +++<td style="text-align:left">++++++<ul>++++++<li>+++Any base type (except +++<code>+++EDGE+++</code>+++ or +++<code>+++JSONOBJECT+++</code>+++): +++<code>+++INT, UINT, FLOAT, DOUBLE, STRING, BOOL, STRING, DATETIME, VERTEX, JSONARRAY+++</code>++++++</li>+++
-          +++<li>++++++<code>+++SET<baseType>+++</code>+++, +++<code>+++BAG<baseType>+++</code>+++
-            +++<ul>++++++<li>++++++<code>+++Edge+++</code>+++ and +++<code>+++JSONOBJECT +++</code>++++++</li>++++++</ul>++++++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:center">+++Return Types+++</td>+++
-      +++<td style="text-align:left">++++++<ul>++++++<li>+++any baseType (including EDGE): INT, UINT, FLOAT, DOUBLE, STRING, BOOL,
-            STRING, VERTEX, EDGE, JSONOBJECT, JSONARRAY+++</li>+++
-          +++<li>+++any accumulator type, except GroupByAccum+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:center">+++API (JSON output format)+++</td>+++
-      +++<td style="text-align:left">+++Currently, the only option is &quot;v2&quot; (default)+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:center">+++SYNTAX+++</td>+++
-      +++<td style="text-align:left">+++v1 (default) or v2 (pattern matching). See the +++<a href="select-statement/">+++SELECT Statement +++</a>+++section
-        for an outline of the differences. See +++<a href="../../../start/gsql-102/">+++Pattern Matching+++</a>+++ for
-        details on v2.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+This table lists the supported data types for input parameters and return values.
+
+[width="100%",cols="29%,71%",options="header",]
+|===
+|Type |Supported Data Types
+|Parameter Types |Any base type (except `EDGE` or `JSONOBJECT`):
+`INT, UINT, FLOAT, DOUBLE, STRING, BOOL, STRING, DATETIME, VERTEX, JSONARRAY\'\'SET<baseType>`,
+`BAG<baseType>\'\'Edge` and `JSONOBJECT`
+
+|Return Types |any baseType (including EDGE): INT, UINT, FLOAT, DOUBLE,
+STRING, BOOL, STRING, VERTEX, EDGE, JSONOBJECT, JSONARRAYany accumulator
+type, except GroupByAccum
+
+|API (JSON output format) |Currently, the only option is ``v2''
+(default)
+
+|SYNTAX |v1 (default) or v2 (pattern matching). See the
+https://docs.tigergraph.com/v/3.2/dev/gsql-ref/querying/select-statement[SELECT
+Statement]section for an outline of the differences. See
+https://docs.tigergraph.com/v/3.2/start/gsql-102[Pattern Matching] for
+details on v2.
+|===
 
 === Default parameter values
 
@@ -642,23 +648,27 @@ Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUE
 
 === Options for `INSTALL QUERY`
 
-The following options are available:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Option+++</th>+++
-      +++<th style="text-align:left">+++Effect+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<p>++++++<code>+++-FORCE+++</code>++++++<b>++++++</b>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Reinstall the query even if the system indicates the query is already
-          installed.+++</p>+++
-        +++<p>++++++</p>+++
-        +++<p>+++This is useful for overwriting an installation that is corrupted or otherwise
-          outdated, without having to drop and then recreate the query. If this option
-          is not used, the GSQL shell will refuse to re-install a query that is already
-          installed.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++-DISTRIBUTED+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++If you have a distributed database deployment, installing the query in
-        Distributed Query Mode can increase performance for single queries - using
-        a single worker from each available machine to yield results. Certain cases
-        may benefit more from this option than others -- more detailed information
-        is available on the next page: +++<a href="https://docs.tigergraph.com/dev/gsql-ref/querying/distributed-query-mode">+++Distributed Query Mode+++</a>+++.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+The following options are available:
+
+[width=``100%'',cols=``19%,81%'',options=``header'']
+|===
+|Option|Effect
+
+|`-FORCE`
+|Reinstall the query even if the system indicates the
+query is already installed. This is useful for overwriting an
+installation that is corrupted or otherwise outdated, without having to
+drop and then recreate the query. If this option is not used, the GSQL
+shell will refuse to re-install a query that is already installed.
+|`-DISTRIBUTED`
+|If you have a distributed database deployment,
+installing the query in Distributed Query Mode can increase performance
+for single queries - using a single worker from each available machine
+to yield results. Certain cases may benefit more from this option than
+others – more detailed information is available on the next page:
+https://docs.tigergraph.com/dev/gsql-ref/querying/distributed-query-mode[Distributed
+Query Mode].
+|===
 
 === Optimize installed queries
 
@@ -783,66 +793,55 @@ RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
 This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`. More details about all parameter types are described in Section "xref:data-types.adoc#_query_parameter_types[Query Parameter Types]".
 
 ==== Parameter list
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
-      +++<th style="text-align:left">+++Syntax+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a string formatted as +++<code>+++&quot;YYYY-MM-DD HH-MM-SS&quot;+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++&quot;2019-02-19 19:19:19&quot;+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
-      +++<td style="text-align:left">+++Use square brackets to enclose the collection of values.+++</td>+++
-      +++<td style="text-align:left">+++A set of integers: +++<code>+++[1,5,10]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++If the vertex type is specified in the query definition, then the vertex
-        argument is +++<b>++++++<code>+++vertex_id+++</code>++++++<br>++++++</br>++++++</b>++++++</td>+++
-      +++<td style="text-align:left">+++The vertex type is +++<code>+++person+++</code>+++ and the desired ID is +++<code>+++person2+++</code>+++.
-        +++<br>++++++</br>++++++<code>+++&quot;person2&quot; +++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++VERTEX+++</code>++++++</p>+++
-        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++If the type is not defined in the query definition, then the argument
-          must provide both the id and type in parentheses:+++<b>+++(vertex_id, vertex_type)+++</b>++++++</p>+++
-        +++<p>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">+++A vertex with ID +++<code>+++&quot;person1&quot;+++</code>+++ and +++<code>+++type=&quot;person+++</code>+++:
-        +++<br>++++++</br>++++++<code>+++(&quot;person1&quot;,&quot;person&quot;)+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Same as a SET or BAG of primitives, where the primitive type is vertex_id.
-        +++<br>++++++</br>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[ &quot;person3&quot;, &quot;person4&quot; ]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++Set or bag of +++<code>+++VERTEX+++</code>++++++</p>+++
-        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++Same as a SET or BAG of vertices, with vertex type not pre-specified.
-        Square brackets enclose a comma-separated list of vertex (id, type) pairs.
-        Mixed types are permitted.
-        +++<br>++++++</br>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[ (&quot;person1&quot;,&quot;person&quot;),(&quot;11&quot;,&quot;post&quot;) ]+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+[width="100%",cols="28%,36%,36%",options="header",]
+|===
+|Parameter type |Syntax |Example
+|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|`"2019-02-19 19:19:19"`
+
+|Set or bag of primitives |Use square brackets to enclose the collection
+of values. |A set of integers: `[1,5,10]`
+
+|`VERTEX<type>` |If the vertex type is specified in the query
+definition, then the vertex argument is `**vertex_id**` |The vertex type
+is `person` and the desired ID is `person2`. `"person2"`
+
+|`VERTEX`(type not pre-specified) |If the type is not defined in the
+query definition, then the argument must provide both the id and type in
+parentheses:*(vertex_id, vertex_type)* |A vertex with ID `"person1"` and
+`type="person`: `("person1","person")`
+
+|Set or bag of `VERTEX<type>` |Same as a SET or BAG of primitives, where
+the primitive type is vertex_id. |`[ "person3", "person4" ]`
+
+|Set or bag of `VERTEX`(type not pre-specified) |Same as a SET or BAG of
+vertices, with vertex type not pre-specified. Square brackets enclose a
+comma-separated list of vertex (id, type) pairs. Mixed types are
+permitted. |`[ ("person1","person"),("11","post") ]`
+|===
 
 ==== Parameter JSON object
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
-      +++<th style="text-align:left">+++Syntax+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a string formatted as +++<code>+++&quot;YYYY-MM-DD HH-MM-SS&quot;+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++&quot;2019-02-19 19:19:19&quot;+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing the primitive values+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[&quot;a&quot;, &quot;list&quot;, &quot;of&quot;, &quot;args&quot;]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
-        vertex ID and a field +++<code>+++&quot;type&quot;+++</code>+++ for the type of the vertex+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>+++ (type not specified)+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
-        vertex ID+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++{&quot;id&quot;: &quot;person1&quot;}+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX<type>+++</code>+++ object+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;}, {&quot;id&quot;: &quot;person2&quot;}]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of vertices of unspecified types+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;},{&quot;id&quot;: &quot;person2&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}]+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+[width="99%",cols="28%,36%,36%",options="header",]
+|===
+|Parameter type |Syntax |Example
+|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|`"2019-02-19 19:19:19"`
+
+|Set or bag of primitives |Use a JSON array containing the primitive
+values |`["a", "list", "of", "args"]`
+
+|`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
+vertex ID and a field `"type"` for the type of the vertex
+|`{"id": "person1",\'\'"type": "person"}`
+
+|`VERTEX` (type not specified) |Use a JSON object containing a field
+`"id"` for the vertex ID |`{"id": "person1"}`
+
+|Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
+JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`
+|===
 
 === Options
 
@@ -906,21 +905,22 @@ At the top level of the JSON structure are four required fields ("version", "err
 
 Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Field+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++api+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++String specifying the output API version. Values are specified as follows:+++</p>+++
-        +++<ul>++++++<li>+++&quot;v1&quot;: Output API used in TigerGraph platform v0.8 through v1.0.
-            +++<br>++++++</br>++++++<b>+++NOTE: &quot;v1&quot; support is no longer available as of TigerGraph v3.0.+++</b>++++++</li>+++
-          +++<li>+++&quot;v2&quot; (default): Output API introduced in TigerGraph platform
-            v1.1 This is the latest API.+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++edition+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++String indicating the edition of the product.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++schema+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Integer representing which version of the user&apos;s graph schema is
-        currently in use. When a +++<code>+++CREATE GRAPH+++</code>+++ statement is executed,
-        the version is initialized to 0. Each time a +++<code>+++SCHEMA_CHANGE JOB+++</code>+++ is
-        run, the schema value is incremented by 1 (e.g., 1, 2, etc.).+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="14%,86%",options="header",]
+|===
+|Field |Description
+|`api` |String specifying the output API version. Values are specified
+as follows:``v1'': Output API used in TigerGraph platform v0.8 through
+v1.0. *NOTE: ``v1'' support is no longer available as of TigerGraph
+v3.0.*”v2” (default): Output API introduced in TigerGraph platform v1.1
+This is the latest API.
+
+|`edition` |String indicating the edition of the product.
+
+|`schema` |Integer representing which version of the user’s graph schema
+is currently in use. When a `CREATE GRAPH` statement is executed, the
+version is initialized to 0. Each time a `SCHEMA_CHANGE JOB` is run, the
+schema value is incremented by 1 (e.g., 1, 2, etc.).
+|===
 
 Other top-level objects, such as "code" may appear in certain circumstances. Note that the top-level objects are enclosed in curly braces, meaning that they form an unordered set. They may appear in any order.
 

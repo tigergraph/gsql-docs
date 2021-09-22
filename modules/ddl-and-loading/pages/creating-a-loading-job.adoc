@@ -16,7 +16,7 @@ CREATE LOADING JOB, which may contain a set of DEFINE and LOAD statements
 
 [NOTE]
 ====
-*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (link:creating-a-loading-job.adoc#_built_in_loader_token_functions[Built-in Loader Token Functions]).
+*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_built_in_loader_token_functions>>).
 ====
 
 == Loading job capabilities

@@ -432,7 +432,7 @@ ALTER VERTEX|EDGE object_type_name DROP ATTRIBUTE (
 
 ==== `+ALTER VERTEX ... WITH+` (Beta)
 
-The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to link:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
+The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to xref:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
 
 .ALTER VERTEX WITH TAGGABLE
 

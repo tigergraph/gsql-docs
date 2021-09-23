@@ -1117,7 +1117,7 @@ The `TAGS` clause specifies the tags to be applied to the vertices loaded by the
 TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
 ----
 
-If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and link:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
+If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
 
 Users have two options when it comes to how to merge tags if the target vertices exist in the graph:
 
@@ -1274,7 +1274,7 @@ In the above data encoding.json, the order of fields are not fixed and some fiel
 
 === Loading Parquet Data
 
-TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:3.2@tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide]. In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the link:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
+TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:3.2@tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide]. In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
 
 In order to load Parquet data, you need to:
 

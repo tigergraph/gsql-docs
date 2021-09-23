@@ -18,8 +18,8 @@ In general, data modification can be at two levels in GSQL:
 
 Pattern matching Insert is supported at both the top-level and within-SELECT levels, using the same syntax as in classic GSQL. You can insert vertices and edges.
 
-* For a top-level statement, use link:../../../dev/gsql-ref/querying/data-modification-statements.md#insert-into-statement[INSERT INTO],
-* Inside an ACCUM or POST-ACCUM clause, use the link:../../../dev/gsql-ref/querying/data-modification-statements.md#dml-sub-insert[DML-sub INSERT] statement.
+* For a top-level statement, use xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO],
+* Inside an ACCUM or POST-ACCUM clause, use the xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insert[DML-sub INSERT] statement.
 
 *Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  KNOWS edges connecting Tiger Woods with Viktor's favorite authors.
 

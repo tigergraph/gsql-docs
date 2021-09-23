@@ -74,7 +74,7 @@ chr(322) => 'B'
 
 === Description
 
-Compares the link:string-functions.md#soundex[Soundex codes] of two strings and returns an integer. The return value ranges from 0 to 4, and it indicates the similarity between the input strings' phonetic representation values.
+Compares the xref:func/string-functions.adoc#_soundex[Soundex codes] of two strings and returns an integer. The return value ranges from 0 to 4, and it indicates the similarity between the input strings' phonetic representation values.
 
 0 indicates weak similarity, and 4 indicates strong similarity with identical phonetic representation values.
 

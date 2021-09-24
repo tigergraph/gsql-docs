@@ -93,7 +93,7 @@ Vertex-attached accumulators can only be accessed or updated (via = or +=) in an
 
 [WARNING]
 ====
- Edge-attached accumulators are not supported.
+Edge-attached accumulators are not supported.
 ====
 
 == Global Accumulators

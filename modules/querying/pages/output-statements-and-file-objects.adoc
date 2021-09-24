@@ -6,7 +6,7 @@ The PRINT statement specifies output data. Each execution of a PRINT statement a
 
 [CAUTION]
 ====
- A PRINT statement does not trigger immediate output.  The full set of data from all PRINT statements is delivered at one time, when the query concludes.
+A PRINT statement does not trigger immediate output.  The full set of data from all PRINT statements is delivered at one time, when the query concludes.
 
 A query can print a maximum of 2GB of data.
 

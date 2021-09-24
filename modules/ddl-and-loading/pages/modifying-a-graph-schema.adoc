@@ -24,7 +24,7 @@ Jobs and queries for unaltered parts of the schema will still be available and d
 
 [WARNING]
 ====
- Load or query operations which begin before the schema change will be completed based on the pre-change schema. Load or query operations which begin after the schema change, and which have not been invalidated, will be completed based on the post-change schema.
+Load or query operations which begin before the schema change will be completed based on the pre-change schema. Load or query operations which begin after the schema change, and which have not been invalidated, will be completed based on the post-change schema.
 ====
 
 == *Global vs. Local Schema Changes*
@@ -318,7 +318,7 @@ Remember to include a semicolon at the end of each `DROP`, `ALTER`, or `ADD` sta
 
 [NOTE]
 ====
- The ADD statement adds existing global vertex or edge types to one of the graphs.
+The ADD statement adds existing global vertex or edge types to one of the graphs.
 ====
 
 .ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE (Global)
@@ -447,7 +447,7 @@ ALTER VERTEX v_type_name WITH TAGGABLE = ("true" | "false")
 
 [NOTE]
 ====
- The DROP statement removes specified global vertex or edge types from one of the graphs. The command does not delete any data.
+The DROP statement removes specified global vertex or edge types from one of the graphs. The command does not delete any data.
 ====
 
 .drop vertex / edge

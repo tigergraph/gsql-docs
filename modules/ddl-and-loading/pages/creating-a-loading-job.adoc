@@ -372,7 +372,7 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 
 [WARNING]
 ====
- A STRING token is never considered missing; if there are no characters, then the string is the empty string
+A STRING token is never considered missing; if there are no characters, then the string is the empty string
 ====
 
 * *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).  For example,
@@ -520,7 +520,7 @@ The job `load_set_list`  will load two `test_vertex` vertices because there are 
 
 [WARNING]
 ====
- Because GSQL loading is multi-threaded, the order of values loaded into a LIST might not match the input order.
+Because GSQL loading is multi-threaded, the order of values loaded into a LIST might not match the input order.
 ====
 
 If the input file contains multiple columns which should be all added to the LIST or SET, then a second method is available. Use the LIST() or SET() function as in the example below:
@@ -572,7 +572,7 @@ v2,john, 5 # 4 # 8
 
 [WARNING]
 ====
- The `SPLIT()` function cannot be used for UDT type elements.
+The `SPLIT()` function cannot be used for UDT type elements.
 ====
 
 === Loading a MAP Attribute
@@ -583,7 +583,7 @@ The first method is to load multiple rows of data that share the same id values.
 
 [WARNING]
 ====
- The loading order might not be the same as the order in the raw data. If a data file contains multiple lines with the same id and same key but different values, loading them together results in a nondeterministic final value for that key.
+The loading order might not be the same as the order in the raw data. If a data file contains multiple lines with the same id and same key but different values, loading them together results in a nondeterministic final value for that key.
 ====
 
 *Method 1*: Below is the syntax to load a `MAP` by the first method: Use an arrow (->)  to separate the map's key and value.
@@ -659,7 +659,7 @@ CREATE LOADING JOB load_map FOR GRAPH test_graph {
 
 [WARNING]
 ====
- The SPLIT() function cannot be used for UDT type elements.
+The SPLIT() function cannot be used for UDT type elements.
 ====
 
 === Loading Composite Key Attributes

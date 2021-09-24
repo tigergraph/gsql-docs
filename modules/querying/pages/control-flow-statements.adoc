@@ -665,7 +665,7 @@ A WHILE statement may have an optional LIMIT clause.  LIMIT clauses has a consta
 
 [CAUTION]
 ====
- If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
+If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
 ====
 
 .WHILE LIMIT semantics

@@ -94,7 +94,7 @@ The situation is a little different when running the query as a REST{pp} endpoin
 
 [WARNING]
 ====
- As of TigerGraph v1.2, the format for the GET /query endpoint has changed.  The graph name must now be specified after /query: +
+As of TigerGraph v1.2, the format for the GET /query endpoint has changed.  The graph name must now be specified after /query: +
 `+/query/{graph_name}/{query_name}+`
 ====
 
@@ -156,7 +156,7 @@ The following statement types are available to specify a user-defined exception 
 
 [NOTE]
 ====
- Built-in exceptions always take precedence over user-defined exceptions. Therefore, user-defined exceptions can only be used to catch conditions that would not be caught by a built-in exception. This means that built--in exceptions are best used to capture situations which are legal according to the general syntax and semantics of the GSQL query language, but which are illegal or undesirable for a particular user application.
+Built-in exceptions always take precedence over user-defined exceptions. Therefore, user-defined exceptions can only be used to catch conditions that would not be caught by a built-in exception. This means that built--in exceptions are best used to capture situations which are legal according to the general syntax and semantics of the GSQL query language, but which are illegal or undesirable for a particular user application.
 ====
 
 === *EXCEPTION Declaration Statement*
@@ -184,7 +184,7 @@ A RAISE statement itself does not include the conditions that define the excepti
 
 [WARNING]
 ====
- In the current version, a RAISE statement can only be used as a query-body-statement. It cannot be used as a DML-sub-statement. In particular, you cannot RAISE an exception inside a SELECT statement.
+In the current version, a RAISE statement can only be used as a query-body-statement. It cannot be used as a DML-sub-statement. In particular, you cannot RAISE an exception inside a SELECT statement.
 ====
 
 The example below defines and checks for two types of exceptions: an empty input set (40001) and no matching edges (40002). Remember that the minimum allowed code number is 40001.
@@ -285,7 +285,7 @@ The TRY...EXCEPTION Statement is used to define and apply user-defined exception
 
 [WARNING]
 ====
- The current version of GSQL does not support custom handling of built-in exceptions. Therefore, if a built-in exception occurs, it ignores the TRY..EXCEPTION blocks and simply applies the default handling, and the query aborts. In future updates, we plan to support custom handling of both custom exceptions (RAISE) and built-in exception with the TRY...EXCEPTION block.
+The current version of GSQL does not support custom handling of built-in exceptions. Therefore, if a built-in exception occurs, it ignores the TRY..EXCEPTION blocks and simply applies the default handling, and the query aborts. In future updates, we plan to support custom handling of both custom exceptions (RAISE) and built-in exception with the TRY...EXCEPTION block.
 ====
 
 The TRY...EXCEPTION Statement is a compound statement containing two blocks. The first block (TRY) consists of the query-body statements for which custom error handling should be applied. The second block (EXCEPTION) contains a series of WHEN...THEN exception handling clauses.  Each exception handling clause names an exception type and specifies what actions to take in the event of the exception. An optional ELSE clause contains handling statements for all other exceptions. The following text and visual flowchart details how the TRY... EXCEPTION block handles an exception.

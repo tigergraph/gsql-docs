@@ -10,7 +10,7 @@ The query-body DELETE statement deletes a given set of edges or vertices. This s
 
 [CAUTION]
 ====
- The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
+The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
 ====
 
 .EBNF
@@ -171,12 +171,12 @@ DML-sub DELETE is a DML-substatement which deletes one vertex or edge each time 
 
 [CAUTION]
 ====
- The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
+The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
 ====
 
 [NOTE]
 ====
- The ACCUM clause iterates over an edge set, which can encounter the same vertex multiple times. If you wish to delete a vertex, it is best practice to place the DML-sub DELETE statement in the POST-ACCUM clause rather than in the ACCUM clause.
+The ACCUM clause iterates over an edge set, which can encounter the same vertex multiple times. If you wish to delete a vertex, it is best practice to place the DML-sub DELETE statement in the POST-ACCUM clause rather than in the ACCUM clause.
 ====
 
 .EBNF
@@ -559,7 +559,7 @@ The `UPDATE` statement can only be used as a query-body-level statement. However
 
 [WARNING]
 ====
- Updating a vertex's attribute value in an `ACCUM` clause is not allowed, because the update can occur multiple times in parallel, and possibly result in a non-deterministic value. If the vertex attribute value update depends on an edge attribute value, use the vertex-attached accumulators to save the value and update the vertex attribute's value in the `POST-ACCUM` clause.
+Updating a vertex's attribute value in an `ACCUM` clause is not allowed, because the update can occur multiple times in parallel, and possibly result in a non-deterministic value. If the vertex attribute value update depends on an edge attribute value, use the vertex-attached accumulators to save the value and update the vertex attribute's value in the `POST-ACCUM` clause.
 ====
 
 The query below uses a `SELECT` statement instead of an `UPDATE` statement and performs the same update as the query above. Query `updateEx2` reverses the `locationId` change made by `updateEx` .

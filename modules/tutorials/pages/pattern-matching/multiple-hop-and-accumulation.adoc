@@ -183,7 +183,7 @@ produces a match table with 3 columns: A, B, and C. Each row is a tuple (A,B,C) 
 
 [NOTE]
 ====
- The ACCUM clause iterates through ALL matches. If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than that number of matches.
+The ACCUM clause iterates through ALL matches. If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than that number of matches.
 ====
 
 For, example, consider

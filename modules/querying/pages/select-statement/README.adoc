@@ -490,7 +490,7 @@ resultSet1 is based on the source end of the edges. resultSet2 is based on the t
 
 [WARNING]
 ====
- We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features which are only available to vertex and edge aliases.
+We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features which are only available to vertex and edge aliases.
 ====
 
 If is legal to declare an alias without explicitly stating an edge/target type. See the examples below.
@@ -1288,7 +1288,7 @@ GSQL > RUN QUERY sampleEx1()
 
 [WARNING]
 ====
- Since the PRINT statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators@timesTraversedNoSample and @timesTraversedWithSample. There is one difference: company3 is not included in afterSample because none of the sample-selected edges reached company3.
+Since the PRINT statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators@timesTraversedNoSample and @timesTraversedWithSample. There is one difference: company3 is not included in afterSample because none of the sample-selected edges reached company3.
 ====
 
 == WHERE Clause
@@ -1762,21 +1762,21 @@ If there is more than one statement in the ACCUM clause, the statements are sepa
 
 [WARNING]
 ====
- The statements within the ACCUM clause are executed sequentially for a given vertex or edge.  However, there is no fixed order in which a vertex set or edge set is processed.
+The statements within the ACCUM clause are executed sequentially for a given vertex or edge.  However, there is no fixed order in which a vertex set or edge set is processed.
 ====
 
 The optional POST-ACCUM clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses. POST-ACCUM can be used without ACCUM. If it is preceded by an ACCUM clause, then it can be used for 2-stage accumulative computation: a first stage in ACCUM followed by a second stage in POST-ACCUM.
 
 [WARNING]
 ====
- Each statement within the POST-ACCUM clause can refer to either source vertices or target vertices but not both.
+Each statement within the POST-ACCUM clause can refer to either source vertices or target vertices but not both.
 ====
 
 Since the ACCUM clause iterates over edges, and often two edges will connect to the same source vertex or to the same target vertex, the ACCUM clause can be repeated multiple times for one vertex.
 
 [WARNING]
 ====
- Operations that are to be performed exactly once per vertex should be performed in the POST-ACCUM clause.
+Operations that are to be performed exactly once per vertex should be performed in the POST-ACCUM clause.
 ====
 
 The primary purpose of the ACCUM or POST-ACCUM clause is to collect information about the graph by updating accumulators (via += or =). See the "Accumulator" section for details on the += operation. However, other kinds of statements (e.g., branching, iteration, local assignments) are permitted to support more complex computations or to log activity. The EBNF syntax below defines the allowable kinds of statements that can occur within an ACCUM or POST-ACCUM.  The *dmlSubStmt* list is similar to the *queryBodyStmt* list which applies to statements outside of a SELECT block; it is important to note the differences.  Each of these statement types is discussed in one of the main sections of this reference document.
@@ -1816,7 +1816,7 @@ dmlSubStmt := assignStmt           // Assignment
 
 [WARNING]
 ====
- Note that dml-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt). Global accumulators may perform accumulation += but not assignment "=" within these clauses.
+Note that dml-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt). Global accumulators may perform accumulation += but not assignment "=" within these clauses.
 ====
 
 [WARNING]
@@ -1939,7 +1939,7 @@ Similar to the ACCUM clause, if multiple source/target vertex types are specifie
 
 [WARNING]
 ====
- Similar to ACCUM clause, we strongly suggest that if multiple source/target vertex types are specified in edge-induced selection and the POST-ACCUM clauses accesses source/target vertex, POST-ACCUM clauses should uses CASE statement (see Section "Control Flow Statements" for more details) to separate the operation on each source/target vertex type. The vertex type conflict checking then checks the ACCUM statement inside each THEN/ELSE blocks based on the condition.
+Similar to ACCUM clause, we strongly suggest that if multiple source/target vertex types are specified in edge-induced selection and the POST-ACCUM clauses accesses source/target vertex, POST-ACCUM clauses should uses CASE statement (see Section "Control Flow Statements" for more details) to separate the operation on each source/target vertex type. The vertex type conflict checking then checks the ACCUM statement inside each THEN/ELSE blocks based on the condition.
 ====
 
 === Rules for Updating Vertex-Attached Accumulators
@@ -1975,7 +1975,7 @@ ACCUM
 
 [WARNING]
 ====
- The following uses are NOT supported by the new rules:
+The following uses are NOT supported by the new rules:
 
 * Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside of a SELECT statement.
 * Passing a vertex into the query as an input parameter is not a route to activation.
@@ -3147,7 +3147,7 @@ If any of the expressions evaluate to a negative integer, the results are undefi
 
 [NOTE]
 ====
- OFFSET is intended for result sets which are in a known order. It is a compile time error to use OFFSET without the ORDER BY clause.
+OFFSET is intended for result sets which are in a known order. It is a compile time error to use OFFSET without the ORDER BY clause.
 ====
 
 The following examples demonstrate the various forms of the LIMIT clause.

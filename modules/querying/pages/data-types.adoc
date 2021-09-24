@@ -80,48 +80,55 @@ name := (letter | "_") [letter | digit | "_"]*
 
 Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).  The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++EBNF term+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Use Case+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++baseType+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++INT+++</code>+++, +++<code>+++UINT+++</code>+++, +++<code>+++FLOAT+++</code>+++, +++<code>+++DOUBLE+++</code>+++, +++<code>+++STRING+++</code>+++, +++<code>+++BOOL+++</code>+++, +++<code>+++DATETIME,+++</code>+++  +++<code>+++VERTEX+++</code>+++, +++<code>+++EDGE+++</code>+++,
-        +++<br>++++++</br>++++++<code>+++JSONOBJECT+++</code>+++, or +++<code>+++JSONARRAY+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Global variable+++</li>+++
-          +++<li>+++Query return value+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++tupleType+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Sequence of base types+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++User-defined tuple+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++accumType+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Family of specialized data objects which support accumulation operations+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Accumulate and aggregate data, when traversing a set of vertices or edges
-            +++<br>++++++</br>+++(Details are in the +++<a href="accumulators.md">+++Query Lang Spec - Accumulators+++</a>+++ chapter.)+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++FILE+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++FILE+++</code>+++ object+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Global sequential data object, linked to a text file+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++parameterType+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++ (except +++<code>+++EDGE+++</code>+++ or +++<code>+++JSONOBJECT+++</code>+++),
-        a set or bag of +++<code>+++baseType+++</code>+++, or +++<code>+++FILE+++</code>+++ object+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Query parameter+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++STRING COMPRESS+++</code>++++++</p>+++
-        +++<p>+++(&#x26A0;+++<b>+++suitable only in limited circumstances+++</b>+++)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++STRING COMPRESS+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++more compact storage of STRING, +++<b>+++if there is a limited number of different values and the value is rarely accessed. Otherwise, it may use more memory.+++</b>++++++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++elementType+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++, +++<code>+++STRING COMPRESS+++</code>+++, or identifier+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Element for most types of container accumulators: +++<code>+++SetAccum+++</code>+++, +++<code>+++BagAccum+++</code>+++, +++<code>+++GroupByAccum+++</code>+++,
-            key of a +++<code>+++MapAccum+++</code>+++ element+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++type+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++baseType+++</code>+++, +++<code>+++STRING COMPRESS+++</code>+++, identifier, or +++<code>+++accumType+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<ul>++++++<li>+++Element of a +++<code>+++ListAccum+++</code>+++, value of a +++<code>+++MapAccum+++</code>+++ element+++</li>+++
-          +++<li>+++Local variable+++</li>++++++</ul>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="<34%,<33%,<33%",options="header",]
+|===
+|EBNF term |Description |Use Case
+|`+baseType+` |`+INT+`, `+UINT+`, `+FLOAT+`, `+DOUBLE+`, `+STRING+`,
+`+BOOL+`, `+DATETIME,+` `+VERTEX+`, `+EDGE+`, +
++
+`+JSONOBJECT+`, or `+JSONARRAY+` a|
+* Global variable
+* Query return value
+
+|`+tupleType+` |Sequence of base types a|
+* User-defined tuple
+
+|`+accumType+` |Family of specialized data objects which support
+accumulation operations a|
+* Accumulate and aggregate data, when traversing a set of vertices or
+edges +
+ +
+(Details are in the link:accumulators.md[Query Lang Spec - Accumulators]
+chapter.)
+
+|`+FILE+` |`+FILE+` object a|
+* Global sequential data object, linked to a text file
+
+|`+parameterType+` |`+baseType+` (except `+EDGE+` or `+JSONOBJECT+`), a
+set or bag of `+baseType+`, or `+FILE+` object a|
+* Query parameter
+
+a|
+`+STRING COMPRESS+`
+
+(⚠**suitable only in limited circumstances**)
+
+|STRING COMPRESS a|
+* more compact storage of STRING, *if there is a limited number of
+different values and the value is rarely accessed. Otherwise, it may use
+more memory.*
+
+|`+elementType+` |`+baseType+`, `+STRING COMPRESS+`, or identifier a|
+* Element for most types of container accumulators: `+SetAccum+`,
+`+BagAccum+`, `+GroupByAccum+`, key of a `+MapAccum+` element
+
+|`+type+` |`+baseType+`, `+STRING COMPRESS+`, identifier, or
+`+accumType+` a|
+* Element of a `+ListAccum+`, value of a `+MapAccum+` element
+* Local variable
+
+|===
+
 
 == Base Types
 

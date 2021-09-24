@@ -269,114 +269,127 @@ The accumulators fall into two major groups :
 
 The details of each accumulator type are summarized in the table below.  The Accumulation Operation column explains how the accumulator *accumName* is updated when the statement *accumName += newVal* is executed. Following the table are example queries for each accumulator type.
 
-Table Ac1: Accumulator Types and Their Accumulation Behavior+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Accumulator Type (Case Sensitive)+++</th>+++
-      +++<th style="text-align:left">+++Default Initial Value+++</th>+++
-      +++<th style="text-align:left">+++Accumulation operation
-        +++<br>++++++</br>+++(result of +++<em>++++++<code>+++accumName +++</code>++++++</em>++++++<code>++++= +++</code>++++++<em>++++++<code>+++newVal +++</code>++++++</em>+++)+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++SumAccum<INT>+++</td>+++
-      +++<td style="text-align:left">+++0+++</td>+++
-      +++<td style="text-align:left">++++++<em>+++accumName +++</em>+++plus +++<em>+++newVal+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++SumAccum<FLOAT or DOUBLE>+++</td>+++
-      +++<td style="text-align:left">+++0.0+++</td>+++
-      +++<td style="text-align:left">++++++<em>+++accumName +++</em>+++plus +++<em>+++newVal+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++SumAccum<STRING>+++</td>+++
-      +++<td style="text-align:left">+++empty string+++</td>+++
-      +++<td style="text-align:left">+++String concatenation of +++<em>+++accumName +++</em>+++and +++<em>+++newVal+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MaxAccum<INT>+++</td>+++
-      +++<td style="text-align:left">+++INT_MIN+++</td>+++
-      +++<td style="text-align:left">+++The greater of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MaxAccum<FLOAT or DOUBLE>+++</td>+++
-      +++<td style="text-align:left">+++FLOAT_MIN or DOUBLE_MIN+++</td>+++
-      +++<td style="text-align:left">+++The greater of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MaxAccum<STRING>+++</td>+++
-      +++<td style="text-align:left">+++empty string+++</td>+++
-      +++<td style="text-align:left">+++The greater of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>+++  +++<em>+++, +++</em>+++according
-        to UTF-8 lexicographical ordering+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MaxAccum<VERTEX>+++</td>+++
-      +++<td style="text-align:left">+++the vertex with internal id 0+++</td>+++
-      +++<td style="text-align:left">+++The vertex with the greater internal id , either +++<em>+++newVal +++</em>+++or +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MaxAccum<tupleTyple>+++</td>+++
-      +++<td style="text-align:left">+++default for each field of the tuple+++</td>+++
-      +++<td style="text-align:left">+++The greater of +++<em>+++newVal +++</em>+++and +++<em>+++accumName. +++</em>+++tupleType is a user-defined
-        sequence of baseTypes. Ordering is hierarchical, using the leftmost field
-        of the tuple first, then the next field, and so on.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MinAccum<INT>+++</td>+++
-      +++<td style="text-align:left">+++INT_MAX+++</td>+++
-      +++<td style="text-align:left">+++The lesser of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MinAccum<FLOAT or DOUBLE>+++</td>+++
-      +++<td style="text-align:left">+++FLOAT_MAX or DOUBLE_MAX+++</td>+++
-      +++<td style="text-align:left">+++The lesser of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MinAccum<STRING>+++</td>+++
-      +++<td style="text-align:left">+++empty string+++</td>+++
-      +++<td style="text-align:left">+++The lesser of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>+++  +++<em>+++, +++</em>+++according
-        to UTF-8 lexicographical ordering+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MinAccum<VERTEX>+++</td>+++
-      +++<td style="text-align:left">+++unknown+++</td>+++
-      +++<td style="text-align:left">+++The vertex with the lesser internal id, either +++<em>+++newVal +++</em>+++or +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++MinAccum<tupleType>+++</td>+++
-      +++<td style="text-align:left">+++default for each field of the tuple+++</td>+++
-      +++<td style="text-align:left">+++The lesser of +++<em>+++newVal +++</em>+++and +++<em>+++accumName. +++</em>+++tupleType is a user-defined
-        sequence of baseTypes. Ordering is hierarchical, using the leftmost field
-        of the tuple first, then the next field, and so on.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++AvgAccum+++</td>+++
-      +++<td style="text-align:left">+++0.0 (double precision)+++</td>+++
-      +++<td style="text-align:left">+++Double precision average of +++<em>+++newVal +++</em>+++and all previous values accumulated
-        to+++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++AndAccum+++</td>+++
-      +++<td style="text-align:left">+++True+++</td>+++
-      +++<td style="text-align:left">+++Boolean AND of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++OrAccum+++</td>+++
-      +++<td style="text-align:left">+++False+++</td>+++
-      +++<td style="text-align:left">+++Boolean OR of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++BitwiseAndAccum+++</td>+++
-      +++<td style="text-align:left">+++-1 (INT) = 64-bit sequence of 1s+++</td>+++
-      +++<td style="text-align:left">+++Bitwise AND of +++<em>+++newVal +++</em>+++and +++<em>+++accumName+++</em>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++BitwiseOrAccum+++</td>+++
-      +++<td style="text-align:left">+++0 (INT) = 64-bit sequence of 0s+++</td>+++
-      +++<td style="text-align:left">+++Bitwise OR of +++<em>+++newVal +++</em>+++and +++<em>+++accumName +++</em>+++
-        +++<br>++++++</br>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++ListAccum< +++<em>+++type +++</em>+++>+++</p>+++
-        +++<p>+++(ordered collection of elements)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++empty list+++</td>+++
-      +++<td style="text-align:left">+++List with +++<em>+++newVal +++</em>+++appended to end of +++<em>+++accumName. newVal +++</em>+++can
-        be a single value or a list. If +++<em>+++accumName +++</em>+++is [ 2, 4, 6 ], then +++<em>+++accumName +++</em>++++=
-        4
-        +++<br>++++++</br>+++produces +++<em>+++accumName +++</em>+++equal to [ 2, 4, 6, 4 ]+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++SetAccum< t+++<em>+++ype +++</em>+++>+++</p>+++
-        +++<p>+++(unordered collection of elements, duplicate items not allowed)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++empty set+++</td>+++
-      +++<td style="text-align:left">+++Set union of +++<em>+++newVal +++</em>+++and +++<em>+++accumName +++</em>+++. +++<em>+++newVal +++</em>+++can
-        be a single value or a set/bag.If +++<em>+++accumName +++</em>+++is ( 2, 4, 6 ), then +++<em>+++accumName +++</em>++++=
-        4
-        +++<br>++++++</br>+++produces +++<em>+++accumName +++</em>+++equal to ( 2, 4, 6)+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++BagAccum<t+++<em>+++ype +++</em>+++>+++</p>+++
-        +++<p>+++(unordered collection of elements, duplicate items allowed)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++empty bag+++</td>+++
-      +++<td style="text-align:left">+++Bag union of +++<em>+++newVal +++</em>+++and +++<em>+++accumName +++</em>+++. +++<em>+++newVal +++</em>+++can
-        be a single value or a set/bag.If +++<em>+++accumName +++</em>+++is ( 2, 4, 6 ), then +++<em>+++accumName +++</em>++++=
-        4
-        +++<br>++++++</br>+++would result in +++<em>+++accumName +++</em>+++equal to ( 2, 4, 4, 6)+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++MapAccum< +++<em>+++type, type +++</em>+++>+++</p>+++
-        +++<p>+++(unordered collection of (key,value) pairs)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++empty map+++</td>+++
-      +++<td style="text-align:left">+++Add or update a key:value pair to the +++<em>+++accumName +++</em>+++map. If +++<em>+++accumName +++</em>+++is
-        [ (&quot;red&quot;,3), (&quot;green&quot;,4),(&quot;blue&quot;,2) ], then +++<em>+++accumName +++</em>++++=
-        (&quot;black&quot;-> 5)
-        +++<br>++++++</br>+++produces +++<em>+++accumName +++</em>+++equal to [ (&quot;red&quot;,3), (&quot;green&quot;,4),(&quot;blue&quot;,2),
-        (&quot;black&quot;,5) ]+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++ArrayAccum< +++<em>+++accumType +++</em>+++>+++</td>+++
-      +++<td style="text-align:left">+++empty list+++</td>+++
-      +++<td style="text-align:left">+++See the ArrayAccum section below for details.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++HeapAccum< +++<em>+++tuple +++</em>+++>(heapSize, sortKey [, sortKey_i]*)+++</p>+++
-        +++<p>+++(sorted collection of tuples)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++empty heap+++</td>+++
-      +++<td style="text-align:left">+++Insert +++<em>+++newVal +++</em>+++into the +++<em>+++accumName +++</em>+++heap, maintaining the
-        heap in sorted order, according to the sortKey(s) and size limit declared
-        for this HeapAccum+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++GroupByAccum< +++<em>+++type [, type]* , accumType [, accumType]* +++</em>+++>+++</td>+++
-      +++<td style="text-align:left">+++empty group by map+++</td>+++
-        +++<td style="text-align:left">+++Add or update a key:value pair in +++<em>+++accumName +++</em>+++. See Section &quot;GroupByAccum&quot;
-          for more details.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+.Accumulator Types and Their Accumulation Behavior
+[width="100%",cols="<34%,<33%,<33%",options="header",]
+|===
+|Accumulator Type (Case Sensitive) |Default Initial Value |Accumulation
+operation +
++
+(result of __`+accumName +`__`+= +`_`+newVal +`_)
+|SumAccum<INT> |0 |_accumName_ plus _newVal_
+
+|SumAccum<FLOAT or DOUBLE> |0.0 |_accumName_ plus _newVal_
+
+|SumAccum<STRING> |empty string |String concatenation of _accumName_ and
+_newVal_
+
+|MaxAccum<INT> |INT_MIN |The greater of _newVal_ and _accumName_
+
+|MaxAccum<FLOAT or DOUBLE> |FLOAT_MIN or DOUBLE_MIN |The greater of
+_newVal_ and _accumName_
+
+|MaxAccum<STRING> |empty string |The greater of _newVal_ and _accumName_
+_,_ according to UTF-8 lexicographical ordering
+
+|MaxAccum<VERTEX> |the vertex with internal id 0 |The vertex with the
+greater internal id , either _newVal_ or _accumName_
+
+|MaxAccum<tupleTyple> |default for each field of the tuple |The greater
+of _newVal_ and _accumName._ tupleType is a user-defined sequence of
+baseTypes. Ordering is hierarchical, using the leftmost field of the
+tuple first, then the next field, and so on.
+
+|MinAccum<INT> |INT_MAX |The lesser of _newVal_ and _accumName_
+
+|MinAccum<FLOAT or DOUBLE> |FLOAT_MAX or DOUBLE_MAX |The lesser of
+_newVal_ and _accumName_
+
+|MinAccum<STRING> |empty string |The lesser of _newVal_ and _accumName_
+_,_ according to UTF-8 lexicographical ordering
+
+|MinAccum<VERTEX> |unknown |The vertex with the lesser internal id,
+either _newVal_ or _accumName_
+
+|MinAccum<tupleType> |default for each field of the tuple |The lesser of
+_newVal_ and _accumName._ tupleType is a user-defined sequence of
+baseTypes. Ordering is hierarchical, using the leftmost field of the
+tuple first, then the next field, and so on.
+
+|AvgAccum |0.0 (double precision) |Double precision average of _newVal_
+and all previous values accumulated to__accumName__
+
+|AndAccum |True |Boolean AND of _newVal_ and _accumName_
+
+|OrAccum |False |Boolean OR of _newVal_ and _accumName_
+
+|BitwiseAndAccum |-1 (INT) = 64-bit sequence of 1s |Bitwise AND of
+_newVal_ and _accumName_
+
+|BitwiseOrAccum |0 (INT) = 64-bit sequence of 0s |Bitwise OR of _newVal_
+and _accumName_ +
++
+
+a|
+ListAccum< _type_ >
+
+(ordered collection of elements)
+
+|empty list |List with _newVal_ appended to end of _accumName. newVal_
+can be a single value or a list. If _accumName_ is [ 2, 4, 6 ], then
+_accumName_ = 4 +
++
+produces _accumName_ equal to [.2]##
+
+a|
+SetAccum< t__ype__ >
+
+(unordered collection of elements, duplicate items not allowed)
+
+|empty set |Set union of _newVal_ and _accumName_ . _newVal_ can be a
+single value or a set/bag.If _accumName_ is ( 2, 4, 6 ), then
+_accumName_ = 4 +
++
+produces _accumName_ equal to ( 2, 4, 6)
+
+a|
+BagAccum<t__ype__ >
+
+(unordered collection of elements, duplicate items allowed)
+
+|empty bag |Bag union of _newVal_ and _accumName_ . _newVal_ can be a
+single value or a set/bag.If _accumName_ is ( 2, 4, 6 ), then
+_accumName_ = 4 +
++
+would result in _accumName_ equal to ( 2, 4, 4, 6)
+
+a|
+MapAccum< _type, type_ >
+
+(unordered collection of (key,value) pairs)
+
+|empty map |Add or update a key:value pair to the _accumName_ map. If
+_accumName_ is [ ("red",3), ("green",4),("blue",2) ], then _accumName_
++= ("black"→ 5) +
++
+produces _accumName_ equal to [.("red"]##
+
+|ArrayAccum< _accumType_ > |empty list |See the ArrayAccum section below
+for details.
+
+a|
+HeapAccum< _tuple_ >(heapSize, sortKey *)*
+
+(sorted collection of tuples)
+
+|empty heap |Insert _newVal_ into the _accumName_ heap, maintaining the
+heap in sorted order, according to the sortKey(s) and size limit
+declared for this HeapAccum
+
+|GroupByAccum< _type [, type] , accumType [, accumType]*_ > |empty group
+by map |Add or update a key:value pair in _accumName_ . See Section
+"GroupByAccum" for more details.
+|===
+
 
 === SumAccum
 

@@ -738,125 +738,134 @@ CREATE LOADING JOB loadOrders {
 
 === Token Functions for Attribute Expressions
 
-The following token functions can be used in an id or attribute expression+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Function+++</th>+++
-      +++<th style="text-align:left">+++Output type+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++gsql_reverse( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns a string with the characters in the reverse order of the input
-        string +++<em>+++in_string+++</em>+++.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_concat( +++<em>+++string1, string2,\...,stringN +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns a string which is the concatenation of all the input strings.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_uuid_v4()+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns a version-4 UUID.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_split_by_space( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns a modified version of +++<em>+++in_string+++</em>+++, in which each space character
-        is replaced with ASCII 30 (decimal).+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_substring(+++<em>+++str+++</em>+++, +++<em>+++beginIndex+++</em>+++ [, +++<em>+++length+++</em>+++])+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-        +++<td style="text-align:left">+++Returns the substring beginning at +++<em>+++beginIndex+++</em>+++, having the given +++<em>+++length+++</em>+++.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_find(+++<em>+++str+++</em>+++, +++<em>+++substr +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns the start index of the substring within the string. If it is not
-        found, then return -1.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_length(+++<em>+++str +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns the length of the string.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_replace(+++<em>+++str+++</em>+++, +++<em>+++oldToken+++</em>+++, +++<em>+++newToken+++</em>+++ [, +++<em>+++max+++</em>+++])+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-        +++<td style="text-align:left">+++Returns the string resulting from replacing all matchings of +++<em>+++oldToken+++</em>+++ with +++<em>+++newToken+++</em>+++ in
-          the original string. If a +++<em>+++max +++</em>+++count is provided, there can only
-          be up to that many replacements.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_regex_replace( +++<em>+++str+++</em>+++, +++<em>+++regex+++</em>+++, +++<em>+++replaceSubstr+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-        +++<td style="text-align:left">+++Returns the string resulting from replacing all substrings in the input
-          string that match the given +++<em>+++regex+++</em>+++ token with the substitute string.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_regex_match(+++<em>+++str+++</em>+++, +++<em>+++regex+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++bool+++</td>+++
-      +++<td style="text-align:left">+++Returns true if the given string token matches the given regex token and
-        false otherwise.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_to_bool( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++bool+++</td>+++
-      +++<td style="text-align:left">+++Returns true if the +++<em>+++in_string +++</em>+++is either &quot;t&quot; or &quot;true&quot;,
-        with case insensitive checking. Returns false otherwise.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_to_uint( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++uint+++</td>+++
-      +++<td style="text-align:left">+++If +++<em>+++in_string +++</em>+++is the string representation of an unsigned int,
-        the function returns that integer.
-        +++<br>++++++</br>+++If +++<em>+++in_string +++</em>+++is the string representation of a nonnegative float,
-        the function returns that number cast as an int.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_to_int( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++If +++<em>+++in_string +++</em>+++is the string representation of an int, the function
-        returns that integer.
-        +++<br>++++++</br>+++If +++<em>+++in_string +++</em>+++is the string representation of a float, the function
-        returns that number cast as an int.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_ts_to_epoch_seconds( +++<em>+++timestamp +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++uint+++</td>+++
-      +++<td style="text-align:left">+++Converts a timestamp in canonical string format to Unix epoch time, which
-        is the int number of seconds since Jan. 1, 1970. Refer to the timestamp
-        input format note below.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_current_time_epoch(0)
-        +++<br>++++++</br>+++
-        +++<br>++++++</br>++++++</td>+++
-      +++<td style="text-align:left">+++uint+++</td>+++
-      +++<td style="text-align:left">+++Returns the current time in Unix epoch seconds. *By convention, the input
-        parameter should be 0, but it is ignored.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++flatten( +++<em>+++column_to_be_split, group_separator, 1 +++</em>+++)+++</p>+++
-        +++<p>+++flatten( +++<em>+++column_to_be_split, group_separator, sub_field_separator, number_of_sub_fields_in_one_group +++</em>+++)+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++</td>+++
-      +++<td style="text-align:left">+++See the section &quot;TEMP_TABLE and Flatten Functions&quot; below. +++<b>++++++<br>++++++</br>++++++</b>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++flatten_json_array ( +++<em>+++$&quot;array_name&quot; +++</em>+++)+++</p>+++
-        +++<p>+++flatten_json_array ( +++<em>+++$&quot;array_name&quot;, $&quot;sub_obj_1&quot;, $&quot;sub_obj_2&quot;, \..., $&quot;sub_obj_n&quot; +++</em>+++)
-          +++<br>++++++</br>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++</td>+++
-      +++<td style="text-align:left">+++See the section &quot;TEMP_TABLE and Flatten Functions&quot; below.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++split( +++<em>+++column_to_be_split, element_separator +++</em>+++)+++</p>+++
-        +++<p>+++split( +++<em>+++column_to_be_split, key_value_separator, element _separator +++</em>+++)+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++See the section &quot;Loading a LIST or SET Attribute&quot; above.+++</p>+++
-        +++<p>+++See the section &quot;Loading a MAP Attribute&quot; above.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_upper( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns the input string in upper-case.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_lower( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Returns the input string in lower-case.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_trim( +++<em>+++in_string +++</em>+++)+++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Trims whitespace from the beginning and end of the input string.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++gsql_ltrim( +++<em>+++in_string +++</em>+++)+++</p>+++
-        +++<p>+++gsql_rtrim( +++<em>+++in_string +++</em>+++)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++string+++</td>+++
-      +++<td style="text-align:left">+++Trims white space from either the beginning or the end of the input string
-        (Left or right).+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_year( +++<em>+++timestamp+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns 4-digit year from timestamp. Refer to timestamp input format note
-        below.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<em>+++gsql_month( timestamp )+++</em>++++++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns month (1-12) from timestamp. Refer to timestamp input format note
-        below.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_day( +++<em>+++timestamp+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns day (1-31) from timestamp. Refer to timestamp input format note
-        below.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_year_epoch( +++<em>+++epoch+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns 4-digit year from Unix epoch time, which is the int number of
-        seconds since Jan. 1, 1970.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_month_epoch( +++<em>+++epoch+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns month (1-12) from Unix epoch time, which is the int number of
-        seconds since Jan. 1, 1970.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++gsql_day_epoch( +++<em>+++epoch+++</em>+++ )+++</td>+++
-      +++<td style="text-align:left">+++int+++</td>+++
-      +++<td style="text-align:left">+++Returns day (1-31) from Unix epoch time, which is the int number of seconds
-        since Jan. 1, 1970.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+The following token functions can be used in an id or attribute expression
+
+[width="100%",cols="2,1,2",options="header",]
+|===
+|Function |Output type |Description
+|gsql_reverse( _in_string_ ) |string |Returns a string with the
+characters in the reverse order of the input string _in_string_.
+
+|gsql_concat( _string1, string2,...,stringN_ ) |string |Returns a string
+which is the concatenation of all the input strings.
+
+|gsql_uuid_v4() |string |Returns a version-4 UUID.
+
+|gsql_split_by_space( _in_string_ ) |string |Returns a modified version
+of _in_string_, in which each space character is replaced with ASCII 30
+(decimal).
+
+|gsql_substring(_str_, _beginIndex_ [, _length_]) |string |Returns the
+substring beginning at _beginIndex_, having the given _length_.
+
+|gsql_find(_str_, _substr_ ) |int |Returns the start index of the
+substring within the string. If it is not found, then return -1.
+
+|gsql_length(_str_ ) |int |Returns the length of the string.
+
+|gsql_replace(_str_, _oldToken_, _newToken_ [, _max_]) |string |Returns
+the string resulting from replacing all matchings of _oldToken_ with
+_newToken_ in the original string. If a _max_ count is provided, there
+can only be up to that many replacements.
+
+|gsql_regex_replace( _str_, _regex_, _replaceSubstr_ ) |string |Returns
+the string resulting from replacing all substrings in the input string
+that match the given _regex_ token with the substitute string.
+
+|gsql_regex_match(_str_, _regex_ ) |bool |Returns true if the given
+string token matches the given regex token and false otherwise.
+
+|gsql_to_bool( _in_string_ ) |bool |Returns true if the _in_string_ is
+either "t" or "true", with case insensitive checking. Returns false
+otherwise.
+
+|gsql_to_uint( _in_string_ ) |uint |If _in_string_ is the string
+representation of an unsigned int, the function returns that integer. +
++
+If _in_string_ is the string representation of a nonnegative float, the
+function returns that number cast as an int.
+
+|gsql_to_int( _in_string_ ) |int |If _in_string_ is the string
+representation of an int, the function returns that integer. +
++
+If _in_string_ is the string representation of a float, the function
+returns that number cast as an int.
+
+|gsql_ts_to_epoch_seconds( _timestamp_ ) |uint |Converts a timestamp in
+canonical string format to Unix epoch time, which is the int number of
+seconds since Jan. 1, 1970. Refer to the timestamp input format note
+below.
+
+|gsql_current_time_epoch(0) +
++
++
++ |uint |Returns the current time in Unix epoch seconds. *By
+convention, the input parameter should be 0, but it is ignored.
+
+a|
+flatten( _column_to_be_split, group_separator, 1_ )
+
+flatten( _column_to_be_split, group_separator, sub_field_separator,
+number_of_sub_fields_in_one_group_ )
+
+| |See the section "TEMP_TABLE and Flatten Functions" below. * +
++
+*
+
+a|
+flatten_json_array ( _$"array_name"_ )
+
+flatten_json_array ( _$"array_name", $"sub_obj_1", $"sub_obj_2", ...,
+$"sub_obj_n"_ ) +
++
+
+| |See the section "TEMP_TABLE and Flatten Functions" below.
+
+a|
+split( _column_to_be_split, element_separator_ )
+
+split( _column_to_be_split, key_value_separator, element _separator_ )
+
+| a|
+See the section "Loading a LIST or SET Attribute" above.
+
+See the section "Loading a MAP Attribute" above.
+
+|gsql_upper( _in_string_ ) |string |Returns the input string in
+upper-case.
+
+|gsql_lower( _in_string_ ) |string |Returns the input string in
+lower-case.
+
+|gsql_trim( _in_string_ ) |string |Trims whitespace from the beginning
+and end of the input string.
+
+a|
+gsql_ltrim( _in_string_ )
+
+gsql_rtrim( _in_string_ )
+
+|string |Trims white space from either the beginning or the end of the
+input string (Left or right).
+
+|gsql_year( _timestamp_ ) |int |Returns 4-digit year from timestamp.
+Refer to timestamp input format note below.
+
+|_gsql_month( timestamp )_ |int |Returns month (1-12) from timestamp.
+Refer to timestamp input format note below.
+
+|gsql_day( _timestamp_ ) |int |Returns day (1-31) from timestamp. Refer
+to timestamp input format note below.
+
+|gsql_year_epoch( _epoch_ ) |int |Returns 4-digit year from Unix epoch
+time, which is the int number of seconds since Jan. 1, 1970.
+
+|gsql_month_epoch( _epoch_ ) |int |Returns month (1-12) from Unix epoch
+time, which is the int number of seconds since Jan. 1, 1970.
+
+|gsql_day_epoch( _epoch_ ) |int |Returns day (1-31) from Unix epoch
+time, which is the int number of seconds since Jan. 1, 1970.
+|===
 
 ==== Timestamp Input Format
 
@@ -1138,60 +1147,85 @@ USING parameter=value [,parameter=value]*
 If multiple LOAD statements use the same source (the same file path, the same TEMP_TABLE, or the same file variable), the USING clauses in these LOAD statements must be the same. Therefore, we recommend that if multiple destination clauses share the same source, put all of these destination clauses into the same LOAD statement.
 ====
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Parameter+++</b>++++++</th>+++
-      +++<th style="text-align:left">++++++<b>+++Meaning of Value+++</b>++++++</th>+++
-      +++<th style="text-align:left">++++++<b>+++Allowed Values+++</b>++++++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++SEPARATOR+++</td>+++
-      +++<td style="text-align:left">+++specifies the special character that separates tokens (columns) in the
-        data file+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++any single ASCII character.+++</p>+++
-        +++<p>+++Default is comma &quot;,&quot;+++</p>+++
-        +++<p>++++++<code>+++&quot;\t&quot; +++</code>+++for tab+++<code>+++&quot;\xy&quot; +++</code>+++for ASCII
-          decimal code xy+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++EOL+++</td>+++
-      +++<td style="text-align:left">+++the end-of-line character+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++any ASCII sequence+++</p>+++
-        +++<p>+++Default = +++<b>++++++<code>+++&quot;\n&quot; +++</code>++++++</b>+++(system-defined newline character
-          or character sequence)+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++QUOTE
-        +++<br>++++++</br>+++(See note below)+++</td>+++
-      +++<td style="text-align:left">+++specifies explicit boundary markers for string tokens, either single or
-        double quotation marks. See more details below.+++</td>+++
-      +++<td style="text-align:left">+++&quot;single&quot; for &apos;
-        +++<br>++++++</br>+++&quot;double&quot; for &quot;+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++HEADER+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++whether the data file&apos;s first line is a header line.+++</p>+++
-        +++<p>+++The header assigns names to the columns.+++</p>+++
-        +++<p>+++The LOAD statement must refer to an actual file with a valid header.+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++&quot;true&quot;, &quot;false&quot;+++</p>+++
-        +++<p>+++Default is &quot;false&quot;+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++USER_DEFINED_HEADER+++</td>+++
-      +++<td style="text-align:left">+++specifies the name of the header variable, when a header has been defined
-        in the loading job, rather than in the data file+++</td>+++
-      +++<td style="text-align:left">+++the variable name in the preceding DEFINE HEADER statement+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++REJECT_LINE_RULE+++</td>+++
-      +++<td style="text-align:left">+++if the filter expression evaluates to true, then do not use this input
-        data line.+++</td>+++
-      +++<td style="text-align:left">+++name of filter from a preceding DEFINE INPUT_LINE_FILTER statement+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++JSON_FILE
-        +++<br>++++++</br>+++(See Loading JSON Data section below)+++</td>+++
-      +++<td style="text-align:left">+++whether each line is a json object (see Section &quot;JSON Loader&quot;
-        below for more details)+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++&quot;true&quot;, &quot;false&quot;+++</p>+++
-        +++<p>+++Default is &quot;false&quot;+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++NEW_VERTEX_ONLY+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++If true, treat vertices as insert-only. If the input data refers to a
-          vertex which already exists, do not update it.+++</p>+++
-        +++<p>+++If false, upsert vertices.+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++&quot;true&quot;, &quot;false&quot;+++</p>+++
-        +++<p>+++Default is &quot;false&quot;+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++VERTEX_MUST_EXIST+++</p>+++
-        +++<p>+++(See VERTEX_MUST_EXIST section below)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++If true, only insert or update an edge If both endpoint vertices already
-        exist. If false, always insert new edges, creating endpoint vertices as
-        needed, using given id and default values for other parameters.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++&quot;true&quot;, &quot;false&quot;+++</p>+++
-        +++<p>+++Default is &quot;false&quot;+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="1,3,3",options="header",]
+|===
+|*Parameter* |*Meaning of Value* |*Allowed Values*
+|SEPARATOR |specifies the special character that separates tokens
+(columns) in the data file a|
+any single ASCII character.
+
+Default is comma ","
+
+`+"\t" +`for tab`+"\xy" +`for ASCII decimal code xy
+
+|EOL |the end-of-line character a|
+any ASCII sequence
+
+Default = *`+"\n" +`*(system-defined newline character or character
+sequence)
+
+|QUOTE +
++
+(See note below) |specifies explicit boundary markers for string tokens,
+either single or double quotation marks. See more details below.
+|"single" for ' +
++
+"double" for "
+
+|HEADER a|
+whether the data file's first line is a header line.
+
+The header assigns names to the columns.
+
+The LOAD statement must refer to an actual file with a valid header.
+
+a|
+"true", "false"
+
+Default is "false"
+
+|USER_DEFINED_HEADER |specifies the name of the header variable, when a
+header has been defined in the loading job, rather than in the data file
+|the variable name in the preceding DEFINE HEADER statement
+
+|REJECT_LINE_RULE |if the filter expression evaluates to true, then do
+not use this input data line. |name of filter from a preceding DEFINE
+INPUT_LINE_FILTER statement
+
+|JSON_FILE +
++
+(See Loading JSON Data section below) |whether each line is a json
+object (see Section "JSON Loader" below for more details) a|
+"true", "false"
+
+Default is "false"
+
+|NEW_VERTEX_ONLY a|
+If true, treat vertices as insert-only. If the input data refers to a
+vertex which already exists, do not update it.
+
+If false, upsert vertices.
+
+a|
+"true", "false"
+
+Default is "false"
+
+a|
+VERTEX_MUST_EXIST
+
+(See VERTEX_MUST_EXIST section below)
+
+|If true, only insert or update an edge If both endpoint vertices
+already exist. If false, always insert new edges, creating endpoint
+vertices as needed, using given id and default values for other
+parameters. a|
+"true", "false"
+
+Default is "false"
+
+|===
+
 
 === *QUOTE parameter*
 

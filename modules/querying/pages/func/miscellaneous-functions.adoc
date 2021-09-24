@@ -95,28 +95,31 @@ Tyep indicated by `typeStr`
 
 === Parameters
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++expressionStr+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++The expression to evaluate typed as a string.+++</p>+++
-        +++<ul>++++++<li>+++Identifiers used in the expression can refer only to a vertex or edge
-            aliases, vertex-attached accumulators, global accumulators, parameters,
-            or scalar function calls involving the above variables.+++</li>+++
-          +++<li>+++The expression may not refer to local variables, global variables, or
-            to FROM clause vertices or edges by type.+++</li>+++
-          +++<li>+++Any accumulators in the expression must be scalar accumulators (e.g.,
-            MaxAccum) for primitive-type data. Container accumulators (e.g., SetAccum)
-            or scalar accumulators with non-primitive type (e.g. VERTEX, EDGE, DATETIME)
-            are not supported. Container type attributes are not supported.+++</li>++++++</ul>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++STRING+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++typeStr+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++The return type for the function call. It must be a string literal for
-        a primitive data type, e.g., one of +++<code>+++&quot;int&quot;+++</code>+++, +++<code>+++&quot;float&quot;+++</code>+++, +++<code>+++&quot;double&quot;+++</code>+++, +++<code>+++&quot;bool&quot;+++</code>+++, +++<code>+++&quot;string&quot;+++</code>+++ (case
-        insensitive).
-        +++<br>++++++</br>+++
-        +++<br>++++++</br>+++The default value is +++<code>+++&quot;bool&quot;+++</code>+++.+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++STRING+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="1,5,1",options="header",]
+|===
+|Parameter |Description |Data type
+|`+expressionStr+` a|
+The expression to evaluate typed as a string.
+
+* Identifiers used in the expression can refer only to a vertex or edge
+aliases, vertex-attached accumulators, global accumulators, parameters,
+or scalar function calls involving the above variables.
+* The expression may not refer to local variables, global variables, or
+to FROM clause vertices or edges by type.
+* Any accumulators in the expression must be scalar accumulators (e.g.,
+MaxAccum) for primitive-type data. Container accumulators (e.g.,
+SetAccum) or scalar accumulators with non-primitive type (e.g. VERTEX,
+EDGE, DATETIME) are not supported. Container type attributes are not
+supported.
+
+|`+STRING+`
+
+|`+typeStr+` |The return type for the function call. It must be a string
+literal for a primitive data type, e.g., one of `+"int"+`, `+"float"+`,
+`+"double"+`, `+"bool"+`, `+"string"+` (case insensitive). +
+
+The default value is `+"bool"+`. |`+STRING+`
+|===
 
 === Example
 

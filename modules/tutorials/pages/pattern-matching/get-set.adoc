@@ -62,24 +62,23 @@ The following general use commands were introduced in xref:tutorials:gsql-101/RE
 * The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privilege to run most gadmin commands.
 * The *`GSQL>`* prefix indicates GSQL shell commands.
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Command+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++% gsql+++</td>+++
-      +++<td style="text-align:left">+++Enter the GSQL shell in interactive mode+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++% gsql &apos;<GSQL command string>&apos;+++</td>+++
-      +++<td style="text-align:left">+++Run one GSQL command+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++% gadmin status+++</td>+++
-      +++<td style="text-align:left">+++Check the status of TigerGraph services
-        +++<br>++++++</br>+++(If your graph store is empty, it is normal for
-        +++<br>++++++</br>+++some statuses to be flagged in red.)+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++% gadmin restart+++</td>+++
-      +++<td style="text-align:left">+++Restart TigerGraph services+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++GSQL> ls+++</td>+++
-      +++<td style="text-align:left">+++List the graph schema, loading jobs, and queries+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++GSQL> show user+++</td>+++
-      +++<td style="text-align:left">+++Show your user name and roles+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++GSQL> drop all+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Delete the entire schema, all data, all+++</p>+++
-        +++<p>+++jobs, and all queries+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++GSQL> exit+++</td>+++
-      +++<td style="text-align:left">+++Exit GSQL interactive shell+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="<50%,<50%",options="header",]
+|===
+|Command |Description
+|% gsql |Enter the GSQL shell in interactive mode
+|% gsql '<GSQL command string>' |Run one GSQL command
+|% gadmin status |Check the status of TigerGraph services +
++
+(If your graph store is empty, it is normal for +
++
+some statuses to be flagged in red.)
+|% gadmin restart |Restart TigerGraph services
+|GSQL> ls |List the graph schema, loading jobs, and queries
+|GSQL> show user |Show your user name and roles
+|GSQL> drop all a|
+Delete the entire schema, all data, all
+
+jobs, and all queries
+
+|GSQL> exit |Exit GSQL interactive shell
+|===

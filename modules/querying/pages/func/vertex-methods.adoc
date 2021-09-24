@@ -728,34 +728,35 @@ Reads a data file that lists particular vertices of the graph and returns the co
 
 ==== Parameters
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++filePath+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++The absolute file path of the input file to be read. A relative path is
-        not supported.+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++STRING+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++vertexIdColumn+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++The vertex ID column position.+++</p>+++
-        +++<p>++++++</p>+++
-        +++<p>+++The index for column positions starts at 0. Therefore, to designate the
-          first column as the ID column, set this parameter to +++<code>+++$0+++</code>+++.+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++$ num+++</code>++++++<em>+++.+++</em>++++++</p>+++
-        +++<p>++++++<br>++++++</br>+++If +++<code>+++header+++</code>+++ is set to true,+++<code>+++$ &quot;column_name&quot;+++</code>+++ is
-          also acceptable.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++vertexTypeColumn+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++The vertex type column position or a specific vertex type.+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++$ num+++</code>++++++<em>+++.+++</em>++++++</p>+++
-        +++<p>++++++<br>++++++</br>+++If +++<code>+++header+++</code>+++ is set to true,+++<code>+++$ &quot;column_name&quot;+++</code>+++ is
-          also acceptable.+++</p>+++
-        +++<p>++++++</p>+++
-        +++<p>+++Alternatively, a vertex type without double quotes.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++separator+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++The column separator character.+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++STRING+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++header+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Whether this file has a header.+++</td>+++
-      +++<td style="text-align:left">+++`BOO+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="<34%,<33%,<33%",options="header",]
+|===
+|Parameter |Description |Data type
+|`+filePath+` |The absolute file path of the input file to be read. A
+relative path is not supported. |`+STRING+`
+
+|`+vertexIdColumn+` a|
+The vertex ID column position.
+
+The index for column positions starts at 0. Therefore, to designate the
+first column as the ID column, set this parameter to `+$0+`.
+
+a|
+`+$ num+`
+
+If `+header+` is set to true, `+$ "column_name"+` is also acceptable.
+
+|`+vertexTypeColumn+` |The vertex type column position or a specific
+vertex type. a|
+`+$ num+`
+
+If `+header+` is set to true,`+$ "column_name"+` is also acceptable.
+
+Alternatively, a vertex type without double quotes.
+
+|`+separator+` |The column separator character. |`+STRING+`
+
+|`+header+` |Whether this file has a header. |`BOO
+|===
 
 ==== Example
 
@@ -769,10 +770,7 @@ Jenny,person
 Amily,person
 ----
 
-
-
 .Example query
-
 [source,gsql]
 ----
 CREATE QUERY selectVertexEx(STRING filename) FOR GRAPH socialNet {

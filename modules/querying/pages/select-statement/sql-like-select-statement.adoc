@@ -240,6 +240,7 @@ Output::
 Example 2 (HAVING clause): Find persons with at least 2 employers.
 
 [tabs]
+====
 Query::
 +
 --
@@ -298,6 +299,7 @@ The output is the same as for Example 2.
 Example 3 (grouping, aggregation, order by and limit): Group employees by country and by work status, sorted by group size and then by country name.
 
 [tabs]
+====
 Query::
 +
 --

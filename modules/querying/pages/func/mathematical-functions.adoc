@@ -291,22 +291,23 @@ Rounds a number to a specified place relative to the decimal point and returns t
 A numeric type.
 
 ==== Parameters
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++num+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++The number to be rounded+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++NUM+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++integer+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Optional. An integer value indicating the place to round the first argument
-          to.
-          +++<br>++++++</br>++++++</p>+++
-        +++<p>+++If +++<code>+++integer+++</code>+++ is positive, the function returns +++<code>+++num+++</code>+++ rounded
-          to +++<code>+++integer+++</code>+++ places to the right of the decimal point. If you
-          omit +++<code>+++integer+++</code>+++, then +++<code>+++num+++</code>+++ is rounded to zero places.
-          If +++<code>+++integer+++</code>+++ is negative, then +++<code>+++num+++</code>+++ is rounded off to
-          the left of the decimal point.+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++INT+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="1,2,1",options="header",]
+|===
+|Parameter |Description |Data type
+|`+num+` |The number to be rounded |`+NUM+`
+
+|`+integer+` a|
+Optional. An integer value indicating the place to round the first
+argument to. +
++
+
+If `+integer+` is positive, the function returns `+num+` rounded to
+`+integer+` places to the right of the decimal point. If you omit
+`+integer+`, then `+num+` is rounded to zero places. If `+integer+` is
+negative, then `+num+` is rounded off to the left of the decimal point.
+
+|`+INT+`
+|===
 
 ==== Examples
 

@@ -89,24 +89,27 @@ Print a `DATETIME` value in a specific format indicated by a string.
 `STRING`
 
 === Parameters
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++date+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++A +++<code>+++DATETIME+++</code>+++ value+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++str+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A string pattern expressing the format to print +++<code>+++date+++</code>+++ in. Use
-          the following specifiers in your string to insert the corresponding value
-          in the output.+++</p>+++
-        +++<ul>++++++<li>++++++<code>+++%Y+++</code>+++ - year+++</li>+++
-          +++<li>++++++<code>+++%m+++</code>+++ - month+++</li>+++
-          +++<li>++++++<code>+++%d+++</code>+++ - day of month+++</li>+++
-          +++<li>++++++<code>+++%H+++</code>+++ - hour+++</li>+++
-          +++<li>++++++<code>+++%M+++</code>+++ - minute+++</li>+++
-          +++<li>++++++<code>+++%S+++</code>+++ - second+++</li>++++++</ul>+++
-        +++<p>+++The default value for this parameter is +++<code>+++&quot;%Y-%m-%d %H:%M:%S&quot;+++</code>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[width="100%",cols="1,2,1",options="header",]
+|===
+|Parameter |Description |Data type
+|`+date+` |A `+DATETIME+` value |`+DATETIME+`
+
+|`+str+` a|
+A string pattern expressing the format to print `+date+` in. Use the
+following specifiers in your string to insert the corresponding value in
+the output.
+
+* `+%Y+` - year
+* `+%m+` - month
+* `+%d+` - day of month
+* `+%H+` - hour
+* `+%M+` - minute
+* `+%S+` - second
+
+The default value for this parameter is `+"%Y-%m-%d %H:%M:%S"+`
+
+|`+DATETIME+`
+|===
 
 === Example
 

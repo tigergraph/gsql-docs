@@ -726,7 +726,9 @@ Reads a data file that lists particular vertices of the graph and returns the co
 
 `SET<VERTEX>`
 
-==== Parameters+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
+==== Parameters
+
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter+++</th>+++
       +++<th style="text-align:left">+++Description+++</th>+++
       +++<th style="text-align:left">+++Data type+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++filePath+++</code>++++++</td>+++

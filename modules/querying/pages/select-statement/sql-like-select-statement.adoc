@@ -39,7 +39,7 @@ The SQL-like form may use the xref:select-statement/sql-like-select-statement.ad
 
 [CAUTION]
 ====
-This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header. 
+This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header.
 ====
 
 [discrete]
@@ -47,9 +47,11 @@ This feature is only available in syntax v2. Ensure that the correct syntax vers
 
 In the example graph `socialNet`, which has vertex types `person` and `post`, and edge type `liked` for when someone likes a post, use a query to retrieve timestamps of all likes, the subject of the posts being liked, and the primary IDs of the people who liked the posts.
 
-{% tabs %}
-{% tab title="Query" %}
-
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
@@ -58,11 +60,10 @@ CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
     PRINT T;
 }
 ----
-
-{% endtab %}
-
-{% tab title="Output" %}
-
+--
+Output::
++
+--
 ----
 [
   {
@@ -116,9 +117,8 @@ CREATE QUERY getLikes() FOR GRAPH socialNet SYNTAX v2 {
   }
 ]
 ----
-
-{% endtab %}
-{% endtabs %}
+--
+====
 
 == GROUP BY Clause
 
@@ -194,9 +194,11 @@ If the SELECT clause contains aggregator functions, the GROUP BY clause can be o
 
 Example 1 (grouping and aggregation): For each employee, find the number of its employers
 
-{% tabs %}
-{% tab title="Query" %}
-
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY tabularEx1() FOR GRAPH workNet SYNTAX v2 {
@@ -207,11 +209,11 @@ CREATE QUERY tabularEx1() FOR GRAPH workNet SYNTAX v2 {
   PRINT T;
 }
 ----
+--
 
-{% endtab %}
-
-{% tab title="Output" %}
-
+Output::
++
+--
 ----
 {"version":{"edition":"enterprise",
                   "api":"v2",
@@ -232,15 +234,15 @@ CREATE QUERY tabularEx1() FOR GRAPH workNet SYNTAX v2 {
 {"employee":"person2","employerCount":2},
 {"employee":"person8","employerCount":1}]}]}
 ----
-
-{% endtab %}
-{% endtabs %}
+--
+====
 
 Example 2 (HAVING clause): Find persons with at least 2 employers.
 
-{% tabs %}
-{% tab title="Query" %}
-
+[tabs]
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
@@ -252,11 +254,11 @@ CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
   PRINT T;
 }
 ----
+--
 
-{% endtab %}
-
-{% tab title="Output" %}
-
+Output::
++
+--
 ----
 {
   "error": false,
@@ -275,9 +277,8 @@ CREATE QUERY tabularEx2() FOR GRAPH workNet SYNTAX v2 {
   ]}]
 }
 ----
-
-{% endtab %}
-{% endtabs %}
+--
+====
 
 Example 2a (implicit grouping): Same as Example 2, but with implicit grouping from the SELECT clause.
 
@@ -296,9 +297,10 @@ The output is the same as for Example 2.
 
 Example 3 (grouping, aggregation, order by and limit): Group employees by country and by work status, sorted by group size and then by country name.
 
-{% tabs %}
-{% tab title="Query" %}
-
+[tabs]
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY tabularEx3() SYNTAX v2 {
@@ -311,11 +313,11 @@ CREATE QUERY tabularEx3() SYNTAX v2 {
   PRINT T;
 }
 ----
+--
 
-{% endtab %}
-
-{% tab title="Output" %}
-
+Output::
++
+--
 ----
 {
   "error": false,
@@ -335,6 +337,5 @@ CREATE QUERY tabularEx3() SYNTAX v2 {
   ]}]
 }
 ----
-
-{% endtab %}
-{% endtabs %}
+--
+====

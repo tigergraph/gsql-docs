@@ -718,9 +718,9 @@ CREATE LOADING JOB test2 FOR GRAPH test_graph {
 ----
 
 
-== *Built-in Loader Token Functions*
+== Token Functions
 
-The GSQL Loader provides several built-in functions which operate on tokens. Some may be used to construct attribute expressions and some may be used for conditional expressions in the `WHERE` clause.
+Token functions are functions in the DDL language that operate on tokens. Some may be used to construct attribute expressions and some may be used for conditional expressions in the `WHERE` clause.
 
 To use a token function, replace the attribute in the destination clause of the `LOAD` statement with the function call. The arguments of the function can be a column from the `FILE` object.
 
@@ -877,6 +877,10 @@ The timestamp parameter should be in one of the following formats: +
 "%Y-%m-%dT%H:%M:%S.000z" // text after the dot . is ignored`
 ====
 
+=== *User-Defined Token Functions*
+
+Users can write their own token functions in C{pp} and install them in the GSQL system. To learn how to add a user-defined token function, see xref:add-token-function.adoc[].
+
 === Reducer Functions
 
 A reducer function aggregates multiple values of a non-id attribute into one attribute value of a single vertex or edge. Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
@@ -1000,115 +1004,7 @@ The GSQL loading language provides several built-in functions for the WHERE clau
 The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
 ====
 
-== *User-Defined Token Functions*
 
-Users can write their own token functions in C{pp} and install them in the GSQL system. The system installation already contains a source code file containing sample functions. Users simply add their customized token functions to this file. The file for user-defined token functions for attribute expressions or `WHERE` clauses is at `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`.
-
-[CAUTION]
-====
-With TigerGraph Version 3.1, GSQL server runs in HA mode by default. Please follow the instructions in the link below to keep all User Sources files in sync across all GSQL servers.
-
-https://docs.tigergraph.com/admin/admin-guide/installation-and-configuration/high-availability-support-for-gsql-server#user-source-code-maintenance
-====
-
-There are a few examples in this file, and details are presented below.
-
-Testing your functions is simple. In the same directory with the `TokenBank.cpp` file is a command script called compile.
-
-. To test that your function compiles:
-
-[source,gsql]
-----
-./compile
-----
-
-. To test that your function works correctly, write your own test and add it to the `main()` procedure in the `TokenBank.cpp`. Then, compile the file and run it. Note that files located in `../TokenLib` need to be included:
-
-[source,gsql]
-----
-g++ -I../TokenLib TokenBank.cpp
-./a.out
-----
-
-=== User-defined Token Functions for Attribute Expressions
-
-|===
-| Attribute type | Function signature
-
-| string or string compress
-| extern "C" void funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum,  char* const oToken, uint32_t& oTokenLen)
-
-| bool
-| extern "C" bool funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)
-
-| uint
-| extern "C" uint64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)
-
-| int
-| extern "C" int64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)
-
-| float
-| extern "C" float funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)
-
-| double
-| extern "C" double funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)
-|===
-
-The parameters are as follows: iToken is the array of string tokens, iTokenLen is the array of the length of the string tokens, and iTokenNum is the number of tokens. Note that the input tokens are always in string (char*) format.
-
-If the attribute type is not string nor string compress, the return type should be the corresponding type: bool for bool; uint64_t for uint; int64_t for int; float for float double for double. If the attribute type is string or string compress, the return type should be void, and use the extra parameters ( char *const oToken, uint32_t& oTokenLen) for storing the return string. oToken is the returned string value, and oTokenLen is the length of this string.
-
-The built-in token function `gsql_concat` is used as an example below. It takes multiple token parameters and returns a string.
-
-.gsql_concat
-
-[source,c]
-----
-extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum, char* const oToken, uint32_t& oTokenLen) {
-  int k = 0;
-  for (int i=0; i < iTokenNum; i++) {
-    for (int j =0; j < iTokenLen[i]; j++) {
-           oToken[k++] = iToken[i][j];
-    }
-  }
-  oTokenLen = k;
-}
-----
-
-
-=== User-defined Token Functions for WHERE Clause
-
-User-defined token functions (described above) can also be used to construct the boolean conditional expression in the `WHERE` clause. However, there are some restrictions in the `WHERE` clause:
-
-[WARNING]
-====
-In the clause "WHERE _conditions_ ",
-
-* The only type of user-defined token function allowed are those that return a boolean value.
-* If a user-defined token function is used in a WHERE Clause, then it must constitute the entire condition; it cannot be combined with another function or operator to produce a subsequent value. However, the arguments of the UDF can include other functions.
-====
-
-The source code for the built-in token function gsql_token_equal is used as an example for how to write a user-defined token function.
-
-.gsql_token_equal
-
-[source,c]
-----
-extern "C" bool gsql_token_equal(const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) {
-  if (iTokenNum != 2) {
-    return false;
-  }
-  if (iTokenLen[0] != iTokenLen[1]) {
-    return false;
-  }
-  for (int i =0; i < iTokenLen[0]; i++) {
-    if (iToken[0][i] != iToken[1][i]) {
-      return false;
-    }
-  }
-  return true;
-}
-----
 
 
 == *Other Optional LOAD Clauses*

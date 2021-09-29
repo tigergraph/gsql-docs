@@ -688,7 +688,7 @@ The functions in this section either have return values of vertex or vertex set 
 
 ==== Syntax
 
-`getvid( id )`
+`getvid( v )`
 
 ==== Description
 
@@ -700,17 +700,99 @@ The engine can access the internal ID faster than accessing the external ID, so 
 
 ==== Return type
 
-`STRING`
+`INT`
 
 ==== Parameters
 
 |===
 | Parameter | Description | Data type
 
-| `id`
-| The primary ID of a vertex
-| `STRING`
+| `v`
+| A vertex alias.
+| Vertex alias
 |===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY getvid_ex () FOR GRAPH socialNet {
+MinAccum<int> @cc_id = 0;       //each vertex's tentative component id
+
+  Start = {person.*};
+  # Initialize: Label each vertex with its own internal ID
+  S = SELECT x FROM Start:x
+      POST-ACCUM
+         x.@cc_id = getvid(x);
+
+  # Community detection steps omitted
+  PRINT Start.@cc_id;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+{
+    "error": false,
+    "message": "",
+    "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+    },
+    "results": [{"Start": [
+    {
+    "v_id": "person7",
+    "attributes": {"Start.@cc_id": 0},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person5",
+    "attributes": {"Start.@cc_id": 4194304},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person1",
+    "attributes": {"Start.@cc_id": 4194305},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person4",
+    "attributes": {"Start.@cc_id": 11534336},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person2",
+    "attributes": {"Start.@cc_id": 13631488},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person3",
+    "attributes": {"Start.@cc_id": 20971520},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person8",
+    "attributes": {"Start.@cc_id": 22020096},
+    "v_type": "person"
+    },
+    {
+    "v_id": "person6",
+    "attributes": {"Start.@cc_id": 24117248},
+    "v_type": "person"
+    }
+]}]
+}
+----
+--
+====
 
 === `selectVertex()`
 

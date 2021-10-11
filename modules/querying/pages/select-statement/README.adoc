@@ -183,7 +183,7 @@ The <<_from_clause>> defines a path pattern to traverse in the graph, and each v
 
 The SELECT block has many optional clauses, which fit together in a logical flow. Overall, the SELECT block starts from a source set of vertices and returns a result set that is either a subset of the source vertices or a subset of their neighboring vertices. Along the way, computations can be performed on the selected vertices and edges. The figure below graphically depicts the overall SELECT data flow. While the ACCUM and POST-ACCUM clauses do not directly affect which vertices are included in the result set, they affect the data (accumulators) which are attached to those vertices.
 
-image::../../../../.gitbook/assets/select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop GSQL SELECT statement]
+image::select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop GSQL SELECT statement]
 
 == FROM Clause
 

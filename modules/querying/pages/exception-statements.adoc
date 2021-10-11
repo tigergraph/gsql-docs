@@ -294,7 +294,7 @@ When an exception occurs within a TRY block, the flow of execution skips the rem
 
 Finally, if the unhandled exception is not within a TRY block, then the the query is aborted, and the default exception response is the output.
 
-image::../../../.gitbook/assets/2%20%283%29.png[]
+image::2%20%283%29.png[]
 
 *Case 1: If cond1 is true* in the outer TRY block,
 
@@ -467,4 +467,4 @@ GSQL > RUN QUERY compPathValid("c24","c25",false)
 
 The flowchart below summarizes all the cases for triggering and handling exceptions, both user-defined and built-in.
 
-image::../../../.gitbook/assets/3.png[]
+image::3.png[]

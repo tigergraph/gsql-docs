@@ -6,11 +6,11 @@ In the figure below, circles represent vertex types, and lines represent edge ty
 
 An edge connects two vertices; in TigerGraph terminology these two vertices are the _*source vertex*_ and the _*target vertex*_ . An edge type can be either _*directed*_ or _*undirected*_.  A directed edge has a clear semantic direction, from the source vertex to the target vertex. For example, if there is an edge type that represents a plane flight segment, each segment needs to distinguish which airport is the origin (source vertex) and which airport is the destination (target vertex).  In the example schema below, all of the edges are undirected. A useful test to decide whether an edge should be directed or undirected is the following: "An edge type is directed if knowing there is a relationship from A to B does not tell me whether there is a relationship from B to A." Having nonstop service from Chicago to Shanghai does not automatically imply there is nonstop service from Shanghai to Chicago.
 
-image::../../../.gitbook/assets/a302a6bb8595a591c65b91c372daaa1f_560070806.png[Figure 1 - A schema for a User-Book-Rating graph]
+image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[Figure 1 - A schema for a User-Book-Rating graph]
 
 An expanded schema is shown below, containing all the original vertex and edge types plus three additional edge types: _friend_of, sequel_of, and user_book_read_ . Note that _friend_of_ joins a User to a User. The friendship is assumed to be bidirectional, so the edge type is undirected. _Sequel_of_ joins a Book to a Book but it is directed, as evidenced by the arrowhead. _The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse is not true. User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
 
-image::../../../.gitbook/assets/image%20%282%29.png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
+image::image%20%282%29.png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
 
 The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests. The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed. The TigerGraph system lets the user modify an existing schema, so the user is not locked into the initial design decision.
 
@@ -104,12 +104,12 @@ CREATE VERTEX movie (id UINT PRIMARY KEY, name STRING, year UINT)
 
 [WARNING]
 ====
-PRIMARY KEY is not supported in GraphStudio. If you decide to use this feature, you will only be able to use command line interface.
+PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
 
 ==== *COMPOSITE KEY*
 
-Beginning with v2.4, GSQL PRIMARY KEY supports composite keys - grouping multiple attributes to create a primary key for a specific vertex. Composite Key usage is similar to a single PRIMARY KEY, but rather than appending "PRIMARY KEY" after an attribute, the syntax is a bit different.
+GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex. To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
 
 [source,ruby]
 ----
@@ -118,14 +118,14 @@ composite_id_name_type := PRIMARY KEY "(" attribute_name ("," attribute_name)* "
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX movie (id UINT, title STRING, year UINT, PRIMARY KEY (title,year,id) )
 ----
 
 [WARNING]
 ====
-COMPOSITE KEY is not supported in GraphStudio. If you decide to use this feature, you will only be able to use command line interface.
+Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
 
 ==== *Vertex Attribute List*
@@ -159,17 +159,20 @@ CREATE VERTEX Book  (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT)
 CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
 ----
 
-
-
 Unlike the tables in a relational database, vertex types do not need to have a foreign key attribute for one vertex type to have a relationship to another vertex type.  Such relationships are handled by edge types.
 
 === *WITH STATS*
 
-By default, when the loader stores a vertex and its attributes in the graph store, it also stores some statistics about the vertex's outdegree -- how many connections it has to other vertices.  The optional WITH STATS clause lets the user control how much information is recorded. Recording the information in the graph store will speed up queries which need degree information, but it increases the memory usage.  There are two* options. If "outdegree_by_edgetype" is chosen, then each vertex records a list of degree count values, one value for each type of edge in the schema. If "none" is chosen, then no degree statistics are recorded with each vertex. If the WITH STATS clause is not used, the loader acts as if "outdegree_by_edgetype" were selected.
+By default, when the loader stores a vertex and its attributes in the graph store, it also stores some statistics about the vertex's outdegree -- how many connections it has to other vertices.
+The optional WITH STATS clause lets the user control how much information is recorded. Recording the information in the graph store will speed up queries which need degree information, but it increases the memory usage.
+There are two* options.
+
+* If `outdegree_by_edgetype` is chosen, then each vertex records a list of degree count values, one value for each type of edge in the schema.
+* If "none" is chosen, then no degree statistics are recorded with each vertex. If the `WITH STATS` clause is not used, the loader acts as if `outdegree_by_edgetype` were selected.
 
 The graph below has two types of edges between persons: phone_call and text.  For Bobby, the "outdegree_by_edgetype" option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
 
-image::../../../.gitbook/assets/image%20%2813%29.png[Figure 3 - Outdegree stats illustration]
+image::image%20%2813%29.png[Figure 3 - Outdegree stats illustration]
 
 |===
 | WITH STATS option (case insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")
@@ -192,7 +195,6 @@ Available to superuser and globaldesigner roles only.
 The CREATE EDGE statement defines a new global edge type. There are two forms of the CREATE EDGE statement, one for directed edges and one for undirected edges.  Each edge type must specify that it connects FROM one vertex type TO another vertex type.  Additional pairs of FROM,To vertex types may be added. Then additional attributes may be added.  Each attribute follows the same requirements as described in the Attribute List subsection for the "CREATE VERTEX" section.
 
 .CREATE UNDIRECTED EDGE
-
 [source,gsql]
 ----
 CREATE UNDIRECTED EDGE edge_type_name "("

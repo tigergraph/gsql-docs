@@ -52,7 +52,7 @@ Note that when we abbreviate that path in this way, we do not support aliases fo
 
 If a pattern has a Kleene star to repeat an edge, GSQL pattern matching selects only the _shortest paths_ which match the pattern. If we did not apply this restriction, computer science theory tells us that the computation time could be unbounded or extreme (NP = non-polynomial, to be technical). If we instead matched ALL paths regardless of length when a Kleene star is used without an upper bound, there could be an infinite number of matches, if there are loops in the graph. Even without loops or with an upper bound, the number of paths to check grows exponentially with the number of hops.
 
-image::../../.gitbook/assets/screen-shot-2019-05-22-at-12.41.56-am.png[Figure 3. Shortest Path Illustration]
+image::screen-shot-2019-05-22-at-12.41.56-am.png[Figure 3. Shortest Path Illustration]
 
 For the pattern `1 - (_*) - 5` in Figure 3 above, you can see the following:
 

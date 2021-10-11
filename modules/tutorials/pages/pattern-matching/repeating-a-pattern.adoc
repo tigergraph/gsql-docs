@@ -37,7 +37,7 @@ Below are more illustrative examples:
 * *No alias allowed for edge with Kleene star* An edge alias may not be used when a Kleene star is used. The reason is that when there are a variable number of edges, we cannot associate or bind the alias to a specific edge in the pattern.
 * *Shortest path semantics* When an edge is repeated with a Kleene star, only the shortest matching occurrences are selected. See the example below:
 
-image::../../.gitbook/assets/screen-shot-2019-05-19-at-2.33.35-am.png[Figure 2 Shortest Path Illustration.]
+image::screen-shot-2019-05-19-at-2.33.35-am.png[Figure 2 Shortest Path Illustration.]
 
 In Figure 2,  or Pattern `1 - (E>*) - 4`, any of the following paths reach 4 from 1.
 

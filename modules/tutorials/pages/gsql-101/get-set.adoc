@@ -10,13 +10,13 @@ A graph is a collection of data entities and the connections between them.  That
 
 Many people call a data entity a *node* ; at TigerGraph we called it a *vertex*. The plural is *vertices*. We call a connection an edge.  Both vertices and edges can have properties or attributes.  The figure below is a visual representation of a graph containing 7 vertices (shown as circles) and 7 edges (the lines).
 
-image::../../.gitbook/assets/friendship-social-graph.png[Friendship Social Graph]
+image::friendship-social-graph.png[Friendship Social Graph]
 
 A graph schema is the model which describes the *types* of vertices (nodes) and edge (connections) which can appear in your graph.  The graph above has one type of vertex (person) and one type of edge (friendship).
 
 A schema diagram looks like a small graph, except each node represents one *type* of vertex, and each link represents one *type* of edge.
 
-image::../../.gitbook/assets/friendship-social-graph-schema.png[Friendship Social Graph Schema]
+image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
 
 The friendship loop shows that a friendship is between a person and another person.
 

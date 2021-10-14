@@ -156,7 +156,7 @@ find_in_set("a","b,a,d") => 2
 
 === Description
 
-Generates and returns a https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_%28random%29[version-4 universally unique identifier(UUID)].
+Generates and returns a https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random)[version-4 universally unique identifier(UUID)].
 
 === Return type
 
@@ -566,7 +566,7 @@ The function begins scanning the string from its last character and removes all 
 
 === Description
 
-Returns a character string containing the https://en.wikipedia.org/wiki/Soundex#:~:text=Soundex%20is%20a%20phonetic%20algorithm,despite%20minor%20differences%20in%20spelling.&text=Improvements%20to%20Soundex%20are%20the%20basis%20for%20many%20modern%20phonetic%20algorithms.[Soundex] code of `str`. This function lets you compare words that are spelled differently, but sound alike in English.
+Returns a character string containing the https://en.wikipedia.org/wiki/Soundex#:~:text=Soundex is a phonetic algorithm,despite minor differences in spelling.&text=Improvements to Soundex are the basis for many modern phonetic algorithms.[Soundex] code of `str`. This function lets you compare words that are spelled differently, but sound alike in English.
 
 Soundex is a phonetic algorithm defined in _The Art of Computer Programming_, Volume 3: Sorting and Searching, by Donald E. Knuth, as follows:
 

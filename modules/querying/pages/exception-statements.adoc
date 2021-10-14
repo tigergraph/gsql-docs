@@ -294,7 +294,7 @@ When an exception occurs within a TRY block, the flow of execution skips the rem
 
 Finally, if the unhandled exception is not within a TRY block, then the the query is aborted, and the default exception response is the output.
 
-image::2%20%283%29.png[]
+image::2 (3).png[]
 
 *Case 1: If cond1 is true* in the outer TRY block,
 

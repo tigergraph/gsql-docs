@@ -10,7 +10,7 @@ image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[Figure 1 - A schema for a 
 
 An expanded schema is shown below, containing all the original vertex and edge types plus three additional edge types: _friend_of, sequel_of, and user_book_read_ . Note that _friend_of_ joins a User to a User. The friendship is assumed to be bidirectional, so the edge type is undirected. _Sequel_of_ joins a Book to a Book but it is directed, as evidenced by the arrowhead. _The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse is not true. User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
 
-image::image%20%282%29.png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
+image::image (2).png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
 
 The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests. The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed. The TigerGraph system lets the user modify an existing schema, so the user is not locked into the initial design decision.
 
@@ -172,7 +172,7 @@ There are two* options.
 
 The graph below has two types of edges between persons: phone_call and text.  For Bobby, the "outdegree_by_edgetype" option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
 
-image::image%20%2813%29.png[Figure 3 - Outdegree stats illustration]
+image::image (13).png[Figure 3 - Outdegree stats illustration]
 
 |===
 | WITH STATS option (case insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")

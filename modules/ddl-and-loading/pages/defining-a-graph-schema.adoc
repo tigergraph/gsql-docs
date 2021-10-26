@@ -538,11 +538,13 @@ The DROP GRAPH deletes the logical definition of the named graph. Furthermore, i
 Available only to superusers.
 ====
 
-The DROP ALL statement clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
+The `DROP ALL` statement clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
+
+Unlike xref:3.2@tigergraph-server:data-definition:README.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
 
 [CAUTION]
 ====
-`DROP ALL`, along with all DROP operations, is nonreversible.
+`DROP ALL`, along with all DROP operations, is non-reversible.
 ====
 
 == SHOW - View Parts of the Catalog
@@ -554,7 +556,8 @@ The SHOW command can be used to show certain aspects of the graph, instead of ma
 SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> [ <name> | <glob> | -r <regex> ]
 ----
 
-This feature supports the *?* and *** from linux globbing operations, and also regular expression matching. Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.
+This feature supports the `?` and `*` from linux globbing operations, and also regular expression matching.
+Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.
 
 [CAUTION]
 ====

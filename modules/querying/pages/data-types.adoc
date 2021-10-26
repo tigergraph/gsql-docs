@@ -153,7 +153,8 @@ baseType := INT
 
 
 
-The default value of each base type is shown in the table below. The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions (see Section "Operators, Functions, and Expressions" for more details).
+The default value of each base type is shown in the table below.
+The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions.
 
 The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[_GSQL Language Reference, Part 1_].
 
@@ -217,7 +218,6 @@ The GSQL Loader can read FLOAT and DOUBLE values with exponential notation (e.g.
 Vertex and edge are the two types of objects which form a graph. A query parameter or variable can be declared as either of these two types. In addition, the schema for the graph defines specific vertex and edge types. The parameter or variable type can be restricted by giving the vertex/edge type in angle brackets `<>` after the keyword `VERTEX` or `EDGE`. A vertex or edge variable declared without a specifier is called a _generic_ type. Below are examples of generic and typed vertex and edge variable declarations:
 
 .Examples of generic and typed VERTEX and EDGE declarations
-
 [source,gsql]
 ----
 VERTEX anyVertex;
@@ -226,11 +226,52 @@ EDGE anyEdge;
 EDGE<friendship> friendEdge;
 ----
 
+=== Vertex
+`VERTEX` is considered a base type in the GSQL query language.
+Both query parameters and variables in a query body can be of type `VERTEX`.
+
+==== Vertex types
+A graph schema defines specific vertex types.
+Each vertex type has its own set of attributes.
+The parameter or variable type can be restricted by giving the vertex type in angle brackets `<>` after the keyword `VERTEX`.
+A vertex variable declared without a specifier is called a _generic_ vertex variable.
+
+.Generic and typed vertex variables
+----
+VERTEX anyVertex;
+VERTEX<person> owner;
+----
+
+All vertices have a built-in attribute `type`. The built-in attribute is of type string. You can access it with the dot (`.`) operator.
+
+For example, if you declare a vertex variable `VERTEX<person> personVertex`, then `personVertex.type` returns `"person"`.
+
+
+=== Edge
+`EDGE` is considered a base type in the GSQL query language.
+Both query parameters and variables in a query body can be of type `EDGE`.
+
+==== Edge types
+A graph schema defines specific edge types.
+Each edge type has its own set of attributes.
+The parameter or variable type can be restricted by giving the edge type in angle brackets `<>` after the keyword `EDGE`.
+An edge variable declared without a specifier is called a _generic_ edge variable.
+
+.Generic and typed edge variables
+----
+EDGE anyEdge;
+EDGE<friendship> friendEdge;
+----
+
+All edges have a built-in attribute `type`. The built-in attribute is of type string. You can access it with the dot (`.`) operator.
+
+For example, if you define an edge variable `EDGE<friendship> friendEdge`, then `friendEdge.type` returns `"Friendship"`.
 
 
 === Vertex and Edge Attribute Types
 
-The following table maps vertex or edge attribute types in the Data Definition Language (DDL) to GSQL query language types. If an attribute of a vertex or edge is referenced in a GSQL query, they will be automatically converted to their corresponding data type in the GSQL query language.
+The following table maps vertex or edge attribute types in the Data Definition Language (DDL) to GSQL query language types.
+If an attribute of a vertex or edge is referenced in a GSQL query, they will be automatically converted to their corresponding data type in the GSQL query language.
 
 |===
 | DDL | GSQL Query

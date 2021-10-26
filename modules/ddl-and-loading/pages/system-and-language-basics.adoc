@@ -3,9 +3,9 @@
 
 == *Language Basics*
 
-* *Identifiers*  Identifiers are user-defined names. An identifier consists of letters, digits, and the underscore.  Identifiers may not begin with a digit.  Identifiers are case sensitive.
-* *Keywords and Reserved Words*  Keywords are words with a predefined semantic meaning in the language. Keywords are not case sensitive. Reserved words are set aside for use by the language, either now or in the future. Reserved words may not be reused as user-defined identifiers.  In most cases, a keyword is also a reserved word.  For example, VERTEX is a keyword.  It is also a reserved word, so VERTEX may not be used as an identifier.
-* *Statements*  Each line corresponds to one statement (except in multi-line mode). Usually, there is no punctuation at the end of a top-level statement. Some statements, such as CREATE LOADING JOB, are block statements which enclose a set of statements within themselves. Some punctuation may be needed to separate the statements within a block.
+* *Identifiers*. Identifiers are user-defined names. An identifier consists of letters, digits, and the underscore.  Identifiers may not begin with a digit.  Identifiers are case sensitive.
+* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case sensitive. Reserved words are set aside for use by the language, either now or in the future. Reserved words may not be reused as user-defined identifiers.  In most cases, a keyword is also a reserved word.  For example, VERTEX is a keyword.  It is also a reserved word, so VERTEX may not be used as an identifier.
+* *Statements*. Each line corresponds to one statement (except in multi-line mode). Usually, there is no punctuation at the end of a top-level statement. Some statements, such as CREATE LOADING JOB, are block statements which enclose a set of statements within themselves. Some punctuation may be needed to separate the statements within a block.
 * *Comments*  Within a command file, comments are text that is ignored by the language interpreter.  Single line comments begin with either # or //. A comment may be on the same line with interpreted code . Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.  Multi-line comment blocks begin with /* and end with */
 
 == *Running GSQL*
@@ -13,18 +13,15 @@
 To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A user name, password, and a graph name may also be provided on the command line.
 
 .GSQL command syntax for entering interactive mode
-
 [source,gsql]
 ----
 gsql [-u username] [-p password] [-g gname]
 ----
 
 
+If a username is provided but not a password, the GSQL system will then ask for the user's password:
 
-If a user name is provided but not a password, the GSQL system will then ask for the user's password:
-
-.Login example with user name
-
+.Login example with username
 [source,gsql]
 ----
 os$ gsql -u victor
@@ -34,10 +31,9 @@ GSQL >
 
 
 
-If a user name is not given, then GSQL will assume that you are attempting to log in as the default tigergraph user:
+If a username is not given, then GSQL will assume that you are attempting to log in as the default tigergraph user:
 
-.Login example without user name
-
+.Login example without username
 [source,gsql]
 ----
 os$ gsql
@@ -53,8 +49,12 @@ To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
 
 === GSQL Client Session Timeout
 
-For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity. Set the GSQL_CLIENT_IDLE_TIMEOUT_SEC bash environment variable=<num_sec>. Then every time you start a GSQL session, the idle timeout will be applied. To disable the timeout, omit <num,_sec>.  The default setting is no timeout.  Example, using the Linux export command to set the environment variable:
+For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity.
+Set the `GSQL_CLIENT_IDLE_TIMEOUT_SEC` bash environment `variable=<num_sec>`.
+Then every time you start a GSQL session, the idle timeout will be applied.
+To disable the timeout, omit `<num_sec>`.  The default setting is no timeout.
 
+.Using the Linux export command to set the environment variable:
 [source,gsql]
 ----
 tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=10
@@ -202,7 +202,7 @@ Starting with v1.2, the output of the LS command is sensitive to the user and th
 
 == *Session Parameters*
 
-Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends. In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively. When running a command file, the session lasts during the execution of the command file.
+Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.When running a command file, the session lasts during the execution of the command file.
 
 Use the SET command to set the value of a session parameter:
 
@@ -255,9 +255,7 @@ CREATE GRAPH g2(*)
 ----
 
 
-
 .Results
-
 [source,gsql]
 ----
 os$ gsql exitOnError.gsql
@@ -279,9 +277,10 @@ The graph g2 is created.
 
 
 
+[#_attribute_data_types]
 == *Attribute Data Types*
 
-Each attribute of a vertex or edge has an assigned data type. The following types are currently supported.
+Each attribute of a vertex or edge has an assigned data type.The following types are currently supported.
 
 === Primitive Types
 
@@ -441,6 +440,5 @@ A UDT must be defined before being used as a field in a vertex type or edge type
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
 ----
-
 
 In the above example, `myTuple` is the name of the UDT. It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.

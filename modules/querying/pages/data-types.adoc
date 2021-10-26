@@ -329,7 +329,10 @@ Currently, GSQL query language syntax does not support `MAP` literals. +
 
 === `JSONOBJECT` and `JSONARRAY`
 
-These two base types allow users to pass a complex data object or to write output in a customized format. These types follow the industry-standard definition of link:https://www.json.org[JSON]. A `JSONOBJECT` instance's external representation (as input and output) is a string, starting and ending with curly braces ( `{}`) which enclose an unordered list of key-value _****_pairs. A `JSONARRAY` is represented as a string, starting and ending with square brackets (`[]`)which enclose an ordered list of _values_. Since a _value ****_can be an object or an array, JSON supports hierarchical, nested data structures.
+These two base types allow users to pass a complex data object or to write output in a customized format.
+These types follow the industry-standard definition of link:https://www.json.org[JSON].
+A `JSONOBJECT` instance's external representation (as input and output) is a string, starting and ending with curly braces (`{}`) which enclose an unordered list of key-value pairs. A `JSONARRAY` is represented as a string, starting and ending with square brackets (`[]`)which enclose an ordered list of _values_.
+Since a value can be an object or an array, JSON supports hierarchical, nested data structures.
 
 [WARNING]
 ====
@@ -338,7 +341,9 @@ A `JSONOBJECT` or `JSONARRAY` value is immutable. No operator is allowed to modi
 
 == Tuple
 
-A tuple is a user-defined data structure consisting of a fixed sequence of base type variables. Tuple types can be created and named using a `TYPEDEF` statement. Tuples must be defined first, before any other statements in a query.
+A tuple is a user-defined data structure consisting of a fixed sequence of base type variables.
+Tuple types can be created and named using a `TYPEDEF` statement.
+Tuples must be defined first, before any other statements in a query.
 
 .ENBF for tuples
 
@@ -359,31 +364,41 @@ The vertex type `person` contains two complex attributes:
 * `secretInfo` of type `SECRET_INFO`, which a user-defined tuple
 * `portfolio` of type `MAP<STRING, DOUBLE>`
 
-.investmentNet schema
-
+[#investmentNet-schema]
+.`investmentNet` Schema
 [source,gsql]
 ----
 TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
+
 CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
+
 CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
+
 CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
+
 CREATE GRAPH investmentNet (*)
 ----
 
+The query below reads both the `SECRET_INFO` tuple and the portfolio MAP.
+The tuple type does not need to be redefined in the query.
+To read and save the map, we define a xref:querying:accumulators.adoc#_mapaccum[`MapAccum`] with the same types for key and value as the `portfolio`  attribute.
+In addition, the query creates a new tuple type, `ORDER_RECORD`.
 
-
-The query below reads both the `SECRET_INFO` tuple and the portfolio MAP. The tuple type does not need to redefine `SECRET_INFO`. To read and save the map, we define a xref:querying:accumulators.adoc#_mapaccum[`MapAccum`] with the same types for key and value as the `portfolio`  attribute. In addition, the query creates a new tuple type, `ORDER_RECORD`.
-
-.tupleEx query
+.Example Query with a user-defined tuple
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
-  #TYPEDEF TUPLE <UINT age, STRING mothersName> SECRET_INFO;       # already defined in schema
-  TYPEDEF TUPLE <STRING ticker, FLOAT price, DATETIME orderTime> ORDER_RECORD; # new for query
 
-  SetAccum<SECRET_INFO> @@info;
+  TYPEDEF TUPLE <STRING ticker, FLOAT price, DATETIME orderTime> ORDER_RECORD;<1>
+
+  SetAccum<SECRET_INFO> @@info; <2>
   ListAccum<ORDER_RECORD> @@orderRecords;
-  MapAccum<STRING, DOUBLE> @@portf;       # corresponds to MAP<STRING, DOUBLE> attribute
+  MapAccum<STRING, DOUBLE> @@portf;
 
   INIT = {p};
 
@@ -401,11 +416,12 @@ CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
   PRINT @@orderRecords;
 }
 ----
+<1> This statement defines a new tuple `ORDER_RECORD` at the top of the query.
+<2> `SECRET_INFO` has already been defined in <<investmentNet-schema>>.
 
-
-
-.tupleEx.json
-
+Result::
++
+--
 [source,gsql]
 ----
 GSQL > RUN QUERY tupleEx("person1")
@@ -449,7 +465,8 @@ GSQL > RUN QUERY tupleEx("person1")
   ]
 }
 ----
-
+--
+====
 
 
 == `STRING COMPRESS`

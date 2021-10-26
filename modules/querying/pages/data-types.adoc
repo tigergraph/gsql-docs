@@ -418,6 +418,7 @@ CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
 ----
 <1> This statement defines a new tuple `ORDER_RECORD` at the top of the query.
 <2> `SECRET_INFO` has already been defined in <<investmentNet-schema>>.
+--
 
 Result::
 +

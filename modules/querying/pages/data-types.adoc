@@ -10,8 +10,7 @@ This section describes the data types that are native to and are supported by th
 This section covers the following subset of the EBNF language definitions:
 
 .EBNF for Data Types
-
-[source,gsql]
+[source,ebnf]
 ----
 lowercase          := [a-z]
 uppercase          := [A-Z]
@@ -66,7 +65,10 @@ parameterType := baseType
 
 == Identifiers
 
-An identifier is the name for an instance of a language element. In the GSQL query language, identifiers are used to name elements such as a query, a variable, or a user-defined function.  In the EBNF syntax, an identifier is referred as `name`. It can be a sequence of letters, digits, or underscores (`"_"`). Other punctuation characters are not supported. The initial character can only be a letter or an underscore.
+An identifier is the name for an instance of a language element. In the GSQL query language, identifiers are used to name elements such as a query, a variable, or a user-defined function.
+In the EBNF syntax, an identifier is referred as `name`.
+It can be a sequence of letters, digits, or underscores (`"_"`).
+Other punctuation characters are not supported. The initial character can only be a letter or an underscore.
 
 .name (identifier)
 
@@ -136,7 +138,7 @@ more memory.*
 The query language supports the following _base types_, which can be declared and assigned anywhere within their scope. Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator. Accumulators are described in detail in a later section.
 
 .EBNF
-[source,gsql]
+[source,ebnf]
 ----
 baseType := INT
           | UINT
@@ -212,19 +214,6 @@ The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `
 
 The GSQL Loader can read FLOAT and DOUBLE values with exponential notation (e.g., 1.25 E-7).
 ====
-
-=== Vertex and edge
-
-Vertex and edge are the two types of objects which form a graph. A query parameter or variable can be declared as either of these two types. In addition, the schema for the graph defines specific vertex and edge types. The parameter or variable type can be restricted by giving the vertex/edge type in angle brackets `<>` after the keyword `VERTEX` or `EDGE`. A vertex or edge variable declared without a specifier is called a _generic_ type. Below are examples of generic and typed vertex and edge variable declarations:
-
-.Examples of generic and typed VERTEX and EDGE declarations
-[source,gsql]
-----
-VERTEX anyVertex;
-VERTEX<person> owner;
-EDGE anyEdge;
-EDGE<friendship> friendEdge;
-----
 
 === Vertex
 `VERTEX` is considered a base type in the GSQL query language.
@@ -472,27 +461,43 @@ GSQL > RUN QUERY tupleEx("person1")
 
 == `STRING COMPRESS`
 
-`STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`. The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally. A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
+`STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`.
+The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally.
+A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
 
 [WARNING]
 ====
-Using `STRING COMPRESS` instead of `STRING` is a trade-off: smaller storage vs. slower access times. The storage space will only be smaller if (1) the original strings are long, and (2) there are only a small number of different strings.  Performance will always be slower; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
+Using `STRING COMPRESS` instead of `STRING` is a trade-off: smaller storage vs. slower access times.
+The storage space will only be smaller if (1) the original strings are long, and (2) there are only a small number of different strings.
+Performance will always be slower; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
 
 We recommend performing comparison tests for both performance and memory usage before settling on `STRING COMPRESS`.
 ====
 
-`STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times. In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
+`STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times.
+In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
 
-An accumulator containing `STRING COMPRESS` stores the dictionary when it is assigned an attribute value or from another accumulator containing `STRING COMPRESS`. An accumulator containing `STRING COMPRESS` can store multiple dictionaries. A `STRING` value can be converted to a `STRING COMPRESS` value only if the value is in the dictionaries. If the `STRING` value is not in the dictionaries, the original string value is saved. A `STRING COMPRESS` value can be automatically converted to a `STRING` value.
+An accumulator containing `STRING COMPRESS` stores the dictionary when it is assigned an attribute value or from another accumulator containing `STRING COMPRESS`.
+An accumulator containing `STRING COMPRESS` can store multiple dictionaries.
+A `STRING` value can be converted to a `STRING COMPRESS` value only if the value is in the dictionaries.
+If the `STRING` value is not in the dictionaries, the original string value is saved.
+A `STRING COMPRESS` value can be automatically converted to a `STRING` value.
 
 When a `STRING COMPRESS` value is output (e.g. by a xref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[`PRINT` statement]), it is shown as a `STRING`.
+
+Below is an example query that uses the `STRING COMPRESS` type.
 
 [WARNING]
 ====
 `STRING COMPRESS` is not a base type.
 ====
 
-.STRING COMPRESS example
+.STRING COMPRESS example query
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
@@ -523,11 +528,11 @@ CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
   PRINT @@strSet2, @@strList2, @@strCompressSet2, @@strCompressList2;
 }
 ----
+--
 
-
-
-.stringCompressEx.json Results
-
+Results::
++
+--
 [source,gsql]
 ----
 GSQL > RUN QUERY stringCompressEx("person12")
@@ -580,7 +585,8 @@ GSQL > RUN QUERY stringCompressEx("person12")
   ]
 }
 ----
-
+--
+====
 
 
 == `FILE` Object
@@ -592,23 +598,28 @@ A `FILE` object is a sequential data storage object, associated with a text file
 When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
 ====
 
-When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to the `FILE` will be appended to the `FILE`. When the query where the `FILE` was declared finishes running, the `FILE` contents are saved to the text file.
+When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased.
+During the execution of the query, content written to the `FILE` will be appended to the `FILE`.
+When the query where the `FILE` was declared finishes running, the `FILE` contents are saved to the text file.
 
 A `FILE` object can be passed as a parameter to another query. When a query receives a `FILE` object as a parameter, it can append data to that `FILE`, as can every other query which receives this `FILE` object as a parameter.
 
 == Query Parameter Types
 
-Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`). A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter. Within the query, `SET` and `BAG` are converted to xref:accumulators.adoc#_setaccum[`SetAccum`] and xref:accumulators.adoc#_bagaccum[`BagAccum`], respectively.
+Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
+A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter.
+Within the query, `SET` and `BAG` are converted to xref:accumulators.adoc#_setaccum[`SetAccum`] and xref:accumulators.adoc#_bagaccum[`BagAccum`], respectively.
 
 [WARNING]
 ====
 A query parameter is immutable. It cannot be assigned a new value within the query.
 
-The `FILE` object is a special case.  It is passed by reference, meaning that the receiving query gets a link to the original `FILE` object.  The receiving query can write to the `FILE` object.
+The `FILE` object is a special case.
+It is passed by reference, meaning that the receiving query gets a link to the original `FILE` object.
+The receiving query can write to the `FILE` object.
 ====
 
 .EBNF
-
 [source,gsql]
 ----
 parameterType := INT
@@ -626,7 +637,6 @@ parameterType := INT
 
 
 .Examples of collection type parameters
-
 [source,gsql]
 ----
 (SET<VERTEX<person> p1, BAG<INT> ids, FILE f1)

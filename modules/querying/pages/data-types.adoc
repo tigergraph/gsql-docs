@@ -61,8 +61,6 @@ parameterType := baseType
                | FILE
 ----
 
-
-
 == Identifiers
 
 An identifier is the name for an instance of a language element. In the GSQL query language, identifiers are used to name elements such as a query, a variable, or a user-defined function.
@@ -77,11 +75,10 @@ Other punctuation characters are not supported. The initial character can only b
 name := (letter | "_") [letter | digit | "_"]*
 ----
 
-
-
 == Overview of Types
 
-Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).  The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
+Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).
+The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===

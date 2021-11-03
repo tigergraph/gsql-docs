@@ -15,7 +15,7 @@ Now, let's write our first GSQL query. We'll display all the direct (1-hop) neig
 
 .GSQL command
 
-[,gsql]
+[source,gsql]
 ----
 USE GRAPH social
 CREATE QUERY hello(VERTEX<person> p) {
@@ -46,7 +46,7 @@ Rather than defining our query in interactive mode, we can store the query in a 
 
 .GSQL shell
 
-[,gsql]
+[source,gsql]
 ----
 GSQL > @hello.gsql
 Using graph 'social'
@@ -81,7 +81,7 @@ However, the query is not installed yet; it is not ready to run. In the GSQL she
 
 .GSQL command
 
-[,gsql]
+[source,gsql]
 ----
 INSTALL QUERY hello
 ----
@@ -90,7 +90,7 @@ INSTALL QUERY hello
 
 .GSQL shell
 
-[,coffeescript]
+[source,coffeescript]
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
@@ -109,7 +109,7 @@ To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of 
 
 .GSQL command - run query examples
 
-[,coffeescript]
+[source,coffeescript]
 ----
 RUN QUERY hello("Tom")
 ----
@@ -120,7 +120,7 @@ The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan
 
 .GSQL shell
 
-[,coffeescript]
+[source,coffeescript]
 ----
 GSQL > RUN QUERY hello("Tom")
 {
@@ -164,7 +164,7 @@ Under the hood, installing a query will also generate a REST endpoint, so that t
 
 .Linux shell
 
-[,bash]
+[source,bash]
 ----
 curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 ----
@@ -175,7 +175,7 @@ Finally, to see the GSQL text of a query in the catalog, you can use
 
 .GSQL command - show query example
 
-[,coffeescript]
+[source,gsql]
 ----
 #SHOW QUERY query_name. E.g.
 SHOW QUERY hello
@@ -197,7 +197,7 @@ Now, let's do a more advanced query. This time, we are going to learn to use the
 
 .GSQL command file - hello2.gsql
 
-[,gsql]
+[source,gsql]
 ----
 USE GRAPH social
 CREATE QUERY hello2 (VERTEX<person> p) {
@@ -222,14 +222,13 @@ RUN QUERY hello2("Tom")
 ----
 
 
-
 In this query we will find all the persons which are exactly 2 hops away from the parameterized input person. Just for fun, let's also compute the average age of those 2-hop neighbors.
 
 In the standard approach for this kind of graph traversal algorithm, you use a boolean variable to mark the first time that the algorithm "visits" a vertex, so that it knows not to count it again. To fit this need, we'll define a local accumulator of the type OrAccum. To declare a local accumulator, we prefix an identifier name with a single "@" symbol. Each accumulator type has a default initial value; the default value for boolean accumulators is false. Optionally, you can specify an initial value.
 
 We also want to compute one average, so we will define a global AvgAccum. The identifier for a global accumulator begins with two "@"s.
 
-After defining the Start set, we then have our first one 1-hop traversal. The SELECT and FROM clauses are the same as in our first example, but there is an additional ACCUM clause. The += operator within an ACCUM clause means that for ****each ****edge matching the FROM clause pattern, we accumulate the right-hand-side expression (true) to the left-hand-accumulator (tgt.@visited as well as s.@visited). Note that a source vertex or target vertex may be visited multiple times. Referring to Figure 1, if we start at vertex Tom, there are two edges incidents to Tom, so the ACCUM clause in the first SELECT statement will visit Tom two times. Since the accumulator type is OrAccum, the cumulative effect of the two traversals is the following:
+After defining the Start set, we then have our first one 1-hop traversal. The SELECT and FROM clauses are the same as in our first example, but there is an additional ACCUM clause. The += operator within an ACCUM clause means that for each edge matching the FROM clause pattern, we accumulate the right-hand-side expression (true) to the left-hand-accumulator (tgt.@visited as well as s.@visited). Note that a source vertex or target vertex may be visited multiple times. Referring to Figure 1, if we start at vertex Tom, there are two edges incidents to Tom, so the ACCUM clause in the first SELECT statement will visit Tom two times. Since the accumulator type is OrAccum, the cumulative effect of the two traversals is the following:
 
 Tom.@visited <== (initial value: false) OR (true) OR (true)
 

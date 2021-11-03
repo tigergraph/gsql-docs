@@ -153,7 +153,7 @@ The SELECT block uses a _step_ _pattern_ or _path_ _pattern_ to select some of t
 ====
 Size limitation
 
-There is a maximum size limit of 2GB for the result set of a SELECT block . If the result of the SELECT block is larger than 2GB, the system will return no data. NO error message is produced.
+There is a maximum size limit of 2 GB for the result set of a SELECT block . If the result of the SELECT block is larger than 2 GB, the system will return no data. NO error message is produced.
 ====
 
 == GSQL SELECT Statement
@@ -238,7 +238,6 @@ resultSet = SELECT s FROM Source:s;
 This statement can be interpreted as "_Select all vertices s, from the vertex set Source_ ." The result is a vertex set. Below is a simple example of a vertex selection.
 
 .Vertex SELECT example
-
 [source,coffeescript]
 ----
 # displays all 'post'-type vertices
@@ -253,7 +252,6 @@ CREATE QUERY printAllPosts() FOR GRAPH socialNet
 
 
 .Results of Query printAllPosts
-
 [source,coffeescript]
 ----
 GSQL > RUN QUERY printAllPosts()
@@ -438,7 +436,7 @@ vertexSetType := vertexType | paramName | globalAccumName
 ====
 
 |===
-| notation | accepted vertex/edge types
+| Notation | Accepted vertex/edge types
 
 | (empty)
 | any type
@@ -496,7 +494,6 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 If is legal to declare an alias without explicitly stating an edge/target type. See the examples below.
 
 .Target vertex type inference
-
 [source,gsql]
 ----
 resultSet3 = SELECT v FROM Source:v-(eType:e)->(V1|V2):t;
@@ -585,7 +582,6 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
 
 
 .Results of Query printAllPosts2
-
 [source,gsql]
 ----
 GSQL > RUN QUERY printAllPosts2("person2")

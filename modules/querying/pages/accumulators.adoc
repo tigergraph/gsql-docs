@@ -1,9 +1,10 @@
 = Accumulators
 
-Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration. Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the "SELECT Statement" section in particular. This section covers the following subset of the EBNF language definitions:
+Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration. Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.
 
-.EBNF
+This section covers the following subset of the EBNF language definitions:
 
+.EBNF for accumulators
 [source,gsql]
 ----
 accumDeclStmt :=
@@ -43,19 +44,24 @@ postAccumClause := "POST-ACCUM" DMLSubStmtList
 ----
 
 
-
 There are a number of different types of accumulators, each providing specific accumulation functions.  Accumulators are declared to have one of two types of association: _global_ or _vertex-attached_.
 
-More technically, accumulators are mutable mutex variables shared among all the graph computation threads exploring the graph within a given query. To improve performance, the graph processing engine employs multithreaded processing. Modification of accumulators is coordinated at run-time so the accumulation operator works correctly (i.e., mutually exclusively) across all threads. This is particularly relevant in the ACCUM clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads. These threads have shared mutually exclusive access to the accumulators.
+More technically, accumulators are mutable mutex variables shared among all the graph computation threads exploring the graph within a given query.
+To improve performance, the graph processing engine employs multithreaded processing.
+Modification of accumulators is coordinated at run-time so the accumulation operator works correctly (i.e., mutually exclusively) across all threads.
+
+This is particularly relevant in the ACCUM clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
+These threads have shared mutually exclusive access to the accumulators.
 
 == Declaration of Accumulators
 
-Global accumulators can be declared anywhere in the query. Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop. Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
+Global accumulators can be declared anywhere in the query.
+Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop.
+Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
 
 The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`. Additionally, a global accumulator may be declared to be static.
 
 .EBNF for Accumulator Declaration
-
 [source,gsql]
 ----
 accumDeclStmt :=
@@ -67,41 +73,37 @@ localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
 ----
 
-
-
 == Vertex-attached Accumulators
 
-Vertex-attached accumulators are mutable state variables that are attached to each vertex in the graph for the duration of the query's lifetime. They act as run-time attributes of a vertex. They are shared, mutual exclusively, among all of the query's processes.
+Vertex-attached accumulators are mutable state variables that are attached to each vertex in the graph for the duration of the query's lifetime.
+They act as run-time attributes of a vertex. They are shared, mutual exclusively, among all query processes.
 
-Vertex-attached accumulators can be set to a value with the = operator. Additionally, an accumulate operator += can be used to update the state of the accumulator; the function of += depends on the accumulator type.
+Vertex-attached accumulators can be set to a value with the `=` operator.
+Additionally, an accumulate operator `+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
+Vertex-attached accumulators can only be accessed or updated (via = or +=) in an `ACCUM` or `POST-ACCUM` clause within a `SELECT` statement or by a `PRINT` statement.
 
-In the example below, there are two accumulators attached to each vertex. The initial value of an accumulator of a given type is predefined, however it can be changed at declaration as in the accumulator @weight below.  All vertex-attached accumulator names have a single leading at-sign "@".
+In the example below, there are two accumulators attached to each vertex.
+The initial value of an accumulator of a given type is predefined, however it can be changed at declaration as in the accumulator @weight below.
+All vertex-attached accumulator names have a single leading at-sign `@`.
 
 .Vertex-Attached Accumulators
-
 [source,gsql]
 ----
 SumAccum<int>   @neighbors;
 MaxAccum<float> @weight = 2.8;
 ----
 
+If there is a graph with 10 vertices, then there is an instance of `@neighbors` and `@weight` for each vertex (hence 10 of each, and 20 total accumulator instances).
+These are accessed via the dot operator on a vertex variable or a vertex alias (e.g., `v.@neighbor`).
+The accumulator operator += only impacts the accumulator for the specific vertex being referenced.
+A statement such as ``v1.@neighbors += 1``will only impact `v1` 's `@neighbors` and not the `@neighbors` for other vertices.
 
-
-If there is a graph with 10 vertices, then there is an instance of `@neighbors` ****and `@weight` ****for each vertex (hence 10 of each, and 20 total accumulator instances). These are accessed via the dot operator on a vertex variable or a vertex alias (e.g., `v.@neighbor` ***). The accumulator operator += only impacts the accumulator for the specific vertex being referenced. A statement such as ``v1.@neighbors += 1``will only impact **v1* 's `@neighbors` ****and not the `@neighbors` ****for other vertices.
-
-Vertex-attached accumulators can only be accessed or updated (via = or +=) in an `ACCUM` or `POST-ACCUM` clause within a `SELECT` block. The only exception to this rule is that vertex-attached accumulators can be referenced in a PRINT statement, as the PRINT has access to all information attached to a vertex set.
-
-[WARNING]
-====
-Edge-attached accumulators are not supported.
-====
 
 == Global Accumulators
 
-A global accumulator is a single mutable accumulator that can be accessed or updated within a query.  The names of global accumulators start with a double at-sign "@@".
+A global accumulator is a single mutable accumulator that can be accessed or updated within a query. The names of global accumulators start with a double at-sign `@@`.
 
 .Global Accumulators
-
 [source,gsql]
 ----
 SumAccum<int>   @@totalNeighbors;
@@ -109,13 +111,22 @@ MaxAccum<float> @@entropy = 1.0;
 ----
 
 
+Global accumulators can only be assigned (using the `=` operator) outside a `SELECT` block (i.e., not within an `ACCUM` or `POST-ACCUM` clause).
+Global accumulators can be accessed or updated via the accumulate operator `+=` anywhere within a query, including inside a SELECT block.
 
-Global accumulators can only be assigned (using the = operator) outside a SELECT block (i.e., not within an ACCUM or POST-ACCUM clause). Global accumulators can be accessed or updated via the accumulate operator += anywhere within a query, including inside a SELECT block.
+The accumulation operation for global accumulators in an ACCUM clause executes once for each process. That is:
 
-It is important to note that the accumulation operation for global accumulators in an ACCUM clause executes once for each process. That is, if the FROM clause uses an edge-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each edge in the selected edge set. If the FROM clause uses a vertex-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each vertex in the selected vertex set. Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an ACCUM clause. Take the following code example. The global accumulator**@@globalRelationshipCount** is accumulated for every *worksFor* edge traversed since it is shared among processes. Conversely, *relationshipCount* appears to have only been incremented once. This is because a non-accumulator variable is not shared among processes. Each process has its own separate unshared copy of *relationshipCount* and increments _*the original value*_ by one. (E.g., each process increments *relationshipCount* from 0 to 1.) There is no accumulation and the final value is one.
+* if the FROM clause uses an edge-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each edge in the selected edge set.
+* If the FROM clause uses a vertex-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each vertex in the selected vertex set.
+
+Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an ACCUM clause.
+
+Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `worksFor` edge traversed since it is shared among processes. Conversely, `relationshipCount` appears to have only been incremented once.
+
+This is because a non-accumulator variable is not shared among processes.
+Each process has its own separate unshared copy of `relationshipCount` and increments the original value by one. (E.g., each process increments *relationshipCount* from 0 to 1.) There is no accumulation and the final value is one.
 
 .Global Variable vs Global Accumulator
-
 [source,gsql]
 ----
 #Count the total number of employment relationships for all companies

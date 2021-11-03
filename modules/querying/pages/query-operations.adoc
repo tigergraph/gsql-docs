@@ -1,24 +1,13 @@
-= CREATE/INTERPRET/INSTALL/RUN QUERY
+= Queries
 :pp: {plus}{plus}
 
-[NOTE]
-====
-Query Privileges
+A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation.
+Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data.
+A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing.
 
-Users with the `querywriter` role or greater (`designer`, `admin`, `globaldesigner,` and `superuser`) can create, install, and drop queries.
-
-Any user with the `queryreader` role or greater for a given graph can run the queries for that graph.
-
-To implement fine-grained control over which queries can be executed by which sets of users:
-
-. Group your queries into your desired privilege groups.
-. Define a graph for each privilege group. These graphs can all have the same domain if you wish.
-. Create your queries, assigning each to its appropriate privilege group.
-====
 
 .EBNF for CREATE QUERY
-
-[source,coffeescript]
+[source,ebnf]
 ----
 createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
                "(" [parameterList] ")"
@@ -57,13 +46,10 @@ showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
 
-
-
-A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation. Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data. A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing. A query can be run in one of three ways:
+A query can be run in one of three ways:
 
 . Define and run an unnamed query immediately:
  .. `INTERPRET QUERY`: execute the query's statements
-
 +
 Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
 `POST /gsqlserver/interpreted_query` +
@@ -95,7 +81,8 @@ queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
 
 `CREATE QUERY` defines the functionality of a query on a given graph schema.
 
-A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body. The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
+A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body.
+The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
 
 [NOTE]
 ====

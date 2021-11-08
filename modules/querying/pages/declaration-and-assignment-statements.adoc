@@ -124,9 +124,9 @@ In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, 
 baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
 
-
-
-A base type variable can be declared and accessed anywhere in the query. To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side. You can declare multiple variables of the same type in a single declaration statement.
+A base type variable can be declared and accessed anywhere in the query.
+To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side.
+You can declare multiple variables of the same type in a single declaration statement.
 
 [source,cpp]
 ----
@@ -139,9 +139,11 @@ CREATE QUERY baseTypeVariable() {
 }
 ----
 
-When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exitng the clause. Therefore, if there are multiple assignment statements for the same base type variable in an `ACCUM` or `POST-ACCUM` clause, only the last one will take effect.
+When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exitng the clause.
+Therefore, if there are multiple assignment statements for the same base type variable in an `ACCUM` or `POST-ACCUM` clause, only the last one will take effect.
 
-For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends. Therefore, the accumulator will not receive the value and will hold a value of 0 at the end of the query.
+For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends.
+Therefore, the accumulator will not receive the value and will hold a value of 0 at the end of the query.
 
 [source,gsql]
 ----
@@ -163,7 +165,8 @@ CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
 
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
-Local base type variables are block-scoped and are accessible in the block where they are declared only. Within a local base type variable's scope, another local base type variable with the same name cannot be declared at the same level.  However, a new local base type variable with the same name can be declared at a lower level (i.e., within a nested `SELECT` or `UPDATE` statement). The lower declaration takes precedence at the lower level.
+Local base type variables are block-scoped and are accessible in the block where they are declared only.
+Within a local base type variable's scope, you cannot another local base type variable with the same name.
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
 
@@ -201,8 +204,6 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
   PRINT @@maxDate, @@maxDateGlob, dtGlob;  # @@maxDateGlob will be 0
 }
 ----
-
-
 
 .localVariable Query Results
 

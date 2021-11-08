@@ -28,7 +28,7 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) "
        | "SetAccum"  "<" elementType ">"
        | "BagAccum"  "<" elementType ">"
        | "MapAccum"  "<" elementType "," (baseType | accumType | tupleType) ">"
-       | "HeapAccum" "<" tupleType ">" "(" simpleSize "," fieleName [ASC | DESC]
+       | "HeapAccum" "<" tupleType ">" "(" simpleSize "," fieldName [ASC | DESC]
                                           ["," fieldName [ASC | DESC]]* ")"
        | "GroupByAccum" "<" elementType fieldName ["," elementType fieldName]* ,
 		                     accumType fieldName ["," accumType fieldName]* ">"

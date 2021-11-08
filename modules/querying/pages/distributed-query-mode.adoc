@@ -49,6 +49,13 @@ For applications where the same query (queries with the same logic but different
 The following GSQL features are not supported in Distributed Query Mode:
 
 * Functions
- ** `Evaluate()`
+** Miscellaneous
+*** `Evaluate()`
+** Vertex methods
+*** `edgeAttribute()`
+*** `neighbors()`
+*** `neighborAttribute()`
+*** `size()`
+
 * Accumulator nesting limitations
  ** Accumulator methods are not supported if the accumulator is nested inside another accumulator

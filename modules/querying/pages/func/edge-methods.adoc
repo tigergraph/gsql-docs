@@ -78,7 +78,7 @@ None.
 
 === Syntax
 
-`e.setAttr( attrName, attrType, attrNewValue)`
+`e.setAttr( attrName, attrNewValue)`
 
 === Description
 
@@ -97,11 +97,7 @@ No return value.
 | The name of the attribute
 | `STRING`
 
-| `attrType`
-| The type of the attribute
-| `STRING`
-
 | `attrNewValue`
 | The new value of the attribute
-| `attrType`
+| The type of the attribute. 
 |===

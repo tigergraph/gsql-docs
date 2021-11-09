@@ -287,7 +287,7 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 
 ==== Syntax
 
-`v.setAttr( attrName, attrType, newValue )`
+`v.setAttr( attrName, newValue )`
 
 ==== Description
 
@@ -306,13 +306,10 @@ No return value.
 | The name of an attribute
 | `STRING`
 
-| `attrType`
-| The type of the attribute
-| `STRING`
 
 | `newValue`
 | The new value for the attribute
-| `STRING`
+| The type of the attribute.
 |===
 
 == VLAC vertex alias methods

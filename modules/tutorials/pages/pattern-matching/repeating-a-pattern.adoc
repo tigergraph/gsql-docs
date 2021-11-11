@@ -75,7 +75,7 @@ You can copy the above GSQL script to a file named example1.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example1.gsql
 ----
@@ -86,7 +86,7 @@ Note below that the starting vertex s, whose name is TennisPlayer, is also a mat
 
 . Output of Example 1
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -173,7 +173,7 @@ You can copy the above GSQL script to a file named example2.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example2.gsql
 ----
@@ -182,7 +182,7 @@ gsql example2.gsql
 
 . Output of Example 2
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -231,7 +231,7 @@ You can copy the above GSQL script to a file named example3.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example3.gsql
 ----
@@ -240,7 +240,7 @@ gsql example3.gsql
 
 . Output of Example 3
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -300,7 +300,7 @@ You can copy the above GSQL script to a file named example4.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example4.gsql
 ----
@@ -309,7 +309,7 @@ gsql example4.gsql
 
 . Output of Example 4
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -378,7 +378,7 @@ You can copy the above GSQL script to a file named example5.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example5.gsql
 ----
@@ -387,7 +387,7 @@ gsql example5.gsql
 
 . Output of Example 5
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -482,7 +482,7 @@ gsql example6.gsql
 
 . Output of Example 6
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {

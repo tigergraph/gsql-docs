@@ -45,7 +45,7 @@ From a vertex, traverse edges of a specified type and return the bag of values f
 
 ==== Syntax
 
-[source,bash]
+[source,gsql]
 ----
 v.neighbors().filter( condition )
 v.neighborAttribute().filter( condition )
@@ -74,7 +74,7 @@ This function is appended to <<_neighbors>>, <<_neighborattribute>>, or <<_edgea
 
 .Example query
 
-[source,bash]
+[source,gsql]
 ----
 CREATE QUERY filterEx (SET<STRING> pIds, INT yr) FOR GRAPH workNet api("v2") {
 
@@ -105,7 +105,7 @@ CREATE QUERY filterEx (SET<STRING> pIds, INT yr) FOR GRAPH workNet api("v2") {
 
 .Results
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > RUN QUERY filterEx(["person1","person2"],2016)
 {
@@ -212,7 +212,7 @@ For the following graph:
 
 image::image (79).png[]
 
-[source,bash]
+[source,gsql]
 ----
 # If v is Jenny
 v.neighborAttribute("friendship", "person", "state") -> ["ca", "ny", "ca"]
@@ -248,7 +248,7 @@ For the following graph:
 
 image::image (79) (1).png[]
 
-[source,bash]
+[source,gsql]
 ----
 # If v is Jenny
 v.neighbors() -> ["Dan", "Amily", "Tom"]
@@ -841,7 +841,7 @@ Alternatively, a vertex type without double quotes.
 
 .selectVertex.csv
 
-[source,bash]
+[source,console]
 ----
 ID,type
 Dan,person
@@ -863,7 +863,7 @@ CREATE QUERY selectVertexEx(STRING filename) FOR GRAPH socialNet {
 
 .Results
 
-[source,bash]
+[source,gsql]
 ----
 RUN QUERY selectVertex("/home/tigergraph/mydata/selectVertex.csv")
 {
@@ -977,7 +977,7 @@ Returns a vertex from a string ID and vertex type. If a vertex with the provided
 
 .Example query using to_vertex()
 
-[source,bash]
+[source,gsql]
 ----
 CREATE QUERY to_vertex_test (STRING uid, STRING vtype) FOR GRAPH social {
   VERTEX v;
@@ -991,7 +991,7 @@ CREATE QUERY to_vertex_test (STRING uid, STRING vtype) FOR GRAPH social {
 
 .Query result
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > RUN QUERY to_vertex_test("Dan", "person")
 {
@@ -1038,7 +1038,7 @@ Returns a vertex set from a set or bag of string IDs and a vertex type. If there
 
 ==== Example
 
-[source,bash]
+[source,gsql]
 ----
 CREATE QUERY to_vertex_set_test (SET<STRING> uids, STRING vtype) FOR GRAPH social {
 
@@ -1047,7 +1047,7 @@ CREATE QUERY to_vertex_set_test (SET<STRING> uids, STRING vtype) FOR GRAPH socia
 }
 ----
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > run query to_vertex_set_test(["Dan", "Amily", "Jeff"], "person")
 {

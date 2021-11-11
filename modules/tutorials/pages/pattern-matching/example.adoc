@@ -74,7 +74,7 @@ You can copy the above GSQL script to a file named app1.gsql, and invoke this sc
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql app1.gsql
 ----
@@ -83,7 +83,7 @@ gsql app1.gsql
 
 . Output of App1
 
-[source,coffeescript]
+[source,gsql]
 ----
 Using graph 'ldbc_snb'
 The query RecommendMessage is dropped.
@@ -126,7 +126,7 @@ When you are satisfied with your query  in the GSQL interpret mode,  you can now
 
 .GSQL Prepare Install Query
 
-[source,coffeescript]
+[source,gsql]
 ----
 #before install the query, need to set the syntax version
 SET syntax_version="v2"
@@ -140,7 +140,7 @@ INSTALL QUERY RecommendMessage
 
 .GSQL Run the Installed Query
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > install query RecommendMessage
 Start installing queries, about 1 minute ...
@@ -181,7 +181,7 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
 
 .Linux Bash:  Shutdown The System
 
-[source,coffeescript]
+[source,console]
 ----
 #when you are not using the TigerGraph System on your laptop,
 # to save resource, you can stop it by

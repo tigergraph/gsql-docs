@@ -26,7 +26,7 @@ For this tutorial, we will create and query the simple friendship social graph s
 
 .person.csv
 
-[,coffeescript]
+[,text]
 ----
 name,gender,age,state
 Tom,male,40,ca
@@ -42,7 +42,7 @@ Jack,male,26,fl
 
 .friendship.csv
 
-[,coffeescript]
+[,text]
 ----
 person1,person2,date
 Tom,Dan,2017-06-03
@@ -65,7 +65,7 @@ First, let's check that you can access GSQL.
 +
 .Linux Shell
 +
-[,bash]
+[,console]
 ----
 $ gsql
 GSQL >
@@ -121,7 +121,7 @@ If you need to restart TigerGraph for any reason, use the following command sequ
 
 .Linux Shell - Restarting TigerGraph services
 
-[,bash]
+[,console]
 ----
 # Switch to the user account set up during installation
 # The default is user=tigergraph, password=tigergraph
@@ -143,7 +143,7 @@ You can also run GSQL commands from a Linux shell. To run a single command, just
 
 .Linux shell - GSQL commands from a Linux shell
 
-[,bash]
+[,console]
 ----
 # "-g graphname" is need for a given graph
 gsql -g social 'ls'

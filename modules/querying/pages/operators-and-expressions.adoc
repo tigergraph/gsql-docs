@@ -67,7 +67,7 @@ argList := expr ["," expr]*
 
 == Constants
 
-[source,text]
+[source,ebnf]
 ----
 constant := numeric | stringLiteral | TRUE | FALSE | GSQL_UINT_MAX
           | GSQL_INT_MAX | GSQL_INT_MIN | TO_DATETIME "(" stringLiteral ")"
@@ -118,7 +118,7 @@ Tip: The operators listed in this section are designed to behave like the operat
 
 We support the following standard mathematical operators and meanings. The latter four ("<<" | ">>" | "&" | "|") are for bitwise operations.  See the section below: "Bit Operators".
 
-[source,text]
+[source,ebnf]
 ----
 mathOperator := "*" | "/" | "%" | "+" | "-" | "<<" | ">>" | "&" | "|"
 ----
@@ -418,7 +418,7 @@ CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
 
 
 
-[source,bash]
+[source,console]
 ----
 Results
 {
@@ -658,7 +658,7 @@ GSQL > RUN QUERY setOperatorsEx()
 
 The result of these operators is another set or bag, so these operations can be nested and chained to form more complex expressions, such as
 
-[source,text]
+[source,gsql]
 ----
 (setBagExpr_A INTERSECT (setBagExpr_B UNION setBagExpr_C) ) MINUS setBagExpr_D
 ----
@@ -667,7 +667,7 @@ The result of these operators is another set or bag, so these operations can be 
 
 For example , suppose setBagExpr_A is ("a", "b", "c")
 
-[source,text]
+[source,gsql]
 ----
 "a" IN setBagExpr_A            => true
 "d" IN setBagExpr_A            => false
@@ -800,7 +800,7 @@ CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH fri
 
 Test cases: Starting from `person1`, search to a distance of 1 and a distance of 2.
 
-[source,bash]
+[source,gsql]
 ----
 GSQL> RUN QUERY findFriendsInDistance("person1", 1)
 [
@@ -1296,7 +1296,7 @@ CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
 
 
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > RUN QUERY expressionStmntEx()
 {

@@ -238,7 +238,7 @@ resultSet = SELECT s FROM Source:s;
 This statement can be interpreted as "_Select all vertices s, from the vertex set Source_ ." The result is a vertex set. Below is a simple example of a vertex selection.
 
 .Vertex SELECT example
-[source,coffeescript]
+[source,gsql]
 ----
 # displays all 'post'-type vertices
 CREATE QUERY printAllPosts() FOR GRAPH socialNet
@@ -252,7 +252,7 @@ CREATE QUERY printAllPosts() FOR GRAPH socialNet
 
 
 .Results of Query printAllPosts
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > RUN QUERY printAllPosts()
 {

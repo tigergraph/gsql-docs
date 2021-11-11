@@ -675,7 +675,7 @@ CREATE QUERY fileParamMain(STRING mainlabel) FOR GRAPH socialNet {
 
 
 
-[source,text]
+[source,gsql]
 ----
 GSQL > RUN QUERY fileParamMain("main")
 GSQL > EXIT

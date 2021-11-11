@@ -32,7 +32,7 @@ Available to superuser and globaldesigner roles only.
 
 The CREATE VERTEX statement defines a new global vertex type, with a name and an attribute list.  At a high level of abstraction, the format is
 
-[source,text]
+[source,gsql]
 ----
 CREATE VERTEX vertex_type_name (id_and_attribute_list) [ vertex_options ]
 ----
@@ -41,7 +41,7 @@ More specifically, the syntax is as follows, assuming that the vertex ID is list
 
 .CREATE VERTEX Syntax
 
-[source,ruby]
+[source,ebnf]
 ----
 CREATE VERTEX vertex_type_name "(" primary_id_name_type
     ["," attribute_name type [DEFAULT default_value] ]* ")"
@@ -66,7 +66,7 @@ Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additio
 
 The primary_id is a required field whose purpose is to uniquely identify each vertex instance. GSQL creates a hash index on the primary id with O(1) time complexity. Its data type may be STRING, INT, or UINT.  The syntax for the primary_id_name_type term is as follows:
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type := PRIMARY_ID id_name id_type
 ----
@@ -75,7 +75,7 @@ primary_id_name_type := PRIMARY_ID id_name id_type
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX movie (PRIMARY_ID id UINT, name STRING, year UINT)
     WITH primary_id_as_attribute="true"
@@ -85,7 +85,7 @@ CREATE VERTEX movie (PRIMARY_ID id UINT, name STRING, year UINT)
 
 Instead of the legacy PRIMARY_ID syntax, starting with v2.3, GSQL now offers another option for specifying the primary key. The keyword phrase PRIMARY KEY may be appended to any one of the attributes in the attribute list, though it is conventional for it to be the first attribute. Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity. It is recommended that the primary key data type  be STRING, INT, or UINT.
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type := id_name_id_type PRIMARY KEY
 ----
@@ -97,7 +97,7 @@ Note the differences between PRIMARY_ID and PRIMARY KEY:
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
@@ -111,7 +111,7 @@ PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using t
 
 GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex. To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
 
-[source,ruby]
+[source,ebnf]
 ----
 composite_id_name_type := PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
 ----
@@ -132,7 +132,7 @@ Composite keys are not supported in GraphStudio. If you define a vertex type wit
 
 The attribute list, enclosed in parentheses, is a list of one or more _id definitions_ and _attribute descriptions_ separated by commas:
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*

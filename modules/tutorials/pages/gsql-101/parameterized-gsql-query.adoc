@@ -90,7 +90,7 @@ INSTALL QUERY hello
 
 .GSQL shell
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
@@ -109,7 +109,7 @@ To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of 
 
 .GSQL command - run query examples
 
-[source,coffeescript]
+[source,gsql]
 ----
 RUN QUERY hello("Tom")
 ----
@@ -120,7 +120,7 @@ The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan
 
 .GSQL shell
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > RUN QUERY hello("Tom")
 {
@@ -164,7 +164,7 @@ Under the hood, installing a query will also generate a REST endpoint, so that t
 
 .Linux shell
 
-[source,bash]
+[source,console]
 ----
 curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 ----

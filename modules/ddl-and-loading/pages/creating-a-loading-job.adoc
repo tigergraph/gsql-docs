@@ -646,7 +646,7 @@ v1,3:lucy#1:john#6:jack
 
 .Loading a MAP by method 3: SPLIT() function
 
-[source,coffeescript]
+[source,gsql]
 ----
 CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
 CREATE GRAPH test_graph (*)
@@ -670,7 +670,7 @@ When loading to an edge where either `TO_VERTEX` or `FROM_VERTEX` contains a com
 
 .Example: loading composite key to vertex and edge
 
-[source,coffeescript]
+[source,gsql]
 ----
 #schema setup
 CREATE VERTEX compositePerson (id uint, name string, PRIMARY KEY (name,id))
@@ -699,7 +699,7 @@ If an edge has been defined using a wildcard vertex type, a vertex type name mus
 
 .Example: explicit vertex typing for an untyped edge
 
-[source,coffeescript]
+[source,gsql]
 ----
 #schema setup
 CREATE VERTEX user(PRIMARY_ID id UINT)

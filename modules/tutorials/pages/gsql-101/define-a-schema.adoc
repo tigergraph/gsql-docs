@@ -102,7 +102,7 @@ At this point, we have created a *person* vertex type, a *friendship* edge type,
 
 .GSQL shell
 
-[,coffeescript]
+[,gsql]
 ----
 GSQL > ls
 ---- Global vertices, edges, and all graphs

@@ -301,7 +301,7 @@ You can copy the above GSQL script to a file named example1.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example1.gsql
 ----
@@ -310,7 +310,7 @@ gsql example1.gsql
 
 . Output of Example 1
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -365,7 +365,7 @@ You can copy the above GSQL script to a file named example2.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example2.gsql
 ----
@@ -374,7 +374,7 @@ gsql example2.gsql
 
 . Output of Example 2
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -461,7 +461,7 @@ You can copy the above GSQL script to a file named example3.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example3.gsql
 ----
@@ -470,7 +470,7 @@ gsql example3.gsql
 
 . Output of Example 3
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {

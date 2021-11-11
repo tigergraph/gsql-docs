@@ -33,7 +33,7 @@ CREATE QUERY coalesceFuncEx (INT p1, DOUBLE p2) FOR GRAPH social {
 
 .Results
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > RUN QUERY coalesceFuncEx(_,_)
 {
@@ -125,7 +125,7 @@ The default value is `+"bool"+`. |`+STRING+`
 
 .Example query
 
-[source,bash]
+[source,gsql]
 ----
 CREATE QUERY evaluateEx (STRING whereCond = "TRUE", STRING postAccumIntExpr = "1") FOR GRAPH socialNet {
   SetAccum<INT> @@timeSet;
@@ -147,7 +147,7 @@ CREATE QUERY evaluateEx (STRING whereCond = "TRUE", STRING postAccumIntExpr = "1
 
 .Results
 
-[source,bash]
+[source,gsql]
 ----
 GSQL > RUN QUERY evaluateEx("s.gender==\"Male\"", "s.@latestLikePostTime")
 {

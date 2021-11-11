@@ -33,7 +33,7 @@ A numeric type. If all members of the set/bag expression are integers, the retur
 
 === Example
 
-[source,coffeescript]
+[source,gsql]
 ----
 avg([5, 4, 1, 0, 0, 0]) -> 1
 avg([3, 2, 1]) -> 2

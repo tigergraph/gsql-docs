@@ -43,7 +43,7 @@ First, let's check that you can access GSQL, and that your version is 3.0 or hig
 +
 .Linux Shell
 +
-[source,bash]
+[source,console]
 ----
 $ gsql
 GSQL > version

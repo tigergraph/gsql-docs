@@ -603,7 +603,7 @@ GSQL > RUN QUERY minMaxAccumVertex()
 
 Tuple data types are treated as hierarchical structures, where the first field used for ordering is the leftmost one. When a tuple is used as an element of a `MinAccum` or `MaxAccum`, tuple fields can be directly accessed from the accumulator.  For example, if we have the following tuple type and `MaxAccum` :
 
-[source,text]
+[source,gsql]
 ----
 TYPEDEF TUPLE <FLOAT weight> EDGE_WEIGHT
 MinAccum<EDGE_WEIGHT> @@AccTest;
@@ -1476,7 +1476,7 @@ Because each element of an ArrayAccum itself is an accumulator, the operators =,
 
 If @A is an ArrayAccum of length 6, then @A[0] and @A[5] refer to its first and last elements, respectively. Referring to an ArrayAccum element is like referring to an accumulator of that type.  For example, given the following definitions:
 
-[source,text]
+[source,gsql]
 ----
 ArrayAccum<SumAccum<INT>> @@Sums[3];
 ArrayAccum<ListAccum<STRING>> @@Lists[2];
@@ -1484,7 +1484,7 @@ ArrayAccum<ListAccum<STRING>> @@Lists[2];
 
 then @@Sums[0], @@Sums[1], and @@Sums[2] each refer to an individual SumAccum<INT>, and @@Lists[0] and @@Lists[1] each refer to a ListAccum<STRING>, supporting all the operations for those accumulator and data types.
 
-[source,text]
+[source,gsql]
 ----
 @@Sums[1] = 1;
 @@Sums[1] += 2;  // value is now 3

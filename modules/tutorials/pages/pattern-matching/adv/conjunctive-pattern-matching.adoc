@@ -44,7 +44,7 @@ FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z,
 
 The first pattern's variables are x, e1, y, e2, and z; the second pattern's variables are z, e3, u, e4, and v. Considering the two patterns independently would yield the follwing match table schemas:
 
-[source,coffeescript]
+[source,text]
 ----
 #first match table
 (x, e1, y, e2, z)

@@ -141,7 +141,7 @@ In this tutorial, we will use Interpreted Mode for GSQL, introduced in TigerGrap
 
 To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
 
-[source,coffeescript]
+[source,gsql]
 ----
 INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
 ----
@@ -154,7 +154,7 @@ Interpreted queries may run slower than installed queries, so we recommend incre
 
 .GSQL: Set Longer Timeout
 
-[source,coffeescript]
+[source,gsql]
 ----
 # set query time out to 1 minutes
 # 1 unit is 1 millisecond
@@ -200,7 +200,7 @@ You can copy the above GSQL script to a file named example1.gsql and invoke this
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example1.gsql
 ----
@@ -209,7 +209,7 @@ gsql example1.gsql
 
 . Output of Example 1
 
-[source,coffeescript]
+[source,text]
 ----
 {
   "error": false,
@@ -285,7 +285,7 @@ You can copy the above GSQL script to a file named example2.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example2.gsql
 ----
@@ -294,7 +294,7 @@ gsql example2.gsql
 
 .Output of Example 2.
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -381,7 +381,7 @@ You can copy the above GSQL script to a file named example4.gsql, and invoke thi
 
 .Linux Bash
 
-[source,coffeescript]
+[source,gsql]
 ----
 gsql example4.gsql
 ----
@@ -390,7 +390,7 @@ gsql example4.gsql
 
 .Output of Example 4.
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {
@@ -440,7 +440,7 @@ You can copy the above GSQL script to a file named example5.gsql, and invoke thi
 
 .Linux Bash
 
-[source,bash]
+[source,console]
 ----
 gsql example5.gsql
 ----
@@ -449,7 +449,7 @@ gsql example5.gsql
 
 .Output of Example 5.
 
-[source,coffeescript]
+[source,text]
 ----
 Using graph 'ldbc_snb'
 {

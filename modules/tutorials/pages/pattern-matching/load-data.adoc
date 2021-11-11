@@ -128,7 +128,7 @@ We have generated a data set with scale factor 1 (approximate 1GB). You can down
 
 .# Linux Bash 
 
-[source,bash]
+[source,console]
 ----
 wget https://s3-us-west-1.amazonaws.com/tigergraph-benchmark-dataset/LDBC/SF-1/ldbc_snb_data-sf1.tar.gz
 ----
@@ -139,7 +139,7 @@ After downloading the raw file, run the tar command below to decompress the down
 
 .# Linux Bash
 
-[source,bash]
+[source,console]
 ----
 tar -xzf  ldbc_snb_data-sf1.tar.gz
 ----
@@ -161,7 +161,7 @@ Specify the environment variable *LDBC_SNB_DATA_DIR*  to point to your raw file 
 
 .# Linux Bash
 
-[source,bash]
+[source,console]
 ----
 #change the directory to your raw file directory
 export LDBC_SNB_DATA_DIR=/home/tigergraph/ldbc_snb_data/social_network/
@@ -179,7 +179,7 @@ Download the https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tiger
 
 .# Linux Bash
 
-[source,bash]
+[source,console]
 ----
 ./load_data.sh
 ----
@@ -188,7 +188,7 @@ Download the https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tiger
 
 .# Sample Loading Progress Output
 
-[source,bash]
+[source,console]
 ----
 tigergraph/gsql_102$ ./load_data.sh
 [Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobid" to track the loading progress again]
@@ -244,7 +244,7 @@ Below we call two functions, stat_vertex_number and stat_edge_number to return t
 
 .Linux shell
 
-[source,bash]
+[source,console]
 ----
 curl -X POST 'http://localhost:9000/builtins/ldbc_snb' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 curl -X POST 'http://localhost:9000/builtins/ldbc_snb' -d  '{"function":"stat_edge_number","type":"*"}' | jq .

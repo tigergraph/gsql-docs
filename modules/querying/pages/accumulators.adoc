@@ -833,34 +833,48 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 |===
 | Function (T is the element type) | Return type | Accessor / Mutator | Description
 
-| *.size()*
-| INT
+| `.size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the list.
 
-| *.contains(* T _val_ *)*
-| BOOL
+| `.contains(* T _val_ *)`
+| `BOOL`
 | Accessor
 | Returns true/false if the list does/doesn't contain the _value_ .
 
-| *.get(* INT _idx_ *)*
+| `.get( INT _idx_ )`
 | T
 | Accessor
 | Returns the value at the given _index_ position in the list. The index begins at 0. If the index is out of bound (including any negative value), the default value of the element type is returned.
 
-| *.clear()*
-| VOID
+| `.clear()`
+| `VOID`
 | Mutator
 | Clears the list so it becomes empty with size 0.
 
-| *.update* (INT _index,_ T _value_ )
-| VOID
+| `.update (INT _index,_ T _value_ )`
+| `VOID`
 | Mutator
 | Assigns _value_ to the list element at position _index_.
+
+|`.remove(INT _index_)
+|`VOID`
+|Mutator
+|Removes value at the specified index. If the index is invalid, the function will do nothing.
+
+|`.removeOne(T _value_)`
+|`VOID`
+|Mutator
+|Removes the first matching value. If there is no matching value, the function will do nothing.
+
+|`.removeAll(T _value_)`
+|`VOID`
+|Mutator
+|Removes all matching values. If there is no matching value, the function will do nothing.
 |===
 
 .ListAccum Example
-
 [source,gsql]
 ----
 # ListAccum Example
@@ -1346,6 +1360,11 @@ Functions that modify the MapAccum (mutator functions) can be used only under th
 | VOID
 | Mutator
 | Clears the map so it becomes empty with size 0.
+
+|`.removeKey( KEY key )`
+|`VOID`
+|Mutator
+| Removes the key-value pair with the specified key. If there is no matching key, then the function will do nothing.
 |===
 
 .MapAccum Example

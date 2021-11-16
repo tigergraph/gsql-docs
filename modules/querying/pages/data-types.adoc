@@ -75,10 +75,13 @@ Other punctuation characters are not supported. The initial character can only b
 name := (letter | "_") [letter | digit | "_"]*
 ----
 
-== Overview of Types
+== Overview
 
-Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).
-The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
+Different types of data can be used in different contexts.
+The EBNF syntax defines several classes of data types.
+The most basic is called base type (`baseType`).
+The other independent types are `FILE` and `STRING COMPRESS`.
+The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
@@ -111,9 +114,9 @@ set or bag of `+baseType+`, or `+FILE+` object a|
 a|
 `+STRING COMPRESS+`
 
-(⚠**suitable only in limited circumstances**)
+(⚠**Deprecated date type. Please use `STRING` instead**)
 
-|STRING COMPRESS a|
+|`STRING COMPRESS` a|
 * more compact storage of STRING, *if there is a limited number of
 different values and the value is rarely accessed. Otherwise, it may use
 more memory.*
@@ -130,9 +133,11 @@ more memory.*
 |===
 
 
-== Base Types
+== Base types
 
-The query language supports the following _base types_, which can be declared and assigned anywhere within their scope. Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator. Accumulators are described in detail in a later section.
+The query language supports the following _base types_, which can be declared and assigned anywhere within their scope.
+Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator.
+Accumulators are described in detail in a later section.
 
 .EBNF
 [source,ebnf]

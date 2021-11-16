@@ -78,7 +78,7 @@ None.
 
 === Syntax
 
-`e.setAttr( attrName, attrNewValue)`
+`e.setAttr( attrName, attrNewValue )`
 
 === Description
 
@@ -94,10 +94,28 @@ No return value.
 | Parameter | Description | Data type
 
 | `attrName`
-| The name of the attribute
+| The name of the attribute. This argument must be a query parameter.
 | `STRING`
 
 | `attrNewValue`
 | The new value of the attribute
 | The type of the attribute. 
 |===
+
+=== Example
+====
+[source,gsql]
+----
+CREATE QUERY setAttrExample(STRING attr){ <1>
+    Current = {v_type.*}
+    S = SELECT s
+            FROM Current:s -(e_type:e) -> v_type:t
+            WHERE t.attribute1 == "example_value"
+            ACCUM e.setAttr(attr, TRUE); <2>
+}
+----
+<1> The first argument of `e.setAttr` must be a query parameter.
+Therefore, in this example we are passing a string value in the query parameter `attr`.
+The string value should be the name of the attribute you want to call the function with.
+<2> Selected edges will have their specified attribute set to `TRUE`.
+====

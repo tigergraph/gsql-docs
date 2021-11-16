@@ -26,6 +26,25 @@ Returns a boolean value indicating whether the JSON object contains a specified 
 | `STRING`
 |===
 
+=== Example
+If we have the following JSON object represented by the variable `han`:
+
+[source,json]
+----
+{
+    "name": "Han Solo",
+    "age": "39",
+    "occupation": "mercenary"
+}
+----
+
+Then:
+[source,text]
+----
+han.containsKey("name") -> true
+han.containsKey("isJedi") -> false
+----
+
 == `getBool()`
 
 === Syntax
@@ -35,6 +54,7 @@ Returns a boolean value indicating whether the JSON object contains a specified 
 === Description
 
 Returns the boolean value associated with a specified key.
+If the key provided is associated with a non-boolean value, the function will raise a runtime error.
 
 === Return type
 
@@ -50,6 +70,25 @@ Returns the boolean value associated with a specified key.
 | `STRING`
 |===
 
+=== Example
+If we have the following JSON object represented by the variable `han`:
+
+[source,json]
+----
+{
+    "name": "Han Solo",
+    "age": 39,
+    "occupation": "mercenary",
+    "isJedi": false
+}
+----
+
+Then:
+[source,text]
+----
+han.getBool("isJedi") -> false
+----
+
 == `getDouble()`
 
 === Syntax
@@ -59,6 +98,7 @@ Returns the boolean value associated with a specified key.
 === Description
 
 Returns the double value associated with a specified key.
+If the key provided is associated with a non-double value, the function will raise a runtime error.
 
 === Return type
 
@@ -83,6 +123,7 @@ Returns the double value associated with a specified key.
 === Description
 
 Returns the integer value associated with a specified key.
+If the key provided is associated with a non-int value, the function will raise a runtime error.
 
 === Return type
 
@@ -107,6 +148,7 @@ Returns the integer value associated with a specified key.
 === Description
 
 Returns the JSON array value associated with a specified key.
+If the key provided is associated with a value whose type is not JSON array, the function will raise a runtime error.
 
 === Return type
 
@@ -131,6 +173,7 @@ Returns the JSON array value associated with a specified key.
 === Description
 
 Returns the value associated with a specified key.
+If the key provided is associated with value whose type is not JSON object, the function will raise a runtime error.
 
 === Return type
 
@@ -155,6 +198,7 @@ Returns the value associated with a specified key.
 === Description
 
 Returns the string value associated with a specified key.
+If the key provided is associated with a non-string value, the function will raise a runtime error.
 
 === Return type
 

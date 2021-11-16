@@ -346,7 +346,7 @@ month(to_datetime("1980-02-05 03:04:05")) -> 2
 
 === Description
 
-Returns the current time in `DATETIME`
+Returns the current UTC time in `DATETIME`
 
 === Return type
 
@@ -355,6 +355,12 @@ Returns the current time in `DATETIME`
 === Parameters
 
 None.
+
+=== Example
+[source,text]
+----
+now() => "2021-11-13 00:32:16"
+----
 
 == `second()`
 

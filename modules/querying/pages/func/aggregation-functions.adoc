@@ -33,7 +33,7 @@ A numeric type. If all members of the set/bag expression are integers, the retur
 
 === Example
 
-[source,gsql]
+[source,text]
 ----
 avg([5, 4, 1, 0, 0, 0]) -> 1
 avg([3, 2, 1]) -> 2
@@ -63,6 +63,14 @@ Returns the size of the set or bag.
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
+=== Example
+[source,text]
+----
+count([1, 2, 3]) => 3
+count([1, 1, 2, 2) => 4
+----
+
+
 == max()
 
 === Syntax
@@ -86,6 +94,13 @@ A numeric type.
 | An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
+
+=== Example
+[souce,text]
+----
+max([1, 2, -3, 4]) => 4
+max([1, 1, 3, 3]) => 3
+----
 
 == min()
 
@@ -111,6 +126,13 @@ A numberic type.
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
 
+=== Example
+[souce,text]
+----
+min([1, 2, -3, 4]) => -3
+min([1, 1, 3, 3]) => 1
+----
+
 == sum()
 
 === Syntax
@@ -134,3 +156,10 @@ A numeric type.
 | An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
 | `SET`, `BAG`, `SetAccum`, `BagAccum`
 |===
+
+=== Example
+[souce,text]
+----
+sum([1, 2, -3, 4]) => 4
+sum([1, 1, 3, 3]) => 8
+----

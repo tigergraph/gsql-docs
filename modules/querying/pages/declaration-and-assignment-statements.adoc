@@ -236,13 +236,50 @@ GSQL > RUN QUERY localVariable("person1")
 Variables declared inside a DML-block storing container type values are called _local container type variables_.
 Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
 
-Local container variables can store values of one type. You must declare
+Local container variables can store values of a specified type.
+The following types are allowed:
 
-.EBNF for local container variable declaration
+|===
+|Container type |Element type
+
+|`SET`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
+
+|`BAG`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+
+|`LIST`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
+
+|`MAP`
+a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
+|===
+
+
+You must declare which type the container variable will be storing when you declare the container variable.
+
+.Local container variable declaration
+[tabs]
+====
+EBNF::
++
+--
 [source,ebnf]
 ----
-localContainerDeclStmt := containerType "<" ( baseType | tupleType | "STRING COMPRESS" ) ">" varName "=" expr
+localContainerDeclStmt := containerType "<" type ">" varName "=" expr
 ----
+--
+Example::
++
+--
+[source,gsql]
+----
+SET<INT> set1 = (1, 2, 3) <1>
+----
+<1> The declaration can only take place in a DML block.
+--
+====
 
 Local container variables are block-scoped and are accessible in the block where they are declared only.
 Within a local container variable’s scope, you cannot another local container variable or local base type variable with the same name at the same level.
@@ -251,7 +288,13 @@ However, you can declare a variable with the same name at a lower level, where t
 In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.
 
 
-==== Example
+==== Query example
+In the following example, the `SELECT` statement in the main query declares three local container variables, each containing:
+
+* A base type
+* A user-defined tuple
+* An anonymous tuple
+
 [tabs]
 ====
 Main query::
@@ -260,7 +303,7 @@ Main query::
 [source,gsql]
 ----
 CREATE QUERY test() FOR GRAPH poc_graph {
-  typedef tuple<int i, string s> mainTuple;
+  TYPEDEF TUPLE<int i, string s> mainTuple;
   SumAccum<int> @@A;
   SetAccum<mainTuple> @@setAcc;
   SetAccum<mainTuple> @@setAcc2;
@@ -269,12 +312,12 @@ CREATE QUERY test() FOR GRAPH poc_graph {
   L1 = SELECT p
     FROM L0:p
       ACCUM
-        // local container with basetype
+        // local container with base type
         List<int> a = subQuery(p),
-        foreach e in a do
+        FOREACH e IN a DO
           @@A +=  e,
-        // use defined tuple
-        Set<mainTuple> setA = subQuery1(p),
+        // user defined tuple
+        Set<mainTuple> setA = subQuery1(p)
         @@setAcc += setA,
         // anonymous tuple(define signature of tuple in declaration)
         Set<tuple<int, string>> setB = subQuery1(p),

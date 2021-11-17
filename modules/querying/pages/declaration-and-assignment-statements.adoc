@@ -177,14 +177,16 @@ In a `POST-ACCUM` clause, each local base type variable may only be used in sour
 localVarDeclStmt := baseType varName "=" expr
 ----
 
-
-
 Local base type variables are not subject to the assignment restrictions of regular base type variables. Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
 
 ==== Example:
 
+[tabs]
+====
+Query::
++
+--
 .Base type variable declaration in DML statements
-
 [source,gsql]
 ----
 # An example showing a local base type variable succeeds
@@ -204,9 +206,11 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
   PRINT @@maxDate, @@maxDateGlob, dtGlob;  # @@maxDateGlob will be 0
 }
 ----
-
+--
+Result::
++
+--
 .localVariable Query Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY localVariable("person1")
@@ -225,8 +229,96 @@ GSQL > RUN QUERY localVariable("person1")
   }]
 }
 ----
+--
+====
+
+=== Local container variable
+Variables declared inside a DML-block storing container type values are called _local container type variables_.
+Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
+
+Local container variables can store values of one type. You must declare
+
+.EBNF for local container variable declaration
+[source,ebnf]
+----
+localContainerDeclStmt := containerType "<" ( baseType | tupleType | "STRING COMPRESS" ) ">" varName "=" expr
+----
+
+Local container variables are block-scoped and are accessible in the block where they are declared only.
+Within a local container variable’s scope, you cannot another local container variable or local base type variable with the same name at the same level.
+However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
+
+In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.
 
 
+==== Example
+[tabs]
+====
+Main query::
++
+--
+[source,gsql]
+----
+CREATE QUERY test() FOR GRAPH poc_graph {
+  typedef tuple<int i, string s> mainTuple;
+  SumAccum<int> @@A;
+  SetAccum<mainTuple> @@setAcc;
+  SetAccum<mainTuple> @@setAcc2;
+
+  L0 = { person.* };
+  L1 = SELECT p
+    FROM L0:p
+      ACCUM
+        // local container with basetype
+        List<int> a = subQuery(p),
+        foreach e in a do
+          @@A +=  e,
+        // use defined tuple
+        Set<mainTuple> setA = subQuery1(p),
+        @@setAcc += setA,
+        // anonymous tuple(define signature of tuple in declaration)
+        Set<tuple<int, string>> setB = subQuery1(p),
+        @@setAcc2 += setB
+      end;
+
+  print @@A;
+  print @@setAcc;
+  print @@setAcc2;
+}
+----
+--
+Subquery 1::
++
+--
+----
+CREATE QUERY subQuery(VERTEX node) FOR GRAPH poc_graph
+returns(ListAccum<int>)
+{
+ListAccum<int> @@res;
+Start = { node };
+Result = select t from Start:t
+Accum @@res += 1;
+return @@res;
+}
+----
+--
+Subquery 2::
++
+--
+----
+CREATE QUERY subQuery1(VERTEX node) for graph poc_graph
+returns(SetAccum<tuple<int, string>>){
+  typedef tuple<int i, string s> subTuple;
+  SetAccum<subTuple> @@res;
+  vSet = { person.* };
+  Result1 = select p from vSet:p
+            where p.name == "Charlie"
+            accum @@res += subTuple(-1, "hello");
+  return @@res;
+}
+----
+--
+====
 
 === Vertex Set Variable Declaration and Assignment
 
@@ -235,7 +327,6 @@ Variables that contain a set of one or more vertices are called vertex set varia
 Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
 
 .EBNF for Vertex Set Variable Declaration
-
 [source,gsql]
 ----
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
@@ -576,11 +667,11 @@ BagAccum<INT> @@bagAcc;
 @@bagAcc.removeAll(0);
 ----
 
-
-
 === Clear Collection Accumulators
 
-Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant. It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty). If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
+Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant.
+It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty).
+If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
 
 [source,gsql]
 ----

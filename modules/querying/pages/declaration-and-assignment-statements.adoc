@@ -2,9 +2,8 @@
 
 In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment. This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
 
-.EBNF
-
-[source,gsql]
+.EBNF for declaration and assignment
+[source,ebnf]
 ----
 ## Declarations ##
 accumDeclStmt :=
@@ -64,8 +63,6 @@ funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
 
 argList := expr ["," expr]*
 ----
-
-
 
 == Variable scopes
 
@@ -235,8 +232,7 @@ Variables that contain a set of one or more vertices are called vertex set varia
 Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
 
 .EBNF for Vertex Set Variable Declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
 
@@ -258,8 +254,6 @@ selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
 
 columnId := "$" (integer | stringLiteral)
 ----
-
-
 
 The query below lists all ways of assigning a vertex set variable an initial set of vertices (that is, forming a seed set).
 
@@ -385,7 +379,7 @@ Assignment statements are used to set or update the value of a variable after it
 
 .EBNF for Assignment Statements
 
-[source,gsql]
+[source,ebnf]
 ----
 ## Assignment Statement ##
 assignStmt := name "=" expr         # baseType variable, vertex set variable
@@ -407,7 +401,7 @@ loadAccumStmt := globalAccumName "=" "{" "LOADACCUM" loadAccumParam
 ====
 Vertex and edge (non-accumulator) attributes can use the += operator in an ACCUM or POST-ACCUM clause to perform parallel accumulation.
 
-[source,gsql]
+[source,ebnf]
 ----
 attrAccumStmt := name "."attrName "+=" expr
 ----
@@ -433,7 +427,7 @@ In general, assignment statements can take place anywhere after the variable has
 
 === `LOADACCUM` Statement
 
-[source,gsql]
+[source,ebnf]
 ----
 loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
                                   ["," LOADACCUM loadAccumParams]* "}"
@@ -474,21 +468,25 @@ Any accumulator using generic `VERTEX` as an element type cannot be initialized 
 
 One assignment statement can have multiple `LOADACCUM()` function calls. However, every `LOADACCUM()` referring to the same file in the same assignment statement must use the same separator and header parameter values.
 
-==== Example:
+==== Example
 
+.LoadAccum example
+[tabs]
+====
+Data::
++
+--
 .loadAccumInput.csv
-
-[source,gsql]
+[source,csv]
 ----
 person1,1,"test1",3
 person5,2,"test2",4
 person6,3,"test3",5
 ----
-
-
-
-.LoadAccum example
-
+--
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
@@ -502,11 +500,10 @@ CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
   PRINT @@testMap, @@testGroupBy;
 }
 ----
-
-
-
-.Results of Query loadAccumEx
-
+--
+Result::
++
+--
 [source,gsql]
 ----
 GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
@@ -548,12 +545,12 @@ GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
   }]
 }
 ----
-
+--
+====
 
 
 == Function Call Statements
-
-[source,gsql]
+[source,ebnf]
 ----
 funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
               | globalAccumName ("." funcName "(" [argList] ")")+
@@ -582,7 +579,7 @@ BagAccum<INT> @@bagAcc;
 
 Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant. It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty). If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
 
-[source,gsql]
+[source,ebnf]
 ----
 "reset_collection_accum" "(" accumName ")"
 ----
@@ -592,6 +589,11 @@ Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size
 `reset_collection_accum` only works in DISTRIBUTED mode queries.  If the query is not in distributed mode, the reset does not take place.
 ====
 
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE DISTRIBUTED QUERY reset_accum()
@@ -621,8 +623,11 @@ FOR GRAPH workNet SYNTAX v2 {
   PRINT @@allStuff.size() AS allStuffClear;
 }
 ----
-
-[source,gsql]
+--
+Results::
++
+--
+[source,json]
 ----
 [{
     "stuffCount": [
@@ -677,3 +682,5 @@ FOR GRAPH workNet SYNTAX v2 {
     "allStuffClear": 0
   }]
 ----
+--
+====

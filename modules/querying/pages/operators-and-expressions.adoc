@@ -3,8 +3,7 @@
 An _expression_ is a combination of fixed values, variables, operators, function calls, and groupings that specify a computation, resulting in a data value. This section of the specification describes the literals (fixed values), operators, and functions available in the GSQL query language. It covers the subset of the EBNF definitions shown below. However, more so than in other sections of the specification, syntax alone is not an adequate description. The semantics (functionality) of the particular operators and functions are an essential complement to the syntax.
 
 .EBNF for Operations, Functions, and Expressions
-
-[source,gsql]
+[source,ebnf]
 ----
 constant := numeric | stringLiteral | TRUE | FALSE | GSQL_UINT_MAX
           | GSQL_INT_MAX | GSQL_INT_MIN | TO_DATETIME "(" stringLiteral ")"
@@ -126,8 +125,7 @@ mathOperator := "*" | "/" | "%" | "+" | "-" | "<<" | ">>" | "&" | "|"
 Operator precedences are shown in the following list, from the highest precedence to the lowest. Operators that are shown together on a line have the same precedence:
 
 .Operator Precedence, highest to lowest
-
-[source,gsql]
+[source,test]
 ----
 *, /, %
 -, +
@@ -138,9 +136,13 @@ Operator precedences are shown in the following list, from the highest precedenc
 ----
 
 
-
+==== Example
+[tabs]
+====
+Query::
++
+--
 .Example 1. Math Operators + - * /
-
 [source,gsql]
 ----
 CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
@@ -167,11 +169,11 @@ CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
     PRINT f1 AS xDIVy,   f2 AS xDIV4f,  f3 AS xMOD3,  f4 AS xMODy;
 }
 ----
-
-
-
+--
+Results::
++
+--
 .mathOperators.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY mathOperators()
@@ -204,7 +206,8 @@ GSQL > RUN QUERY mathOperators()
   ]
 }
 ----
-
+--
+====
 
 
 === Boolean Operators
@@ -216,7 +219,6 @@ We support the standard Boolean operators and standard order of precedence: AND,
 Bit operators (<<, >>, &, and |) operate on integers and return an integer.
 
 .Bit Operators
-
 [source,gsql]
 ----
 CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
@@ -230,8 +232,6 @@ CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
 }
 ----
 
-
-
 === String Operators
 
 Operator + can be used for concatenating strings.
@@ -244,7 +244,7 @@ The fields of the tuple can be accessed using the dot operator.
 
 A condition is an expression that evaluates to a boolean value of either true or false. One type of condition uses the familiar comparison operators. A comparison operator compares two numeric or string values.
 
-[source,gsql]
+[source,ebnf]
 ----
 comparisonOperator := "<" | "<=" | ">" | ">=" | "==" | "!="
 
@@ -289,14 +289,19 @@ CREATE QUERY mathOperatorBetween() FOR GRAPH minimalNet
 }
 ----
 
-
-
 === IS NULL, IS NOT NULL
 
 IS NULL and IS NOT NULL can be used for checking whether an optional parameter is given any value.
 
-.IS NULL example
 
+==== Example
+
+[tabs]
+====
+Query::
++
+--
+.IS NULL example
 [source,gsql]
 ----
 CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
@@ -307,11 +312,11 @@ CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
   END;
 }
 ----
-
-
-
+--
+Results::
++
+--
 .parameterIsNULL.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY parameterIsNULL(_)
@@ -337,7 +342,8 @@ GSQL > RUN QUERY parameterIsNULL(3)
   "results": [{"p is not null": "p is not null"}]
 }
 ----
-
+--
+====
 
 
 [WARNING]
@@ -402,8 +408,12 @@ The first `"%"` has its usual pattern-matching meaning "zero or more characters"
 
 ==== Example
 
-.Example query using LIKE operator 
-
+[tabs]
+====
+Query::
++
+--
+.Example query using LIKE operator
 [source,gsql]
 ----
 CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
@@ -415,12 +425,19 @@ CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
 	PRINT aPosts;
 }
 ----
+--
 
+<<<<<<< HEAD
 
 
 [source,console]
+=======
+Results::
++
+--
+[source,json]
+>>>>>>> e7da895 (formatting operators and expressions)
 ----
-Results
 {
   "error": false,
   "message": "",
@@ -465,34 +482,38 @@ Results
   ]}]
 }
 ----
+--
+====
 
-== Vertex, Edge, and Accumulator Attributes
+== Vertex, edge, and accumulator attributes
 
 === Accessing attributes
 
 Attributes on vertices or edges are defined in the graph schema. Additionally, each vertex and edge has a built-in STRING attribute called *type* which represents the user-defined type of that edge or vertex. These attributes, including *type,* can be accessed for a particular edge or vertex with the dot operator:
 
 .Accessing attributes with a known name.
-
-[source,gsql]
+[source,ebnf]
 ----
 name ".type"   // read only. Returns vertexType or edgeType of name
 name "." attrName // read/write. Accesses attribute called attrName
 ----
 
 
-
+.Dynamic query support
 [NOTE]
 ====
-*DYNAMIC Query Support*
-
 The name of the attribute can be parameterized using the *getAttr* and *setAttr* xref:querying:func/vertex-methods.adoc[vertex functions], described later in this section. This allows you to write xref:querying:query-operations.adoc#_dynamic_querying[dynamic query] procedures where the attribute names are specified when you run the query.
 ====
 
 For example, the following code snippet shows two different SELECT statements which produce equivalent results. The first uses the dot operator on the vertex variable *v* to access the "subject" attribute, which is defined in the graph schema. The FROM clause in the first SELECT statement necessitates that any target vertices will be of type "post" (also defined in the graph schema). The second SELECT schema checks that the vertex variable v's type is a "post" vertex by using the dot operator to access the built-in *type* attribute.
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .Accessing vertex variable attributes
-
 [source,gsql]
 ----
 CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
@@ -504,14 +525,14 @@ CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
     PRINT results;
 }
 ----
+--
 
-
-
-.Results for Query coffeeRelatedPosts
-
-[source,gsql]
+Results::
++
+--
+.Results for Query `coffeeRelatedPosts`
+[source,json]
 ----
-GSQL > RUN QUERY coffeeRelatedPosts()
 {
   "error": false,
   "message": "",
@@ -540,7 +561,8 @@ GSQL > RUN QUERY coffeeRelatedPosts()
   ]
 }
 ----
-
+--
+====
 
 
 === Accumulator Functions
@@ -568,8 +590,7 @@ In the last line, we compute `@@max_diff` as the absolute value of the differenc
 SELECT blocks take an input vertex set and perform various selection and filtering operations to produce an output set. Therefore, _set/bag expressions_ and their operators are a useful and powerful part of the GSQL query language. A set/bag expression can use either SetAccum or BagAccum.
 
 .EBNF
-
-[source,gsql]
+[source,ebnf]
 ----
 setBagExpr := name
         | globalAccumName
@@ -585,12 +606,19 @@ setBagExpr := name
 
 
 
-=== Set/Bag Expression Operators - UNION, INTERSECT, MINUS
+=== Set/Bag expression operators - UNION, INTERSECT, MINUS
 
-The operators are straightforward, when two operands are both sets, the result expression is a set. When at least one operand is a bag, the result expression is a bag. If one operand is a bag and the other is a set, the operator treats the set operant as a bag containing one of each value.
+The operators are straightforward, when two operands are both sets, the result expression is a set.
+When at least one operand is a bag, the result expression is a bag.
+If one operand is a bag and the other is a set, the operator treats the set operand as a bag containing one of each value.
 
+==== Set/bag operator examples
+[tabs]
+====
+Query::
++
+--
 .Set/Bag Operator Examples
-
 [source,gsql]
 ----
 # Demonstrate Set & Bag operators
@@ -621,11 +649,12 @@ CREATE QUERY setOperatorsEx() FOR GRAPH minimalNet   {
                                                           // because set UNION set is a set
 }
 ----
+--
 
-
-
+Results::
++
+--
 .setOperatorsEx Query Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY setOperatorsEx()
@@ -653,7 +682,8 @@ GSQL > RUN QUERY setOperatorsEx()
   ]
 }
 ----
-
+--
+====
 
 
 The result of these operators is another set or bag, so these operations can be nested and chained to form more complex expressions, such as
@@ -679,8 +709,13 @@ The IN and NOT IN operators support all base types on the left-hand side, and an
 
 The following example uses NOT IN to exclude neighbors that are on a blocked list.
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .Set Membership example
-
 [source,gsql]
 ----
 CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> blockedList) FOR GRAPH socialNet `{
@@ -691,11 +726,12 @@ CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> b
   PRINT Result;
 }
 ----
+--
 
-
-
-.Results for Query friendsNotInblockedlist
-
+Result::
++
+--
+.Results for Query `friendsNotInblockedlist`
 [source,gsql]
 ----
 GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
@@ -717,7 +753,8 @@ GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
   }]}]
 }
 ----
-
+--
+====
 
 
 == Subqueries
@@ -727,7 +764,6 @@ A query defined with a `RETURNS` header following its `CREATE` statement is call
 A subquery must be created before the query that calls the subquery. A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
 .Main Components of a Subquery
-
 [source,gsql]
 ----
 CREATE QUERY <query_name>() FOR GRAPH <graph_name> // Parameters are optional
@@ -769,8 +805,12 @@ Recursion is supported for subqueries and a subquery can call itself. Here is an
 While recursive subqueries may look simpler in writing, they are usually not as efficient as iterative subqueries in GSQL.
 ====
 
-.Recursive Query Example
-
+==== Example
+[tabs]
+====
+Subquery::
++
+--
 [source,gsql]
 ----
 CREATE QUERY subFindFriendsInDistance(SET<VERTEX> seeds, INT distance)
@@ -788,7 +828,13 @@ FOR GRAPH friendNet RETURNS (SET<VERTEX>)
 	  RETURN seeds UNION subFindFriendsInDistance(next_vs, distance - 1);
   END;
 }
-
+----
+--
+Query::
++
+--
+[source, gsql]
+----
 CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH friendNet {
 
 	seed = {p};
@@ -796,13 +842,20 @@ CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH fri
 	PRINT subFindFriendsInDistance(seed, distance) AS friends;
 }
 ----
+--
 
-
+Result::
++
+--
 Test cases: Starting from `person1`, search to a distance of 1 and a distance of 2.
 
+<<<<<<< HEAD
 [source,gsql]
+=======
+.`GSQL> RUN QUERY findFriendsInDistance("person1", 1)`
+[source,bash]
+>>>>>>> e7da895 (formatting operators and expressions)
 ----
-GSQL> RUN QUERY findFriendsInDistance("person1", 1)
 [
   {
     "friends": [
@@ -828,13 +881,19 @@ GSQL> RUN QUERY findFriendsInDistance("person1", 2)
   }
 ]
 ----
+--
+====
 
 == Examples of Expressions
 
 Below is a list of examples of expressions. Note that ( argList ) is a set/bag expression, while [ argList ] is a list expression.
 
+[tabs]
+====
+Query::
++
+--
 .Expression Examples
-
 [source,gsql]
 ----
 #Show various types of expressions
@@ -926,14 +985,15 @@ CREATE QUERY expressionEx() FOR GRAPH workNet {
   PRINT @@companyEmployeeRelationships.size();
 }
 ----
+--
 
 
-
+Results::
++
+--
 .expressionEx.json Results
-
-[source,gsql]
+[source,json]
 ----
-GSQL > RUN QUERY expressionEx()
 {
   "error": false,
   "message": "",
@@ -1247,13 +1307,19 @@ GSQL > RUN QUERY expressionEx()
   ]
 }
 ----
+--
+====
 
 
 
 == Examples of Expression Statements
 
+[tabs]
+====
+Query::
++
+--
 .Expression Statement Examples
-
 [source,gsql]
 ----
 #Show various types of expression statements
@@ -1293,12 +1359,20 @@ CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
   PRINT employees;
 }
 ----
+--
 
+<<<<<<< HEAD
 
 
 [source,gsql]
+=======
+Results::
++
+--
+.GSQL > RUN QUERY expressionStmntEx()
+[source,json]
+>>>>>>> e7da895 (formatting operators and expressions)
 ----
-GSQL > RUN QUERY expressionStmntEx()
 {
   "error": false,
   "message": "",
@@ -1558,3 +1632,5 @@ GSQL > RUN QUERY expressionStmntEx()
   ]
 }
 ----
+--
+====

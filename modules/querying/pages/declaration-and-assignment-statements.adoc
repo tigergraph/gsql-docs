@@ -115,8 +115,7 @@ Accumulator declaration is discussed in xref:querying:accumulators.adoc#_declara
 In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables. The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
 
 .EBNF for base type variable declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
@@ -267,7 +266,6 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * Union of vertex set variables
 
 .Seed Set Example
-
 [source,gsql]
 ----
 CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VERTEX<person>> v4) FOR GRAPH socialNet {
@@ -297,12 +295,11 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
 
 When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
 
+.Declaration syntax difference: vertex set variable vs. base type variable
 [WARNING]
 ====
-Declaration syntax difference: vertex set variable vs. base type variable
-
 In a vertex set variable declaration, the optional type specifier follows the variable name and should be surrounded by parentheses: *`vSetName(type)`* +
-This is different than a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
+This is different from a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
 ====
 
 ==== Assignment
@@ -310,7 +307,6 @@ This is different than a base type variable declaration, where the type specifie
 After a vertex set variable is declared, the vertex type of the vertex set variable is immutable. Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type. The following is an example in which we must declare the vertex set variable type.
 
 .Vertex set variable type
-
 [source,gsql]
 ----
 CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet {
@@ -326,22 +322,21 @@ CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet
 }
 ----
 
-
-
-In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex. If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type. However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices. Therefore, `S` must be declared as an ANY-type vertex set variable.
+In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex.
+If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type.
+However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices.
+Therefore, `S` must be declared as an ANY-type vertex set variable.
 
 === `FILE` Object Declaration
 
 A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
 
 .EBNF for FILE object declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 fileDeclStmt := FILE fileVar "(" filePath ")"
 fileVar := name
 ----
-
 
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.  When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
@@ -349,7 +344,6 @@ When a `FILE` object is declared, associated with a particular text file, any ex
 ==== Example:
 
 .File object query example
-
 [source,gsql]
 ----
 CREATE QUERY getUSWorkerInterests (STRING fileLocation) FOR GRAPH workNet {
@@ -378,7 +372,6 @@ RUN QUERY getUSWorkerInterests("/home/tigergraph/fileEx.txt")
 Assignment statements are used to set or update the value of a variable after it has been declared. This applies to base type variables, vertex set variables, and accumulators. Accumulators also have the special += accumulate statement, which was discussed in the Accumulator section.  Assignment statements can use expressions to define the new value of the variable.
 
 .EBNF for Assignment Statements
-
 [source,ebnf]
 ----
 ## Assignment Statement ##
@@ -418,7 +411,6 @@ In general, assignment statements can take place anywhere after the variable has
 
 [WARNING]
 ====
-
 * Global accumulator assignment is not permitted within the body of `SELECT` or `UPDATE` statements
 * Base type variable assignment is permitted in `ACCUM` or `POST-ACCUM` clauses, but the change in value will not take place until exiting the clause. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
 * Vertex attribute assignment is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted. This is because the `ACCUM` clause iterates over an edge set.

@@ -14,8 +14,7 @@ The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then 
 ====
 
 .EBNF
-
-[source,gsql]
+[source,ebnf]
 ----
 queryBodyDeleteStmt := DELETE alias FROM pattern [whereClause]
 pattern := (vertexPattern | edgePattern)
@@ -26,7 +25,6 @@ pattern := (vertexPattern | edgePattern)
 The vertexPattern and edgePattern terms in the FROM clause follow the same rules as those in the FROM clause in a SELECT statement. The WHERE clause can filter the items in the vertexPattern or edgePattern. Below are two examples, one for deleting vertices and one for deleting edges.
 
 .DELETE statement example
-
 [source,gsql]
 ----
 # Delete all "person" vertices with location equal to "us"
@@ -40,7 +38,6 @@ CREATE QUERY deleteEx() FOR GRAPH workNet {
 
 
 .DELETE statement example 2
-
 [source,gsql]
 ----
 # Delete all "worksFor" edges where the person's location is "us"
@@ -56,7 +53,6 @@ CREATE QUERY deleteEx2() FOR GRAPH workNet {
 The following query can be used to observe the effect of the delete statements. This query counts the person vertices who work in the US ("us") and the worksFor edges for persons in the US.  When the initial workNet test data loaded, there are 5 persons and 9 worksFor edges for locationId = "us".  If query deleteEx2 is run, the worksAtUS query will then find the 5 persons but 0 worksFor edges.  Next, if the deleteEx query is run, the worksAtUS query will then find 0 persons and 0 worksFor edges.
 
 .Query to check the results of deleteEx and deleteEx2
-
 [source,gsql]
 ----
 CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
@@ -78,8 +74,12 @@ CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
 
 For example, the following sequence of countAtLocation, deleteEx2, and deleteEx queries
 
+[tabs]
+====
+Query::
++
+--
 .deleteEx.run
-
 [source,gsql]
 ----
 RUN QUERY countAtLocation("us")
@@ -88,14 +88,12 @@ RUN QUERY countAtLocation("us")
 RUN QUERY deleteEx()
 RUN QUERY countAtLocation("us")
 ----
-
-
-
-will produce the following result:
-
+--
+Results::
++
+--
 .Results from DeleteEx Example
-
-[source,gsql]
+[source,javascript]
 ----
 # Before any deletions
 {
@@ -162,7 +160,8 @@ will produce the following result:
   ]
 }
 ----
-
+--
+====
 
 
 == DML-sub DELETE Statement
@@ -180,8 +179,7 @@ The ACCUM clause iterates over an edge set, which can encounter the same vertex 
 ====
 
 .EBNF
-
-[source,gsql]
+[source,ebnf]
 ----
 dmlSubDeleteStmt := DELETE "(" alias ")"
 ----
@@ -292,7 +290,7 @@ Like any other data modification in a query, the insertion does not take effect 
 
 .EBNF
 
-[source,gsql]
+[source,ebnf]
 ----
 insertStmt := insertVertexStmt | insertEdgeStmt
 insertVertexStmt := INSERT INTO (vertexType | name)
@@ -525,7 +523,7 @@ The `UPDATE` statement updates the attributes of vertices or edges.
 
 .EBNF
 
-[source,gsql]
+[source,ebnf]
 ----
 updateStmt := UPDATE alias FROM pattern SET dmlSubStmtList [whereClause]
 pattern := (vertexPattern | edgePattern)

@@ -66,7 +66,7 @@ There are some limitations to Interpreted Mode. See the section on <<Interpret a
 
 == `CREATE QUERY`
 
-[source,coffeescript]
+[source,ebnf]
 ----
 createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
                "(" [parameterList] ")"
@@ -109,7 +109,7 @@ The query body may include calls to other queries. That is, the other queries ar
 
 .Example of a CREATE QUERY statement
 
-[source,coffeescript]
+[source,gsql]
 ----
 CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
   SYNTAX v2 {
@@ -168,7 +168,7 @@ To specify the default value for a parameter, use the assignment operator (`=`) 
 
 .Example of a CREATE QUERY command with a default parameter value
 
-[source,coffeescript]
+[source,gsql]
 ----
 CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int)
   SYNTAX v2 {
@@ -203,6 +203,11 @@ Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniqu
 * edge type  = Link
 * vertex attribute = Score
 
+[tabs]
+====
+Embedded schema::
++
+--
 [source,gsql]
 ----
 CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
@@ -229,9 +234,10 @@ CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
 }
 RUN QUERY pageRank(_,_,_)
 ----
-
-Here is the same algorithm written in Dynamic Querying style:
-
+--
+Dynamic Querying::
++
+--
 [source,gsql]
 ----
 CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
@@ -259,6 +265,9 @@ CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
 }
 RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
 ----
+--
+====
+
 
 === Statement types
 
@@ -270,7 +279,7 @@ The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub 
 
 There is some overlap in the types. For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
 
-[source,text]
+[source,ebnf]
 ----
 queryBodyStmts := (queryBodyStmt ";")+
 
@@ -326,7 +335,7 @@ Guidelines for understanding statement type hierarchy:
 
 .Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
 
-[source,coffeescript]
+[source,gsql]
 ----
 # Each statement's operation type is either ControlFlow, DML, or other.
 # Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
@@ -520,7 +529,7 @@ There are two GSQL syntax options for Interpreted GSQL: xref:querying:query-oper
 
 .Interpreted GSQL REST Endpoint with Immediate Query
 
-[source,csharp]
+[source,console]
 ----
 curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interpreted_query?a=10' -d '
   INTERPRET QUERY (int a) FOR GRAPH gsql_demo {
@@ -535,7 +544,7 @@ curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interprete
 
 .interpret-anonymous-query syntax
 
-[source,coffeescript]
+[source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
                [FOR GRAPH graphName]
@@ -558,7 +567,7 @@ Compare the example below to the example in the `Create Query` section:
 
 .Example of Immediate Mode for INTERPRET QUERY
 
-[source,coffeescript]
+[source,gsql]
 ----
 INTERPRET QUERY () FOR GRAPH socialNet {
   # declaration statements
@@ -578,7 +587,7 @@ INTERPRET QUERY () FOR GRAPH socialNet {
 
 .interpret-saved-query syntax
 
-[source,coffeescript]
+[source,ebnf]
 ----
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
@@ -592,7 +601,7 @@ This syntax is like `RUN` query, except
 
 .Example of Interpret-Only Mode for INTERPRET QUERY
 
-[source,coffeescript]
+[source,gsql]
 ----
 INTERPRET QUERY createQueryEx ("Jane.Doe")
 ----
@@ -601,7 +610,7 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 
 == `INSTALL QUERY`
 
-[source,coffeescript]
+[source,ebnf]
 ----
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
 ----
@@ -673,7 +682,7 @@ You can also run an installed query through REST requests - see xref:3.2@tigergr
 
 .RUN QUERY syntax
 
-[source,bash]
+[source,ebnf]
 ----
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
     "(" parameterValueList | parameterValueJSON ")"
@@ -700,7 +709,7 @@ To use the default value for a parameter, use the `_` character for the value of
 
 For example, if we have the following query definition:
 
-[source,text]
+[source,gsql]
 ----
 CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
   DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
@@ -711,7 +720,7 @@ CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
 
 To run the query with default values for the parameter `name,` use `_` in the place of the second parameter value:
 
-[source,coffeescript]
+[source,console]
 ----
 GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
 # Below is the query output
@@ -733,7 +742,7 @@ GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
 
 To use the default values for both the second and the third parameters, you can omit both parameters and only provide a value for the first parameter.
 
-[source,coffeescript]
+[source,console]
 ----
 GSQL > RUN QUERY greetPerson(21)
 # Below is the query output
@@ -759,7 +768,7 @@ To pass query parameters by name with a JSON object, map the parameter names to 
 
 For example, if we have the following query:
 
-[source,text]
+[source,gsql]
 ----
 CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
   DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
@@ -770,7 +779,7 @@ CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
 
 Supplying the parameters with a JSON object will look like the following. The parameter `birthday` is not named in the parameter JSON object and therefore takes the default value:
 
-[source,text]
+[source,gsql]
 ----
 RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
 ----
@@ -843,7 +852,7 @@ Some queries run with all or almost all vertices in a SELECT statement s, e.g. P
 
 To run the query in all-vertex mode, use the -av option in shell mode or include `\__GQUERY__USING_ALL_ACTIVE_MODE=true` in the query string of an HTTP request.
 
-[source,coffeescript]
+[source,console]
 ----
 GSQL > RUN QUERY -av test()
 
@@ -866,7 +875,7 @@ GSQL > RUN QUERY -async <queryName>
 
 You will receive a JSON response immediately containing a query ID (`request_id`):
 
-[source,gsql]
+[source,json]
 ----
 {
   "error": false,
@@ -877,7 +886,7 @@ You will receive a JSON response immediately containing a query ID (`request_id`
 
 To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` header and set its value to true. If the query takes parameters, put them in the query string:
 
-[source,coffeescript]
+[source,console]
 ----
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
@@ -914,8 +923,7 @@ Other top-level objects, such as "code" may appear in certain circumstances. Not
 Below is an example of the output of a successful query:
 
 .Top Level JSON of a Valid Query - Example
-
-[source,coffeescript]
+[source,javascript]
 ----
 {
   "version": {"edition": "developer","api": "v2","schema": "1"},
@@ -971,7 +979,7 @@ As of TigerGraph v3.0, the only supported JSON API is "v2".
 
 == SHOW QUERY
 
-[source,coffeescript]
+[source,ebnf]
 ----
 showQuery := SHOW QUERY queryName
 ----
@@ -982,7 +990,7 @@ Additionally, the `ls` GSQL command lists all created queries and identifies whi
 
 == DROP QUERY
 
-[source,coffeescript]
+[source,ebnf]
 ----
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----

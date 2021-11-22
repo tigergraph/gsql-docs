@@ -203,6 +203,11 @@ Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniqu
 * edge type  = Link
 * vertex attribute = Score
 
+[tabs]
+====
+Embedded schema::
++
+--
 [source,gsql]
 ----
 CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
@@ -229,9 +234,10 @@ CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
 }
 RUN QUERY pageRank(_,_,_)
 ----
-
-Here is the same algorithm written in Dynamic Querying style:
-
+--
+Dynamic Querying::
++
+--
 [source,gsql]
 ----
 CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
@@ -259,6 +265,9 @@ CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
 }
 RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
 ----
+--
+====
+
 
 === Statement types
 
@@ -520,7 +529,7 @@ There are two GSQL syntax options for Interpreted GSQL: xref:querying:query-oper
 
 .Interpreted GSQL REST Endpoint with Immediate Query
 
-[source,csharp]
+[source,console]
 ----
 curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interpreted_query?a=10' -d '
   INTERPRET QUERY (int a) FOR GRAPH gsql_demo {
@@ -711,7 +720,7 @@ CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
 
 To run the query with default values for the parameter `name,` use `_` in the place of the second parameter value:
 
-[source,gsql]
+[source,console]
 ----
 GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
 # Below is the query output
@@ -733,7 +742,7 @@ GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
 
 To use the default values for both the second and the third parameters, you can omit both parameters and only provide a value for the first parameter.
 
-[source,gsql]
+[source,console]
 ----
 GSQL > RUN QUERY greetPerson(21)
 # Below is the query output
@@ -843,7 +852,7 @@ Some queries run with all or almost all vertices in a SELECT statement s, e.g. P
 
 To run the query in all-vertex mode, use the -av option in shell mode or include `\__GQUERY__USING_ALL_ACTIVE_MODE=true` in the query string of an HTTP request.
 
-[source,gsql]
+[source,console]
 ----
 GSQL > RUN QUERY -av test()
 
@@ -866,7 +875,7 @@ GSQL > RUN QUERY -async <queryName>
 
 You will receive a JSON response immediately containing a query ID (`request_id`):
 
-[source,gsql]
+[source,json]
 ----
 {
   "error": false,
@@ -914,8 +923,7 @@ Other top-level objects, such as "code" may appear in certain circumstances. Not
 Below is an example of the output of a successful query:
 
 .Top Level JSON of a Valid Query - Example
-
-[source,console]
+[source,javascript]
 ----
 {
   "version": {"edition": "developer","api": "v2","schema": "1"},

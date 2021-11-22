@@ -70,7 +70,7 @@ Other punctuation characters are not supported. The initial character can only b
 
 .name (identifier)
 
-[source,gsql]
+[source,ebnf]
 ----
 name := (letter | "_") [letter | digit | "_"]*
 ----
@@ -337,8 +337,7 @@ Tuple types can be created and named using a `TYPEDEF` statement.
 Tuples must be defined first, before any other statements in a query.
 
 .ENBF for tuples
-
-[source,gsql]
+[source,ebnf]
 ----
 typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
 
@@ -622,7 +621,7 @@ The receiving query can write to the `FILE` object.
 ====
 
 .EBNF
-[source,gsql]
+[source,ebnf]
 ----
 parameterType := INT
                | UINT

@@ -427,16 +427,10 @@ CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
 ----
 --
 
-<<<<<<< HEAD
-
-
-[source,console]
-=======
 Results::
 +
 --
 [source,json]
->>>>>>> e7da895 (formatting operators and expressions)
 ----
 {
   "error": false,
@@ -849,12 +843,8 @@ Result::
 --
 Test cases: Starting from `person1`, search to a distance of 1 and a distance of 2.
 
-<<<<<<< HEAD
-[source,gsql]
-=======
 .`GSQL> RUN QUERY findFriendsInDistance("person1", 1)`
 [source,bash]
->>>>>>> e7da895 (formatting operators and expressions)
 ----
 [
   {
@@ -1361,17 +1351,11 @@ CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
 ----
 --
 
-<<<<<<< HEAD
-
-
-[source,gsql]
-=======
 Results::
 +
 --
 .GSQL > RUN QUERY expressionStmntEx()
 [source,json]
->>>>>>> e7da895 (formatting operators and expressions)
 ----
 {
   "error": false,

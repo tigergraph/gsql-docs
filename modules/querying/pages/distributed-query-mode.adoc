@@ -17,7 +17,7 @@ TigerGraph Enterprise Edition offers a Distributed Query mode which provides a m
 
 To invoke Distributed Query Mode, insert the keyword `DISTRIBUTED` before `QUERY` in the query definition:
 
-[source,gsql]
+[source,ebnf]
 ----
 createQuery :=
     CREATE [OR REPLACE][DISTRIBUTED] QUERY queryName "(" [parameterList] ")"

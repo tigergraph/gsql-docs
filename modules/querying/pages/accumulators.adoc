@@ -5,7 +5,7 @@ Accumulators are special types of variables that accumulate information about th
 This section covers the following subset of the EBNF language definitions:
 
 .EBNF for accumulators
-[source,gsql]
+[source,ebnf]
 ----
 accumDeclStmt :=
           accumType localAccumName ["=" constant]
@@ -62,7 +62,7 @@ Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block
 The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`. Additionally, a global accumulator may be declared to be static.
 
 .EBNF for Accumulator Declaration
-[source,gsql]
+[source,ebnf]
 ----
 accumDeclStmt :=
           accumType localAccumName ["=" expr]
@@ -126,6 +126,12 @@ Take the following code example. The global accumulator `@@globalRelationshipCou
 This is because a non-accumulator variable is not shared among processes.
 Each process has its own separate unshared copy of `relationshipCount` and increments the original value by one. (E.g., each process increments *relationshipCount* from 0 to 1.) There is no accumulation and the final value is one.
 
+=== Example
+[tabs]
+====
+Query::
++
+--
 .Global Variable vs Global Accumulator
 [source,gsql]
 ----
@@ -145,11 +151,12 @@ CREATE QUERY countEmploymentRelationships() FOR GRAPH workNet {
   PRINT @@globalRelationshipCount;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .countEmploymentRelationship.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY countEmploymentRelationships()
@@ -167,15 +174,22 @@ GSQL > RUN QUERY countEmploymentRelationships()
   ]
 }
 ----
-
+--
+====
 
 
 === Static Global Accumulators
 
 A static global accumulator retains its value after the execution of a query. To declare a static global accumulator, include the STATIC keyword at the beginning of the declaration statement. For example, if a static global accumulator is incremented by 1 each time a query is executed, then its value is equal to the number of times the query has been run, since the query was installed. Each static global accumulator belongs to the particular query in which it is declared; it cannot be shared among different queries. The value only persists in the context of running the same query multiple times.  The value will reset to the default value when the GPE is restarted.
 
-.Static Global Accumulators example
 
+==== Example
+[tabs]
+====
+Query::
++
+--
+.Static Global Accumulators example
 [source,gsql]
 ----
 CREATE QUERY staticAccumEx(INT x) FOR GRAPH minimalNet {
@@ -184,11 +198,11 @@ CREATE QUERY staticAccumEx(INT x) FOR GRAPH minimalNet {
   PRINT @@testList;
 }
 ----
-
-
-
+--
+Results::
++
+--
 .staticAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY staticAccumEx(3)
@@ -223,7 +237,8 @@ GSQL > RUN QUERY staticAccumEx(-5)
   ]}]
 }
 ----
-
+--
+====
 
 
 There is no command to deallocate a static global accumulator. If a static global accumulator is a collection accumulator and is no longer needed, it should be cleared to minimize memory usage.
@@ -233,8 +248,7 @@ There is no command to deallocate a static global accumulator. If a static globa
 The following are the accumulator types we currently support. Each type of accumulator supports one or more data types.
 
 .EBNF for Accumulator Types
-
-[source,gsql]
+[source,ebnf]
 ----
 accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) ">"
 		   | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
@@ -408,8 +422,14 @@ The SumAccum type computes and stores the cumulative sum of numeric values or th
 
 The *+=* operator updates the accumulator's state. For INT, FLOAT, and DOUBLE types, *+= `arg`* performs a numeric addition, while for the STRING value type *+= `arg`* concatenates *arg* to the current value of the SumAccum.
 
-.SumAccum Example
+==== Example
 
+[tabs]
+====
+Query::
++
+--
+.SumAccum Example
 [source,gsql]
 ----
 # SumAccum Example
@@ -438,11 +458,12 @@ CREATE QUERY sumAccumEx() FOR GRAPH minimalNet {
   PRINT @@stringAccum;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .sumAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY sumAccumEx()
@@ -462,7 +483,8 @@ GSQL > RUN QUERY sumAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === MinAccum / MaxAccum
@@ -471,8 +493,13 @@ The `MinAccum` and `MaxAccum` types calculate and store the cumulative minimum o
 
 For `MinAccum`, *+= `arg`* checks if the current value held is less than *arg* and stores the smaller of the two. `MaxAccum` behaves the same, with the exception that it checks for and stores the greater instead of the lesser of the two.
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .MinAccum and MaxAccum Example
-
 [source,gsql]
 ----
 # MinAccum and MaxAccum Example
@@ -493,11 +520,12 @@ CREATE QUERY minMaxAccumEx() FOR GRAPH minimalNet {
   PRINT @@maxAccum;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .minMaxAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY minMaxAccumEx()
@@ -515,15 +543,25 @@ GSQL > RUN QUERY minMaxAccumEx()
   ]
 }
 ----
+--
+====
 
 
 
-String minimum and maximum values are based on their UTF-8 codes, which is a multilingual superset of the ASCII codes. Within ASCII, a < z, uppercase is less than lowercase, and digits are less than alphabetic characters.
+String minimum and maximum values are based on their UTF-8 codes, which is a multilingual superset of the ASCII codes.
+Within ASCII, a < z, uppercase is less than lowercase, and digits are less than alphabetic characters.
 
-MinAccum and MaxAccum operating on VERTEX type have a special comparison. They do not compare vertex ids, but TigerGraph internal ids, which might not be in the same order as the external ids. Comparing internal ids is much faster, so MinAccum/MaxAccum<VERTEX> provides an efficient way to compare and select vertices. This is helpful for some graph algorithms that require the vertices to be numbered and sortable. For example, the following query returns one post from each person. The returned vertex is not necessarily the vertex with the alphabetically largest id.
+MinAccum and MaxAccum operating on VERTEX type have a special comparison.
+They do not compare vertex ids, but TigerGraph internal ids, which might not be in the same order as the external ids.
+Comparing internal ids is much faster, so MinAccum/MaxAccum<VERTEX> provides an efficient way to compare and select vertices.
+This is helpful for some graph algorithms that require the vertices to be numbered and sortable.
+For example, the following query returns one post from each person. The returned vertex is not necessarily the vertex with the alphabetically largest id.
 
-.MaxAccum+++<VERTEX>+++example+++</VERTEX>+++
-
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 # Output one random post vertex from each person
@@ -538,11 +576,12 @@ CREATE QUERY minMaxAccumVertex() FOR GRAPH socialNet api("v2") {
   PRINT allUser[allUser.@maxVertex]; // api v2
 }
 ----
+--
 
-
-
+Results::
++
+--
 .minMaxAccuxVertex.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY minMaxAccumVertex()
@@ -598,10 +637,13 @@ GSQL > RUN QUERY minMaxAccumVertex()
   ]}]
 }
 ----
+--
+====
 
 
-
-Tuple data types are treated as hierarchical structures, where the first field used for ordering is the leftmost one. When a tuple is used as an element of a `MinAccum` or `MaxAccum`, tuple fields can be directly accessed from the accumulator.  For example, if we have the following tuple type and `MaxAccum` :
+Tuple data types are treated as hierarchical structures, where the first field used for ordering is the leftmost one.
+When a tuple is used as an element of a `MinAccum` or `MaxAccum`, tuple fields can be directly accessed from the accumulator.
+For example, if we have the following tuple type and `MaxAccum` :
 
 [source,gsql]
 ----
@@ -623,8 +665,13 @@ The AvgAccum type calculates and stores the cumulative mean of a series of numer
 
 The *+= arg* operation updates the AvgAccum variable's state to be the mean of all the previous arguments along with the current argument; The *`= arg`* operation clears all the previously accumulated state and sets the new state to be *arg* with a count of one.
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .AvgAccum Example
-
 [source,gsql]
 ----
 # AvgAccum Example
@@ -644,11 +691,12 @@ CREATE QUERY avgAccumEx() FOR GRAPH minimalNet {
   PRINT @@averageAccum;  # 100
 }
 ----
+--
 
-
-
+Results::
++
+--
 .avgAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY avgAccumEx()
@@ -666,7 +714,8 @@ GSQL > RUN QUERY avgAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === AndAccum / OrAccum
@@ -675,8 +724,13 @@ The AndAccum and OrAccum types calculate and store the cumulative result of a se
 
 For AndAccum, *+= arg* updates the state to be the logical AND between the current boolean state and *arg*. OrAccum behaves the same, with the exception that it stores the result of a logical OR operation.
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .AndAccum and OrAccum Example
-
 [source,gsql]
 ----
 # AndAccum and OrAccum Example
@@ -700,11 +754,12 @@ CREATE QUERY andOrAccumEx() FOR GRAPH minimalNet {
   PRINT @@orAccumVar;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .andOrAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY andOrAccumEx()
@@ -722,7 +777,8 @@ GSQL > RUN QUERY andOrAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === BitwiseAndAccum / BitwiseOrAccum
@@ -740,8 +796,13 @@ Bitwise Operations and Negative Integers
 Most computer systems represent negative integers using "2's complement" format, where the uppermost bit has special significance. Operations that affect the uppermost bit are crossing the boundary between positive and negative numbers, and vice versa.
 ====
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .BitwiseAndAccum and BitwiseOrAccum Example
-
 [source,gsql]
 ----
 # BitwiseAndAccum and BitwiseOrAccum Example
@@ -774,11 +835,12 @@ CREATE QUERY bitwiseAccumEx() FOR GRAPH minimalNet {
   PRINT @@bwOrAccumVar;  # 95
 }
 ----
+--
 
-
-
+Results::
++
+--
 .bitwiseAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY bitwiseAccumEx()
@@ -798,7 +860,8 @@ GSQL > RUN QUERY bitwiseAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === ListAccum
@@ -859,6 +922,12 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 | Assigns _value_ to the list element at position _index_.
 |===
 
+==== Examples
+[tabs]
+====
+Query::
++
+--
 .ListAccum Example
 
 [source,gsql]
@@ -916,11 +985,12 @@ CREATE QUERY listAccumEx() FOR GRAPH minimalNet {
   PRINT @@nestedListAccum.get(0).get(1);
 }
 ----
+--
 
-
-
+Results::
++
+--
 .listAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY listAccumEx()
@@ -954,11 +1024,15 @@ GSQL > RUN QUERY listAccumEx()
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example for update function on a global ListAccum
-
 [source,gsql]
 ----
 CREATE QUERY listAccumUpdateEx() FOR GRAPH workNet {
@@ -980,11 +1054,12 @@ CREATE QUERY listAccumUpdateEx() FOR GRAPH workNet {
   PRINT @@intListAccum, @@stringListAccum, @@passFail;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results in listAcccumUpdateEx.json
-
 [source,gsql]
 ----
 GSQL > RUN QUERY listAccumUpdateEx()
@@ -1003,11 +1078,15 @@ GSQL > RUN QUERY listAccumUpdateEx()
   }]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example for update function on a vertex-attached ListAccum
-
 [source,gsql]
 ----
 CREATE QUERY listAccumUpdateEx2(SET<VERTEX<person>> seed) FOR GRAPH workNet api("v2") {
@@ -1037,11 +1116,12 @@ CREATE QUERY listAccumUpdateEx2(SET<VERTEX<person>> seed) FOR GRAPH workNet api(
   PRINT @@intFails, @@strFails;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results for listAccumUpdateEx2
-
 [source,gsql]
 ----
 GSQL > RUN QUERY listAccumUpdateEx2(["person1","person5"])
@@ -1083,7 +1163,8 @@ GSQL > RUN QUERY listAccumUpdateEx2(["person1","person5"])
   ]
 }
 ----
-
+--
+====
 
 
 === SetAccum
@@ -1128,8 +1209,13 @@ Functions that modify the SetAccum (mutator functions) can be used only under th
 | Clears the set so it becomes empty with size 0.
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .SetAccum Example
-
 [source,gsql]
 ----
 # SetAccum Example
@@ -1163,11 +1249,12 @@ CREATE QUERY setAccumEx() FOR GRAPH minimalNet {
   PRINT @@stringSetAccum.size();
 }
 ----
+--
 
-
-
+Results::
++
+--
 .setAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY setAccumEx()
@@ -1187,7 +1274,8 @@ GSQL > RUN QUERY setAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === BagAccum
@@ -1239,8 +1327,13 @@ Functions which modify the BagAccum (mutator functions) can be used only under t
 | Removes all instances of the given value from the bag.
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .BagAccum Example
-
 [source,gsql]
 ----
 # BagAccum Example
@@ -1273,11 +1366,12 @@ CREATE QUERY bagAccumEx() FOR GRAPH minimalNet {
   PRINT @@stringBagAccum;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .bagAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY bagAccumEx()
@@ -1297,7 +1391,8 @@ GSQL > RUN QUERY bagAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === MapAccum
@@ -1348,8 +1443,13 @@ Functions that modify the MapAccum (mutator functions) can be used only under th
 | Clears the map so it becomes empty with size 0.
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .MapAccum Example
-
 [source,gsql]
 ----
 #MapAccum Example
@@ -1403,11 +1503,12 @@ CREATE QUERY mapAccumEx() FOR GRAPH minimalNet {
   END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .mapAccumEx.json Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY mapAccumEx()
@@ -1446,7 +1547,8 @@ GSQL > RUN QUERY mapAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === ArrayAccum
@@ -1461,7 +1563,6 @@ The ArrayAccum type maintains an array of accumulators. An array is a fixed-leng
 When an ArrayAccum is declared, the instance name should be followed by a pair of brackets for each dimension.  The brackets may either contain an integer constant to set the size of the array, or they may be empty. In that case, the size must be set with the reallocate function before the ArrayAccum can be used.
 
 .ArrayAccum declaration example
-
 [source,gsql]
 ----
 ArrayAccum<SetAccum<STRING>> @@names[10];
@@ -1536,8 +1637,13 @@ Functions that modify the ArrayAccum (mutator functions) can be used only under 
 | Discards the previous ArrayAccum instance and creates a new ArrayAccum, with the size(s) given. An N-dimensional ArrayAccum requires N integer parameters. The reallocate function cannot be used to change the number of dimensions.
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .Example of ArrayAccum Element-level Operations
-
 [source,gsql]
 ----
 CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
@@ -1594,11 +1700,12 @@ CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
 	PRINT @@aaList;		PRINT @@aaSetF;		PRINT @@aaBagT;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .ArrayAccumElem.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY ArrayAccumElem()
@@ -1647,11 +1754,15 @@ GSQL > RUN QUERY ArrayAccumElem()
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example of Operations between Whole ArrayAccums
-
 [source,gsql]
 ----
 CREATE QUERY ArrayAccumOp3(INT lenA) FOR GRAPH minimalNet {
@@ -1691,11 +1802,12 @@ CREATE QUERY ArrayAccumOp3(INT lenA) FOR GRAPH minimalNet {
     PRINT msg, @@arrayA; 			// A changes size & dim
 }
 ----
+--
 
-
-
+Results::
++
+--
 .ArrayAccumOp3.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY ArrayAccumOp3(3)
@@ -1739,11 +1851,15 @@ GSQL > RUN QUERY ArrayAccumOp3(3)
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example for Vertex-Attached ArrayAccum
-
 [source,gsql]
 ----
 CREATE QUERY arrayAccumLocal() FOR GRAPH socialNet api("v2") {
@@ -1765,11 +1881,12 @@ CREATE QUERY arrayAccumLocal() FOR GRAPH socialNet api("v2") {
     PRINT Persons[Persons.@edgesByType]; // api v2
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results for Query ArrayAccumLocal
-
 [source,gsql]
 ----
 GSQL > RUN QUERY arrayAccumLocal()
@@ -1825,7 +1942,8 @@ GSQL > RUN QUERY arrayAccumLocal()
   ]}]
 }
 ----
-
+--
+====
 
 
 === HeapAccum
@@ -1836,7 +1954,7 @@ The declaration of a HeapAccum is more complex than for most other accumulators,
 
 .HeapAccum declaration syntax
 
-[source,gsql]
+[source,ebnf]
 ----
 TYPEDEF TUPLE<type field_1,.., type field_n> tupleType;
 ...
@@ -1888,8 +2006,13 @@ Functions that modify the HeapAccum (mutator functions) can be used only under t
 | Clears the heap so it becomes empty with size 0.
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .HeapAccum Example
-
 [source,gsql]
 ----
 #HeapAccum Example
@@ -1938,11 +2061,12 @@ CREATE QUERY heapAccumEx() FOR GRAPH minimalNet {
   PRINT @@topTestResults.size();
 }
 ----
+--
 
-
-
+Results::
++
+--
 .heapAccumEx.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY heapAccumEx()
@@ -2058,7 +2182,8 @@ GSQL > RUN QUERY heapAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 === GroupByAccum
@@ -2066,8 +2191,7 @@ GSQL > RUN QUERY heapAccumEx()
 The GroupByAccum is a compound accumulator, an accumulator of accumulators. At the top level, it is a MapAccum where both the key and the value can have multiple fields. Moreover, each of the value fields is an accumulator type.
 
 .GroupByAccum syntax
-
-[source,gsql]
+[source,ebnf]
 ----
 GroupByAccum<type [, type]* , accumType [, accumType]* >
 ----
@@ -2130,8 +2254,13 @@ Functions that modify the GroupByAccum (mutator functions) can be used only unde
 | Removes the group associating with the key(s)
 |===
 
+==== Example
+[tabs]
+====
+Query::
++
+--
 .GroupByAccum Example
-
 [source,gsql]
 ----
 #GroupByAccum Example
@@ -2178,11 +2307,12 @@ CREATE QUERY groupByAccumEx () FOR GRAPH socialNet {
   PRINT @@group2, @@group2.get("Male").m, @@group2.get("Female").m;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Result for Query groupByAccum
-
 [source,gsql]
 ----
 GSQL > RUN QUERY groupByAccumEx()
@@ -2307,7 +2437,8 @@ GSQL > RUN QUERY groupByAccumEx()
   ]
 }
 ----
-
+--
+====
 
 
 == Nested Accumulators
@@ -2353,6 +2484,11 @@ GroupByAccum<INT a, STRING b, MaxAccum<INT> maxs, ListAccum<ListAccum<INT>> list
 
 It is legal to define nested ListAccums to form a multi-dimensional array. Note the declaration statements and the nested [ bracket ] notation in the example below:
 
+[tabs]
+====
+Query::
++
+--
 [source,text]
 ----
 CREATE QUERY nestedAccumEx() FOR GRAPH minimalNet {
@@ -2386,9 +2522,11 @@ CREATE QUERY nestedAccumEx() FOR GRAPH minimalNet {
   PRINT @@_3d_list;
 }
 ----
-
+--
+Results::
++
+--
 .nestedAccumEx.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY nestedAccumEx()
@@ -2439,5 +2577,6 @@ GSQL > RUN QUERY nestedAccumEx()
   ]
 }
 ----
-
+--
+====
 

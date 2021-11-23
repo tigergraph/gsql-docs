@@ -921,7 +921,7 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 | Mutator
 | Assigns _value_ to the list element at position _index_.
 
-|`.remove(INT _index_)
+|`.remove(INT _index_)`
 |`VOID`
 |Mutator
 |Removes value at the specified index. If the index is invalid, the function will do nothing.

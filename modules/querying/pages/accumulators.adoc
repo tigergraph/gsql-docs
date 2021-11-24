@@ -1967,30 +1967,37 @@ GSQL > RUN QUERY arrayAccumLocal()
 
 === HeapAccum
 
-The HeapAccum type maintains a sorted collection of tuples and enforces a maximum number of tuples in the collection. The output of a HeapAccum is a sorted collection of tuple elements. The *+= arg* operation adds a tuple to the collection in sorted order. If the HeapAccum is already at maximum capacity when the *+=* operator is applied, then the tuple which is last in the sorted order is dropped from the HeapAccum. Sorting of tuples is performed on one or more defined tuple fields ordered either ascending or descending. Sorting precedence is performed based on defined tuple fields from left to right.
+The HeapAccum type maintains a sorted collection of tuples and enforces a maximum number of tuples in the collection.
+The output of a HeapAccum is a sorted collection of tuple elements.
+The `+=` operation adds a tuple to the collection in sorted order. If the HeapAccum is already at maximum capacity when the `+=` operator is applied, then the tuple which is last in the sorted order is dropped from the HeapAccum.
+Sorting of tuples is performed on one or more defined tuple fields ordered either ascending or descending.
+Sorting precedence is performed based on defined tuple fields from left to right.
 
-The declaration of a HeapAccum is more complex than for most other accumulators, because the user must define a custom tuple type, set the maximum capacity of the HeapAccum, and specify how the HeapAccum should be sorted. The declaration syntax is outlined in the figure below:
+You must have defined a custom xref:data-types.adoc#_tuple[tuple type] to declare a `HeapAccum`, and one of the fields in the tuple must be a data type that can be sorted.
+To declare a `HeapAccum`, set the maximum capacity of the `HeapAccum`, and specify how the HeapAccum should be sorted.
+The declaration syntax is outlined in the figure below:
 
 .HeapAccum declaration syntax
-
 [source,ebnf]
 ----
-TYPEDEF TUPLE<type field_1,.., type field_n> tupleType;
-...
 HeapAccum<tupleType>(capacity, field_a [ASC|DESC],... , field_z [ASC|DESC]);
 ----
 
+In the declaration of the `HeapAccum`, the keyword `HeapAccum` is followed by the tuple type in angle brackets `< >`.
+This is followed by a parenthesized list of two or more parameters.
+The first parameter is the maximum number of tuples that the HeapAccum may store.
+This parameter must be a positive integer.
+The subsequent parameters are a subset of the tuple's field, which are used as sort keys.
+The sort key hierarchy is from left to right, with the leftmost key being the primary sort key.
+The keywords `ASC` and `DESC` indicate Ascending (lowest value first) or Descending (highest value first) sort order.
+Ascending order is the default.
 
-
-First, the HeapAccum declaration must be preceded by a TYPEDEF statement which defines the tuple type. At least one of the fields (field_1, ..., field_n) must be of a data type that can be sorted.
-
-In the declaration of the HeapAccum itself, the keyword "HeapAccum" is followed by the tuple type in angle brackets < >. This is followed by a parenthesized list of two or more parameters. The first parameter is the maximum number of tuples that the HeapAccum may store. This parameter must be a positive integer. The subsequent parameters are a subset of the tuple's field, which are used as sort keys. The sort key hierarchy is from left to right, with the leftmost key being the primary sort key. The keywords ASC and DESC indicate Ascending (lowest value first) or Descending (highest value first) sort order. Ascending order is the default.
-
+==== Functions
 HeapAccum also supports the following class functions.
 
 [WARNING]
 ====
-Functions that modify the HeapAccum (mutator functions) can be used only under the following conditions:
+Functions that modify the `HeapAccum` (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.

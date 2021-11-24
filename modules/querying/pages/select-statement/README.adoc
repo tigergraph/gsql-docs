@@ -2660,18 +2660,19 @@ GSQL > RUN QUERY personGender("Female")
 
 == HAVING Clause
 
-The optional HAVING clause provides constraints on the result set of the SELECT. The constraints are applied *after* ACCUM and POST-ACCUM actions. This differs from the WHERE clause, which is applied *before* the ACCUM and POST-ACCUM actions.
+The optional HAVING clause provides constraints on the result set of the SELECT.
+The constraints are applied *after* ACCUM and POST-ACCUM actions.
+This differs from the WHERE clause, which is applied *before* the ACCUM and POST-ACCUM actions.
 
 .EBNF for HAVING Clause
-
 [source,ebnf]
 ----
 havingClause := HAVING condition
 ----
 
-
-
-A HAVING clause can only be used if there is an ACCUM or POST-ACCUM clause . The condition is applied to each vertex in the SELECT set (either source or target vertices) which also fulfilled the FROM and WHERE conditions. The HAVING clause is intended to test one or more of the accumulator variables that were updated in the ACCUM or POST-ACCUM clause, though the condition may be anything that equates to a boolean value. If the condition is false for a particular vertex, then that vertex is excluded from the result set.
+The condition in a `HAVING` clause is applied to each vertex in the `SELECT` set (either source or target vertices) which also fulfilled the `FROM` and `WHERE` conditions.
+The `HAVING` clause is intended to test one or more of the accumulator variables that were updated in the `ACCUM` or `POST-ACCUM` clause, though the condition may be anything that equates to a boolean value.
+If the condition is false for a particular vertex, then that vertex is excluded from the result set.
 
 The following example demonstrates using the HAVING clause to constrain a result set based on the vertex accumulator variable which was updated during the ACCUM clause.
 

@@ -1980,7 +1980,7 @@ The declaration syntax is outlined in the figure below:
 .HeapAccum declaration syntax
 [source,ebnf]
 ----
-HeapAccum<tupleType>( [capacity], field_a [ASC|DESC],... , field_z [ASC|DESC]);
+HeapAccum<tupleType>( [capacity,] field_a [ASC|DESC],... , field_z [ASC|DESC]);
 ----
 
 In the declaration of the `HeapAccum`, the keyword `HeapAccum` is followed by the tuple type in angle brackets `< >`.

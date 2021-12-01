@@ -10,7 +10,7 @@ sqlSelectBlock := sqlSelectClause
                [whereClause]
                [groupByClause]
                [havingClause]
-               [orderClause]
+               [orderClause] <1>
                [limitClause]
 
 sqlSelectClause := SELECT [DISTINCT] columnExpr ("," columnExpr)*
@@ -20,9 +20,9 @@ columnExpr := expr [AS columnName]
 columnName := name
 tableName := name
 ----
+<1> If a SQL-like `SELECT` statement has an xref:{page-component-version}@gsql-ref:querying:select-statement/README.adoc#_order_by_clause[`ORDER BY` clause], it must also have a `LIMIT` clause.
 
-
-Just as in SQL, the SELECT keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.
+Just as in SQL, the `SELECT` keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.
 The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query.
 A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
 

@@ -1,5 +1,6 @@
 = Creating a Loading Job
 :pp: {plus}{plus}
+:description: GSQL commands related to creating loading jobs.
 
 After a graph schema has been created, the system is ready to load data into the graph store. The GSQL language offers easy-to-understand and easy-to-use commands for data loading which perform many of the same data conversion, mapping, filtering, and merging operations that are found in enterprise ETL (Extract, Transform, and Load) systems.
 
@@ -16,7 +17,7 @@ CREATE LOADING JOB, which may contain a set of DEFINE and LOAD statements
 
 [NOTE]
 ====
-*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_built_in_loader_token_functions>>).
+*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_token_functions>>).
 ====
 
 == Loading job capabilities
@@ -159,7 +160,7 @@ Then, when running this loading job, first set a value for the parameter, and th
 [source,gsql]
 ----
 SET sys.data_root="/data/mydata"
-RUN JOB filePathEx
+RUN LOADING JOB filePathEx
 ----
 
 
@@ -1156,7 +1157,7 @@ CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
   LOAD "encoding.json" TO VERTEX encoding
     VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
 }
-RUN JOB json_load
+RUN LOADING JOB json_load
 ----
 
 

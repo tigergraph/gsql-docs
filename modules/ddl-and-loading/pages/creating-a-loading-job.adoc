@@ -158,7 +158,7 @@ Then, when running this loading job, first set a value for the parameter, and th
 [source,gsql]
 ----
 SET sys.data_root="/data/mydata"
-RUN JOB filePathEx
+RUN LOADING JOB filePathEx
 ----
 
 
@@ -1145,7 +1145,7 @@ CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
   LOAD "encoding.json" TO VERTEX encoding
     VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
 }
-RUN JOB json_load
+RUN LOADING JOB json_load
 ----
 
 

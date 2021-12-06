@@ -33,7 +33,7 @@ GSQL will confirm the creation of the vertex type.
 [,gsql]
 ----
 GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
-The vertex type person is created.
+Successfully created vertex types: [person].
 GSQL >
 ----
 
@@ -43,7 +43,7 @@ You can create as many vertex types as you need.
 
 == Create an Edge Type
 
-Next, use the CREATE ... EDGE command to create an edge type named *friendship*. The keyword UNDIRECTED indicates this edge is a bidirectional edge, meaning that information can flow starting from either vertex. If you'd rather have a unidirectional connection where information flows only from the FROM vertex, use the DIRECTED keyword in place of UNDIRECTED.  Here, FROM and TO are required to specify which two vertex types the edge type connects. An individual edge is specifying by giving the primary_ids of its source (FROM) vertex and target (TO) vertex. These are followed by an optional list of attributes, just as in the vertex definition.
+Next, use the CREATE ... EDGE command to create an edge type named *friendship*. The keyword UNDIRECTED indicates this edge is a bidirectional edge, meaning that information can flow starting from either vertex. If you'd rather have a unidirectional connection where information flows only from the FROM vertex, use the DIRECTED keyword in place of UNDIRECTED.  Here, FROM and TO are required to specify which two vertex types the edge type connects. An individual edge is specified by giving the primary_ids of its source (FROM) vertex and target (TO) vertex. These are followed by an optional list of attributes, just as in the vertex definition.
 
 .GSQL command
 
@@ -61,7 +61,7 @@ GSQL will confirm the creation of the edge type.
 [,gsql]
 ----
 GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
-The edge type friendship is created.
+Successfully created edge types: [friendship].
 GSQL >
 ----
 
@@ -71,7 +71,7 @@ You can create as many edge types as you need.
 
 == Create a Graph
 
-Next, use the CREATE GRAPH command to create a graph named *social.* Here, we just list the vertex types and edge types that we want to include in this graph.
+Next, use the CREATE GRAPH command to create a graph named *social*. Here, we just list the vertex types and edge types that we want to include in this graph.
 
 .GSQL command
 
@@ -89,10 +89,10 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 [,gsql]
 ----
 GSQL > CREATE GRAPH social (person, friendship)
-
-Restarting gse gpe restpp ...
-
-Finish restarting services in 16.554 seconds!
+Stopping GPE GSE RESTPP
+Successfully stopped GPE GSE RESTPP in 16.554 seconds
+Starting GPE GSE RESTPP
+Successfully strated GPE GSE RESTPP in 0.119 seconds
 The graph social is created.
 ----
 
@@ -117,6 +117,7 @@ Jobs:
 
 
 Json API version: v2
+Syntax version: v1
 ----
 
 

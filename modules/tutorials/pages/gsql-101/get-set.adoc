@@ -8,11 +8,11 @@ In this tutorial, we will show you how to create a graph schema, load data in yo
 
 A graph is a collection of data entities and the connections between them.  That is, it's a network of data entities.
 
-Many people call a data entity a *node* ; at TigerGraph we called it a *vertex*. The plural is *vertices*. We call a connection an edge.  Both vertices and edges can have properties or attributes.  The figure below is a visual representation of a graph containing 7 vertices (shown as circles) and 7 edges (the lines).
+Many people call a data entity a *node* ; at TigerGraph we call it a *vertex*. The plural is *vertices*. We call a connection an *edge*.  Both vertices and edges can have properties or attributes.  The figure below is a visual representation of a graph containing 7 vertices (shown as circles) and 7 edges (the lines).
 
 image::friendship-social-graph.png[Friendship Social Graph]
 
-A graph schema is the model which describes the *types* of vertices (nodes) and edge (connections) which can appear in your graph.  The graph above has one type of vertex (person) and one type of edge (friendship).
+A graph schema is the model which describes the *types* of vertices (nodes) and edges (connections) which can appear in your graph.  The graph above has one type of vertex (person) and one type of edge (friendship).
 
 A schema diagram looks like a small graph, except each node represents one *type* of vertex, and each link represents one *type* of edge.
 
@@ -90,6 +90,7 @@ Graphs:
 Jobs:
 
 Json API version: v2
+Syntax version: v1
 ----
 
 

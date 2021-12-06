@@ -352,9 +352,9 @@ Every attribute value stored in GSQL is a valid value, so IS NULL and IS NOT NUL
 expr [NOT] LIKE expr [ESCAPE escape_char]
 ----
 
-The `LIKE` operator is used for string pattern matching and can only be used in `WHERE` clauses. The expression ``string1 LIKE string_pattern``evaluates to boolean true if `string1` __matches the pattern in `string_pattern`; otherwise, it is false.
+The `LIKE` operator is used for string pattern matching and can only be used in `WHERE` clauses. The expression `string1 LIKE string_pattern` evaluates to boolean true if `string1` matches the pattern in `string_pattern`; otherwise, it is false.
 
-Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. A `string_pattern` __can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (``<char_list>``indicates a placeholder):
+Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (``<char_list>``indicates a placeholder):
 
 |===
 | Character or syntax | Description | Example

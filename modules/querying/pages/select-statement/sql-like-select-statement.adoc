@@ -1,17 +1,16 @@
 = SQL-like SELECT statement
 
-The SQL-like SELECT statement defines a tabular output. It introduces the GROUP BY clause, as well as internal table structures which can be printed.
+The SQL-like `SELECT` statement defines a tabular output. It introduces the `GROUP BY` clause, as well as internal table structures which can be printed.
 
 .EBNF for SQL-Like Select Statement
-
-[source,gsql]
+[source,ebnf]
 ----
 sqlSelectBlock := sqlSelectClause
                fromClause
                [whereClause]
                [groupByClause]
                [havingClause]
-               [orderClause]
+               [orderClause] <1>
                [limitClause]
 
 sqlSelectClause := SELECT [DISTINCT] columnExpr ("," columnExpr)*
@@ -21,29 +20,31 @@ columnExpr := expr [AS columnName]
 columnName := name
 tableName := name
 ----
+<1> If a SQL-like `SELECT` statement has an xref:{page-component-version}@gsql-ref:querying:select-statement/README.adoc#_order_by_clause[`ORDER BY` clause], it must also have a `LIMIT` clause.
 
-
-
-Just as in SQL, the SELECT keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.  The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query. A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
+Just as in SQL, the `SELECT` keyword is followed by an ordered list of expressions (`columnExpr`), each expression defining one column in the output table.
+The expressions can refer to the attributes or accumulators of the vertices and edges selected in the FROM clause of this query.
+A column can apply one of the `aggregator` functions (COUNT, SUM, AVG, MIN, MAX), so that the table aggregates the raw data into summary results.  Each column can be given an alias for its heading (`AS columnName`).
 
 [CAUTION]
 ====
 If some columns are aggregated, the non-aggregated (grouping) columns must come first.
 ====
 
-Unlike the classic GSQL SELECT statement which assigns its output to a vertex set variable, the SQL-like form uses `INTO tableName` to store the results in a table. `tableName` can be any identifier that has not been used in the query before.
+Unlike the classic GSQL `SELECT` statement, which assigns its output to a vertex set variable, the SQL-like form uses `INTO tableName` to store the results in a table.
+`tableName` can be any identifier that has not been used in the query before.
 
-`DISTINCT` has the same meaning as it does in SQL: values that appear more than once in the raw data should only be used once. It can be used either individually for aggregated columns (e.g., count how many unique values there are) or collectively so that there are no repeated rows in the table.
+`DISTINCT` has the same meaning as it does in SQL: values that appear more than once in the raw data should only be used once.
+It can be used either individually for aggregated columns (e.g., count how many unique values there are) or collectively so that there are no repeated rows in the table.
 
-The SQL-like form may use the xref:select-statement/sql-like-select-statement.adoc[GROUP  BY clause] but may not use the ACCUM and POST-ACCUM clauses.
+The SQL-like form may use the xref:select-statement/sql-like-select-statement.adoc[GROUP  BY clause] but may not use the `ACCUM` and `POST-ACCUM` clauses.
 
 [CAUTION]
 ====
 This feature is only available in syntax v2. Ensure that the correct syntax version is specified in the `CREATE QUERY` header.
 ====
 
-[discrete]
-==== Example:
+== Example
 
 In the example graph `socialNet`, which has vertex types `person` and `post`, and edge type `liked` for when someone likes a post, use a query to retrieve timestamps of all likes, the subject of the posts being liked, and the primary IDs of the people who liked the posts.
 
@@ -122,24 +123,22 @@ Output::
 
 == GROUP BY Clause
 
-The optional GROUP BY clause acts just as it does in basic SQL: it groups and merge rows of data together, so that the output table summarizes the data, rather than showing every individual tuple which matches the SELECT and FROM clauses.
+The optional `GROUP BY` clause acts just as it does in basic SQL: it groups and merge rows of data together, so that the output table summarizes the data, rather than showing every individual tuple which matches the SELECT and FROM clauses.
 
 .EBNF for GROUP BY clause
-
-[source,gsql]
+[source,ebnf]
 ----
 groupByClause := GROUP BY groupExpr ("," groupExpr)*
 groupExpr = expr
 ----
 
 
+The `SELECT` clause's list of column expressions defines a set of tuples or rows. All the tuples which have the same value for `groupExpr` are grouped together.
+If there is a second `groupExpr`, then this is used to subdivide each group into subgroups, and so on through the list of `groupExpr` from left to right.
 
-The SELECT clause's list of column expressions defines a set of tuples or rows. All the tuples which have the same value for `groupExpr` are grouped together. If there is a second `groupExpr`, then this is used to subdivide each group into subgroups, and so on through the list of `groupExpr` from left to right.
+=== Coordinating SELECT and GROUP BY
 
-[discrete]
-==== Coordinating SELECT and GROUP BY
-
-The SELECT clause and GROUP BY clause must be coordinated. Each expression `groupExpr` may be a vertex or edge alias from the FROM clause, or an attribute of a vertex or edge alias. Furthermore, each `groupExpr` must either be the same as or the basis of a SELECT `columnExpr`. In the SELECT clause, any columns which are not associated with a  groupExpr must be be aggregated (with COUNT, SUM, AVG, MIN or MAX) and must be at the end of the list of columns. For example, in the workNet graph, if we have this FROM clause: +
+The `SELECT` clause and `GROUP BY` clause must be coordinated. Each expression `groupExpr` may be a vertex or edge alias from the `FROM` clause, or an attribute of a vertex or edge alias. Furthermore, each `groupExpr` must either be the same as or the basis of a SELECT `columnExpr`. In the SELECT clause, any columns which are not associated with a  `groupExpr` must be aggregated (with `COUNT`, `SUM`, `AVG`, `MIN` or `MAX`) and must be at the end of the list of columns. For example, in the workNet graph, if we have this FROM clause: +
 `FROM person:p -(worksFor:w)- company:c` +
 and if we want columns for company's country, whether working full time or not, and employees, with no grouping we could have
 
@@ -184,13 +183,11 @@ Then the grouped output would look like this:
       ...
 ----
 
-[discrete]
-==== Implied GROUP BY
+=== Implied GROUP BY
 
-If the SELECT clause contains aggregator functions, the GROUP BY clause can be omitted. Instead, GSQL will assume that every SELECT expression that is not aggregrated is to be used for grouping, in left-to-right order.
+If the SELECT clause contains aggregator functions, the GROUP BY clause can be omitted. Instead, GSQL will assume that every SELECT expression that is not aggregated is to be used for grouping, in left-to-right order.
 
-[discrete]
-==== Examples
+=== Examples
 
 Example 1 (grouping and aggregation): For each employee, find the number of its employers
 

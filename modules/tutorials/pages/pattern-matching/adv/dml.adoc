@@ -1,25 +1,17 @@
 = Data Modification
 
-Pattern Matching GSQL supports Insert, Update, and Delete operations. The syntax is identical to that in classic GSQL (v1), though the full range of data modification operations are not yet support.
+Pattern Matching GSQL supports Insert, Update, and Delete operations. In general, data modification can be at two levels in GSQL:
 
-In general, data modification can be at two levels in GSQL:
+. Statement level: Stand-alone insert/update/delete statements.
+. SELECT-block level: The FROM-WHERE clauses define a match table, and the data modification is performed based on the vertex and edge information in the match table. The GSQL specifications calls these block level data modifications *DML-sub statements*.
 
-. Top level. The statement does not need to within any other statement.
-. Within a SELECT query statement. The FROM-WHERE clauses define a match table, and the data modification is performed based on the vertex and edge information in the match table. The GSQL specifications calls these within-SELECT statements *DML-sub statements*.
-
-[CAUTION]
-====
-
-* Insert, Update, and Delete currently work in compiled mode only (e.g., you must run INSTALL QUERY before RUN QUERY.)  Data Modification in interpreted mode is not yet available.
-* SELECT queries with data modification may only have one POST-ACCUM clause.
-====
 
 == INSERT
 
-Pattern matching Insert is supported at both the top-level and within-SELECT levels, using the same syntax as in classic GSQL. You can insert vertices and edges.
+Pattern matching Insert is supported at both the statement and SELECT-block levels, using the same syntax as in classic GSQL. You can insert vertices and edges.
 
-* For a top-level statement, use xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO],
-* Inside an ACCUM or POST-ACCUM clause, use the xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insert[DML-sub INSERT] statement.
+* At statement level, refer to xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO],
+* Inside an ACCUM or POST-ACCUM clause, refer to xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insert[DML-sub INSERT].
 
 *Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  KNOWS edges connecting Tiger Woods with Viktor's favorite authors.
 
@@ -27,60 +19,9 @@ Pattern matching Insert is supported at both the top-level and within-SELECT lev
 ----
 USE GRAPH ldbc_snb
 
-#find Viktor's 2012 favorite posts' authors, whose lastName prefix with S.
-INTERPRET QUERY() SYNTAX V2 {
-
-  R  =  SELECT t
-        FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-         AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012;
-
-  PRINT R[R.id, R.firstName, R.lastName];
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"R": [
-    {
-      "v_id": "8796093025410",
-      "attributes": {
-        "R.id": 8796093025410,
-        "R.firstName": "Priyanka",
-        "R.lastName": "Singh"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "2199023260091",
-      "attributes": {
-        "R.id": 2199023260091,
-        "R.firstName": "Janne",
-        "R.lastName": "Seppala"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "15393162796846",
-      "attributes": {
-        "R.id": 15393162796846,
-        "R.firstName": "Mario",
-        "R.lastName": "Santos"
-      },
-      "v_type": "Person"
-    }
-  ]}]
-}
-
 # create a Person node, whose name is tiger,
 # and connect this Person with above Victor's favorite authors
-CREATE QUERY InsertEdgeAndVertex () SYNTAX v2{
+CREATE QUERY InsertEdgeAndVertex () SYNTAX v2 {
 
   #add a celebrity person node using INSERT INTO statement.
   INSERT INTO Person VALUES (100000000,"Tiger", "Woods", "m", _, _,_,_,_,_);
@@ -208,11 +149,9 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410"
 [NOTE]
 ====
 
-* Top-level UPDATE statements are not yet supported in syntax v2.
-+
-Vertex attributes can only be updated in POST-ACCUM clause, and  edge attributes can only be updated in the ACCUM clause.
+* Vertex attributes can only be updated in POST-ACCUM clause, and  edge attributes can only be updated in the ACCUM clause.
 
-* To perform within-SELECT updates, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
+* The FROM pattern can only be a _*single hop, fixed length, undirected or right-directed*_ pattern.
 ====
 
 *Example 2.* For all KNOWS edges that connect Viktor Akhiezer and his friends whose lastName begins with "S", update the edge creationDate to "2020-10-01".  Also, for the Person vertex (Tiger Woods) update the vertex's creationDate and language he speaks.
@@ -356,10 +295,9 @@ You  can use delete () function to delete edges and vertices in ACCUM and POST-A
 [NOTE]
 ====
 
-* Top-levels  DELETE statements are not yet supported in SYNTAX v2.
 * Edges can only be deleted in the ACCUM clause.
 * For best performance, vertices should be deleted in the POST-ACCUM clause.
-* To perform within-SELECT deletes, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
+* The FROM pattern can only be a _*single hop, fixed length, undirected or right-directed*_ pattern.
 ====
 
 *Example 3.* Delete vertex Tiger Woods and its KNOWS edges.

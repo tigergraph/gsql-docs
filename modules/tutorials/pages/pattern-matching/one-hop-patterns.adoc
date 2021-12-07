@@ -20,12 +20,16 @@ Pattern matching queries support nested queries
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-In classic GSQL queries, described in xref:tutorials:gsql-101/README.adoc[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
+[NOTE]
+====
+In classic GSQL queries, we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
 
 [source,gsql]
 ----
-Person:p -(LIKES:e)-> Message:m          /* Classic GSQL example */
+/* Classic GSQL example */
+Person:p -(LIKES:e)-> Message:m
 ----
+====
 
 In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, where the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
 
@@ -43,7 +47,7 @@ Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* Pattern example */
 [discrete]
 ==== Edge Type Wildcards
 
-The underscore _`_`_ is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `_>` or `<_` or `_` +
+The underscore `\_` is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `\_>` or `<_` or `_` +
 The empty parentheses `()` means any edge, directed or undirected.
 
 [discrete]
@@ -56,7 +60,7 @@ Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined a
 [source,gsql]
 ----
 CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
-    Source = {Person}; // Seed set
+    Source = {Person.*}; // Seed set
     SELECT t FROM Source:s -(IS_LOCATED_IN:e)- :t;
     PRINT t;
 }
@@ -97,7 +101,7 @@ Performance may be better when types are explicitly provided.
  ** Any one of the three edge patterns.
 . `FROM X:x - () - Y:y`
  ** any edge (directed or undirected)
- ** Same as `(<_|_>|_)`
+ ** Same as `(<\_|_>|_)`
 
 == Entering Pattern Match Syntax Mode
 
@@ -123,7 +127,7 @@ SET syntax_version="v2"
 
 You can also select the syntax by using the SYNTAX clause in the CREATE QUERY statement: v1 for classic syntax (default); v2 for pattern matching. The query-level SYNTAX option overrides the syntax_version session parameter.
 
-.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query 
+.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query
 
 [source,gsql]
 ----

@@ -12,7 +12,7 @@ This short tutorial aims to shorten the learning curve of accumulator. Supposedl
 
 image::https://lh3.googleusercontent.com/TZfcbUMlXsHvCYVO_ex9QqjlK823ybyrX7aQhv38j35fghJVpsJEtdFBjcjMj1x2pHfHbNUraTgbySriMRttCuNv359iOwnRHDVcRgPyAj9tQLappYXe6ManjmRS27eunYMc2rjG[Figure 1. The left box is a GSQL query with different accumulators being accumulated to. The right box shows the accumulator variables&apos; final results.]
 
-An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query. It has an initial value, and users can keep accumulating (using its "+=" built-in operator) new values into it. Each accumulator variable has a type. The type decides what semantics the declared accumulator will use to interpret the "+=" operation.
+An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query. It has an initial value, and users can keep accumulating (using its "\+=" built-in operator) new values into it. Each accumulator variable has a type. The type decides what semantics the declared accumulator will use to interpret the "+=" operation.
 
 In Figure 1's left box, from line 3 to line 8, six different accumulator variables (those with prefix @@) are declared, each with a unique type. Below we explain the semantic and usage of them.
 
@@ -46,8 +46,8 @@ As Figure 2 shows, Dan has 4 direct friends -- Tom, Kevin, Jenny, and Nancy, eac
 
 ACCUM and POST-ACCUM clauses are computed in stages, where-in a SELECT-FROM-WHERE query block, ACCUM is executed first, followed by the POST-ACCUM clause.
 
-* *ACCUM* executes its statement(s) once for each matched edge (or path) of the FROM clause pattern. Further, ACCUM parallelly executes its statements for all the matches.
-* *POST-ACCUM* executes its statement(s) once for each involved vertex. Note that each statement within the POST-ACCUM clause can refer to either source vertices or target vertices but not both. Its statements can access the aggregated accumulator result computed in the ACCUM clause.
+* *ACCUM* executes its statement(s) once for each matched subgraph specified by the FROM, WHERE, and PER clauses. Further, ACCUM parallelly executes its statements for all the matches.
+* *POST-ACCUM* executes its statement(s) once for each involved vertex. Note that statements within the POST-ACCUM clause can only refer to one vertex alias specified in the FROM clause. Its statements can access the aggregated accumulator result computed in the ACCUM clause.
 
 == *Conclusion*
 
@@ -57,4 +57,4 @@ We have explained the mechanism of accumulators, their types, and the two differ
 * *IC:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex*]****
 * *BI:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/business_intelligence[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/business_intelligence*]****
 
-You can follow GSQL 102 to setup the environment. You can also post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarifying any doubts.
+You can follow xref:tutorials:pattern-matching/README.adoc[Pattern Matching Tutorial] to setup the environment. You can also post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarifying any doubts.

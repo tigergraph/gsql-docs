@@ -2,9 +2,8 @@
 
 In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment. This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
 
-.EBNF
-
-[source,gsql]
+.EBNF for declaration and assignment
+[source,ebnf]
 ----
 ## Declarations ##
 accumDeclStmt :=
@@ -65,8 +64,6 @@ funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
 argList := expr ["," expr]*
 ----
 
-
-
 == Variable scopes
 
 Different types of variable declarations use different scoping rules. There are two types of scoping rules in a GSQL query:
@@ -118,8 +115,7 @@ Accumulator declaration is discussed in xref:querying:accumulators.adoc#_declara
 In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables. The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
 
 .EBNF for base type variable declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
@@ -128,7 +124,7 @@ A base type variable can be declared and accessed anywhere in the query.
 To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side.
 You can declare multiple variables of the same type in a single declaration statement.
 
-[source,cpp]
+[source,gsql]
 ----
 CREATE QUERY baseTypeVariable() {
     STRING a;
@@ -166,25 +162,27 @@ CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
 Local base type variables are block-scoped and are accessible in the block where they are declared only.
-Within a local base type variable's scope, you cannot another local base type variable with the same name.
+Within a local base type variable's scope, you cannot another local base type variable with the same name at the same level.
+However, you can declare a local base type variable or local container variable with the same name at a lower level, where the lower-level declaration will take precedence over the previous declaration.
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
 
 .EBNF for local base type variable declaration and initialization
-
-[source,gsql]
+[source,ebnf]
 ----
 localVarDeclStmt := baseType varName "=" expr
 ----
-
-
 
 Local base type variables are not subject to the assignment restrictions of regular base type variables. Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
 
 ==== Example:
 
+[tabs]
+====
+Query::
++
+--
 .Base type variable declaration in DML statements
-
 [source,gsql]
 ----
 # An example showing a local base type variable succeeds
@@ -204,9 +202,11 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
   PRINT @@maxDate, @@maxDateGlob, dtGlob;  # @@maxDateGlob will be 0
 }
 ----
-
+--
+Result::
++
+--
 .localVariable Query Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY localVariable("person1")
@@ -225,8 +225,139 @@ GSQL > RUN QUERY localVariable("person1")
   }]
 }
 ----
+--
+====
+
+=== Local container variable
+Variables declared inside a DML-block storing container type values are called _local container type variables_.
+Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
+
+Local container variables can store values of a specified type.
+The following types are allowed:
+
+|===
+|Container type |Element type
+
+|`SET`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
+
+|`BAG`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+
+|`LIST`
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
+
+|`MAP`
+a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
+|===
 
 
+You must declare which type the container variable will be storing when you declare the container variable.
+
+.Local container variable declaration
+[tabs]
+====
+EBNF::
++
+--
+[source,ebnf]
+----
+localContainerDeclStmt := containerType "<" type ">" varName "=" expr
+----
+--
+Example::
++
+--
+[source,gsql]
+----
+SET<INT> set1 = (1, 2, 3) <1>
+----
+<1> The declaration can only take place in a DML block.
+--
+====
+
+Local container variables are block-scoped and are accessible in the block where they are declared only.
+Within a local container variable’s scope, you cannot another local container variable or local base type variable with the same name at the same level.
+However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
+
+In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.
+
+
+==== Query example
+In the following example, the `SELECT` statement in the main query declares three local container variables, each containing:
+
+* A base type
+* A user-defined tuple
+* An anonymous tuple
+
+[tabs]
+====
+Main query::
++
+--
+[source,gsql]
+----
+CREATE QUERY test() FOR GRAPH poc_graph {
+  TYPEDEF TUPLE<int i, string s> mainTuple;
+  SumAccum<int> @@A;
+  SetAccum<mainTuple> @@setAcc;
+  SetAccum<mainTuple> @@setAcc2;
+
+  L0 = { person.* };
+  L1 = SELECT p
+    FROM L0:p
+      ACCUM
+        // local container with base type
+        List<int> a = subQuery(p),
+        FOREACH e IN a DO
+          @@A +=  e,
+        // user defined tuple
+        Set<mainTuple> setA = subQuery1(p)
+        @@setAcc += setA,
+        // anonymous tuple(define signature of tuple in declaration)
+        Set<tuple<int, string>> setB = subQuery1(p),
+        @@setAcc2 += setB
+      end;
+
+  print @@A;
+  print @@setAcc;
+  print @@setAcc2;
+}
+----
+--
+Subquery 1::
++
+--
+----
+CREATE QUERY subQuery(VERTEX node) FOR GRAPH poc_graph
+returns(ListAccum<int>)
+{
+ListAccum<int> @@res;
+Start = { node };
+Result = select t from Start:t
+Accum @@res += 1;
+return @@res;
+}
+----
+--
+Subquery 2::
++
+--
+----
+CREATE QUERY subQuery1(VERTEX node) for graph poc_graph
+returns(SetAccum<tuple<int, string>>){
+  typedef tuple<int i, string s> subTuple;
+  SetAccum<subTuple> @@res;
+  vSet = { person.* };
+  Result1 = select p from vSet:p
+            where p.name == "Charlie"
+            accum @@res += subTuple(-1, "hello");
+  return @@res;
+}
+----
+--
+====
 
 === Vertex Set Variable Declaration and Assignment
 
@@ -235,8 +366,7 @@ Variables that contain a set of one or more vertices are called vertex set varia
 Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
 
 .EBNF for Vertex Set Variable Declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
 
@@ -259,8 +389,6 @@ selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
 columnId := "$" (integer | stringLiteral)
 ----
 
-
-
 The query below lists all ways of assigning a vertex set variable an initial set of vertices (that is, forming a seed set).
 
 * A vertex parameter, untyped or typed, enclosed in curly brackets
@@ -273,7 +401,6 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * Union of vertex set variables
 
 .Seed Set Example
-
 [source,gsql]
 ----
 CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VERTEX<person>> v4) FOR GRAPH socialNet {
@@ -303,12 +430,11 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
 
 When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
 
+.Declaration syntax difference: vertex set variable vs. base type variable
 [WARNING]
 ====
-Declaration syntax difference: vertex set variable vs. base type variable
-
 In a vertex set variable declaration, the optional type specifier follows the variable name and should be surrounded by parentheses: *`vSetName(type)`* +
-This is different than a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
+This is different from a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
 ====
 
 ==== Assignment
@@ -316,7 +442,6 @@ This is different than a base type variable declaration, where the type specifie
 After a vertex set variable is declared, the vertex type of the vertex set variable is immutable. Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type. The following is an example in which we must declare the vertex set variable type.
 
 .Vertex set variable type
-
 [source,gsql]
 ----
 CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet {
@@ -332,22 +457,21 @@ CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet
 }
 ----
 
-
-
-In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex. If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type. However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices. Therefore, `S` must be declared as an ANY-type vertex set variable.
+In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex.
+If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type.
+However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices.
+Therefore, `S` must be declared as an ANY-type vertex set variable.
 
 === `FILE` Object Declaration
 
 A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
 
 .EBNF for FILE object declaration
-
-[source,gsql]
+[source,ebnf]
 ----
 fileDeclStmt := FILE fileVar "(" filePath ")"
 fileVar := name
 ----
-
 
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.  When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
@@ -355,7 +479,6 @@ When a `FILE` object is declared, associated with a particular text file, any ex
 ==== Example:
 
 .File object query example
-
 [source,gsql]
 ----
 CREATE QUERY getUSWorkerInterests (STRING fileLocation) FOR GRAPH workNet {
@@ -384,8 +507,7 @@ RUN QUERY getUSWorkerInterests("/home/tigergraph/fileEx.txt")
 Assignment statements are used to set or update the value of a variable after it has been declared. This applies to base type variables, vertex set variables, and accumulators. Accumulators also have the special += accumulate statement, which was discussed in the Accumulator section.  Assignment statements can use expressions to define the new value of the variable.
 
 .EBNF for Assignment Statements
-
-[source,gsql]
+[source,ebnf]
 ----
 ## Assignment Statement ##
 assignStmt := name "=" expr         # baseType variable, vertex set variable
@@ -407,7 +529,7 @@ loadAccumStmt := globalAccumName "=" "{" "LOADACCUM" loadAccumParam
 ====
 Vertex and edge (non-accumulator) attributes can use the += operator in an ACCUM or POST-ACCUM clause to perform parallel accumulation.
 
-[source,gsql]
+[source,ebnf]
 ----
 attrAccumStmt := name "."attrName "+=" expr
 ----
@@ -424,7 +546,6 @@ In general, assignment statements can take place anywhere after the variable has
 
 [WARNING]
 ====
-
 * Global accumulator assignment is not permitted within the body of `SELECT` or `UPDATE` statements
 * Base type variable assignment is permitted in `ACCUM` or `POST-ACCUM` clauses, but the change in value will not take place until exiting the clause. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
 * Vertex attribute assignment is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted. This is because the `ACCUM` clause iterates over an edge set.
@@ -433,7 +554,7 @@ In general, assignment statements can take place anywhere after the variable has
 
 === `LOADACCUM` Statement
 
-[source,gsql]
+[source,ebnf]
 ----
 loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
                                   ["," LOADACCUM loadAccumParams]* "}"
@@ -474,21 +595,25 @@ Any accumulator using generic `VERTEX` as an element type cannot be initialized 
 
 One assignment statement can have multiple `LOADACCUM()` function calls. However, every `LOADACCUM()` referring to the same file in the same assignment statement must use the same separator and header parameter values.
 
-==== Example:
+==== Example
 
+.LoadAccum example
+[tabs]
+====
+Data::
++
+--
 .loadAccumInput.csv
-
-[source,gsql]
+[source,csv]
 ----
 person1,1,"test1",3
 person5,2,"test2",4
 person6,3,"test3",5
 ----
-
-
-
-.LoadAccum example
-
+--
+Query::
++
+--
 [source,gsql]
 ----
 CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
@@ -502,11 +627,10 @@ CREATE QUERY loadAccumEx(STRING filename) FOR GRAPH socialNet {
   PRINT @@testMap, @@testGroupBy;
 }
 ----
-
-
-
-.Results of Query loadAccumEx
-
+--
+Result::
++
+--
 [source,gsql]
 ----
 GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
@@ -548,12 +672,12 @@ GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
   }]
 }
 ----
-
+--
+====
 
 
 == Function Call Statements
-
-[source,gsql]
+[source,ebnf]
 ----
 funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
               | globalAccumName ("." funcName "(" [argList] ")")+
@@ -576,13 +700,13 @@ BagAccum<INT> @@bagAcc;
 @@bagAcc.removeAll(0);
 ----
 
-
-
 === Clear Collection Accumulators
 
-Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant. It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty). If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
+Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size as data is added. Particularly for vertex-attached accumulators, if the number of vertices is large, their memory consumption can be significant.
+It can improve system performance to clear or reset collection accumulators during a query as soon as their data is no longer needed. Running the `reset_collection_accum(accumName)` function resets the collection(s) to be zero-length (empty).
+If the argument is a vertex-attached accumulator, then the entire set of accumulators is reset.
 
-[source,gsql]
+[source,ebnf]
 ----
 "reset_collection_accum" "(" accumName ")"
 ----
@@ -592,6 +716,11 @@ Collection accumulators (e.g., `ListAccum`, `SetAccum`, `MapAccum`) grow in size
 `reset_collection_accum` only works in DISTRIBUTED mode queries.  If the query is not in distributed mode, the reset does not take place.
 ====
 
+[tabs]
+====
+Query::
++
+--
 [source,gsql]
 ----
 CREATE DISTRIBUTED QUERY reset_accum()
@@ -621,8 +750,11 @@ FOR GRAPH workNet SYNTAX v2 {
   PRINT @@allStuff.size() AS allStuffClear;
 }
 ----
-
-[source,gsql]
+--
+Results::
++
+--
+[source,json]
 ----
 [{
     "stuffCount": [
@@ -677,3 +809,5 @@ FOR GRAPH workNet SYNTAX v2 {
     "allStuffClear": 0
   }]
 ----
+--
+====

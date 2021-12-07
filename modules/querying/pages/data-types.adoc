@@ -70,15 +70,18 @@ Other punctuation characters are not supported. The initial character can only b
 
 .name (identifier)
 
-[source,gsql]
+[source,ebnf]
 ----
 name := (letter | "_") [letter | digit | "_"]*
 ----
 
-== Overview of Types
+== Overview
 
-Different types of data can be used in different contexts. The EBNF syntax defines several classes of data types.  The most basic is called base type (`baseType`).
-The other independent types are `FILE` and `STRING COMPRESS`. The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
+Different types of data can be used in different contexts.
+The EBNF syntax defines several classes of data types.
+The most basic is called base type (`baseType`).
+The other independent types are `FILE` and `STRING COMPRESS`.
+The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
@@ -87,8 +90,10 @@ The other independent types are `FILE` and `STRING COMPRESS`. The remaining type
 `+BOOL+`, `+DATETIME,+` `+VERTEX+`, `+EDGE+`, +
 +
 `+JSONOBJECT+`, or `+JSONARRAY+` a|
-* Global variable
+* Base type variable
 * Query return value
+
+|`+containerType+`| `SET`, `BAG`, `LIST`, `MAP` a| * Local container variable
 
 |`+tupleType+` |Sequence of base types a|
 * User-defined tuple
@@ -111,9 +116,9 @@ set or bag of `+baseType+`, or `+FILE+` object a|
 a|
 `+STRING COMPRESS+`
 
-(⚠**suitable only in limited circumstances**)
+(⚠**Deprecated date type. Please use `STRING` instead**)
 
-|STRING COMPRESS a|
+|`STRING COMPRESS` a|
 * more compact storage of STRING, *if there is a limited number of
 different values and the value is rarely accessed. Otherwise, it may use
 more memory.*
@@ -130,9 +135,11 @@ more memory.*
 |===
 
 
-== Base Types
+== Base types
 
-The query language supports the following _base types_, which can be declared and assigned anywhere within their scope. Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator. Accumulators are described in detail in a later section.
+The query language supports the following _base types_, which can be declared and assigned anywhere within their scope.
+Any of these base types may be used when defining a global variable, a local variable, a query return value, a parameter, part of a tuple, or an element of a container accumulator.
+Accumulators are described in detail in a later section.
 
 .EBNF
 [source,ebnf]
@@ -296,22 +303,6 @@ If an attribute of a vertex or edge is referenced in a GSQL query, they will be 
 | `DATETIME`
 |===
 
-==== `SET` and `LIST` literals
-
-In the GSQL query language, one cannot declare a variable of `SET` (xref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variable_declaration_and_assignment[vertex sets] are an exception), `LIST` , or `MAP` types.  However, one can still use `SET` and `LIST` literals to update the value of a vertex attribute of type `SET` or `LIST`, insert a vertex or edge with attributes of type `SET` or `LIST` , and initialize an accumulator.
-
-[source,cpp]
-----
-// Elements within a set or a list need to be of the same type
-set_literal := "(" expr ("," expr)* ")"
-list_literal := "[" expr ("," expr)* "]"
-expr := INT | UINT | FLOAT | DOUBLE | BOOL | STRING | UDT | DATETIME
-----
-
-[NOTE]
-====
-Currently, GSQL query language syntax does not support `MAP` literals. +
-====
 
 === `JSONOBJECT` and `JSONARRAY`
 
@@ -325,6 +316,42 @@ Since a value can be an object or an array, JSON supports hierarchical, nested d
 A `JSONOBJECT` or `JSONARRAY` value is immutable. No operator is allowed to modify its value.
 ====
 
+== Container types
+Container types include the following data types:
+
+* `SET`
+* `BAG`
+* `LIST`
+* `MAP`
+
+.Container types
+|===
+|Type |Literal |Example |Default value
+
+|`SET`
+|Elements enclosed by parentheses, separated by commas.
+|`(1, 2, 3)`
+|Empty set.
+
+|`BAG`
+|Elements enclosed by parentheses, separated by commas.
+|`(1, 1, 2)`
+|Empty bag.
+
+|`LIST`
+|Elements enclosed by square brackets, separated by commas.
+|`[1, 2, 3]`
+|Empty list.
+
+|`MAP`
+|No literal.
+| N/A
+|Empty map.
+|===
+
+To see how container type variables are declared in a GSQL query, see xref:declaration-and-assignment-statements.adoc#_local_container_variable[Local container variables].
+
+
 == Tuple
 
 A tuple is a user-defined data structure consisting of a fixed sequence of base type variables.
@@ -332,8 +359,7 @@ Tuple types can be created and named using a `TYPEDEF` statement.
 Tuples must be defined first, before any other statements in a query.
 
 .ENBF for tuples
-
-[source,gsql]
+[source,ebnf]
 ----
 typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
 
@@ -617,7 +643,7 @@ The receiving query can write to the `FILE` object.
 ====
 
 .EBNF
-[source,gsql]
+[source,ebnf]
 ----
 parameterType := INT
                | UINT

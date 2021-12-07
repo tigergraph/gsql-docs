@@ -85,7 +85,7 @@ in GSQL the token function will return the string stored in `+oToken+`:
 Note that the input tokens are always in string (`+char*+`) format. If
 necessary, convert them to other types inside the function.
 
-== Example
+==== Example
 
 The built-in token function `+gsql_concat+` is used as an example below.
 It takes multiple token parameters and returns a string.
@@ -102,7 +102,7 @@ extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], ui
 }
 ....
 
-== User-defined Token Functions for `+WHERE+` Clause
+==== User-defined Token Functions for `+WHERE+` Clause
 
 User-defined token functions (described above) can also be used to
 construct the boolean conditional expression in the `+WHERE+` clause.
@@ -138,7 +138,7 @@ extern "C" bool gsql_token_equal(const char* const iToken[], uint32_t iTokenLen[
 ....
 
 [[step-3-upload-the-tokenbankcpp-file]]
-== Step 3: Upload the TokenBank.cpp file
+=== Step 3: Upload the TokenBank.cpp file
 
 After defining the token functions, use the `+PUT TokenBank+` command to
 upload the functions. The path after the keyword `+FROM+` is the

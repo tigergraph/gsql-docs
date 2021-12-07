@@ -259,19 +259,18 @@ Using graph 'ldbc_snb'
 }
 ----
 
-However, the following is not allowed, since it involves two aliases (t and s) in one POST-ACCUM clause.
+Each POST-ACCUM clause binds to one and only one vertex alias. Therefore, the following use cases are not allowed. since it involves two aliases (t and s) in one POST-ACCUM clause.
 
 [source,gsql]
 ----
- POST-ACCUM t.@cnt1 += 1,
-            s.@cnt1 += 1
-----
+ # not allowed because POST-ACCUM clause involves two aliases (t and s)
+ POST-ACCUM t.@cnt1 += 1, s.@cnt1 += 1
 
-Also, you may not use more than one alias in a single assignment. The following is not allowed:
-
-[source,gsql]
-----
+ # not allowed because multiple aliases are used in a single assignment
  POST-ACCUM t.@cnt1 += s.@cnt + 1
+
+ # not allowed because no vertex alias is bind to the POST-ACCUM
+ POST-ACCUM @@cnt += 1
 ----
 
 == Examples of Multiple Hop Pattern Match

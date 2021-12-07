@@ -47,7 +47,7 @@ As Figure 2 shows, Dan has 4 direct friends -- Tom, Kevin, Jenny, and Nancy, eac
 ACCUM and POST-ACCUM clauses are computed in stages, where-in a SELECT-FROM-WHERE query block, ACCUM is executed first, followed by the POST-ACCUM clause.
 
 * *ACCUM* executes its statement(s) once for each matched subgraph specified by the FROM, WHERE, and PER clauses. Further, ACCUM parallelly executes its statements for all the matches.
-* *POST-ACCUM* executes its statement(s) once for each involved vertex. Note that statements within the POST-ACCUM clause can only refer to one vertex alias specified in the FROM clause. Its statements can access the aggregated accumulator result computed in the ACCUM clause.
+* *POST-ACCUM* executes its statement(s) once for each involved vertex. Note that each POST-ACCUM clause should bind to one and only one vertex alias specified in the FROM clause. Its statements can access the aggregated accumulator result computed in the ACCUM clause.
 
 == *Conclusion*
 

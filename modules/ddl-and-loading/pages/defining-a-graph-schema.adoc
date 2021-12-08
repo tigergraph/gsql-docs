@@ -1,36 +1,63 @@
 = Defining a Graph Schema
+:description: GSQL commands used to define a graph schema.
 
-Before data can be loaded into the graph store, the user must define a _*graph schema.*_ A graph schema is a "dictionary" that defines the types of entities, _*vertices*_ and _*edges*_, in the graph and how those types of entities are related to one another. Each vertex or edge type has a name and a set of attributes (properties) associated with it. For example, a Book vertex could have title, author, publication year, genre, and language attributes.
+Before data can be loaded into the graph store, the user must define a _graph schema._
 
-In the figure below, circles represent vertex types, and lines represent edge types. The labeling text shows the name of each type. This example has four types of vertices: _User, Occupation, Book,_ and _Genre_.  Also, the example has 3 types of edges: _user_occupation, user_book_rating,_ and _book_genre_. Note that this diagram does not say anything about how many users or books are in the graph database.  It also does not indicate the cardinality of the relationship. For example, it does not specify whether a User may connect to multiple occupations.
+A graph schema is a "dictionary" that defines the types of entities, _vertices_ and _edges_, in the graph and how those types of entities are related to one another.
+Each vertex or edge type has a name and a set of attributes (properties) associated with it.
+For example, a Book vertex could have title, author, publication year, genre, and language attributes.
 
-An edge connects two vertices; in TigerGraph terminology these two vertices are the _*source vertex*_ and the _*target vertex*_ . An edge type can be either _*directed*_ or _*undirected*_.  A directed edge has a clear semantic direction, from the source vertex to the target vertex. For example, if there is an edge type that represents a plane flight segment, each segment needs to distinguish which airport is the origin (source vertex) and which airport is the destination (target vertex).  In the example schema below, all of the edges are undirected. A useful test to decide whether an edge should be directed or undirected is the following: "An edge type is directed if knowing there is a relationship from A to B does not tell me whether there is a relationship from B to A." Having nonstop service from Chicago to Shanghai does not automatically imply there is nonstop service from Shanghai to Chicago.
+In the figure below, circles represent vertex types, and lines represent edge types.
+The labeling text shows the name of each type. This example has four types of vertices: _User, Occupation, Book,_ and _Genre_.
+Also, the example has 3 types of edges: _user_occupation, user_book_rating,_ and _book_genre_.
+Note that this diagram does not say anything about how many users or books are in the graph database.
+It also does not indicate the cardinality of the relationship.
+For example, it does not specify whether a User may connect to multiple occupations.
 
 image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[Figure 1 - A schema for a User-Book-Rating graph]
 
-An expanded schema is shown below, containing all the original vertex and edge types plus three additional edge types: _friend_of, sequel_of, and user_book_read_ . Note that _friend_of_ joins a User to a User. The friendship is assumed to be bidirectional, so the edge type is undirected. _Sequel_of_ joins a Book to a Book but it is directed, as evidenced by the arrowhead. _The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse is not true. User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
+An edge connects two vertices: a _source vertex_ and a _target vertex_ .
+An edge type can be either _directed_ or _undirected_.
+A directed edge has a clear semantic direction, from the source vertex to the target vertex.
+For example, if there is an edge type that represents a plane flight segment, each segment needs to distinguish which airport is the origin (source vertex) and which airport is the destination (target vertex).
+In the example schema below, all edges are undirected.
+
+A useful test to decide whether an edge should be directed or undirected is the following: "An edge type is directed if knowing there is a relationship from A to B does not tell me whether there is a relationship from B to A."
+Having nonstop service from Chicago to Shanghai does not automatically imply there is nonstop service from Shanghai to Chicago.
+
+
+An expanded schema is shown below, containing all the original vertex and edge types plus three additional edge types: _friend_of, sequel_of, and user_book_read_.
+Note that _friend_of_ joins a User to a User.
+The friendship is assumed to be bidirectional, so the edge type is undirected.
+_Sequel_of_ joins a Book to a Book but it is directed, as evidenced by the arrowhead.
+_The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse is not true.
+User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
 
 image::image (2).png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
 
-The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests. The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed. The TigerGraph system lets the user modify an existing schema, so the user is not locked into the initial design decision.
+The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests.
+The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed.
+The TigerGraph system lets the user modify an existing schema, so the user is not locked into the initial design decision.
 
-In the first schema diagram above, there are seven entities: four vertex types and three edge types.You may wonder why it was decided to make Occupation a separate vertex type instead of an attribute of User. Likewise, why is Genre a vertex type instead of an attribute of Book?  These are examples of design choices.  Occupation and Genre were separated out as vertex types because in graph analysis, if an attribute will be used as a query variable, it is often easier to work with as a vertex type.
+In the first schema diagram above, there are seven entities: four vertex types and three edge types.
+You may wonder why it was decided to make Occupation a separate vertex type instead of an attribute of User.
+Likewise, why is Genre a vertex type instead of an attribute of Book?  These are examples of design choices.
+Occupation and Genre were separated out as vertex types because in graph analysis, if an attribute will be used as a query variable, it is often easier to work with as a vertex type.
 
 Once the graph designer has chosen a graph schema, the schema is ready to be formalized into a series of GSQL statements.
 
+.Graph Creation and Modification Privileges
 [NOTE]
 ====
-Graph Creation and Modification Privileges
+You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 
-Only superusers and globaldesigners can define global vertex types. global edge types, and graphs, using CREATE VERTEX / EDGE / GRAPH. +
-However, once a graph has been created, its admin and designer users can customize its schema, including adding new local vertex types and local edge types, by using a SCHEMA_CHANGE JOB, described in the next section. +
+To learn more about permission and privileges, see xref:tigergraph-server:user-access:roles-and-privileges.adoc[].
 ====
 
-== *CREATE VERTEX*
+== `CREATE VERTEX`
 
-Available to superuser and globaldesigner roles only.
-
-The CREATE VERTEX statement defines a new global vertex type, with a name and an attribute list.  At a high level of abstraction, the format is
+The `CREATE VERTEX` statement defines a new global vertex type, with a name and an attribute list.
+At a high level of abstraction, the format is
 
 [source,text]
 ----
@@ -40,15 +67,15 @@ CREATE VERTEX vertex_type_name (id_and_attribute_list) [ vertex_options ]
 More specifically, the syntax is as follows, assuming that the vertex ID is listed first:
 
 .CREATE VERTEX Syntax
-
-[source,ruby]
+[source,ebnf]
 ----
 CREATE VERTEX vertex_type_name "(" primary_id_name_type
     ["," attribute_name type [DEFAULT default_value] ]* ")"
     [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
 ----
 
-
+=== Required privilege
+`WRITE_SCHEMA`
 
 === Keys and Attributes
 
@@ -62,16 +89,21 @@ Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additio
 . PRIMARY KEY syntax.  This syntax is modeled after SQL.
 ====
 
-==== *PRIMARY_ID  and WITH primary_id_as_attribute*
+==== `PRIMARY_ID`  and `WITH primary_id_as_attribute`
 
-The primary_id is a required field whose purpose is to uniquely identify each vertex instance. GSQL creates a hash index on the primary id with O(1) time complexity. Its data type may be STRING, INT, or UINT.  The syntax for the primary_id_name_type term is as follows:
+The `primary_id` is a required field whose purpose is to uniquely identify each vertex instance.
+GSQL creates a hash index on the primary id with O(1) time complexity.
+Its data type may be `STRING`, `INT`, or `UINT`.
+The syntax for the `primary_id_name_type` term is as follows:
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type := PRIMARY_ID id_name id_type
 ----
 
-*NOTE*: In default mode, the primary_id field is not one of the attribute fields. The purpose of this distinction is to minimize storage space for vertices. The functional consequence of this difference is that a query cannot read the primary_id or use it as part of an expression.
+NOTE: By default, the `primary_id` field is not one of the attribute fields.
+The purpose of this distinction is to minimize storage space for vertices.
+The functional consequence of this difference is that a query cannot read the `primary_id` or use it as part of an expression.
 
 Example:
 
@@ -81,23 +113,23 @@ CREATE VERTEX movie (PRIMARY_ID id UINT, name STRING, year UINT)
     WITH primary_id_as_attribute="true"
 ----
 
-==== *PRIMARY KEY*
+==== `PRIMARY KEY`
 
-Instead of the legacy PRIMARY_ID syntax, starting with v2.3, GSQL now offers another option for specifying the primary key. The keyword phrase PRIMARY KEY may be appended to any one of the attributes in the attribute list, though it is conventional for it to be the first attribute. Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity. It is recommended that the primary key data type  be STRING, INT, or UINT.
+Instead of the legacy `PRIMARY_ID` syntax, starting with v2.3, GSQL now offers another option for specifying the primary key.
+Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attribute list to make the attribute the primary key.
+It is conventional for the primary key to be the first attribute.
+Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity.
+The primary key data type should `STRING`, `INT`, or `UINT`.
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type := id_name_id_type PRIMARY KEY
 ----
 
-Note the differences between PRIMARY_ID and PRIMARY KEY:
-
-. "PRIMARY_ID" precedes the (name, type) pair. "PRIMARY KEY" follows the (name, type) pair.
-. In default mode, a PRIMARY_ID is not an attribute, but the WITH primary_id_as_attribute="true" clause can be used to make it an attribute.  Alternately, the PRIMARY KEY is always an attribute; the WITH option is unneeded.
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
@@ -107,11 +139,12 @@ CREATE VERTEX movie (id UINT PRIMARY KEY, name STRING, year UINT)
 PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
 
-==== *COMPOSITE KEY*
+==== Composite keys
 
-GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex. To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
+GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex.
+To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
 
-[source,ruby]
+[source,ebnf]
 ----
 composite_id_name_type := PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
 ----
@@ -132,7 +165,7 @@ Composite keys are not supported in GraphStudio. If you define a vertex type wit
 
 The attribute list, enclosed in parentheses, is a list of one or more _id definitions_ and _attribute descriptions_ separated by commas:
 
-[source,ruby]
+[source,ebnf]
 ----
 primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*
@@ -161,16 +194,16 @@ CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
 
 Unlike the tables in a relational database, vertex types do not need to have a foreign key attribute for one vertex type to have a relationship to another vertex type.  Such relationships are handled by edge types.
 
-=== *WITH STATS*
+=== `WITH STATS`
 
 By default, when the loader stores a vertex and its attributes in the graph store, it also stores some statistics about the vertex's outdegree -- how many connections it has to other vertices.
-The optional WITH STATS clause lets the user control how much information is recorded. Recording the information in the graph store will speed up queries which need degree information, but it increases the memory usage.
+The optional `WITH STATS` clause lets the user control how much information is recorded. Recording the information in the graph store will speed up queries which need degree information, but it increases the memory usage.
 There are two* options.
 
 * If `outdegree_by_edgetype` is chosen, then each vertex records a list of degree count values, one value for each type of edge in the schema.
 * If "none" is chosen, then no degree statistics are recorded with each vertex. If the `WITH STATS` clause is not used, the loader acts as if `outdegree_by_edgetype` were selected.
 
-The graph below has two types of edges between persons: phone_call and text.  For Bobby, the "outdegree_by_edgetype" option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
+The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
 
 image::image (13).png[Figure 3 - Outdegree stats illustration]
 
@@ -188,26 +221,32 @@ image::image (13).png[Figure 3 - Outdegree stats illustration]
 | 1
 |===
 
-== *CREATE EDGE*
+== `CREATE EDGE`
 
-Available to superuser and globaldesigner roles only.
+`CREATE EDGE` defines a new global edge type.
+There are two forms of the `CREATE EDGE` statement, one for directed edges and one for undirected edges.
+Each edge type must specify that it connects FROM one vertex type TO another vertex type.
+Additional pairs of FROM,To vertex types may be added.
+Then additional attributes may be added.
+Each attribute follows the same requirements as described in the Attribute List subsection for the `CREATE VERTEX` section.
 
-The CREATE EDGE statement defines a new global edge type. There are two forms of the CREATE EDGE statement, one for directed edges and one for undirected edges.  Each edge type must specify that it connects FROM one vertex type TO another vertex type.  Additional pairs of FROM,To vertex types may be added. Then additional attributes may be added.  Each attribute follows the same requirements as described in the Attribute List subsection for the "CREATE VERTEX" section.
-
-.CREATE UNDIRECTED EDGE
-[source,gsql]
+[tabs]
+====
+CREATE UNDIRECTED EDGE::
++
+--
+[source,ebnf]
 ----
 CREATE UNDIRECTED EDGE edge_type_name "("
         FROM vertex_type_name "," TO vertex_type_name
    ["|" FROM vertex_type_name, TO vertex_type_name]*
    ["," attribute_name type [DEFAULT default_value]]* ")"
 ----
-
-
-
-.CREATE DIRECTED EDGE
-
-[source,gsql]
+--
+CREATE DIRECTED EDGE::
++
+--
+[source,ebnf]
 ----
 CREATE DIRECTED EDGE edge_type_name "("
         FROM vertex_type_name "," TO vertex_type_name
@@ -215,10 +254,10 @@ CREATE DIRECTED EDGE edge_type_name "("
    ["," attribute_name type [DEFAULT default_value]]* ")"
    [WITH REVERSE_EDGE="rev_name"]
 ----
+--
+====
 
-
-
-As of v3.0, a single edge type can be defined between multiple pairs of vertex types, e.g.
+A single edge type can be defined between multiple pairs of vertex types, e.g.
 
 [source,gsql]
 ----
@@ -226,7 +265,9 @@ CREATE DIRECTED EDGE member_of (FROM Person, TO Org | FROM Org, TO Org,
                                joined DATETIME)
 ----
 
-Note that edges do not have a PRIMARY_ID field. Instead, each edge is uniquely identified by a FROM vertex, a TO vertex, and optionally other attributes.  The edge type may also be a distinguishing characteristic. For example, as shown in Figure 2 above, there are two types of edges between User and Book.  Therefore, both types would have attribute lists which begin `+(FROM User, To Book,...).+`
+Note that edges do not have a `PRIMARY_ID` field.
+Instead, each edge is uniquely identified by a FROM vertex, a TO vertex, and optionally other attributes.
+The edge type may also be a distinguishing characteristic. For example, as shown in Figure 2 above, there are two types of edges between User and Book.  Therefore, both types would have attribute lists which begin `+(FROM User, To Book,...).+`
 
 === Creating an Edge from or to Any Vertex Type
 
@@ -243,12 +284,14 @@ CREATE DIRECTED EDGE any_edge (FROM *, TO *, label STRING)
 
 [CAUTION]
 ====
-Note: If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard. That is, "*" is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
+If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard. That is, "*" is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
 ====
 
-=== WITH REVERSE_EDGE
+=== `WITH REVERSE_EDGE`
 
-If a CREATE DIRECTED EDGE statement includes the WITH REVERSE_EDGE=" _rev_name_ " optional clause, then an additional directed edge type called " _`rev_name`_ " is automatically created, with the FROM and TO vertices swapped.  Moreover, whenever a new edge is created, a reverse edge is also created. The reverse edge will have the same attributes, and whenever the principal edge is updated, the corresponding reverse edge is also updated.
+If a `CREATE DIRECTED EDGE` statement includes the `WITH REVERSE_EDGE=" _rev_name_ "` optional clause, then an additional directed edge type called `rev_name` is automatically created, with the FROM and TO vertices swapped.
+Moreover, whenever a new edge is created, a reverse edge is also created.
+The reverse edge will have the same attributes, and whenever the principal edge is updated, the corresponding reverse edge is also updated.
 
 In a TigerGraph system, reverse edges provide the most efficient way to perform graph queries and searches that need to look "backwards". For example, referring to the schema of Figure 2, the query "What is the sequel of Book X, if it has one?" is a forward search, using_sequel_of_ edges.  However, the query "Is Book X a sequel? If so, what Book came before X?" requires examining reverse edges.
 
@@ -257,7 +300,6 @@ In a TigerGraph system, reverse edges provide the most efficient way to perform 
 Create undirected edges for the three edge types in Figure 1.
 
 .Edge definitions for User-Book-Rating graph
-
 [source,gsql]
 ----
 CREATE UNDIRECTED EDGE user_occupation (FROM User, TO Occupation)
@@ -286,11 +328,14 @@ CREATE DIRECTED EDGE sequel_of (FROM Book, TO Book) WITH REVERSE_EDGE="preceded_
 
 Every time the GSQL loader creates a *`sequel_of`* edge, it will also automatically create a *`preceded_by`* edge, pointing in the opposite direction.
 
-== Catalog-level `TYPEDEF`
+== `TYPEDEF`
 
-User-defined tuple types defined in a query cannot be used outside of its query or across queries. To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema. User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
+User-defined tuple types defined in a query cannot be used outside of its query or across queries.
+To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema.
+User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
 
-`TYPEDEF` statements can be used outside of a query to define tuple types, GroupBy accumulator types, and heap accumulator types. Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.
+`TYPEDEF` statements can be used outside a query to define tuple types, GroupBy accumulator types, and heap accumulator types.
+Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.
 
 [discrete]
 ==== Example:
@@ -336,7 +381,7 @@ CREATE UNDIRECTED EDGE e (FROM v1, TO v2, att1 STRING COMPRESS e1)
 
 
 
-== *CREATE INDEX*
+== `ALTER INDEX`
 
 User-defined indexes (or secondary indexes. as they are called commonly called in the database industry) are a valuable feature that enhances the performance of a database system. Indexes allow users to perform fast lookups on non-key columns or attributes without a full-fledged scan.
 
@@ -366,12 +411,7 @@ CREATE GLOBAL SCHEMA_CHANGE job <job-name>
 
 `ALTER VERTEX User ADD INDEX user_country_index ON (country);`
 
-== *CREATE GRAPH*
-
-[NOTE]
-====
-Available to _superuser_ and _globaldesigner_ roles only.
-====
+== `CREATE GRAPH`
 
 [NOTE]
 ====
@@ -382,9 +422,11 @@ If the optional MultiGraph service is enabled, CREATE GRAPH can be invoked multi
 
 After all the required vertex and edge types are created, the CREATE GRAPH command defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data. The vertex types and edge types may be listed in any order.
 
-.CREATE GRAPH syntax
+=== Required privilege
+`WRITE_SCHEMA`
 
-[source,gsql]
+.CREATE GRAPH syntax
+[source,ebnf]
 ----
 CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...)
                 [WITH ADMIN username]
@@ -395,11 +437,12 @@ CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...)
 
 
 
-The optional WITH ADMIN clause sets the named user to be the admin for the new graph.
+The optional `WITH ADMIN` clause sets the named user to be the admin for the new graph.
 
-As a convenience, executing CREATE GRAPH will set the new graph to be the working graph.
+As a convenience, executing `CREATE GRAPH` will set the new graph to be the working graph.
 
-Instead of providing a list of specific vertex types and edge types, it is also possible to define a graph type that includes all the available vertex types and edge types. It is also legal to create a graph with an empty domain.  A SCHEMA_CHANGE can be used later to add vertex and edge types.
+Instead of providing a list of specific vertex types and edge types, it is also possible to define a graph type that includes all the available vertex types and edge types. It is also legal to create a graph with an empty domain.
+A schema change can be used later to add vertex and edge types.
 
 .Examples of CREATE GRAPH with all vertex & edge types and with an empty domain.
 
@@ -447,15 +490,14 @@ CREATE GRAPH Book_rating (*)
 
 
 
-=== `+CREATE GRAPH ... AS+` (Beta)
+=== `CREATE GRAPH ... AS` (Beta)
 
-`+CREATE GRAPH ... AS+` creates a tag-based graph of an existing graph. Tag-based graphs include vertices with specific tags from their base graphs, and have their own access control. Users can be granted roles on a tag-based graph and their roles will give them privileges that only apply to the resources in the tag-based graph.
+`CREATE GRAPH ... AS` creates a tag-based graph of an existing graph. Tag-based graphs include vertices with specific tags from their base graphs, and have their own access control. Users can be granted roles on a tag-based graph and their roles will give them privileges that only apply to the resources in the tag-based graph.
 
 This command can only be run on the base graph and requires the user to have the schema-editing privilege on the base graph.
 
 .Synopsis
-
-[source,gsql]
+[source,ebnf]
 ----
 <create_tag_graph> :=
     CREATE GRAPH <tag_graph_name> AS <base_graph_name>
@@ -491,7 +533,7 @@ Use a colon to specify tags directly after the graph name to include everything 
 CREATE GRAPH publicNet2 AS socialNet:public
 ----
 
-== *USE GRAPH*
+== `USE GRAPH`
 
 [NOTE]
 ====
@@ -503,7 +545,6 @@ Before a user can make use of a graph, first the user must be granted a role on 
 For more about roles and privileges, see the document xref:3.2@tigergraph-server:user-access:README.adoc[Managing User Privileges and Authentication].
 
 .USE GRAPH syntax
-
 [source,gsql]
 ----
 USE GRAPH gname
@@ -513,30 +554,24 @@ USE GRAPH gname
 
 Instead of the USE GRAPH command, gsql can be invoked with the -g <graph_name> option.
 
-== *DROP GRAPH*
+== `DROP GRAPH`
 
-[NOTE]
-====
-Available to _superuser_ and _globaldesigner_ roles only. The effect of this command takes into account shared domains.
-====
-
-.DROP GRAPH syntax
-
+=== Syntax
 [source,gsql]
 ----
 DROP GRAPH gname
 ----
 
+=== Required privilege
+`WRITE_SCHEMA`
 
 
 The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an xref:modifying-a-graph-schema.adoc#_add_vertex_edge_local[ADD VERTEX/EDGE] statement within a xref:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
-== DROP ALL
+== `DROP ALL`
 
-[NOTE]
-====
-Available only to superusers.
-====
+=== Required privilege
+`Drop_ALL`
 
 The `DROP ALL` statement clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
@@ -547,7 +582,7 @@ Unlike xref:3.2@tigergraph-server:data-definition:README.adoc#_reset_all[the `gs
 `DROP ALL`, along with all DROP operations, is non-reversible.
 ====
 
-== SHOW - View Parts of the Catalog
+== `SHOW` - View Parts of the Catalog
 
 The SHOW command can be used to show certain aspects of the graph, instead of manually filtering through the entire graph schema when using the ls command. You can either type the exact identifier or use regular expression / Linux globbing to search.
 

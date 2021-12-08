@@ -1,12 +1,13 @@
 = Queries
 :pp: {plus}{plus}
+:description: Commands in the GSQL query language associated with query operations.
 
 A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation.
 Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data.
 A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing.
 
 
-.EBNF for CREATE QUERY
+.EBNF for `CREATE QUERY`
 [source,ebnf]
 ----
 createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
@@ -514,36 +515,22 @@ Here is a descriptive list of DML-sub-statements:
 
 == `INTERPRET QUERY`
 
-`INTERPRET QUERY` runs a query by translating it line-by-line. This is in contrast to the 2-step flow: (1) `INSTALL` to pre-translate and optimize a query, then (2) `RUN` to execute the installed query.  The basic trade-off between `INTERPRET QUERY` and `INSTALL/RUN QUERY` is as follows:
+`INTERPRET QUERY` runs a query by translating it line-by-line.
+This is in contrast to the 2-step flow to <<_install_query,install a query>> first and then <<_run_query,run the query>>.
 
-* `INTERPRET`:
- ** Starts running immediately but may take longer to finish than running an installed query.
- ** Suitable for ad hoc exploration of a graph or when developing and debugging an application, and rapid experimentation is desired.
- ** Supports most but not all of the features of the full GSQL query language.  See the Appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
-* `INSTALL`/`RUN`:
- ** Takes up to a minute to `INSTALL`.
- ** Runs faster than `INTERPRET`, from only a few percent faster to twice as fast.
- ** Should always be used for production environments with fixed queries.
+`INTERPRET QUERY` runs a query immediately but may take longer to finish than running an installed query.
+`INTERPRET QUERY` also has xref:appendix-query/interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
 
-There are two GSQL syntax options for Interpreted GSQL: xref:querying:query-operations.adoc#_immediate_mode_define_and_interpret[Immediate mode] and xref:querying:query-operations.adoc#_interpret_a_created_query[Saved-query mode]. In addition there is also a predefined RESTful endpoint for running interpreted GSQL: `POST /gsqlserver/interpreted_query`.  The query body is sent as the payload of the request. The syntax is like the Immediate query option, except that it is possible to provide parameters, using the query string of the endpoint's request URL. The example below shows a parameterized query using the `POST /gsqlserver/interpreted_query` endpoint. For more details, see the xref:tigergraph-server:API:intro.adoc[RESTPP API User Guide].
+There are two GSQL syntax options for Interpreted GSQL:
 
-.Interpreted GSQL REST Endpoint with Immediate Query
-
-[source,console]
-----
-curl --user tigergraph:tigergraph -X POST 'localhost:14240/gsqlserver/interpreted_query?a=10' -d '
-  INTERPRET QUERY (int a) FOR GRAPH gsql_demo {
-    PRINT a;
-  }
-'
-----
+* <<interpret-an-anonymous-query,Interpret an anonymous query>>
+* <<interpret-a-created-query>>.
 
 
+[#interpret-an-anonymous-query]
+=== Interpret an anonymous query
 
-=== Immediate mode: define and interpret
-
-.interpret-anonymous-query syntax
-
+.Syntax for interpreting an anonymous query
 [source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
@@ -552,13 +539,8 @@ interpretQuery := INTERPRET QUERY "(" ")"
                "{" queryBody "}"
 ----
 
-
-
-This syntax is similar in concept to SQL queries. Queries are not named, do not accept parameters, and are not saved after being run. Syntax differences from compiled GSQL:
-
-* The keyword `CREATE` is replaced with `INTERPRET`.
-* The query is executed immediately by the `INTERPRET` statement.  The `INSTALL` and `RUN` statements are not used.
-* Parameters are not accepted.
+This syntax is similar in concept to SQL queries.
+Queries are not named, do not accept parameters, and are not saved after being run.
 
 Compare the example below to the example in the `Create Query` section:
 
@@ -566,7 +548,6 @@ Compare the example below to the example in the `Create Query` section:
 * Because no parameter is allowed, the parameter `uid` is set within the query.
 
 .Example of Immediate Mode for INTERPRET QUERY
-
 [source,gsql]
 ----
 INTERPRET QUERY () FOR GRAPH socialNet {
@@ -582,17 +563,14 @@ INTERPRET QUERY () FOR GRAPH socialNet {
 ----
 
 
-
+[[interpret-a-created-query]]
 === Interpret a created query
 
-.interpret-saved-query syntax
-
+.Syntax for interpreting a created query
 [source,ebnf]
 ----
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
-
-
 
 This syntax is like `RUN` query, except
 
@@ -605,7 +583,6 @@ This syntax is like `RUN` query, except
 ----
 INTERPRET QUERY createQueryEx ("Jane.Doe")
 ----
-
 
 
 == `INSTALL QUERY`

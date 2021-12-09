@@ -1,6 +1,10 @@
 = Query Language Reserved Words
 
-The following words are reserved for use by the GSQL query language. That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local TUPLE type.
+The following words are reserved for use by the GSQL query language.
+That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local `TUPLE` type.
+
+You should also not use words from this list to name vertex or edge types.
+While GSQL will not raise an error when you define the types, you will not be able to reference the types in a query.
 
 == History:
 

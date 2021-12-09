@@ -14,7 +14,8 @@ Note that this diagram does not say anything about how many users or books are i
 It also does not indicate the cardinality of the relationship.
 For example, it does not specify whether a User may connect to multiple occupations.
 
-image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[Figure 1 - A schema for a User-Book-Rating graph]
+.A schema for a User-Book-Rating graph
+image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
 
 An edge connects two vertices: a _source vertex_ and a _target vertex_ .
 An edge type can be either _directed_ or _undirected_.
@@ -33,7 +34,8 @@ _Sequel_of_ joins a Book to a Book but it is directed, as evidenced by the arrow
 _The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse is not true.
 User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
 
-image::image (2).png[Figure 2 - Expanded-User-Book-Rating schema with additional edges]
+.Expanded-User-Book-Rating schema with additional edges
+image::image (2).png[Expanded-User-Book-Rating schema with additional edges]
 
 The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests.
 The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed.
@@ -413,64 +415,44 @@ CREATE GLOBAL SCHEMA_CHANGE job <job-name>
 
 == `CREATE GRAPH`
 
-[NOTE]
-====
-Multiple Graph support
-
-If the optional MultiGraph service is enabled, CREATE GRAPH can be invoked multiple times to define multiple graphs, and vertex types and edge types may be re-used (shared) among multiple graphs. There is an option to assign an admin use for the new graph.
-====
-
-After all the required vertex and edge types are created, the CREATE GRAPH command defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data. The vertex types and edge types may be listed in any order.
+`CREATE GRAPH` defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data.
+The vertex types and edge types may be listed in any order.
+Executing `CREATE GRAPH` will set the new graph to be the working graph.
 
 === Required privilege
 `WRITE_SCHEMA`
 
-.CREATE GRAPH syntax
-[source,ebnf]
+.Syntax for `CREATE GRAPH`
+[source.wrap,ebnf]
 ----
-CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...)
+CREATE GRAPH graph_name (vertex_or_edge_type, vertex_or_edge_type...) <1><2>
                 [WITH ADMIN username]
-// Replace graph_name with the name you want to name the graph with
-// Replace vertex_or_edge_type with the vertex and edge types you
-//     want to include in the graph
 ----
-
-
+<1> Replace graph_name with the name you want to name the graph with
+<2> Replace vertex_or_edge_type with the vertex and edge types you want to include in the graph
 
 The optional `WITH ADMIN` clause sets the named user to be the admin for the new graph.
 
-As a convenience, executing `CREATE GRAPH` will set the new graph to be the working graph.
+Instead of providing a list of specific vertex types and edge types, you can define a graph type that includes all the available vertex types and edge types by replacing the list of vertex and edge types with `*`.
 
-Instead of providing a list of specific vertex types and edge types, it is also possible to define a graph type that includes all the available vertex types and edge types. It is also legal to create a graph with an empty domain.
+You can also create a graph with no vertex or edge types.
 A schema change can be used later to add vertex and edge types.
 
-.Examples of CREATE GRAPH with all vertex & edge types and with an empty domain.
-
+.Examples of `CREATE GRAPH` with all vertex & edge types and with an empty domain.
 [source,gsql]
 ----
 CREATE GRAPH everythingGraph (*)
 CREATE GRAPH emptyGraph ()
 ----
 
+=== Examples
 
+Create graph `Book_rating` for the edge and vertex types defined for the below:
 
-Examples :
-
-Create graph Book_rating for the edge and vertex types defined for Figure 1:
-
-.Graph definition for User-Book-Rating graph
-
-[source,gsql]
-----
-CREATE GRAPH Book_rating (*)
-----
-
-
-
-The following code example shows the full set of statements to define the expanded user-book-rating graph:
+.A schema for a User-Book-Rating graph
+image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
 
 .Full definition for the Expanded User-Book-Rating graph
-
 [source,gsql]
 ----
 CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
@@ -485,14 +467,15 @@ CREATE UNDIRECTED EDGE user_book_rating (FROM User, TO Book, rating UINT, date_t
 CREATE UNDIRECTED EDGE friend_of (FROM User, TO User, on_date UINT)
 CREATE UNDIRECTED EDGE user_book_read (FROM User, To Book, on_date UINT)
 CREATE DIRECTED EDGE sequel_of (FROM Book, TO Book) WITH REVERSE_EDGE="preceded_by"
-CREATE GRAPH Book_rating (*)
+CREATE GRAPH Book_rating (*) <1>
 ----
-
+<1> Having created all the necessary vertex and edge types, use the `*` sign to include all vertex and edge types in the graph.
 
 
 === `CREATE GRAPH ... AS` (Beta)
 
-`CREATE GRAPH ... AS` creates a tag-based graph of an existing graph. Tag-based graphs include vertices with specific tags from their base graphs, and have their own access control. Users can be granted roles on a tag-based graph and their roles will give them privileges that only apply to the resources in the tag-based graph.
+`CREATE GRAPH ... AS` creates a tag-based graph of an existing graph. Tag-based graphs include vertices with specific tags from their base graphs, and have their own access control.
+Users can be granted roles on a tag-based graph and their roles will give them privileges that only apply to the resources in the tag-based graph.
 
 This command can only be run on the base graph and requires the user to have the schema-editing privilege on the base graph.
 

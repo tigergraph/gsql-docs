@@ -2,18 +2,24 @@
 :pp: {plus}{plus}
 :description: GSQL commands related to creating loading jobs.
 
-After a graph schema has been created, the system is ready to load data into the graph store. The GSQL language offers easy-to-understand and easy-to-use commands for data loading which perform many of the same data conversion, mapping, filtering, and merging operations that are found in enterprise ETL (Extract, Transform, and Load) systems.
+After a graph schema has been created, the system is ready to load data into the graph store.
+The GSQL language offers commands for data loading which perform many of the same data conversion, mapping, filtering, and merging operations that are found in enterprise ETL (Extract, Transform, and Load) systems.
 
-The GSQL system can read structured or semistructured data from text files. The loading language syntax is geared towards tabular or JSON data, but conditional clauses and data manipulation functions allow for reading data that is structured in a more complex or irregular way.  For tabular data, each line in the data file contains a series of data values, separated by commas, tabs, spaces, or any other designated ASCII characters (only single character separators are supported). A line should contain only data values and separators, without extra whitespace. From a tabular view, each line of data is a row, and each row consists of a series of column values.
+The GSQL system can read structured or semi-structured data from text files.
+The loading language syntax is geared towards tabular or JSON data, but conditional clauses and data manipulation functions allow for reading data that is structured in a more complex or irregular way.
+For tabular data, each line in the data file contains a series of data values, separated by commas, tabs, spaces, or any other designated ASCII characters (only single character separators are supported).
+A line should contain only data values and separators, without extra whitespace.
+From a tabular view, each line of data is a row, and each row consists of a series of column values.
 
-Loading data is a two-step process. First, a loading job is defined. Next, the job is executed with a `RUN LOADING JOB` statement. These two statements, and the components of the loading job, are detailed below.
+Loading data is a two-step process.
+First, a loading job is defined. Next, the job is executed with a `RUN LOADING JOB` statement. These two statements, and the components of the loading job, are detailed below.
 
 The structure of a loading job will be presented hierarchically, top-down:
 
-CREATE LOADING JOB, which may contain a set of DEFINE and LOAD statements
+`CREATE LOADING JOB`, which may contain a set of DEFINE and LOAD statements
 
-* DEFINE statements
-* LOAD statements, which can have several clauses
+* `DEFINE` statements
+* `LOAD` statements, which can have several clauses
 
 [NOTE]
 ====
@@ -47,52 +53,46 @@ A concurrent-capable loading job can logically be separated into parts according
 Example loading jobs and data files for the `book_rating` schema defined earlier in the document are available in the `$(gadmin config get System.AppRoot)/document/examples` folder in your TigerGraph platform installation.
 ====
 
-== *CREATE LOADING JOB*
+== `CREATE LOADING JOB`
 
-The CREATE LOADING JOB statement is used to define a block of DEFINE, LOAD, and DELETE statements for loading data to or removing data from a particular graph. The sequence of statements is enclosed in curly braces. Each statement in the block, including the last one, should end with a semicolon.
+The `CREATE LOADING JOB` statement is used to define a block of `DEFINE`, `LOAD`, and `DELETE` statements for loading data to or removing data from a particular graph.
+The sequence of statements is enclosed in curly braces.
+Each statement in the block, including the last one, should end with a semicolon.
 
 .CREATE LOADING JOB syntax
-
 [source,gsql]
 ----
 CREATE LOADING JOB job_name FOR GRAPH graph_name {
    [zero or more DEFINE statements;]
-   [zero or more LOAD statements;] | [zero or more DELETE statements;]
+   [zero or more LOAD statements;] | [zero or more DELETE statements;] <1>
 }
 ----
-
-
-[WARNING]
-====
-*LOAD or DELETE Statements* +
-A loading job may contain either `LOAD` or `DELETE` statements but not both. +
+<1> A loading job may contain either `LOAD` or `DELETE` statements but not both.
 A loading job that includes both will be rejected when the `CREATE` statement is executed.
-====
 
-[discrete]
-==== Example:
+=== Example
 
 .Loading Job Example
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 CREATE LOADING JOB job1 FOR GRAPH graph1 {
-   # File path specified at complile time
-   DEFINE FILENAME file1 = "/data/v1.csv";
+   DEFINE FILENAME file1 = "/data/v1.csv"; <1>
    DEFINE FILENAME file2;
 
    LOAD file1 TO VERTEX v1 VALUES ($0, $1, $2);
    LOAD file2 TO EDGE e2 VALUES ($0, $1);
 }
 
-# Run-time specification will override path specified at compile time
-RUN LOADING JOB job1 USING file1="m1:/data/v1_1.csv", file2="m2:/data/e2.csv"
+RUN LOADING JOB job1 USING file1="m1:/data/v1_1.csv", file2="m2:/data/e2.csv" <2>
 ----
+<1> File path specified at compile time.
+<2> Run-time specification will override path specified at compile time.
 
+== `DROP JOB` statement
 
-== *DROP JOB statement*
-
-To drop (remove) a job, run `DROP JOB job_name`. The job will be removed from GSQL. To drop all jobs, run either of the following commands:
+To drop (remove) a job, run `DROP JOB job_name`. The job will be removed from GSQL.
+To drop all jobs, run either of the following commands:
 
 [source,gsql]
 ----
@@ -102,7 +102,8 @@ DROP JOB *
 
 [NOTE]
 ====
-The scope of `ALL` depends on the user's current scope. If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph. If a superuser has set their scope to be global, then `DROP ALL` removes all jobs across all graph spaces.
+The scope of `ALL` depends on the user's current scope. If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph.
+If a superuser has set their scope to be global, then `DROP ALL` removes all jobs across all graph spaces.
 ====
 
 == `DEFINE` statements
@@ -111,224 +112,95 @@ A `DEFINE` statement is used to define a local variable or expression to be used
 
 === `DEFINE FILENAME`
 
-The `DEFINE FILENAME` statement defines a filename variable. The variable can then be used later in the `JOB` block by a `LOAD` statement to identify its data source. Every concurrent loading job must have at least one `DEFINE FILENAME` statement.
+The `DEFINE FILENAME` statement defines a filename variable.
+The variable can then be used later in the `JOB` block by a `LOAD` statement to identify its data source.
+Every concurrent loading job must have at least one `DEFINE FILENAME` statement.
 
-[source,gsql]
+[source,ebnf]
 ----
 DEFINE FILENAME filevar ["=" filepath_string ];
+
 filepath_string = ( path | " all :" path | " any :" path | mach_aliases " :" path ["," mach_aliases ":" path ]* )
 mach_aliases = name["|"name]*
 ----
 
-The `filevar` __is optionally followed by a `filepath_string`, which tells the job where to find input data. As the name suggests, _filepath_string_ is a string value. Therefore, it should start and end with double quotes.
+==== Parameters
 
-*filepath_string*
+`filevar`:: The name of the filename variable.
+`filepath_string`::
+The `filevar` is optionally followed by a `filepath_string`, which tells the job where to find input data.
+`filepath_string` is a string value and should start and end with double quotes.
++
+There are four options for `filepath_string`:
 
-There are four options for _filepath_string_ :
-
-* `path`_:_ either an absolute path or relative path for either a file or a folder on the machine where the job is run. If it is a folder, then the loader will attempt to load each non-hidden file in the folder.
-
-.path examples
-
-[source,gsql]
-----
-"/data/graph.csv"
-----
-
-
-[WARNING]
-====
-If this path is not valid when CREATE LOADING JOB is executed, GSQL will report an error.
-====
-
-An absolute path may begin with the session variable $sys.data_root.
-
-.Example: using sys.data_root in a loading job
-
-[source,gsql]
-----
-CREATE LOADING JOB filePathEx FOR GRAPH gsql_demo {
-  LOAD "$sys.data_root/persons.csv" TO ...
-}
-----
-
-
-Then, when running this loading job, first set a value for the parameter, and then run the job:
-
-.Example: Setting sys.data_root session parameter
-
-[source,gsql]
-----
-SET sys.data_root="/data/mydata"
-RUN LOADING JOB filePathEx
-----
-
-
-As the name implies, session parameters only retain their value for the duration of the current GSQL session.  If the user exits GSQL, the settings are lost.
-
-* `"all:" path`: If the path is prefixed with `all:`, then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at _path_. *If the path is invalid on any of the machines, the job will be aborted*.  Also, the session parameter $sys.data_root may not be used.
-
-.ALL:path examples
-
+* Provide an absolute path or relative path for either a file or a folder on the machine where the job is run.
+If it is a folder, then the loader will attempt to load each non-hidden file in the folder.
+If this path is not valid when `CREATE LOADING JOB` is executed, GSQL will report an error.
++
+An absolute path may begin with the xref:tigergraph-server:gsql-shell:gsql-sessions.adoc[session parameter] `$sys.data_root`.
+* `"all:" path`: If the path is prefixed with `all:`, then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at _path_. *If the path is invalid on any of the machines, the job will be aborted*.  Also, the session parameter `$sys.data_root` may not be used.
++
+.`ALL:path` examples
 [source,gsql]
 ----
 "ALL:/data/graph.csv"
 ----
 
-
-* `"any:" path`: If the path is prefixed with `any:` , then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at the specified path. *If the path is invalid on any of the machines, those machines where the path is not valid are skipped.* Also, the session parameter $sys.data_root may not be used.
-
-.ANY:path examples
-
+* `"any:" path`: If the path is prefixed with `any:` , then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at the specified path.
+*If the path is invalid on any of the machines, those machines where the path is not valid are skipped.*
+Also, the session parameter `$sys.data_root` may not be used.
++
+.`ANY:path` examples
 [source,gsql]
 ----
 "ANY:/data/graph.csv"
 ----
 
-
-* *A list of machine-specific paths*: A machine_alias is a name such as m1, m2, etc. which is defined when the cluster configuration is set.  For this option, the _filepath_string_ may include a list of paths, separated by commas. If several machines have the same path, the paths can be grouped together by using a list of machine aliases, with the vertical bar "|" as a separator. The loading job will run on whichever machines are named; each RESTPP-LOADER will work on its local files.
-
+* *A list of machine-specific paths*: A machine alias is a name such as m1, m2, etc. which is defined when the cluster configuration is set.
+For this option, the `filepath_string` may include a list of paths, separated by commas.
+If several machines have the same path, the paths can be grouped together by using a list of machine aliases, with the vertical bar "|" as a separator. The loading job will run on whichever machines are named; each RESTPP-LOADER will work on its local files.
++
 .machine-specific path example
-
 [source,gsql]
 ----
 "m1:/data1.csv, m2|m3|m5:/data/data2.csv"
 ----
 
 
-=== DEFINE HEADER
+=== `DEFINE HEADER`
 
-The DEFINE HEADER statement defines a sequence of column names for an input data file. The first column name maps to the first column, the second column name maps to the second column, etc.
+The `DEFINE HEADER` statement defines a sequence of column names for an input data file.
+The first column name maps to the first column, the second column name maps to the second column, etc.
 
-[source,gsql]
+[source,ebnf]
 ----
 DEFINE HEADER header_name = " column_name "[," column_name "]*;
 ----
 
-=== DEFINE INPUT_LINE_FILTER
+=== `DEFINE INPUT_LINE_FILTER`
 
-The DEFINE INPUT_LINE_FILTER statement defines a named Boolean expression whose value depends on column attributes from a row of input data. When combined with a USING reject_line_rule clause in a LOAD statement, the filter determines whether an input line is ignored or not.
+The `DEFINE INPUT_LINE_FILTER` statement defines a named Boolean expression whose value depends on column attributes from a row of input data.
+When combined with a `USING reject_line_rule` clause in a `LOAD` statement, the filter determines whether an input line is ignored or not.
 
-[source,gsql]
+[source,ebnf]
 ----
 DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables ;
 ----
 
-== *`LOAD` statement*
+include::partial$load-statement.adoc[]
 
-A `LOAD` statement describes how to parse a data line into column values (tokens), and then describes how the values should be used to create a new vertex or edge instance.
+== Attributes and Attribute Expressions
 
-One `LOAD` statement can be used to generate multiple vertices or edges, each vertex or edge having its own _destination clause_, as shown below.
-Additionally, two or more LOAD statements may refer to the same input data file. In this case, the GSQL loader will merge their operations so that both of their operations are executed in a single pass through the data file.
-
-The `LOAD` statement has many options. This reference guide provides examples of key features and options. Tutorials such as xref:tutorials:gsql-101/[GSQL 101] provide additional solution- and application-oriented examples.
-
-Different `LOAD` statement types have different rules for the xref:creating-a-loading-job.adoc#_using_clause[`USING` clause]; see the `USING` clause section below for specifics.
-
-=== Syntax
-
-[source,gsql]
-----
-LOAD [filepath_string|filevar|TEMP_TABLE table_name ]
-     Destination_Clause [, Destination_Clause ]*
-     [TAGS clause ]
-     [USING clause ];
-----
-
-`filevar` __must have been previously defined in a DEFINE FILENAME statement.
-
-`filepath_string` __must satisfy the same rules given above in the DEFINE FILENAME section.
-
-=== Destination clause
-
-A _Destination clause_ ***describes how the tokens from a data source should be used to construct one of three types of **data objects*: a vertex, an edge, or a row in a temporary table (`TEMP_TABLE`). The destination clause formats for the three types are very similar, but we show them separately for clarity:
-
-.Vertex Destination Clause
-
-[source,gsql]
-----
-TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
-    [WHERE conditions] [OPTION (options)]
-----
-
-
-.Edge Destination Clause
-
-[source,gsql]
-----
-TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
-                               target_id_expr [target_type_expr]
-                               [, attr_expr]*)
-    [WHERE conditions] [OPTION (options)]
-----
-
-
-For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for its parameters apply:
-
-* The _`vertex_type_name`_ or _`edge_type_name`_ must match the name of a vertex or edge type previously defined in a `CREATE VERTEX` or `CREATE UNDIRECTED|DIRECTED EDGE` statement.
-* The values in the value list_(`id_expr`, `attr_expr1`, `attr_expr2`,...)_ are assigned to the id(s) and attributes of a new vertex or edge instance, in the same order in which they are listed in the `CREATE` statement.
-* _`id_expr`_ obeys the same attribute rules as _`attr_expr`_, except that _only `attr_expr`_ can use the reducer function, which is introduced later.
-* For edge clauses, the _`source_id_expr`_ and _`target_id_expr`_ can each optionally be followed by a _`source_type_expr`_ and _`target_type_expr`_, respectively. The _`source_type_expr`_ and _`target_type_expr`_ must evaluate to one of the allowed endpoint vertex types for the given edge type. By specifying the vertex type, this tells the loader what id types to expect. This may be important when the edge type is defined to accept more than one type of source/target vertex.
-
-.TEMP_TABLE Destination Clause
-
-[source,gsql]
-----
-TO TEMP_TABLE table_name (id_name [, attr_name]*)
-    VALUES (id_expr [, attr_expr]*)
-    [WHERE conditions] [OPTION (options)]
-----
-
-
-The `TO TEMP_TABLE` clause defines a new, temporary data structure. Its unique characteristics will be described in a separate subsection. For now, we focus on `TO VERTEX` and `TO EDGE`.
-
-[CAUTION]
-====
-*For fast loading of edge data, referential integrity checking is disabled by default.* +
-For an edge to be valid, it must refer to endpoint vertices that exist. To support fast, out-of-order loading, *if one or both of the endpoint vertices do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.* Due to the loader's UPSERT semantics, if the vertex data is loaded later, it will be automatically merged with the dummy vertices. The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST=true` option.
-====
-
-=== Examples
-
-Suppose we have the following vertex and edge types:
-
-[source,gsql]
-----
-CREATE VERTEX Person (pid STRING PRIMARY KEY, birthdate DATETIME)
-CREATE VERTEX Company (cid INT PRIMARY KEY, industry STRING)
-CREATE DIRECTED EDGE Visit (FROM Person, TO Person
-                          | FROM Person, TO Company, year INT)
-----
-
-A `Visit` edge can connect two `Person` vertices or a `Person` to a `Company`. A `Person` has a string ID, while a Company has an `INT` ID. Then suppose the `Visit` edge source data comes from a single CSV file, containing both variants of edges. Note that the 2nd column ($1) contains either `Person` or `Company`, and that the 3rd column ($2) contains either a string or an integer.
-
-[source,gsql]
-----
-Sam,Person,Joe,2012
-Sam,Company,4057,2017
-Chris,Company,9401,2016
-Pat,Person,Taylor,2020
-----
-
-Using the optional _`target_type_expr`_ field, we can load both variants of the `Visit` edge with a single clause.
-
-[source,gsql]
-----
-LOAD file1 TO EDGE Visit VALUES ($0, $2 $1, $3) USING separator=",";
-----
-
-[NOTE]
-====
-Known issue: you must include a `USING clause` when loading data into edge types with different `FROM-TO` vertex pairs, even if all options are default.
-====
-
-== *Attributes and Attribute Expressions*
-
-A `LOAD` statement processes each line of an input file, splitting each line (according to the `SEPARATOR` character, see Section "Other Optional `LOAD` Clauses" for more details) into a sequence of tokens. Each destination clause provides a token-to-attribute mapping which defines how to construct a new vertex, an edge, or a temp table row instance (e.g., one data object). The tokens can also be thought of as the column values in a table. There are two ways to refer to a column, by position or by name.  Assuming a column has a name, either method may be used, and both methods may be used within one expression.
+A `LOAD` statement processes each line of an input file, splitting each lin into a sequence of tokens.
+Each destination clause provides a token-to-attribute mapping which defines how to construct a new vertex, an edge, or a temp table row instance (e.g., one data object).
+The tokens can also be thought of as the column values in a table.
+There are two ways to refer to a column, by position or by name.
+Assuming a column has a name, either method may be used, and both methods may be used within one expression.
 
 *By Position*: The columns (tokens) are numbered from left to right, starting with $0.  The next column is $1, and so on.
 
-*By Name*: Columns can be named, either through a header line in the input file, or through a `DEFINE HEADER` statement.  If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value. Names are enclosed in double quotes, e.g. `$"age"`.
+*By Name*: Columns can be named, either through a header line in the input file, or through a `DEFINE HEADER` statement.
+If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value. Names are enclosed in double quotes, e.g. `$"age"`.
 
 *Data file name:* $sys.file_name refers to the current input data file.
 
@@ -744,63 +616,88 @@ The following token functions can be used in an id or attribute expression
 [width="100%",cols="2,1,2",options="header",]
 |===
 |Function |Output type |Description
-|gsql_reverse( _in_string_ ) |string |Returns a string with the
+|gsql_reverse( _in_string_ )
+|string
+|Returns a string with the
 characters in the reverse order of the input string _in_string_.
 
-|gsql_concat( _string1, string2,...,stringN_ ) |string |Returns a string
+|gsql_concat( _string1, string2,...,stringN_ )
+|string
+|Returns a string
 which is the concatenation of all the input strings.
 
-|gsql_uuid_v4() |string |Returns a version-4 UUID.
+|gsql_uuid_v4()
+|string
+|Returns a version-4 UUID.
 
-|gsql_split_by_space( _in_string_ ) |string |Returns a modified version
+|gsql_split_by_space( _in_string_ )
+|string
+|Returns a modified version
 of _in_string_, in which each space character is replaced with ASCII 30
 (decimal).
 
-|gsql_substring(_str_, _beginIndex_ [, _length_]) |string |Returns the
+|gsql_substring(_str_, _beginIndex_ [, _length_])
+|string
+|Returns the
 substring beginning at _beginIndex_, having the given _length_.
 
-|gsql_find(_str_, _substr_ ) |int |Returns the start index of the
+|gsql_find(_str_, _substr_ )
+|int
+|Returns the start index of the
 substring within the string. If it is not found, then return -1.
 
-|gsql_length(_str_ ) |int |Returns the length of the string.
+|gsql_length(_str_ )
+|int
+|Returns the length of the string.
 
-|gsql_replace(_str_, _oldToken_, _newToken_ [, _max_]) |string |Returns
+|gsql_replace(_str_, _oldToken_, _newToken_ [, _max_])
+|string
+|Returns
 the string resulting from replacing all matchings of _oldToken_ with
 _newToken_ in the original string. If a _max_ count is provided, there
 can only be up to that many replacements.
 
-|gsql_regex_replace( _str_, _regex_, _replaceSubstr_ ) |string |Returns
+|gsql_regex_replace( _str_, _regex_, _replaceSubstr_ )
+|string
+|Returns
 the string resulting from replacing all substrings in the input string
 that match the given _regex_ token with the substitute string.
 
-|gsql_regex_match(_str_, _regex_ ) |bool |Returns true if the given
+|gsql_regex_match(_str_, _regex_ )
+|bool
+|Returns true if the given
 string token matches the given regex token and false otherwise.
 
-|gsql_to_bool( _in_string_ ) |bool |Returns true if the _in_string_ is
-either "t" or "true", with case insensitive checking. Returns false
+|gsql_to_bool( _in_string_ )
+|bool
+|Returns true if the _in_string_ is
+either "t" or "true", with case-insensitive checking. Returns false
 otherwise.
 
-|gsql_to_uint( _in_string_ ) |uint |If _in_string_ is the string
-representation of an unsigned int, the function returns that integer. +
-+
-If _in_string_ is the string representation of a nonnegative float, the
+|gsql_to_uint( _in_string_ )
+|uint
+a|* If _in_string_ is the string
+representation of an unsigned int, the function returns that integer.
+* If _in_string_ is the string representation of a non-negative float, the
 function returns that number cast as an int.
 
-|gsql_to_int( _in_string_ ) |int |If _in_string_ is the string
-representation of an int, the function returns that integer. +
-+
-If _in_string_ is the string representation of a float, the function
+|gsql_to_int( _in_string_ )
+|int
+a|* If _in_string_ is the string
+representation of an int, the function returns that integer.
+* If _in_string_ is the string representation of a float, the function
 returns that number cast as an int.
 
-|gsql_ts_to_epoch_seconds( _timestamp_ ) |uint |Converts a timestamp in
+|gsql_ts_to_epoch_seconds( _timestamp_ )
+|uint
+|Converts a timestamp in
 canonical string format to Unix epoch time, which is the int number of
 seconds since Jan. 1, 1970. Refer to the timestamp input format note
 below.
 
-|gsql_current_time_epoch(0) +
-+
-+
-+ |uint |Returns the current time in Unix epoch seconds. *By
+|gsql_current_time_epoch(0)
+|uint
+|Returns the current time in Unix epoch seconds. *By
 convention, the input parameter should be 0, but it is ignored.
 
 a|
@@ -809,36 +706,41 @@ flatten( _column_to_be_split, group_separator, 1_ )
 flatten( _column_to_be_split, group_separator, sub_field_separator,
 number_of_sub_fields_in_one_group_ )
 
-| |See the section "TEMP_TABLE and Flatten Functions" below. * +
-+
-*
+|
+|See the section "TEMP_TABLE and Flatten Functions" below.
 
 a|
 flatten_json_array ( _$"array_name"_ )
 
 flatten_json_array ( _$"array_name", $"sub_obj_1", $"sub_obj_2", ...,
-$"sub_obj_n"_ ) +
-+
-
-| |See the section "TEMP_TABLE and Flatten Functions" below.
+$"sub_obj_n"_ )
+|
+|See the section "TEMP_TABLE and Flatten Functions" below.
 
 a|
 split( _column_to_be_split, element_separator_ )
 
 split( _column_to_be_split, key_value_separator, element _separator_ )
 
-| a|
+|
+a|
 See the section "Loading a LIST or SET Attribute" above.
 
 See the section "Loading a MAP Attribute" above.
 
-|gsql_upper( _in_string_ ) |string |Returns the input string in
+|gsql_upper( _in_string_ )
+|string
+|Returns the input string in
 upper-case.
 
-|gsql_lower( _in_string_ ) |string |Returns the input string in
+|gsql_lower( _in_string_ )
+|string
+|Returns the input string in
 lower-case.
 
-|gsql_trim( _in_string_ ) |string |Trims whitespace from the beginning
+|gsql_trim( _in_string_ )
+|string
+|Trims whitespace from the beginning
 and end of the input string.
 
 a|
@@ -846,25 +748,38 @@ gsql_ltrim( _in_string_ )
 
 gsql_rtrim( _in_string_ )
 
-|string |Trims white space from either the beginning or the end of the
+|string
+|Trims white space from either the beginning or the end of the
 input string (Left or right).
 
-|gsql_year( _timestamp_ ) |int |Returns 4-digit year from timestamp.
+|gsql_year( _timestamp_ )
+|int
+|Returns 4-digit year from timestamp.
 Refer to timestamp input format note below.
 
-|_gsql_month( timestamp )_ |int |Returns month (1-12) from timestamp.
+|_gsql_month( timestamp )_
+|int
+|Returns month (1-12) from timestamp.
 Refer to timestamp input format note below.
 
-|gsql_day( _timestamp_ ) |int |Returns day (1-31) from timestamp. Refer
+|gsql_day( _timestamp_ )
+|int
+|Returns day (1-31) from timestamp. Refer
 to timestamp input format note below.
 
-|gsql_year_epoch( _epoch_ ) |int |Returns 4-digit year from Unix epoch
+|gsql_year_epoch( _epoch_ )
+|int
+|Returns 4-digit year from Unix epoch
 time, which is the int number of seconds since Jan. 1, 1970.
 
-|gsql_month_epoch( _epoch_ ) |int |Returns month (1-12) from Unix epoch
+|gsql_month_epoch( _epoch_ )
+|int
+|Returns month (1-12) from Unix epoch
 time, which is the int number of seconds since Jan. 1, 1970.
 
-|gsql_day_epoch( _epoch_ ) |int |Returns day (1-31) from Unix epoch
+|gsql_day_epoch( _epoch_ )
+|int
+|Returns day (1-31) from Unix epoch
 time, which is the int number of seconds since Jan. 1, 1970.
 |===
 
@@ -926,324 +841,6 @@ Each reducer function is overloaded so that one function can be used for several
 ====
 Each function supports a certain set of attribute types. Calling a reducer function with an incompatible type crashes the service. In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
 ====
-
-== *WHERE Clause*
-
-The `WHERE` clause is an optional clause. The `WHERE` clause's condition is a boolean expression.  The expression may use column token variables, token functions, and operators which are described below. The expression is evaluated for each input data line. If the condition is true, then the vertex or edge instance is loaded into the graph store. If the condition is false, then this instance is skipped. Note that all attribute values are treated as string values in the expression, so the type conversion functions `to_int()` and `to_float()`, which are described below, are provided to enable numerical conditions.
-
-=== Operators in the WHERE Clause
-
-The GSQL Loader language supports most of the standard arithmetic, relational, and boolean operators found in C{pp}. Standard operator precedence applies, and parentheses provide the usual override of precedence.
-
-* *Arithmetic Operators: +, -, *, /, {caret}*  Numeric operators can be used to express complex operations between numeric types. Just as in ordinary mathematical expressions, parentheses can be used to define a group and to modify the order of precedence.
-
-[WARNING]
-====
-Because computers necessarily can only store approximations for most `DOUBLE` and `FLOAT` type values, it is not recommended to test these data types for exact equality or inequality. Instead, one should allow for an acceptable amount of error. The following example checks if `$0 = 5`, with an error of 0.00001 permitted:
-
-[source,text]
-----
-WHERE to_float($0) BETWEEN 5-0.00001 AND 5+0.00001
-----
-
-====
-
-* *Relational Operators: <, >, ==, !=, <=, >=*  Comparisons can be performed between two numeric values or between two string values.
-* *Predicate Operators:*
- ** *AND, OR, NOT* operators are the same as in SQL. They can be used to combine multiple conditions together.  E.g., _$0 < "abc" AND $1 > "abc"_ selects the rows with the first token less than "abc" and the second token greater than "abc".  E.g., _NOT $1 < "abc"_ selects the rows with the second token greater than or equal to "abc".
- ** *IS NUMERIC*  _*token*_ *IS NUMERIC* returns true if *token* is in numeric format. Numeric format include integers, decimal notation, and exponential notation. Specifically, IS NUMERIC is true if token matches the following regular expression: (+/-) ? [0-9] + (.[0-9]) ? [0-9] * ((e/E)(+/-) ? [0-9] +) ? . Any leading space and trailing space is skipped, but no other spaces are allowed.  E.g., _$0 IS NUMERIC_ checks whether the first token is in numeric format.
- ** *IS EMPTY*  _*token*_ *IS EMPTY* returns true if *token* is an empty string.  E.g., _$1 IS EMPTY_ checks whether the second token is empty.
- ** *IN*  _*token*_ *IN (* _*set_of_values*_ *)* returns true if *token* is equal to one member of a set of specified values. The values may be string or numeric types.  E.g., _$2 IN ("abc", "def", "lhm")_ tests whether the third token equals one of the three strings in the given set.  E.g., _to_int($3) IN (10, 1, 12, 13, 19)_ tests whether the fourth token equals one of the specified five numbers.
- ** *BETWEEN ... AND*  _*token*_ *BETWEEN* _*lowerVal*_ *AND* _*upperVal*_ returns true if *token* is within the specified range, inclusive of the endpoints. The values may be string or numeric types.  E.g., _$4 BETWEEN "abc" AND "def"_ checks whether the fifth token is greater than or equal to "abc" and also less than or equal to "def"  E.g., _to_float($5) BETWEEN 1 AND 100.5_ checks whether the sixth token is greater than or equal to 1.0 and less than or equal to 100.5.
-
-=== Token functions in the WHERE clause
-
-The GSQL loading language provides several built-in functions for the WHERE clause.
-
-|===
-| Function name | Output type | Description of function
-
-| to_int( _main_string_ )
-| int
-| Converts _main_string_ to an integer value.
-
-| to_float( _main_string_ )
-| float
-| Converts _main_string_ to a float value.
-
-| concat( _string1, string2_ )
-| string
-| Returns a string which is the concatenation of _string1_ and _string2_ .
-
-| token_len( _main_string_ )
-| int
-| Returns the length of _main_string._
-
-| gsql_is_not_empty_string( _main_string_ )
-| bool
-| Returns true if _main_string_ is empty after removing white space. Returns false otherwise.
-
-| gsql_token_equal( _string1, string2_ )
-| bool
-| Returns true if _string1_ is exactly the same (case sensitive) as _string2_ . Returns false otherwise.
-
-| gsql_token_ignore_case_equal( _string1, string2_ )
-| bool
-| Returns true if _string1_ is exactly the same (case insensitive) as _string2_ . Returns false otherwise.
-
-| gsql_is_true( _main_string_ )
-| bool
-| Returns true if _main_string_ is either "t" or "true" (case insensitive). Returns false otherwise.
-
-| gsql_is_false( _main_string_ )
-| bool
-| Returns true if _main_string_ is either "f" or "false" (case insensitive). Returns false otherwise.
-|===
-
-[WARNING]
-====
-The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
-====
-
-
-
-
-== *Other Optional LOAD Clauses*
-
-=== *`OPTION` clause*
-
-There are no supported options for the OPTION clause at this time.
-
-=== `TAGS` clause (Beta)
-
-The `TAGS` clause specifies the tags to be applied to the vertices loaded by the `LOAD` statement.
-
-[source,gsql]
-----
-TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
-----
-
-If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
-
-Users have two options when it comes to how to merge tags if the target vertices exist in the graph:
-
-* `BY OR` : Add the new tags to the existing set of tags.
-* `BY OVERWRITE`: Overwrite existing tags with the new tags.
-
-=== *`USING` clause*
-
-A `USING` clause contains one or more optional parameter value pairs:
-
-[source,gsql]
-----
-USING parameter=value [,parameter=value]*
-----
-
-[WARNING]
-====
-If multiple LOAD statements use the same source (the same file path, the same TEMP_TABLE, or the same file variable), the USING clauses in these LOAD statements must be the same. Therefore, we recommend that if multiple destination clauses share the same source, put all of these destination clauses into the same LOAD statement.
-====
-
-[width="100%",cols="1,3,3",options="header",]
-|===
-|*Parameter* |*Meaning of Value* |*Allowed Values*
-|SEPARATOR |specifies the special character that separates tokens
-(columns) in the data file a|
-any single ASCII character.
-
-Default is comma ","
-
-`+"\t" +`for tab`+"\xy" +`for ASCII decimal code xy
-
-|EOL |the end-of-line character a|
-any ASCII sequence
-
-Default = *`+"\n" +`*(system-defined newline character or character
-sequence)
-
-|QUOTE +
-+
-(See note below) |specifies explicit boundary markers for string tokens,
-either single or double quotation marks. See more details below.
-|"single" for ' +
-+
-"double" for "
-
-|HEADER a|
-whether the data file's first line is a header line.
-
-The header assigns names to the columns.
-
-The LOAD statement must refer to an actual file with a valid header.
-
-a|
-"true", "false"
-
-Default is "false"
-
-|USER_DEFINED_HEADER |specifies the name of the header variable, when a
-header has been defined in the loading job, rather than in the data file
-|the variable name in the preceding DEFINE HEADER statement
-
-|REJECT_LINE_RULE |if the filter expression evaluates to true, then do
-not use this input data line. |name of filter from a preceding DEFINE
-INPUT_LINE_FILTER statement
-
-|JSON_FILE +
-+
-(See Loading JSON Data section below) |whether each line is a json
-object (see Section "JSON Loader" below for more details) a|
-"true", "false"
-
-Default is "false"
-
-|NEW_VERTEX_ONLY a|
-If true, treat vertices as insert-only. If the input data refers to a
-vertex which already exists, do not update it.
-
-If false, upsert vertices.
-
-a|
-"true", "false"
-
-Default is "false"
-
-a|
-VERTEX_MUST_EXIST
-
-(See VERTEX_MUST_EXIST section below)
-
-|If true, only insert or update an edge If both endpoint vertices
-already exist. If false, always insert new edges, creating endpoint
-vertices as needed, using given id and default values for other
-parameters. a|
-"true", "false"
-
-Default is "false"
-
-|===
-
-
-=== *QUOTE parameter*
-
-The parser will not treat separator characters found within a pair of quotation marks as a separator. For example, if the parsing conditions are `QUOTE="double", SEPARATOR=","`, the comma in `"Leonard,Euler"` will not separate Leonard and Euler into separate tokens. +
-_**_
-
-* If QUOTE is not declared, quotation marks are treated as ordinary characters.
-* If QUOTE is declared, but a string does not contain a matching pair of quotation marks, then the string is treated as if QUOTE is not declared.
-* Only the string inside the first pair of quote (from left to right) marks are loaded. For example QUOTE="double", the string a"b"c"d"e will be loaded as b.
-* There is no escape character in the loader, so the only way to include quotation marks within a string is for the string body to use one type of quote (single or double) and to declare the other type as the string boundary marker.
-
-[NOTE]
-====
-Previously, ill-formatted strings such as *a"a,b"ac,d* would be parsed as a,b,d ignoring a,a,c. The expected input string should be *a,"a,b",ac,d*. In v2.4, incorrectly formatted strings such as this example will be parsed normally, giving you this result: *a"a,b"ac* and *d.*
-====
-
-=== *Loading JSON Data*
-
-When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects instead of tabular data. A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures.  A colon separates each key from its value, and a comma separates items in a collection.  A more complete description of JSON format is available at http://www.json.org/[www.json.org]. The JSON loader requires that each input line has exactly one JSON object. Instead of using column values as tokens, the JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair. In a GSQL loading job, a JSON field is identified by a dollar sign $ followed by the colon-separated sequence of nested key names to reach the value from the top level. For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifier `$"abc":"def"` is used to access `"this_value"`. The double quotes are mandatory.
-
-An example is shown below:
-
-.USING JSON_FILE test schema and loading job
-
-[source,gsql]
-----
-CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
-CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
-CREATE GRAPH encoding_graph (*)
-
-CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
-  LOAD "encoding.json" TO VERTEX encoding
-    VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
-}
-RUN LOADING JOB json_load
-----
-
-
-To specify an end-of-line character other than the standard one, use the EOL option, as shown below.
-
-.JSON loading using EOL
-
-[source,gsql]
-----
-CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
-
-  LOAD "/tmp/data.json"
-    TO VERTEX company VALUES($"company":"name":"value",$"company":"name":"value"),
-    TO VERTEX members VALUES($"members",$"members") USING JSON_FILE="true", EOL="\03";
-}
-----
-
-
-{% file src="../../../.gitbook/assets/encoding.json" caption="encoding.json - Download" %}
-
-.encoding.json
-
-[source,javascript]
-----
-{"encoding": "UTF-7","plug-ins":["c"],"indent" : { "length" : 30, "use_space": true }}
-{"encoding":"UTF-1","indent":{"use_space": "dontloadme"}, "plug-ins" : [null, true, false] }
-{"plug-ins":["C","c++"],"indent":{"length" : 3, "use_space": false},"encoding":"UTF-6"}
-----
-
-
-In the above data encoding.json, the order of fields are not fixed and some fields are missing. The JSON loader ignores the order and accesses the fields by the nested key names. The missing fields are loaded with default values. The result vertices are:
-
-|===
-| id | attr1
-
-| "UTF-7"
-| 30
-
-| "UTF-1"
-| 0
-
-| "UTF-6"
-| 3
-|===
-
-=== Loading Parquet Data
-
-TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:3.2@tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide]. In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
-
-In order to load Parquet data, you need to:
-
-. Specify `"file.reader.type": "parquet"` in the S3 file configuration file or argument
-. Specify `JSON_FILE="true"` in the USING clause of the LOAD statements
-. Refer to JSON keys (≈ Parquet "column names") instead of column numbers
-
-You will probably want to add `USING EOF="true"` to your RUN LOADING JOB statement to explicitly indicate to the loading job to stop after consuming all data from the Parquet source, not to expect further entries.
-
-An example of a Parquet loading setup is shown below:
-
-[source,gsql]
-----
-CREATE DATA_SOURCE S3 s3ds = "{\"file.reader.settings.fs.s3a.access.key\":\"myaccesskey\",\"file.reader.settings.fs.s3a.secret.key\":\"mysecretkey\"}" FOR GRAPH companyGraph
-
-CREATE LOADING JOB parquet_load FOR GRAPH companyGraph {
-
-    DEFINE FILENAME f = "$s3ds:{\"file.uris\": \"s3://mybucket/mydata.parquet\", \"file.reader.type\": \"parquet\"}";
-
-    LOAD f
-      TO VERTEX members VALUES($"members", $"members") USING JSON_FILE="true";
-}
-
-RUN LOADING JOB parquet_load USING EOF="true"
-----
-
-=== *`VERTEX_MUST_EXIST` Parameter*
-
-Normally, if vertices do not exist when loading data to edges, a vertex will be created for the connecting edge, using default values for all attributes. Using the VERTEX_MUST_EXIST="true" option will load data only if the vertices on both sides of an edge already exist, therefore no longer creating extra vertices.
-
-[source,gsql]
-----
-CREATE LOADING JOB load_edge FOR GRAPH MyGraph {
-    DEFINE FILENAME f;
-    LOAD f
-        TO EDGE MyEdge VALUES ($1, $2, $3,) USING VERTEX_MUST_EXIST="true";
-}
-----
 
 == *`TEMP_TABLE` and Flatten Functions*
 

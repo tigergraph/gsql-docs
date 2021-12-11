@@ -1,0 +1,441 @@
+                                                                             == Load statement
+
+A `LOAD` statement describes how to parse a data line into column values (tokens), and then describes how the values should be used to create a new vertex or edge instance.
+
+One `LOAD` statement can be used to generate multiple vertices or edges, each vertex or edge having its own _destination clause_, as shown below.
+Additionally, two or more LOAD statements may refer to the same input data file.
+In this case, the GSQL loader will merge their operations so that both of their operations are executed in a single pass through the data file.
+
+The `LOAD` statement has many options. This reference guide provides examples of key features and options. Tutorials such as xref:tutorials:gsql-101/[GSQL 101] provide additional solution- and application-oriented examples.
+
+Different `LOAD` statement types have different rules for the xref:creating-a-loading-job.adoc#_using_clause[`USING` clause]; see the `USING` clause section below for specifics.
+
+=== Syntax
+
+[source,ebnf]
+----
+LOAD [ filepath_string|filevar|TEMP_TABLE table_name ]
+     destination_clause [, destination_clause ]*
+     [ TAGS clause ]
+     [ USING clause ];
+----
+
+`filevar` must have been previously defined in a `DEFINE FILENAME` statement.
+
+`filepath_string` must satisfy the same rules given above in the `DEFINE FILENAME` section.
+
+=== Destination clause
+
+A _destination clause_ describes how the tokens from a data source should be used to construct one of three types of data objects: a vertex, an edge, or a row in a temporary table (`TEMP_TABLE`).
+The destination clause formats for the three types are very similar, but we show them separately for clarity:
+
+.Vertex Destination Clause
+[source,gsql]
+----
+TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
+    [WHERE conditions] [OPTION (options)]
+----
+
+
+.Edge Destination Clause
+[source,gsql]
+----
+TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
+                               target_id_expr [target_type_expr]
+                               [, attr_expr]*)
+    [WHERE conditions] [OPTION (options)]
+----
+
+
+For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for its parameters apply:
+
+* The `vertex_type_name` or `edge_type_name` must match the name of a vertex or edge type previously defined in a `CREATE VERTEX` or `CREATE UNDIRECTED|DIRECTED EDGE` statement.
+* The values in the value list_(`id_expr`, `attr_expr1`, `attr_expr2`,...)_ are assigned to the ID(s) and attributes of a new vertex or edge instance, in the same order in which they are listed in the `CREATE` statement.
+* `id_expr` obeys the same attribute rules as `attr_expr`, except that only `attr_expr` can use the reducer function, which is introduced later.
+* For edge clauses, the `source_id_expr` and `target_id_expr` can each optionally be followed by a `source_type_expr` and `target_type_expr`, respectively. The `source_type_expr` and `target_type_expr` must evaluate to one of the allowed endpoint vertex types for the given edge type.
+By specifying the vertex type, this tells the loader what id types to expect. This may be important when the edge type is defined to accept more than one type of source/target vertex.
+
+.`TEMP_TABLE` Destination Clause
+[source,ebnf]
+----
+TO TEMP_TABLE table_name (id_name [, attr_name]*)
+    VALUES (id_expr [, attr_expr]*)
+    [WHERE conditions] [OPTION (options)]
+----
+
+
+The `TO TEMP_TABLE` clause defines a new, temporary data structure. Its unique characteristics will be described in a separate subsection. For now, we focus on `TO VERTEX` and `TO EDGE`.
+
+[CAUTION]
+====
+*For fast loading of edge data, referential integrity checking is disabled by default.* +
+For an edge to be valid, it must refer to endpoint vertices that exist.
+To support fast, out-of-order loading, *if one or both of the endpoint vertices do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.*
+If the vertex data is loaded later, it will be automatically merged with the dummy vertices.
+The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST=true` option.
+====
+
+=== Examples
+
+Suppose we have the following vertex and edge types:
+
+[source,gsql]
+----
+CREATE VERTEX Person (pid STRING PRIMARY KEY, birthdate DATETIME)
+CREATE VERTEX Company (cid INT PRIMARY KEY, industry STRING)
+CREATE DIRECTED EDGE Visit (FROM Person, TO Person
+                          | FROM Person, TO Company, year INT)
+----
+
+A `Visit` edge can connect two `Person` vertices or a `Person` to a `Company`.
+A `Person` has a string ID, while a Company has an `INT` ID.
+Then suppose the `Visit` edge source data comes from a single CSV file, containing both variants of edges.
+Note that the 2nd column ($1) contains either `Person` or `Company`, and that the 3rd column ($2) contains either a string or an integer.
+
+[source,csv]
+----
+Sam,Person,Joe,2012
+Sam,Company,4057,2017
+Chris,Company,9401,2016
+Pat,Person,Taylor,2020
+----
+
+Using the optional _`target_type_expr`_ field, we can load both variants of the `Visit` edge with a single clause.
+
+[source,gsql]
+----
+LOAD file1 TO EDGE Visit VALUES ($0, $2 $1, $3) USING separator=",";
+----
+
+[NOTE]
+====
+Known issue: you must include a `USING clause` when loading data into edge types with different `FROM-TO` vertex pairs, even if all options are default.
+====
+
+=== *WHERE Clause*
+
+The `WHERE` clause is an optional clause.
+The `WHERE` clause's condition is a boolean expression.
+The expression may use column token variables, token functions, and operators which are described below.
+The expression is evaluated for each input data line. If the condition is true, then the vertex or edge instance is loaded into the graph store.
+If the condition is false, then this instance is skipped. Note that all attribute values are treated as string values in the expression, so the type conversion functions `to_int()` and `to_float()`, which are described below, are provided to enable numerical conditions.
+
+==== Operators in the WHERE Clause
+
+The GSQL Loader language supports most of the standard arithmetic, relational, and boolean operators found in C{pp}. Standard operator precedence applies, and parentheses provide the usual override of precedence.
+
+Arithmetic Operators:: `+`, `-`, `*`, `/`, `{caret}`. Numeric operators can be used to express complex operations between numeric types. Just as in ordinary mathematical expressions, parentheses can be used to define a group and to modify the order of precedence.
+
+[WARNING]
+====
+Because computers necessarily can only store approximations for most `DOUBLE` and `FLOAT` type values, it is not recommended to test these data types for exact equality or inequality. Instead, one should allow for an acceptable amount of error. The following example checks if `$0 = 5`, with an error of 0.00001 permitted:
+
+[source,gsql]
+----
+WHERE to_float($0) BETWEEN 5-0.00001 AND 5+0.00001
+----
+
+====
+
+Relational Operators:: `<`, `>`, `==`, `!=`, `<=`, `>=`.  Comparisons can be performed between two numeric values or between two string values.
+
+Predicate Operators::
+`AND`, `OR`, `NOT`::: operators are the same as in SQL. They can be used to combine multiple conditions together.  E.g., _$0 < "abc" AND $1 > "abc"_ selects the rows with the first token less than "abc" and the second token greater than "abc".  E.g., _NOT $1 < "abc"_ selects the rows with the second token greater than or equal to "abc".
+`IS NUMERIC`:::  `<token> IS NUMERIC` returns true if `<token>` is in numeric format.
+Numeric format include integers, decimal notation, and exponential notation.
+Specifically, `IS NUMERIC` is true if token matches the following regular expression: `(+/-) ? [0-9] + (.[0-9]) ? [0-9] * ((e/E)(+/-) ? [0-9] +) ?`.
+Any leading space and trailing space is skipped, but no other spaces are allowed.
+For example, `$0 IS NUMERIC` checks whether the first token is in numeric format.
+`IS EMPTY`:::  `<token> IS EMPTY` returns true if `<token>` is an empty string.
+For example, `$1 IS EMPTY` checks whether the second token is empty.
+`IN` ::: `<token> IN ( <set_of_values> )` returns true if `<token>` is equal to one member of a set of specified values.
+The values may be string or numeric types.
+For example, `$2 IN ("abc", "def", "lhm")` tests whether the third token equals one of the three strings in the given set.
+For example, `to_int($3) IN (10, 1, 12, 13, 19)` tests whether the fourth token equals one of the specified five numbers.
+`BETWEEN ... AND`:::  `<token> BETWEEN <lower_val> AND <upper_val>` returns true if `<token>` is within the specified range, inclusive of the endpoints. The values may be string or numeric types.
+For example, `$4 BETWEEN "abc" AND "def"` checks whether the fifth token is greater than or equal to "abc" and also less than or equal to "def";
+`to_float($5) BETWEEN 1 AND 100.5` checks whether the sixth token is greater than or equal to 1.0 and less than or equal to 100.5.
+
+[[token-functions-in-where-clause]]
+==== Token functions in the WHERE clause
+
+The GSQL loading language provides several built-in functions for the `WHERE` clause.
+
+|===
+| Function name | Output type | Description of function
+
+| to_int( _main_string_ )
+| int
+| Converts _main_string_ to an integer value.
+
+| to_float( _main_string_ )
+| float
+| Converts _main_string_ to a float value.
+
+| concat( _string1, string2_ )
+| string
+| Returns a string which is the concatenation of _string1_ and _string2_ .
+
+| token_len( _main_string_ )
+| int
+| Returns the length of _main_string._
+
+| gsql_is_not_empty_string( _main_string_ )
+| bool
+| Returns true if _main_string_ is empty after removing white space. Returns false otherwise.
+
+| gsql_token_equal( _string1, string2_ )
+| bool
+| Returns true if _string1_ is exactly the same (case sensitive) as _string2_ . Returns false otherwise.
+
+| gsql_token_ignore_case_equal( _string1, string2_ )
+| bool
+| Returns true if _string1_ is exactly the same (case insensitive) as _string2_ . Returns false otherwise.
+
+| gsql_is_true( _main_string_ )
+| bool
+| Returns true if _main_string_ is either "t" or "true" (case insensitive). Returns false otherwise.
+
+| gsql_is_false( _main_string_ )
+| bool
+| Returns true if _main_string_ is either "f" or "false" (case insensitive). Returns false otherwise.
+|===
+
+[WARNING]
+====
+The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
+====
+
+
+=== `TAGS` clause (Beta)
+
+The `TAGS` clause specifies the tags to be applied to the vertices loaded by the `LOAD` statement.
+
+[source,gsql]
+----
+TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
+----
+
+If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
+
+Users have two options when it comes to how to merge tags if the target vertices exist in the graph:
+
+* `BY OR` : Add the new tags to the existing set of tags.
+* `BY OVERWRITE`: Overwrite existing tags with the new tags.
+
+=== `USING` clause
+
+A `USING` clause contains one or more optional parameter value pairs:
+
+[source,ebnf]
+----
+USING parameter=value [,parameter=value]*
+----
+
+[WARNING]
+====
+If multiple `LOAD` statements use the same source (the same file path, the same temporary data table, or the same file variable), the `USING` clauses in these `LOAD` statements must be the same.
+Therefore, we recommend that if multiple destination clauses share the same source, put all of these destination clauses into the same `LOAD` statement.
+====
+
+[width="100%",cols="1,4,1",options="header",]
+|===
+|Parameter | Description |Allowed values
+|`SEPARATOR`
+|Specifies the special character that separates tokens
+(columns) in the data file.
+
+a|
+Any single ASCII character.
+
+Default: comma `,`
+
+* `\t`for tab`
+* `\xy` for ASCII decimal code `xy`
+
+|`EOL`
+|Specifies the end-of-line character.
+a|
+Any ASCII sequence
+
+Default: `\n`(system-defined newline character or character
+sequence)
+
+|`QUOTE`
+a|Specifies explicit boundary markers for string tokens,
+either single or double quotation marks.
+
+The parser will not treat separator characters found within a pair of quotation marks as a separator.
+For example, if the parsing conditions are `QUOTE="double", SEPARATOR=","`, the comma in `"Leonard,Euler"` will not separate Leonard and Euler into separate tokens.
+
+* If `QUOTE` is not declared, quotation marks are treated as ordinary characters.
+* If `QUOTE` is declared, but a string does not contain a matching pair of quotation marks, then the string is treated as if `QUOTE` is not declared.
+* Only the string inside the first pair of quote (from left to right) marks are loaded. For example `QUOTE="double"`, the string `a"b"c"d"e` will be loaded as b.
+* There is no escape character in the loader, so the only way to include quotation marks within a string is for the string body to use one type of quote (single or double) and to declare the other type as the string boundary marker.
+a|
+* `"single"` for `'`
+* `"double"` for `"`
+
+|`HEADER`
+a|
+Whether the data file's first line is a header line.
+
+The header assigns names to the columns.
+
+The `LOAD` statement must refer to an actual file with a valid header.
+
+a|
+`true`, `false`
+
+Default is `false`
+
+|`USER_DEFINED_HEADER`
+|Specifies the name of the header variable, when a
+header has been defined in the loading job, rather than in the data file
+|The variable name in the preceding `DEFINE HEADER` statement
+
+|`REJECT_LINE_RULE`
+|If the filter expression evaluates to true, then do
+not use this input data line.
+|name of filter from a preceding `DEFINE
+INPUT_LINE_FILTER` statement
+
+|`JSON_FILE`
+|Whether each line is a json
+object (see xref:creating-a-loading-job.adoc#_loading_json_data[Loading JSON Data] below for more details)
+a|
+`true`, `false`
+
+Default is `false`
+
+|`NEW_VERTEX_ONLY`
+a|
+If true, treat vertices as insert-only.
+If the input data refers to a
+vertex which already exists, do not update it.
+
+If false, upsert vertices.
+
+a|
+`true`, `false`
+
+Default is `false`
+
+a|
+`VERTEX_MUST_EXIST`
+
+|If true, only insert or update an edge if both endpoint vertices
+already exist.
+If false, always insert new edges, creating endpoint
+vertices as needed, using given id and default values for other
+parameters.
+a|
+`true`, `false`
+
+Default is "false"
+|===
+
+=== Loading JSON Data
+
+When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects instead of tabular data.
+A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures. A colon separates each key from its value, and a comma separates items in a collection.
+
+The JSON loader requires that each input line has exactly one JSON object. Instead of using column values as tokens, the JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair.
+In a GSQL loading job, a JSON field is identified by a dollar sign $ followed by the colon-separated sequence of nested key names to reach the value from the top level.
+For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifier `$"abc":"def"` is used to access `"this_value"`. The double quotes are mandatory.
+
+An example is shown below:
+
+.USING JSON_FILE test schema and loading job
+[source,gsql]
+----
+CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
+CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
+CREATE GRAPH encoding_graph (*)
+
+CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
+  LOAD "encoding.json" TO VERTEX encoding
+    VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
+}
+RUN LOADING JOB json_load
+----
+
+
+To specify an end-of-line character other than the standard one, use the EOL option, as shown below.
+
+[tabs]
+====
+Loading job::
++
+--
+.JSON loading using EOL
+[source,gsql]
+----
+CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
+
+  LOAD "/tmp/data.json"
+    TO VERTEX company VALUES($"company":"name":"value",$"company":"name":"value"),
+    TO VERTEX members VALUES($"members",$"members") USING JSON_FILE="true", EOL="\03";
+}
+----
+--
+.json file::
++
+--
+.encoding.json
+[source,javascript]
+----
+{"encoding": "UTF-7","plug-ins":["c"],"indent" : { "length" : 30, "use_space": true }}
+{"encoding":"UTF-1","indent":{"use_space": "dontloadme"}, "plug-ins" : [null, true, false] }
+{"plug-ins":["C","c++"],"indent":{"length" : 3, "use_space": false},"encoding":"UTF-6"}
+----
+--
+====
+
+xref:attachment$encoding.json[Download `encoding.json`]
+
+In the above data encoding.json, the order of fields are not fixed and some fields are missing.
+The JSON loader ignores the order and accesses the fields by the nested key names. The missing fields are loaded with default values. The result vertices are:
+
+|===
+| id | attr1
+
+| "UTF-7"
+| 30
+
+| "UTF-1"
+| 0
+
+| "UTF-6"
+| 3
+|===
+
+=== Loading Parquet Data
+
+TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
+In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
+
+In order to load Parquet data, you need to:
+
+. Specify `"file.reader.type": "parquet"` in the S3 file configuration file or argument
+. Specify `JSON_FILE="true"` in the USING clause of the LOAD statements
+. Refer to JSON keys (≈ Parquet "column names") instead of column numbers
+
+You will probably want to add `USING EOF="true"` to your `RUN LOADING JOB` statement to explicitly indicate to the loading job to stop after consuming all data from the Parquet source, not to expect further entries.
+
+An example of a Parquet loading setup is shown below:
+
+[source,gsql]
+----
+CREATE DATA_SOURCE S3 s3ds = "{\"file.reader.settings.fs.s3a.access.key\":\"myaccesskey\",\"file.reader.settings.fs.s3a.secret.key\":\"mysecretkey\"}" FOR GRAPH companyGraph
+
+CREATE LOADING JOB parquet_load FOR GRAPH companyGraph {
+
+    DEFINE FILENAME f = "$s3ds:{\"file.uris\": \"s3://mybucket/mydata.parquet\", \"file.reader.type\": \"parquet\"}";
+
+    LOAD f
+      TO VERTEX members VALUES($"members", $"members") USING JSON_FILE="true";
+}
+
+RUN LOADING JOB parquet_load USING EOF="true"
+----

@@ -1,4 +1,4 @@
-                                                                             == Load statement
+== Load statement
 
 A `LOAD` statement describes how to parse a data line into column values (tokens), and then describes how the values should be used to create a new vertex or edge instance.
 

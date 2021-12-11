@@ -398,6 +398,7 @@ xref:attachment$list_set_vertex.csv[Download list_set_vertex.csv]
 3,40
 1,20
 ----
+--
 ====
 
 
@@ -934,6 +935,7 @@ xref:attachment$book1.dat[Download book1.dat]
 101|"Harry Potter and the Philosopher's Stone"|"fiction,fantasy,young adult"
 102|"The Three-Body Problem"|"fiction,science fiction,Chinese"
 ----
+--
 ====
 
 Line 5 says that the third column (`$2`) of each input line should be split into separate tokens, with comma (`,`) as the separator.

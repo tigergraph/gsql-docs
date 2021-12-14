@@ -167,11 +167,11 @@ will produce the following result:
 
 == DML-sub DELETE Statement
 
-DML-sub DELETE is a DML-substatement which deletes one vertex or edge each time it is called.  (Deletion at the query-body level is served by the Query-body DELETE statement described above.) In practice, this statement resides within the body of a SELECT...ACCUM/POST-ACCUM clause, so it is called once for each member of a selected vertex set or edge set.
+DML-sub DELETE is a DML-sub statement which deletes one vertex or edge each time it is called.  (Deletion at the query-body level is served by the Query-body DELETE statement described above.) In practice, this statement resides within the body of a SELECT...ACCUM/POST-ACCUM clause, so it is called once for each member of a selected vertex set or edge set.
 
 [CAUTION]
 ====
-The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
+The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all edges which connect to it are automatically deleted as well.
 ====
 
 [NOTE]
@@ -309,11 +309,11 @@ insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)
 
 [NOTE]
 ====
-*Dynamic Query Support* +
-As of TigerGraph 3.0, the vertex or edge type in an `INSERT` statement can either be set statically (`vertexType` or `edgeType`), or it can be written as a string variable (`name`), with the value being set at run time, to make a xref:querying:query-operations.adoc#_dynamic_querying[Dynamic DML query].
+*Dynamic Query Support*
+The vertex or edge type in an `INSERT` statement can either be set statically (`vertexType` or `edgeType`), or it can be written as a string variable (`name`), with the value being set at run time, to make a xref:querying:query-operations.adoc#_dynamic_querying[Dynamic DML query].
 *`INSERT INTO`* `+(vertexType | name) ...+` +
-Note that to INSERT an edge type dynamically, the keyword EDGE is required: +
-*`INSERT INTO`* `(edgeType |` *`EDGE`* `+name) ...+`
+Note that to insert an edge type dynamically, the keyword `EDGE` is required:
+`INSERT INTO` `(edgeType |` `EDGE` `+name) ...+`
 ====
 
 There are two options for specifying the attributes of the vertex or edge type for the values provided:
@@ -339,12 +339,14 @@ INSERT INTO vertex_type (PRIMARY_ID, specified_attributes)
 VALUES (ID, values_for_specified_attributes)
 
 INSERT INTO edge_type (FROM, TO, specified_attributes)
-VALUES (
+VALUES (value_for_from_vertex, value_for_to_vertex, <1>
+    values_for_specified_attributes)
 ----
+<1> `value_for_from_vertex` and `value_for_to_vertex` can either be the ID of the vertex followed by the vertex type, separated by a space or a vertex variable.
 +
 
-
-For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type. The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
+For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type.
+The optional __name__ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
 === Query-Body INSERT
 

@@ -83,7 +83,7 @@ queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
 `CREATE QUERY` defines the functionality of a query on a given graph schema.
 
 A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body.
-The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements. The body defines the behavior of the query.
+The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements.The body defines the behavior of the query.
 
 [NOTE]
 ====
@@ -95,18 +95,18 @@ or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command. +
 This is one aspect of xref:querying:query-operations.adoc#_dynamic_querying[Dynamic Querying].
 ====
 
-If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name. The new query will not be installed.  That is, +
+If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name.The new query will not be installed.That is, +
 `CREATE OR REPLACE QUERY name` +
 acts like +
 `DROP QUERY name
 CREATE QUERY name` +
-However, if there are any errors in this query definition, then the previous query definition will be maintained. If the `OR REPLACE` option is not used, then GSQL will reject a `CREATE QUERY` command that uses an existing name.
+However, if there are any errors in this query definition, then the previous query definition will be maintained.If the `OR REPLACE` option is not used, then GSQL will reject a `CREATE QUERY` command that uses an existing name.
 
-The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster. If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster. For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
+The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
 
-Typedefs allow the definition of custom types for use within the body.  The declarations support the definition of _accumulators_ (see Chapter  "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.  All accumulators and global variables must be declared before any statements. There are various types of statements that can be used within the body.  Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements. The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`. It also supports calling functions, assigning variables, printing, and modifying the graph data.
+Typedefs allow the definition of custom types for use within the body.The declarations support the definition of _accumulators_ (see Chapter "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.All accumulators and global variables must be declared before any statements.There are various types of statements that can be used within the body.Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements.The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`.It also supports calling functions, assigning variables, printing, and modifying the graph data.
 
-The query body may include calls to other queries. That is, the other queries are treated as subquery functions.  See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
+The query body may include calls to other queries.That is, the other queries are treated as subquery functions.See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
 
 .Example of a CREATE QUERY statement
 
@@ -154,7 +154,7 @@ details on v2.
 
 === Default parameter values
 
-You can specify default values for parameters of primitive types when creating a query. Primitive types include:
+You can specify default values for parameters of primitive types when creating a query.Primitive types include:
 
 * `INT`
 * `UINT`
@@ -186,18 +186,19 @@ CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int
 
 
 
+[#_dynamic_querying]
 === Dynamic querying
 
-TigerGraph 3.0+ supports Dynamic Querying. This means the query can be written and installed as a saved procedure without referencing a particular graph. Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
+TigerGraph 3.0+ supports Dynamic Querying.This means the query can be written and installed as a saved procedure without referencing a particular graph.Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
 
 Here are the ingredients for a dynamic query:
 
 * *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
-* *Vertex type and edge type in `SELECT` statements*.  Typically, the xref:querying:select-statement/README.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types. String or string set parameters can be used for edge and target types instead.
-* *Attribute names*. The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
-* `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add. This can also be parameterized.
+* *Vertex type and edge type in `SELECT` statements*.Typically, the xref:querying:select-statement/README.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.String or string set parameters can be used for edge and target types instead.
+* *Attribute names*.The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
+* `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
 
-Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniques. Here is the PageRank algorithm from our GSQL Graph Algorithm library. Here is it written with schema information embedded statically in the query:
+Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniques.Here is the PageRank algorithm from our GSQL Graph Algorithm library.Here is it written with schema information embedded statically in the query:
 
 * graph name = social
 * vertex type = Page

@@ -69,13 +69,13 @@ There are some limitations to Interpreted Mode. See the section on <<Interpret a
 
 [source,ebnf]
 ----
-createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY query_name
-               "(" [parameter_list] ")"
-               [FOR GRAPH graph_name]
-               [RETURNS "("  base_type | accum_type ")"]
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               [RETURNS "("  baseType | accumType ")"]
                [API ( v2 )]
-               [SYNTAX syntax_name]
-               "{" query_body "}"
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
 
 queryBody := [typedefs] [declExceptStmts] queryBodyStmts
 ----
@@ -112,7 +112,7 @@ parameterType paramName ["=" constant] ["," parameterType paramName  ["=" consta
 ----
 For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
 
-`FOR GRAPH graph_name`:: Specifies the graph that the query is created on.
+`FOR GRAPH graphName`:: Specifies the graph that the query is created on.
 This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
 
 `RETURNS` clause::
@@ -129,7 +129,7 @@ See
 xref:tutorials:pattern-matching/README.adoc[Pattern Matching tutorial] for
 details on v2.
 
-`query_body`::
+`queryBody`::
 The query body contains a sequence of data retrieval-and-computation statements.
 +
 Typedefs allow the definition of custom types for use within the body.

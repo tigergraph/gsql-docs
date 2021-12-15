@@ -69,47 +69,83 @@ There are some limitations to Interpreted Mode. See the section on <<Interpret a
 
 [source,ebnf]
 ----
-createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
-               "(" [parameterList] ")"
-               [FOR GRAPH graphName]
-               [RETURNS "("  baseType | accumType ")"]
-               [API "(" stringLiteral ")"]
-               [SYNTAX syntaxName]
-               "{" queryBody "}"
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY query_name
+               "(" [parameter_list] ")"
+               [FOR GRAPH graph_name]
+               [RETURNS "("  base_type | accum_type ")"]
+               [API ( v2 )]
+               [SYNTAX syntax_name]
+               "{" query_body "}"
 
-queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
+queryBody := [typedefs] [declExceptStmts] queryBodyStmts
 ----
 
 `CREATE QUERY` defines the functionality of a query on a given graph schema.
 
 A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body.
-The body consists of an optional sequence of _`typedefs`_, followed by an optional sequence of declarations, then followed by one or more statements.The body defines the behavior of the query.
+The body consists of an optional sequence of `typedefs`, followed by an optional sequence of declarations, then followed by one or more statements.
+The body defines the behavior of the query.
 
-[NOTE]
-====
-*Dynamic Query Support*
+=== Parameters
 
-As of TigerGraph 3.0+, *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: +
-*`GSQL -g graphName [<gsql_command>]`* +
-or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command. +
-This is one aspect of xref:querying:query-operations.adoc#_dynamic_querying[Dynamic Querying].
-====
+`OR REPLACE`::
 
-If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name.The new query will not be installed.That is, +
+If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name.The new query will not be installed. That is, +
 `CREATE OR REPLACE QUERY name` +
 acts like +
 `DROP QUERY name
 CREATE QUERY name` +
 However, if there are any errors in this query definition, then the previous query definition will be maintained.If the `OR REPLACE` option is not used, then GSQL will reject a `CREATE QUERY` command that uses an existing name.
 
-The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
+`DISTRIBUTED`::
+The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
+If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
 
-Typedefs allow the definition of custom types for use within the body.The declarations support the definition of _accumulators_ (see Chapter "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.All accumulators and global variables must be declared before any statements.There are various types of statements that can be used within the body.Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements.The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`.It also supports calling functions, assigning variables, printing, and modifying the graph data.
+`queryName`:: Name of the query.
 
-The query body may include calls to other queries.That is, the other queries are treated as subquery functions.See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
+`parameterList`:: A list of parameters for  the query.
+The parameter list for a query follows the following form:
++
+[source,ebnf]
+----
+parameterType paramName ["=" constant] ["," parameterType paramName  ["=" constant]]*
+----
+For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
 
-.Example of a CREATE QUERY statement
+`FOR GRAPH graph_name`:: Specifies the graph that the query is created on.
+This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
 
+`RETURNS` clause::
+The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETRUN` statement of the subquery.
+For more information, see xref:operators-and-expressions.adoc#_subqueries[Subqueries].
+
+`API v2`:: Specifies the JSON output format.
+The only option is v2.
+
+`SYNTAX syntaxName`:: Specifies the GSQL syntax version to be used by the query.
+See the
+xref:select-statement/README.adoc#_gsql_syntax_versions[GSQL syntax versions] for an outline of the differences.
+See
+xref:tutorials:pattern-matching/README.adoc[Pattern Matching tutorial] for
+details on v2.
+
+`query_body`::
+The query body contains a sequence of data retrieval-and-computation statements.
++
+Typedefs allow the definition of custom types for use within the body.
+The declarations support the definition of _accumulators_ (see Chapter "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.
+All accumulators and global variables must be declared before any statements.There are various types of statements that can be used within the body.
++
+Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements.
+The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`.
+It also supports calling functions, assigning variables, printing, and modifying the graph data.
++
+The query body may include calls to other queries. That is, the other queries are treated as subquery functions.
+See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
+
+=== Examples
+
+.Example of a `CREATE QUERY` statement
 [source,gsql]
 ----
 CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
@@ -125,36 +161,9 @@ CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
 }
 ----
 
+=== Default query parameter values
 
-
-=== Query parameter and return types
-
-This table lists the supported data types for input parameters and return values.
-
-[width="100%",cols="29%,71%",options="header",]
-|===
-|Type |Supported Data Types
-|Parameter Types |Any base type (except `EDGE` or `JSONOBJECT`):
-`INT, UINT, FLOAT, DOUBLE, STRING, BOOL, STRING, DATETIME, VERTEX, JSONARRAY\'\'SET<baseType>`,
-`BAG<baseType>\'\'Edge` and `JSONOBJECT`
-
-|Return Types |any baseType (including EDGE): INT, UINT, FLOAT, DOUBLE,
-STRING, BOOL, STRING, VERTEX, EDGE, JSONOBJECT, JSONARRAYany accumulator
-type, except GroupByAccum
-
-|API (JSON output format) |Currently, the only option is ``v2''
-(default)
-
-|SYNTAX |v1 (default) or v2 (pattern matching). See the
-https://docs.tigergraph.com/v/3.2/dev/gsql-ref/querying/select-statement[SELECT
-Statement]section for an outline of the differences. See
-https://docs.tigergraph.com/v/3.2/start/gsql-102[Pattern Matching] for
-details on v2.
-|===
-
-=== Default parameter values
-
-You can specify default values for parameters of primitive types when creating a query.Primitive types include:
+You can specify default values for parameters of primitive types when creating a query. Primitive types include:
 
 * `INT`
 * `UINT`
@@ -167,8 +176,7 @@ You can specify default values for parameters of primitive types when creating a
 
 To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
 
-.Example of a CREATE QUERY command with a default parameter value
-
+.Example of a `CREATE QUERY` command with a default parameter value
 [source,gsql]
 ----
 CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int)
@@ -189,7 +197,8 @@ CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int
 [#_dynamic_querying]
 === Dynamic querying
 
-TigerGraph 3.0+ supports Dynamic Querying.This means the query can be written and installed as a saved procedure without referencing a particular graph.Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
+TigerGraph 3.0+ supports Dynamic Querying.
+This means the query can be written and installed as a saved procedure without referencing a particular graph.Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
 
 Here are the ingredients for a dynamic query:
 
@@ -273,9 +282,11 @@ RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
 
 === Statement types
 
-A _statement_ is a standalone instruction that expresses an action to be carried out. The most common statements are _*data manipulation language (DML) statements*_. DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
+A _statement_ is a standalone instruction that expresses an action to be carried out. The most common statements are _data manipulation language (DML) statements_.
+DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
 
-A GSQL query has two levels of statements. The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short. This statement type is part of either the top-level block or a query-body control flow block. For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement. If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement. Each query-body statement ends with a semicolon.
+A GSQL query has two levels of statements.
+The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short. This statement type is part of either the top-level block or a query-body control flow block. For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement. If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement. Each query-body statement ends with a semicolon.
 
 The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short. This statement type is used inside certain query-body DML statements, to define particular data manipulation actions. DML-sub-statements are comma-separated. There is no comma or semicolon after the last DML-sub-statement in a block. For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.  If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
 
@@ -808,7 +819,7 @@ values |`["a", "list", "of", "args"]`
 
 |`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
 vertex ID and a field `"type"` for the type of the vertex
-|`{"id": "person1",\'\'"type": "person"}`
+|`{"id": "person1","type": "person"}`
 
 |`VERTEX` (type not specified) |Use a JSON object containing a field
 `"id"` for the vertex ID |`{"id": "person1"}`

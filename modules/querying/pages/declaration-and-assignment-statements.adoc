@@ -157,6 +157,7 @@ CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
 }
 ----
 
+[#_local_base_type_variables]
 === Local base type variables
 
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
@@ -228,6 +229,7 @@ GSQL > RUN QUERY localVariable("person1")
 --
 ====
 
+[#_local_container_variable]
 === Local container variable
 Variables declared inside a DML-block storing container type values are called _local container type variables_.
 Their values can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.

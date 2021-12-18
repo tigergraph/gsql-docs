@@ -2,19 +2,19 @@
 
 == Introduction
 
-GSQL is a Turing complete Graph Database query language. Comparing to other graph query languages, the biggest advantages is its support of accumulators -- global or vertex local.
+GSQL is a Turing-complete Graph Database query language. Compared to other graph query languages, the biggest advantage is its support of accumulators, either global or vertex-local.
 
-In addition to provide the classic xref:tutorials:pattern-matching/README.adoc[pattern match] syntax, which is easy to master, GSQL supports powerful run-time vertex attributes (a.k.a local accumulators) and  global state variables (a.k.a global accumulators).
+In addition to the classic xref:tutorials:pattern-matching/README.adoc[pattern match] syntax, which is easy to master, GSQL supports powerful run-time vertex attributes (a.k.a local accumulators) and  global state variables (a.k.a global accumulators).
 
-This short tutorial aims to shorten the learning curve of accumulator. Supposedly, after reading this article, everyone can master the essence of accumulator by heart, and start solving real-life graph problems with this handy language feature.
+This short tutorial aims to shorten the accumulator learning curve. In theory, after reading this article, you can master the basics of accumulators and start using them to solve real-life graph problems.
 
 == *What is an Accumulator?*
 
 image::https://lh3.googleusercontent.com/TZfcbUMlXsHvCYVO_ex9QqjlK823ybyrX7aQhv38j35fghJVpsJEtdFBjcjMj1x2pHfHbNUraTgbySriMRttCuNv359iOwnRHDVcRgPyAj9tQLappYXe6ManjmRS27eunYMc2rjG[Figure 1. The left box is a GSQL query with different accumulators being accumulated to. The right box shows the accumulator variables&apos; final results.]
 
-An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query. It has an initial value, and users can keep accumulating (using its "+=" built-in operator) new values into it. Each accumulator variable has a type. The type decides what semantics the declared accumulator will use to interpret the "+=" operation.
+An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query. It has an initial value, and users can keep accumulating (using its built-in `+=` operator) new values into it. Each accumulator variable has a type. The type decides what semantics the declared accumulator will use to interpret the `+=` operation.
 
-In Figure 1's left box, from line 3 to line 8, six different accumulator variables (those with prefix @@) are declared, each with a unique type. Below we explain the semantic and usage of them.
+In Figure 1's left box, from line 3 to line 8, six different accumulator variables (those with prefix @@) are declared, each with a unique type. Below we explain the semantics and their usage.
 
 * *SumAccum<INT>*  allows user to keep adding INT values into its internal state variable. As the line 10 and 11 have shown, we added 1 and 2 to the accumulator,  and end up with the value 3 (shown on line 3 in the right box).
 * *MinAccum<INT>*  keeps the smallest INT number it has seen. As the line 14 and 15 have shown,  we accumulated 1 and 2 to the MinAccum accumulator, and end up with the value 1 (shown on line 6 in the right box).
@@ -25,22 +25,25 @@ In Figure 1's left box, from line 3 to line 8, six different accumulator variabl
 
 == *Global vs. Vertex-attached Accumulator*
 
-At this point, we have seen that accumulators are special typed variable in GSQL language. We are ready to explain their global and local scopes.
+At this point, we have seen that accumulators are special typed variables in GSQL. We are ready to explain their global and local scopes.
 
-Global accumulator belongs to the entire query. Anywhere in a query, a statement can update its value. Local accumulator belongs to each vertex.  It can only be updated when its owning vertex is accessible. To differentiate them, we use special prefixes in the identifier when we declare them.
+Global accumulators can be updated by statements anywhere in a query. In contrast, local accumulators can only be updated when their parent vertices are accessible.
 
-* *@@* prefix is used for declaring global accumulator variable. It is always used stand-alone. E.g  _**_`@@cnt +=1`
-* *@* prefix is used for declaring local accumulator variable. It must be used with a vertex alias in a query block. E.g. `v.@cnt += 1,` where v is a vertex alias specified in a FROM clause of a SELECT-FROM-WHERE query block.
+To differentiate these two accumulator types, we use special prefixes in the identifiers during declaration.
+
+* `@@` is used for declaring global accumulators. It is always used stand-alone. E.g  `@@cnt +=1`
+* `@`  is used for declaring local accumulators. It must be used with a vertex alias in a query block. E.g. `v.@cnt += 1,` where v is a vertex alias specified in a FROM clause of a SELECT-FROM-WHERE query block.
 
 image::https://lh6.googleusercontent.com/zBXxBe-6iSKX2RJZ9ITyC1wLf-gcbuJbzHlqnGCFV6uwjkYHrTYXtW56HzAn2uA-YYw4TQNt2-MFe-nbGXDnNml0K1sRYVdAKlc3SxMYZ5UsRnlWTb4R-fHIcXJillIGsyffAO2H[Figure 2. A social graph with 7 person vertices and 7 friendship edges connecting them.]
 
-Consider a toy social graph modeled by a person vertex type and a person-to-person friendship edge type shown in Figure 2. Below we write a query, which accepts a person, and does a 1-hop traversal from the input person to its neighbors. We use the @@global_edge_cnt accumulator to accumulate the total number of edges we traverse. And we use @vertex_cnt to write to the input person's each friend vertex an integer 1.
+Consider a toy social graph modeled by a person vertex type and a person-to-person friendship edge type shown in Figure 2. Below we write a query, which accepts a person, and does a 1-hop traversal from the input person to its neighbors. We use the *@@global_edge_cnt* accumulator to accumulate the total number of edges we traverse. We use *@vertex_cnt* to write to the input person's each friend vertex an integer 1.
 
 image::https://lh5.googleusercontent.com/6PVg2z_7N7SqnLUeZOP2mdh52KQqB_GCZC-x5A6edcAagOWqBKWRPixykP-wS-tnAAqPYBWZbEBQOTHqV1GghvlsObYEW5tLkZ-Nn0lIc0EsAk8_RZRP_-vZQnsNn2Wy-j4sB-e4[]
 
 image::https://lh4.googleusercontent.com/P8rs2ukMPxoFJKk1x74FNkEa38PTg-KNcC9uJ_BN4ZRcYh5nhDTcjYD4_ajvgBe047-hLRaUbHfMXdEnn2nLzFQXGkRHRBbVb4lY399yZ_7If25HKtCAO0Hymn35Zm5fxdux_YtV[Figure 3. The top box shows a query that given a person, accumulate the edge count into @@global_edge_cnt. The bottom box shows that for each friend of the input person, we accumulate 1 into its @vertex_cnt.  ]
 
-As Figure 2 shows, Dan has 4 direct friends -- Tom, Kevin, Jenny, and Nancy, each of which holds a local accumulator @vertex_cnt. And the @@global_edge_cnt has value 4, reflecting the fact that for each edge, we have accumulated 1 into it.
+As Figure 2 shows, Dan has 4 direct friends: "Tom, Kevin, Jenny, and Nancy, each of which holds a local accumulator @vertex_cnt.
+@@global_edge_cnt has value 4, reflecting the fact that for each edge, we have accumulated 1 into it.
 
 == *ACCUM vs. POST-ACCUM*
 
@@ -57,4 +60,4 @@ We have explained the mechanism of accumulators, their types, and the two differ
 * *IC:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex*]****
 * *BI:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/business_intelligence[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/business_intelligence*]****
 
-You can follow GSQL 102 to setup the environment. You can also post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarifying any doubts.
+You can follow GSQL 102 to set up the environment. You can also post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarify any doubts.

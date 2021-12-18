@@ -670,7 +670,7 @@ Returns the substring indicated by the start point and length. If the parameter 
 | `INT`
 
 | `length`
-| Optional. The length of the substring. If omitted, the substring will be
+| Optional. The length of the substring. If omitted, the function will extract characters to the end of the string.
 | `INT`
 |===
 

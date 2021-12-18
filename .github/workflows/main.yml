@@ -1,14 +1,23 @@
+<<<<<<< HEAD
 # This is a basic workflow to help you get started with Actions
 
+=======
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 name: CI
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
+<<<<<<< HEAD
     branches: [ '3.2', '3.3' ]
   pull_request:
     branches: [ '3.2', '3.3' ]
+=======
+    branches: [ main, '3.3' ]
+  pull_request:
+    branches: [ main, '3.3' ]
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,12 +34,19 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+<<<<<<< HEAD
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
+=======
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 
       # Runs a set of commands using the runners shell
       - name: Make curl call to build hook
         run: |
           echo Making curl call to Netlify build hook
+<<<<<<< HEAD
           curl -X POST -d '{}' ${{ secrets.BUILD_HOOK }}
+=======
+          curl -X POST -d '{}' ${{ secrets.BUILD_HOOK }}
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7

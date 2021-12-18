@@ -78,7 +78,11 @@ None.
 
 === Syntax
 
+<<<<<<< HEAD
 `e.setAttr( attrName, attrNewValue )`
+=======
+`e.setAttr( attrName, attrNewValue)`
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 
 === Description
 
@@ -94,7 +98,11 @@ No return value.
 | Parameter | Description | Data type
 
 | `attrName`
+<<<<<<< HEAD
 | The name of the attribute. This argument must be a query parameter.
+=======
+| The name of the attribute
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 | `STRING`
 
 | `attrNewValue`

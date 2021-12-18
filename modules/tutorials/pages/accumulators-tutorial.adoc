@@ -42,7 +42,11 @@ image::https://lh5.googleusercontent.com/6PVg2z_7N7SqnLUeZOP2mdh52KQqB_GCZC-x5A6
 
 image::https://lh4.googleusercontent.com/P8rs2ukMPxoFJKk1x74FNkEa38PTg-KNcC9uJ_BN4ZRcYh5nhDTcjYD4_ajvgBe047-hLRaUbHfMXdEnn2nLzFQXGkRHRBbVb4lY399yZ_7If25HKtCAO0Hymn35Zm5fxdux_YtV[Figure 3. The top box shows a query that given a person, accumulate the edge count into @@global_edge_cnt. The bottom box shows that for each friend of the input person, we accumulate 1 into its @vertex_cnt.  ]
 
+<<<<<<< HEAD
 As Figure 2 shows, Dan has 4 direct friends: Tom, Kevin, Jenny, and Nancy, each of which holds a local accumulator @vertex_cnt.
+=======
+As Figure 2 shows, Dan has 4 direct friends: "Tom, Kevin, Jenny, and Nancy, each of which holds a local accumulator @vertex_cnt.
+>>>>>>> b7e5ee06b72ef8e89652bf1fbac8cfee2e10aba7
 @@global_edge_cnt has value 4, reflecting the fact that for each edge, we have accumulated 1 into it.
 
 == *ACCUM vs. POST-ACCUM*

@@ -6,7 +6,8 @@ With just the knowledge from GSQL 101 and a little practice, you should be able 
 
 * Create a graph schema containing multiple vertex types and edge types.
 * Define a loading job that takes one or more CSV files and maps the data directly to the vertices and edges of your graph.
-* Write and run simple parameterized queries which start at one vertex and then traverse one or more hops to generate a final vertex set. Make a simple additive computation and return the results.
+* Write and run simple parameterized queries which start at one vertex and then traverse one or more hops to generate a final vertex set.
+* Make a simple additive computation and return the results.
 
 Want to learn more?
 
@@ -14,4 +15,4 @@ Want to learn more?
 * Continue learning xref:pattern-matching/README.adoc[Pattern Matching].
 * To see more GSQL examples, see https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_short[IS],  https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_complex[IC], and https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/business_intelligence[BI] workloads based on http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC] benchmark https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/load_scripts/setup_schema.gsql[schema].
 
-* To discuss and get help with fellow GSQL users and GSQL developers,  join https://community.tigergraph.com/[GSQL community forum].
+* To discuss with and get help from fellow GSQL users and developers,  join our https://community.tigergraph.com/[GSQL community forum].

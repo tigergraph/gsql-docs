@@ -2,13 +2,13 @@
 
 After creating a graph schema, the next step is to load data into it. The task here is to instruct the GSQL loader how to associate ("map") the fields in a set of data files to the attributes in your vertex types and edge types of  the graph schema we just defined.
 
-You should have the two data files person.csv and friendship.csv on your local disk. It's not necessary that they are in the same folder with you.
+You should have the two data files person.csv and friendship.csv on your local disk. They don't need to be in your current working directory.
 
-If you need to exit the GSQL shell for any reason, you can do so by typing "quit" without the quotes.  Type gsql to enter again.
+If you need to exit the GSQL shell for any reason, you can do so by typing `quit`.  Type `gsql` to enter again.
 
 == Define a Loading Job
 
-The loading job below assumes that your data files are in the folder `/home/tigergraph`. If they are elsewhere, then in the loading job script below replace `/home/tigergraph/person.csv` and `/home/tigergraph/friendship.csv` with their corresponding file path respectively. Assuming you're (back) in the GSQL shell, enter the following set of commands.
+The loading job below assumes that your data files are in the folder `/home/tigergraph`. If they are elsewhere, then in the loading job script below replace `/home/tigergraph/person.csv` and `/home/tigergraph/friendship.csv` with their corresponding file paths respectively. Assuming you're (back) in the GSQL shell, enter the following set of commands.
 
 .GSQL commands to define a loading job
 
@@ -37,7 +37,7 @@ Let's walk through the commands:
  ** In file1, gender comes before age.  In the person vertex, gender comes after age. When loading, state your attributes in the order needed by the target object (in this case, the person vertex).
  ** Each LOAD statement has a USING clause.  Here it tells GSQL that both files contain a header (whether we choose to use the names or not, GSQL still needs to know whether to consider the first line as data or not). It also says the column separator is comma. GSQL can handle any single-character separator, not just commas.
 
-When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
+When you run the `CREATE LOADING JOB` statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
 
 .GSQL shell
 
@@ -56,7 +56,7 @@ GSQL > }
 GSQL > END
 The job load_social is created.
 ----
-
+If you get a Semantic Check Fail error at this stage, check to make sure that your .csv files are in ANSI encoding and have been saved with a text editor, not a spreadsheet editor.
 
 
 == Run a Loading Job

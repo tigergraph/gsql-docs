@@ -4,13 +4,13 @@ You now have a graph with data!  You can run some  queries using the built-in RE
 
 == Get Vertex/Edge Statistics
 
-Below we call two functions, stat_vertex_number and stat_edge_number to return the cardinality of each vertex and edge type.
+Below we call two functions, *stat_vertex_number* and *stat_edge_number* to return the cardinality of each vertex and edge type.
 
 [NOTE]
 ====
-REST endpoints return results in JSON format. JSON data are used for various purposes. But JSON data can't be read easily from JSON file by using bash script like other normal files. *jq* tool is used to solve this problem
+REST endpoints return results in JSON format. JSON data are used for various purposes. However, JSON data can't be read easily from JSON files by using bash scripts the way other files can. The *jq* tool is used to solve this problem.
 
-We recommend you install jq and redirect the REST call result to jq before it is output. +
+We recommend you install *jq* and redirect the REST call result to *jq* before it is output. +
 ====
 
 .Linux Shell
@@ -140,7 +140,7 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 
 
 
-*Example*. Find all friendship edges whose source vertex's primary_id is "Tom".
+*Example*. Find all friendship edges whose source vertex's primary_id is "Tom". In other words, find all of Tom's friendships.
 
 .Linux Shell
 

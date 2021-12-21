@@ -1182,11 +1182,12 @@ GSQL > RUN QUERY listAccumUpdateEx2(["person1","person5"])
 ====
 
 
+[#_setaccum]
 === SetAccum
 
-The SetAccum type maintains a collection of unique elements. The output of a SetAccum is a list of elements in arbitrary order. A SetAccum instance can contain values of one type. The element type can be any base type, tuple, or STRING COMPRESS.
+The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.A SetAccum instance can contain values of one type.The element type can be any base type, tuple, or STRING COMPRESS.
 
-For SetAccum, the *+= arg* operation adds a non-duplicate element or set of elements to the set. If an element is already represented in the set, then the SetAccum state does not change.
+For SetAccum, the *+= arg* operation adds a non-duplicate element or set of elements to the set.If an element is already represented in the set, then the SetAccum state does not change.
 
 SetAccum also can be used with the three canonical set operators: UNION, INTERSECT, and MINUS (see Section "Set/Bag Expression and Operators" for more details).
 
@@ -1293,9 +1294,10 @@ GSQL > RUN QUERY setAccumEx()
 ====
 
 
+[#_bagaccum]
 === BagAccum
 
-The BagAccum type maintains a collection of elements with duplicated elements allowed. The output of a BagAccum is a list of elements in arbitrary order. A BagAccum instance can contain values of one type. The element type can be any base type, tuple, or STRING COMPRESS.
+The BagAccum type maintains a collection of elements with duplicated elements allowed.The output of a BagAccum is a list of elements in arbitrary order.A BagAccum instance can contain values of one type.The element type can be any base type, tuple, or STRING COMPRESS.
 
 For BagAccum, the *+= arg* operation adds an element or bag of elements to the bag.
 
@@ -1410,15 +1412,16 @@ GSQL > RUN QUERY bagAccumEx()
 ====
 
 
+[#_mapaccum]
 === MapAccum
 
-The MapAccum type maintains a collection of (key -> value) pairs. The output of a MapAccum is a set of key and value pairs in which the keys are unique.
+The MapAccum type maintains a collection of (key -> value) pairs.The output of a MapAccum is a set of key and value pairs in which the keys are unique.
 
-The key type of a MapAccum can be all base types or tuples.  If the key type is VERTEX, then only the vertex's id is stored and displayed.
+The key type of a MapAccum can be all base types or tuples.If the key type is VERTEX, then only the vertex's id is stored and displayed.
 
 The value type of a MapAccum can be all base types, tuples, or any type of accumulator, except for HeapAccum.
 
-For MapAccum, the *+= `+(key->val)+`* operation adds a key-value element to the collection if *key* is not yet used in the MapAccum. If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val* . (Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
+For MapAccum, the *+= `+(key->val)+`* operation adds a key-value element to the collection if *key* is not yet used in the MapAccum.If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val* . (Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
 
 MapAccum also supports the *+* operator:
 

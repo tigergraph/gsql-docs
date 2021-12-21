@@ -116,7 +116,7 @@ set or bag of `+baseType+`, or `+FILE+` object a|
 a|
 `+STRING COMPRESS+`
 
-(⚠**Deprecated date type. Please use `STRING` instead**)
+(⚠**Deprecated data type. Please use `STRING` instead**)
 
 |`STRING COMPRESS` a|
 * more compact storage of STRING, *if there is a limited number of
@@ -358,7 +358,7 @@ A tuple is a user-defined data structure consisting of a fixed sequence of base 
 Tuple types can be created and named using a `TYPEDEF` statement.
 Tuples must be defined first, before any other statements in a query.
 
-.ENBF for tuples
+.EBNF for tuples
 [source,ebnf]
 ----
 typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
@@ -627,7 +627,7 @@ When the query where the `FILE` was declared finishes running, the `FILE` conten
 
 A `FILE` object can be passed as a parameter to another query. When a query receives a `FILE` object as a parameter, it can append data to that `FILE`, as can every other query which receives this `FILE` object as a parameter.
 
-== Query Parameter Types
+== Query parameter types
 
 Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
 A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter.

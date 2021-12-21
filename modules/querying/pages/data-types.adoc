@@ -304,17 +304,40 @@ If an attribute of a vertex or edge is referenced in a GSQL query, they will be 
 |===
 
 
-=== `JSONOBJECT` and `JSONARRAY`
+=== `JSONOBJECT`
 
-These two base types allow users to pass a complex data object or to write output in a customized format.
-These types follow the industry-standard definition of link:https://www.json.org[JSON].
-A `JSONOBJECT` instance's external representation (as input and output) is a string, starting and ending with curly braces (`{}`) which enclose an unordered list of key-value pairs. A `JSONARRAY` is represented as a string, starting and ending with square brackets (`[]`)which enclose an ordered list of _values_.
-Since a value can be an object or an array, JSON supports hierarchical, nested data structures.
+A `JSONOBJECT` instance's external representation (as input and output) is a string, starting and ending with curly braces (`{}`) which enclose an unordered list of key-value pairs.
+`JSONOBJECT` is immutable.
+No operator is allowed to alter its value.
 
-[WARNING]
-====
-A `JSONOBJECT` or `JSONARRAY` value is immutable. No operator is allowed to modify its value.
-====
+==== Assign a `JSONOBJECT` value to a base type variable
+There is no `JSONOBJECT` literal in the GSQL query language.
+Therefore, to assign value to a `JSONOBJECT` base type variable in GSQL, you need to use the `parse_json_object()` function to convert a string representation of s JSON object to a `JSONOBJECT` value.
+
+For example, the following line declares a variable `han` with a `JSONOBJECT` value:
+
+[,gsql]
+----
+JSONOBJECT han = parse_json_object("{\"f_name\": \"Han\", \"l_name\": \"Solo\"}");
+----
+
+
+
+=== `JSONARRAY`
+A `JSONARRAY` is represented as a string, starting and ending with square brackets (`[]`)which enclose an ordered list of _values_.
+`JSONARRAY` is immutable.
+No operator is allowed to alter its value.
+
+==== Assign a `JSONARRAY` value to a base type variable
+There is no `JSONARRAY` literal in the GSQL query language.
+Therefore, to assign value to a `JSONARRAY` base type variable in GSQL, you need to use the `parse_json_array()` function to convert a string representation of s JSON object to a `JSONARRAY` value.
+
+For example, the following line declares a variable `fruits` with a `JSONARRAY` value:
+
+[,gsql]
+----
+JSONARRAY fruits = parse_json_array("[\"apple\", \"banana\", \"citrus\"]");
+----
 
 == Container types
 Container types include the following data types:

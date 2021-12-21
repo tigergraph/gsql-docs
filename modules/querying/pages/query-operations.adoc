@@ -280,17 +280,18 @@ RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
 ====
 
 
+[#_statement_types]
 === Statement types
 
-A _statement_ is a standalone instruction that expresses an action to be carried out. The most common statements are _data manipulation language (DML) statements_.
+A _statement_ is a standalone instruction that expresses an action to be carried out.The most common statements are _data manipulation language (DML) statements_.
 DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
 
 A GSQL query has two levels of statements.
-The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short. This statement type is part of either the top-level block or a query-body control flow block. For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement. If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement. Each query-body statement ends with a semicolon.
+The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
 
-The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short. This statement type is used inside certain query-body DML statements, to define particular data manipulation actions. DML-sub-statements are comma-separated. There is no comma or semicolon after the last DML-sub-statement in a block. For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.  If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
+The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short.This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.There is no comma or semicolon after the last DML-sub-statement in a block.For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
 
-There is some overlap in the types. For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
+There is some overlap in the types.For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
 
 [source,ebnf]
 ----

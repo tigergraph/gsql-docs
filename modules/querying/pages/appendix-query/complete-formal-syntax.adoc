@@ -173,7 +173,7 @@ parameterType := baseType
 
 accumDeclStmt := accumType localAccumName ["=" constant]
                         ["," localAccumName ["=" constant]]*
-               | [STATIC] accumType globalAccumName ["=" constant]
+               | accumType globalAccumName ["=" constant]
                                  ["," globalAccumName ["=" constant]]*
 localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;

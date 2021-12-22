@@ -330,6 +330,7 @@ CREATE DIRECTED EDGE sequel_of (FROM Book, TO Book) WITH REVERSE_EDGE="preceded_
 
 Every time the GSQL loader creates a *`sequel_of`* edge, it will also automatically create a *`preceded_by`* edge, pointing in the opposite direction.
 
+[#_typedef]
 == `TYPEDEF`
 
 User-defined tuple types defined in a query cannot be used outside of its query or across queries.

@@ -10,7 +10,7 @@ This section covers the following subset of the EBNF language definitions:
 accumDeclStmt :=
           accumType localAccumName ["=" constant]
                     ["," localAccumName ["=" constant]]*
-        | [STATIC] accumType globalAccumName ["=" constant]
+        | accumType globalAccumName ["=" constant]
                     ["," globalAccumName ["=" constant]]*
 localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
@@ -59,7 +59,7 @@ Global accumulators can be declared anywhere in the query.
 Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop.
 Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
 
-The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`. Additionally, a global accumulator may be declared to be static.
+The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`.
 
 .EBNF for Accumulator Declaration
 [source,ebnf]
@@ -67,7 +67,7 @@ The name of a vertex-attached accumulator begins with a single `@`. The name of 
 accumDeclStmt :=
           accumType localAccumName ["=" expr]
                     ["," localAccumName ["=" expr]]*
-        | [STATIC] accumType globalAccumName ["=" expr]
+        | accumType globalAccumName ["=" expr]
                     ["," globalAccumName ["=" expr]]*
 localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
@@ -177,71 +177,6 @@ GSQL > RUN QUERY countEmploymentRelationships()
 --
 ====
 
-
-=== Static Global Accumulators
-
-A static global accumulator retains its value after the execution of a query. To declare a static global accumulator, include the STATIC keyword at the beginning of the declaration statement. For example, if a static global accumulator is incremented by 1 each time a query is executed, then its value is equal to the number of times the query has been run, since the query was installed. Each static global accumulator belongs to the particular query in which it is declared; it cannot be shared among different queries. The value only persists in the context of running the same query multiple times.  The value will reset to the default value when the GPE is restarted.
-
-
-==== Example
-[tabs]
-====
-Query::
-+
---
-.Static Global Accumulators example
-[source,gsql]
-----
-CREATE QUERY staticAccumEx(INT x) FOR GRAPH minimalNet {
-  STATIC ListAccum<INT> @@testList;
-  @@testList += x;
-  PRINT @@testList;
-}
-----
---
-Results::
-+
---
-.staticAccumEx.json Result
-[source,gsql]
-----
-GSQL > RUN QUERY staticAccumEx(3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@testList": [
-    3,
-    -5,
-    3
-  ]}]
-}
-GSQL > RUN QUERY staticAccumEx(-5)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@testList": [
-    3,
-    -5,
-    3,
-    -5
-  ]}]
-}
-----
---
-====
-
-
-There is no command to deallocate a static global accumulator. If a static global accumulator is a collection accumulator and is no longer needed, it should be cleared to minimize memory usage.
 
 == Accumulator Types
 

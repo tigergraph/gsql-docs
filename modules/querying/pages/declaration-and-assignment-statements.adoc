@@ -10,7 +10,7 @@ In GSQL, different types of variables and objects follow different rules when it
 accumDeclStmt :=
           accumType localAccumName ["=" constant]
                     ["," localASccumName ["=" constant]]*
-        | [STATIC] accumType globaAccumName ["=" constant]
+        | accumType globaAccumName ["=" constant]
                     ["," GlobalAccumName ["=" constant]]*
 localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;

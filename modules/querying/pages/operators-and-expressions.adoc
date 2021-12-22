@@ -787,10 +787,45 @@ A subquery parameter can only be one of the following types:
 
 A subquery's return value can be any base type or accumulator type with the following exceptions.
 
-* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level].
+* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level].
 * If the return type is a `BagAccum`. `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
 
-=== *Recursive subqueries*
+==== Example
+The following query uses a subquery that returns an anonymous tuple:
+
+[tabs]
+====
+Subquery::
++
+--
+[,gsql]
+----
+CREATE QUERY subQuery(vertex x) RETURNS (ListAccum<tuple<int, string, double>>){
+    typedef tuple<int a, string b, double c> MyTuple;
+    ListAccum<MyTuple> @@res;
+    RETURN @@res;
+}
+----
+--
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY mainQuery() {
+  TYPEDEF tuple<INT a, STRING b, DOUBLE c> myTuple1;
+  ListAccum<myTuple1> @@Acc1;
+  V = SELECT src FROM xxxx:src
+    // put the elemetns which returned from the subQuery
+    // to the end of the @@Acc1
+    ACCUM @@Acc1 += subQuery(src);
+  PRINT @@Acc1;
+}
+----
+--
+====
+
+=== Recursive subqueries
 
 Recursion is supported for subqueries and a subquery can call itself. Here is an example of a recursive subquery: The following subquery takes a set of persons as starting points, and returns all the friends within a given distance.
 

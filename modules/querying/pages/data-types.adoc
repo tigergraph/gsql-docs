@@ -375,6 +375,7 @@ Container types include the following data types:
 To see how container type variables are declared in a GSQL query, see xref:declaration-and-assignment-statements.adoc#_local_container_variable[Local container variables].
 
 
+[#_tuple]
 == Tuple
 
 A tuple is a user-defined data structure consisting of a fixed sequence of base type variables.

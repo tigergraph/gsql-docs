@@ -143,7 +143,7 @@ Therefore, the accumulator will not receive the value and will hold a value of 0
 
 [source,gsql]
 ----
-CREATE QUERY baseTypeVariable(vertex<person> m1) FOR GRAPH socialNet {
+CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
   MaxAccum<INT> @@maxDateGlob;
   DATETIME dt;
 

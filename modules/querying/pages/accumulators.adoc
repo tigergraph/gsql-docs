@@ -1,4 +1,6 @@
 = Accumulators
+:description: This page describes the syntax and features of accumulators in the GSQL query language.
+:stem: latex
 
 Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration.
 Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.

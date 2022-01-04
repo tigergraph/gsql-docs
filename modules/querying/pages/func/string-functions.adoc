@@ -74,7 +74,7 @@ chr(322) => 'B'
 
 === Description
 
-Compares the xref:func/string-functions.adoc#_soundex[Soundex codes] of two strings and returns an integer. The return value ranges from 0 to 4, and it indicates the similarity between the input strings' phonetic representation values.
+Compares the <<_soundex,Soundex codes>> of two strings and returns an integer. The return value ranges from 0 to 4, and it indicates the similarity between the input strings' phonetic representation values.
 
 0 indicates weak similarity, and 4 indicates strong similarity with identical phonetic representation values.
 
@@ -693,9 +693,7 @@ substr("ABCDE", -2, 1) -> "D"
 
 Returns the string from the first argument after the characters specified in the second argument are translated into the characters specified at the same index in the third argument.
 
-____
-*NOTE*: The function will return an error if `characters` and `translations` have different lengths.
-____
+The function will return an error if `characters` and `translations` have different lengths.
 
 === Return type
 
@@ -723,10 +721,10 @@ ____
 
 [source,text]
 ----
-translate(”Hello world”, "", "") = ”Hello World”
-translate(”Hello world”, "o", "U") = ”HellU WUrld”
-translate(”Hello world”, "lo", "aU") = ”HeaaU WUrad”
-translate(””, "lo", "aU") = ””
+translate(”Hello world”, "", "") => ”Hello world”
+translate(”Hello world”, "o", "U") => ”HellU wUrld”
+translate(”Hello world”, "lo", "aU") => ”HeaaU wUrad”
+translate(””, "lo", "aU") => ””
 ----
 
 == trim()

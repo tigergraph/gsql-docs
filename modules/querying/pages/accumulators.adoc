@@ -1,6 +1,9 @@
 = Accumulators
+:description: This page describes the syntax and features of accumulators in the GSQL query language.
+:stem: latex
 
-Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration. Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.
+Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration.
+Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.
 
 This section covers the following subset of the EBNF language definitions:
 
@@ -79,7 +82,7 @@ Vertex-attached accumulators are mutable state variables that are attached to ea
 They act as run-time attributes of a vertex. They are shared, mutual exclusively, among all query processes.
 
 Vertex-attached accumulators can be set to a value with the `=` operator.
-Additionally, an accumulate operator `+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
+Additionally, the operator `+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
 Vertex-attached accumulators can only be accessed or updated (via = or +=) in an `ACCUM` or `POST-ACCUM` clause within a `SELECT` statement or by a `PRINT` statement.
 
 In the example below, there are two accumulators attached to each vertex.
@@ -227,127 +230,89 @@ The accumulators fall into two major groups :
  ** HeapAccum
  ** GroupByAccum
 
-The details of each accumulator type are summarized in the table below.  The Accumulation Operation column explains how the accumulator *accumName* is updated when the statement *accumName += newVal* is executed. Following the table are example queries for each accumulator type.
+The details of each accumulator type are summarized in the table below.  The Accumulation Operation column explains how the accumulator `exampleAccum` is updated when the statement `exampleAccum += newVal` is executed.
+Following the table are example queries for each accumulator type.
 
 .Accumulator Types and Their Accumulation Behavior
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
-|Accumulator Type (Case Sensitive) |Default Initial Value |Accumulation
-operation +
-+
-(result of __`+accumName +`__`+= +`_`+newVal +`_)
-|SumAccum<INT> |0 |_accumName_ plus _newVal_
+|Accumulator type (Case Sensitive) |Default Initial Value |Accumulation
+operation
+|`SumAccum<INT>` |0 |Adds right operand to `SumAccum`.
 
-|SumAccum<FLOAT or DOUBLE> |0.0 |_accumName_ plus _newVal_
+|`SumAccum<FLOAT or DOUBLE>` |0.0 |Adds right operand to `SumAccum`.
 
-|SumAccum<STRING> |empty string |String concatenation of _accumName_ and
-_newVal_
+|`SumAccum<STRING>` |Empty string |Concatenates `SumAccum` and right operand.
 
-|MaxAccum<INT> |INT_MIN |The greater of _newVal_ and _accumName_
+|`MaxAccum<INT>` |`INT_MIN` |Updates the value of `MaxAccum` to the greater between `MaxAccum` and right operand.
 
-|MaxAccum<FLOAT or DOUBLE> |FLOAT_MIN or DOUBLE_MIN |The greater of
-_newVal_ and _accumName_
+|`MaxAccum<FLOAT or DOUBLE>` |`FLOAT_MIN` or `DOUBLE_MIN` |Updates the value of `MaxAccum` to the greater between `MaxAccum` and right operand.
 
-|MaxAccum<STRING> |empty string |The greater of _newVal_ and _accumName_
-_,_ according to UTF-8 lexicographical ordering
+|`MaxAccum<STRING>` |Empty string |Updates the value of `MaxAccum` to the greater between `MaxAccum` and right operand according to UTF-8 lexicographical ordering.
 
-|MaxAccum<VERTEX> |the vertex with internal id 0 |The vertex with the
-greater internal id , either _newVal_ or _accumName_
+|`MaxAccum<VERTEX>` |Vertex with internal ID `0` |Updates the value of `MaxAccum` to the vertex with greater internal ID between `MaxAccum` and right operand.
 
-|MaxAccum<tupleTyple> |default for each field of the tuple |The greater
-of _newVal_ and _accumName._ tupleType is a user-defined sequence of
+|`MaxAccum<tupleType>` |Default for each field of the tuple |Updates the value of `MaxAccum` to the greater between `MaxAccum` and right operand. `tupleType` is a user-defined sequence of
+base types.
+Ordering is hierarchical, using the leftmost field of the
+tuple first, then the next field, and so on.
+
+|`MinAccum<INT>` |`INT_MAX` |Updates the value of `MinAccum` to the lesser between `MinAccum` and right operand.
+
+|`MinAccum<FLOAT or DOUBLE>` |`FLOAT_MAX` or `DOUBLE_MAX` |Updates the value of `MinAccum` to the lesser between `MinAccum` and right operand.
+
+|`MinAccum<STRING>` |empty string |Updates the value of `MinAccum` to the lesser between `MinAccum` and right operand according to UTF-8 lexicographical ordering.
+
+|`MinAccum<VERTEX>` |unknown |Updates the value of `MinAccum` to the vertex with lesser internal ID between `MinAccum` and right operand.
+
+|`MinAccum<tupleType>` |Default for each field of the tuple |Updates the value of `MinAccum` to the lesser between `MinAccum` and right operand. `tupleType` is a user-defined sequence of
 baseTypes. Ordering is hierarchical, using the leftmost field of the
 tuple first, then the next field, and so on.
 
-|MinAccum<INT> |INT_MAX |The lesser of _newVal_ and _accumName_
+|`AvgAccum` |0.0 (double precision) |Updates `AvgAccum` to double precision average of right operand and all previous values accumulated to `AvgAccum`
 
-|MinAccum<FLOAT or DOUBLE> |FLOAT_MAX or DOUBLE_MAX |The lesser of
-_newVal_ and _accumName_
+|`AndAccum` |True |Updates `AndAccum` to boolean `AND` of right operand and `AndAccum`.
 
-|MinAccum<STRING> |empty string |The lesser of _newVal_ and _accumName_
-_,_ according to UTF-8 lexicographical ordering
+|`OrAccum` |False |Updates `OrAccum` to boolean `OR` of right operand and `AndAccum`.
 
-|MinAccum<VERTEX> |unknown |The vertex with the lesser internal id,
-either _newVal_ or _accumName_
+|`BitwiseAndAccum` |-1 (INT) = 64-bit sequence of 1s |Updates `BitwiseAndAccum` to boolean `AND` of right operand and `BitwiseAndAccum`.
 
-|MinAccum<tupleType> |default for each field of the tuple |The lesser of
-_newVal_ and _accumName._ tupleType is a user-defined sequence of
-baseTypes. Ordering is hierarchical, using the leftmost field of the
-tuple first, then the next field, and so on.
-
-|AvgAccum |0.0 (double precision) |Double precision average of _newVal_
-and all previous values accumulated to__accumName__
-
-|AndAccum |True |Boolean AND of _newVal_ and _accumName_
-
-|OrAccum |False |Boolean OR of _newVal_ and _accumName_
-
-|BitwiseAndAccum |-1 (INT) = 64-bit sequence of 1s |Bitwise AND of
-_newVal_ and _accumName_
-
-|BitwiseOrAccum |0 (INT) = 64-bit sequence of 0s |Bitwise OR of _newVal_
-and _accumName_ +
-+
+|`BitwiseOrAccum` |0 (INT) = 64-bit sequence of 0s |Updates `BitwiseOrAccum` to boolean `OR` of right operand and `BitwiseORAccum`.
 
 a|
-ListAccum< _type_ >
+`ListAccum< type >`
 
-(ordered collection of elements)
-
-|empty list |List with _newVal_ appended to end of _accumName. newVal_
-can be a single value or a list. If _accumName_ is [ 2, 4, 6 ], then
-_accumName_ = 4 +
-+
-produces _accumName_ equal to [.2]##
+|Empty list |Appends right operand to end of `ListAccum`.
 
 a|
-SetAccum< t__ype__ >
+`SetAccum< type >`
 
-(unordered collection of elements, duplicate items not allowed)
-
-|empty set |Set union of _newVal_ and _accumName_ . _newVal_ can be a
-single value or a set/bag.If _accumName_ is ( 2, 4, 6 ), then
-_accumName_ = 4 +
-+
-produces _accumName_ equal to ( 2, 4, 6)
+|empty set |Updates `SetAccum` to union of right operand and `SetAccum`. right operand can be a single value or a set/bag.
 
 a|
-BagAccum<t__ype__ >
+`BagAccum<type>`
 
-(unordered collection of elements, duplicate items allowed)
-
-|empty bag |Bag union of _newVal_ and _accumName_ . _newVal_ can be a
-single value or a set/bag.If _accumName_ is ( 2, 4, 6 ), then
-_accumName_ = 4 +
-+
-would result in _accumName_ equal to ( 2, 4, 4, 6)
+|Empty bag |Updates `BagAccum` to union of right operand and `BagAccum`. Right operand can be a single value or a set/bag.
 
 a|
-MapAccum< _type, type_ >
+`MapAccum< type, type >`
 
-(unordered collection of (key,value) pairs)
+|Empty map |Adds or updates a key-value pair of `MapAccum`.
 
-|empty map |Add or update a key:value pair to the _accumName_ map. If
-_accumName_ is [ ("red",3), ("green",4),("blue",2) ], then _accumName_
-+= ("black"→ 5) +
-+
-produces _accumName_ equal to [.("red"]##
-
-|ArrayAccum< _accumType_ > |empty list |See the ArrayAccum section below
+|`ArrayAccum< accumType >` |Empty list |See the <<ArrayAccum>> section below
 for details.
 
 a|
-HeapAccum< _tuple_ >(heapSize, sortKey *)*
+`HeapAccum< tuple >(heapSize, sortKey)`
 
-(sorted collection of tuples)
+|Empty heap |Inserts right operand into HeapAccum, maintaining the
+heap in sorted order, according to the sort key(s) and size limit
+declared for this `HeapAccum`.
 
-|empty heap |Insert _newVal_ into the _accumName_ heap, maintaining the
-heap in sorted order, according to the sortKey(s) and size limit
-declared for this HeapAccum
-
-|GroupByAccum< _type [, type] , accumType [, accumType]*_ > |empty group
-by map |Add or update a key:value pair in _accumName_ . See Section
-"GroupByAccum" for more details.
+|`GroupByAccum< _type [, type] , accumType [, accumType]*_ >` |Empty group
+by map |Adds or updates a key:value pair GroupByAccum.
+See Section
+<<GroupByAccum>> for more details.
 |===
 
 
@@ -355,7 +320,8 @@ by map |Add or update a key:value pair in _accumName_ . See Section
 
 The SumAccum type computes and stores the cumulative sum of numeric values or the cumulative concatenation of text values. The output of a SumAccum is a single numeric or string value. SumAccum variables operate on values of type INT, UINT, FLOAT, DOUBLE, or STRING only.
 
-The *+=* operator updates the accumulator's state. For INT, FLOAT, and DOUBLE types, *+= `arg`* performs a numeric addition, while for the STRING value type *+= `arg`* concatenates *arg* to the current value of the SumAccum.
+The `+=` operator updates the accumulator's state.
+For `INT`, `FLOAT`, and `DOUBLE` types, `+= arg` performs a numeric addition, while for the `STRING` value type `+= arg` concatenates `arg` to the current value of the SumAccum.
 
 ==== Example
 
@@ -426,7 +392,7 @@ GSQL > RUN QUERY sumAccumEx()
 
 The `MinAccum` and `MaxAccum` types calculate and store the cumulative minimum or the cumulative maximum of a series of values. The output of a `MinAccum` or a `MaxAccum` is a single value of the type that was passed in. `MinAccum` and `MaxAccum` variables operate on values of type `INT, UINT, FLOAT, DOUBLE, STRING, TUPLE`, and `VERTEX` (with optional specific vertex type) only.
 
-For `MinAccum`, *+= `arg`* checks if the current value held is less than *arg* and stores the smaller of the two. `MaxAccum` behaves the same, with the exception that it checks for and stores the greater instead of the lesser of the two.
+For `MinAccum`, `+= arg` checks if the current value held is less than `arg` and stores the smaller of the two. `MaxAccum` behaves the same, with the exception that it checks for and stores the greater instead of the lesser of the two.
 
 ==== Example
 [tabs]
@@ -596,9 +562,14 @@ Then the `weight` field of the tuple can be accessed directly from the `MacAccum
 
 === AvgAccum
 
-The AvgAccum type calculates and stores the cumulative mean of a series of numeric values. Internally, its state information includes the sum value of all inputs and a count of how many input values it has accumulated. The output is the mean value; the sum and the count values are not accessible to the user. The data type of an AvgAccum variable is not declared; all AvgAccum accumulators accept inputs of type INT, UINT, FLOAT, and DOUBLE.  The output is always DOUBLE type.
+The AvgAccum type calculates and stores the cumulative mean of a series of numeric values.
+Internally, its state information includes the sum value of all inputs and a count of how many input values it has accumulated.
+The output is the mean value; the sum and the count values are not accessible to the user.
 
-The *+= arg* operation updates the AvgAccum variable's state to be the mean of all the previous arguments along with the current argument; The *`= arg`* operation clears all the previously accumulated state and sets the new state to be *arg* with a count of one.
+The data type of an AvgAccum variable is not declared; all AvgAccum accumulators accept inputs of type `INT`, `UINT`, `FLOAT`, and `DOUBLE`.
+The output is always `DOUBLE` type.
+
+The `+= arg` operation updates the AvgAccum variable's state to be the mean of all the previous arguments along with the current argument; The `= arg` operation clears all the previously accumulated state and sets the new state to be `arg` with a count of one.
 
 ==== Example
 [tabs]
@@ -657,7 +628,8 @@ GSQL > RUN QUERY avgAccumEx()
 
 The AndAccum and OrAccum types calculate and store the cumulative result of a series of boolean operations. The output of an AndAccum or an OrAccum is a single boolean value (True or False). AndAccum and OrAccum variables operate on boolean values only.  The data type does not need to be declared.
 
-For AndAccum, *+= arg* updates the state to be the logical AND between the current boolean state and *arg*. OrAccum behaves the same, with the exception that it stores the result of a logical OR operation.
+For AndAccum, `+= arg` updates the state to be the logical `AND` between the current boolean state and `arg`.
+OrAccum behaves the same, with the exception that it stores the result of a logical OR operation.
 
 ==== Example
 [tabs]
@@ -718,11 +690,17 @@ GSQL > RUN QUERY andOrAccumEx()
 
 === BitwiseAndAccum / BitwiseOrAccum
 
-The BitwiseAndAccum and BitwiseOrAccum types calculate and store the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences. BitwiseAndAccum and BitwiseOrAccum operator on INT only. The data type does not need to be declared.
+The BitwiseAndAccum and BitwiseOrAccum types calculate and store the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.
+BitwiseAndAccum and BitwiseOrAccum operate on `INT` only.
+The data type does not need to be declared.
 
-Fundamental for understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s. "Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false. Hence, an integer is equivalent to a sequence of boolean values. Computing the Bitwise AND of two numbers A and B means to compute the bit sequence C where the j th bit of C, denoted C j , is equal to (A j AND B j ).
+Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
+"Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.
+Hence, an integer is equivalent to a sequence of boolean values.
+Computing the Bitwise `AND` of two numbers A and B means to compute the bit sequence C where the stem:[j_{th}] bit of C, denoted stem:[C_j], is equal to stem:[A_j] `AND` stem:[B_j].
 
-For BitwiseAndAccum, *+= `arg`* updates the accumulator's state to be the Bitwise AND of the current state and *arg* `.` BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise OR.
+For BitwiseAndAccum, `+= arg` updates the accumulator's state to be the Bitwise AND of the current state and `arg`.
+BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise OR.
 
 [CAUTION]
 ====
@@ -802,22 +780,21 @@ GSQL > RUN QUERY bitwiseAccumEx()
 [#_listaccum]
 === ListAccum
 
-The ListAccum type maintains a sequential collection of elements.The output of a ListAccum is a list of values in the order the elements were added.The element type can be any base type, tuple, or STRING COMPRESS.Additionally, a ListAccum can contain a nested collection of type ListAccum.Nesting of ListAccums is limited to a depth of three.
+The ListAccum type maintains a sequential collection of elements.
+The output of a ListAccum is a list of values in the order the elements were added.
+The element type can be any base type, tuple, or `STRING COMPRESS`.
+Additionally, a ListAccum can contain a nested collection of type ListAccum.
+Nesting of ListAccums is limited to a depth of three.
 
-The *+= arg* operation appends `arg` to the end of the list.In this case, `arg` may be either a single element or another ListAccum.
+The `+= arg` operation appends `arg` to the end of the list.
+In this case, `arg` may be either a single element or another ListAccum.
 
 ListAccum supports two additional operations:
 
-* *@list1 + @list2* creates a new ListAccum, which contains the elements of @list1 followed by the elements of @list2. The two ListAccums must have identical data types.
+* `@list1 + @list2` creates a new ListAccum, which contains the elements of `@list1` followed by the elements of `@list2`.
+The two ListAccums must have identical data types.
 
-[WARNING]
-====
-Change in "+" definition
-
-The pre-v2.0 definition of the ListAccum "+" operator ( *@list + arg*: Add arg to each member of @list) is no longer supported.
-====
-
-* *@list1 * @list2* (STRING data only) generates a new list of strings consisting of all permutations of an element of the first list followed by an element of the second list.
+* `@list1 * @list2` (`STRING` data only) generates a new list of strings consisting of all permutations of an element of the first list followed by an element of the second list.
 
 ListAccum also supports the following class functions.
 
@@ -840,7 +817,7 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 | `.contains(* T _val_ *)`
 | `BOOL`
 | Accessor
-| Returns true/false if the list does/doesn't contain the _value_ .
+| Returns true if the list does contain `value`, and false if it doesn't.
 
 | `.get( INT _idx_ )`
 | T
@@ -1009,7 +986,7 @@ CREATE QUERY listAccumUpdateEx() FOR GRAPH workNet {
 Results::
 +
 --
-.Results in listAcccumUpdateEx.json
+.Results in listAccumUpdateEx.json
 [source,gsql]
 ----
 GSQL > RUN QUERY listAccumUpdateEx()
@@ -1120,11 +1097,11 @@ GSQL > RUN QUERY listAccumUpdateEx2(["person1","person5"])
 [#_setaccum]
 === SetAccum
 
-The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.A SetAccum instance can contain values of one type.The element type can be any base type, tuple, or STRING COMPRESS.
+The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.A SetAccum instance can contain values of one type.The element type can be any base type, tuple, or `STRING COMPRESS`.
 
-For SetAccum, the *+= arg* operation adds a non-duplicate element or set of elements to the set.If an element is already represented in the set, then the SetAccum state does not change.
+For SetAccum, the `+= arg` operation adds a non-duplicate element or set of elements to the set.If an element is already represented in the set, then the SetAccum state does not change.
 
-SetAccum also can be used with the three canonical set operators: UNION, INTERSECT, and MINUS (see Section "Set/Bag Expression and Operators" for more details).
+SetAccum also can be used with the three canonical set operators: `UNION`, `INTERSECT`, and `MINUS` (see Section "Set/Bag Expression and Operators" for more details).
 
 SetAccum also supports the following class functions.
 
@@ -1133,29 +1110,30 @@ SetAccum also supports the following class functions.
 Functions that modify the SetAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
 | Function (T is the element type) | Return type | Accessor / Mutator | Description
 
-| *size()*
-| INT
+| `size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the set.
 
-| *contains(* T _value_ *)*
-| BOOL
+| `contains( T value )`
+| `BOOL`
 | Accessor
-| Returns true/false if the set does/doesn't contain the _value_.
+| Returns true if the set contains `value`.
+Returns false if the set doesn't contain `value`.
 
-| *remove(* T _value *)*_
-| VOID
+| `remove( T value )`
+| `VOID`
 | Mutator
-| Removes _value_ from the set.
+| Removes `value` from the set.
 
-| *clear()*
-| VOID
+| `clear()`
+| `VOID`
 | Mutator
 | Clears the set so it becomes empty with size 0.
 |===
@@ -1234,11 +1212,11 @@ GSQL > RUN QUERY setAccumEx()
 
 The BagAccum type maintains a collection of elements with duplicated elements allowed.The output of a BagAccum is a list of elements in arbitrary order.A BagAccum instance can contain values of one type.The element type can be any base type, tuple, or STRING COMPRESS.
 
-For BagAccum, the *+= arg* operation adds an element or bag of elements to the bag.
+For BagAccum, the `+= arg` operation adds an element or bag of elements to the bag.
 
-BagAccum also supports the *+* operator:
+BagAccum also supports the `+` operator:
 
-* *@bag1 + @bag2* creates a new BagAccum, which contains the elements of @bag1 and the elements of @bag2. The two BagAccums must have identical data types.
+* `@bag1 + @bag2` creates a new BagAccum, which contains the elements of @bag1 and the elements of @bag2. The two BagAccums must have identical data types.
 
 BagAccum also supports the following class functions.
 
@@ -1253,28 +1231,28 @@ Functions which modify the BagAccum (mutator functions) can be used only under t
 |===
 | Function (T is the element type) | Return type | Accessor / Mutator | Description
 
-| *size()*
-| INT
+| `size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the bag.
 
-| *contains(* T _value_ *)*
-| BOOL
+| `contains( T value )`
+| `BOOL`
 | Accessor
-| Returns true/false if the bag does/doesn't contain the _value_ .
+| Returns true/false if the bag does/doesn't contain `value` .
 
-| *clear()*
-| VOID
+| `clear()`
+| `VOID`
 | Mutator
 | Clears the bag so it becomes empty with size 0.
 
-| *remove(* T _value *)*_
-| VOID
+| `remove( T value )`
+| `VOID`
 | Mutator
 | Removes one instance of _value_ from the bag.
 
-| *removeAll(* T _value_ *)*
-| VOID
+| `removeAll( T value )`
+| `VOID`
 | Mutator
 | Removes all instances of the given value from the bag.
 |===
@@ -1352,15 +1330,17 @@ GSQL > RUN QUERY bagAccumEx()
 
 The MapAccum type maintains a collection of (key -> value) pairs.The output of a MapAccum is a set of key and value pairs in which the keys are unique.
 
-The key type of a MapAccum can be all base types or tuples.If the key type is VERTEX, then only the vertex's id is stored and displayed.
+The key type of a MapAccum can be all base types or tuples.If the key type is `VERTEX`, then only the vertex's id is stored and displayed.
 
 The value type of a MapAccum can be all base types, tuples, or any type of accumulator, except for HeapAccum.
 
-For MapAccum, the *+= `+(key->val)+`* operation adds a key-value element to the collection if *key* is not yet used in the MapAccum.If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val* . (Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
+For MapAccum, the `+= (key->val)` operation adds a key-value element to the collection if *key* is not yet used in the MapAccum.
+If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val* . (Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
 
-MapAccum also supports the *+* operator:
+MapAccum also supports the `+` operator:
 
-* *@map1 + @map2* creates a new MapAccum, which contains the (key,value) pairs of @map2 added to the (key,value) pairs of @map1. The two MapAccums must have identical data types.
+* `@map1 + @map2` creates a new MapAccum, which contains the key-value pairs of `@map2` added to the key-value pairs of `@map1`.
+The two MapAccums must have identical data types.
 
 MapAccum also supports the following class functions.
 
@@ -1373,25 +1353,26 @@ Functions that modify the MapAccum (mutator functions) can be used only under th
 ====
 
 |===
-| Function (KEY is the key type) | Return type | Accessor / Mutator | Description
+| Function (`KEY` is the key type) | Return type | Accessor / Mutator | Description
 
-| *size()*
-| INT
+| `size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the map.
 
-| *containsKey(* KEY _key_ *)*
-| BOOL
+| `containsKey( KEY key )`
+| `BOOL`
 | Accessor
-| Returns true/false if the map does/doesn't contain _key_ .
+| Returns true if the map does contain `key` and false if it doesn't.
 
-| *get(* KEY _key *)*_
+| `get( KEY key )`
 | _value_ type
 | Accessor
-| Returns the value which the map associates with _key_ . If the map doesn't contain_key_ , then the return value is undefined.
+| Returns the value which the map associates with `key`.
+If the map doesn't contain key, then the return value is undefined.
 
-| *clear()*
-| VOID
+| `clear()`
+| `VOID`
 | Mutator
 | Clears the map so it becomes empty with size 0.
 
@@ -1551,9 +1532,10 @@ then @@Sums[0], @@Sums[1], and @@Sums[2] each refer to an individual SumAccum<IN
 @@Lists[0] += "egory";  // value is now "category"
 ----
 
-==== *Accumulator-level operations*
+==== Accumulator-level operations
 
-The operators =, +=, and + have special meanings when applied to an ArrayAccum as a whole. There operations efficiently update an entire ArrayAccum. All of the ArrayAccums must have the same element type.
+The operators =, +=, and + have special meanings when applied to an ArrayAccum as a whole. There operations efficiently update an entire ArrayAccum.
+All ArrayAccums must have the same element type.
 
 |===
 | Operator | Description | Example
@@ -1584,15 +1566,16 @@ Functions that modify the ArrayAccum (mutator functions) can be used only under 
 |===
 | Function | Return type | Accessor / Mutator | Description
 
-| *size()*
+| `size()`
 | INT
 | Accessor
-| Returns the total number of elements in the (multi-dimensional) array. For example, the size of an ArrayAccum declared as @A[3][4] is 12.
+| Returns the total number of elements in the (multidimensional) array. For example, the size of an ArrayAccum declared as @A[3][4] is 12.
 
-| *reallocate(* INT, ... *)*
+| `reallocate( INT, ... )`
 | VOID
 | Mutator
-| Discards the previous ArrayAccum instance and creates a new ArrayAccum, with the size(s) given. An N-dimensional ArrayAccum requires N integer parameters. The reallocate function cannot be used to change the number of dimensions.
+| Discards the previous ArrayAccum instance and creates a new ArrayAccum, with the size(s) given.
+An N-dimensional ArrayAccum requires N integer parameters. The reallocate function cannot be used to change the number of dimensions.
 |===
 
 ==== Example
@@ -1946,28 +1929,28 @@ Functions that modify the `HeapAccum` (mutator functions) can be used only under
 |===
 | Function | Return type | Accessor / Mutator | Description
 
-| *size()*
-| INT
+| `size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the heap.
 
-| *top()*
-| tupleType
+| `top()`
+| `tupleType`
 | Accessor
 | Returns the top tuple. If this heap is empty, returns a tuple with each element equal to the default value.
 
-| *pop()*
-| tupleType
+| `pop()`
+| `tupleType`
 | Mutator
 | Returns the top tuple and removes it from the heap. If this heap is empty, returns a tuple with each element equal to the default value.
 
-| *resize(* INT *)*
-| VOID
+| `resize( INT newSize)`
+| `VOID`
 | Mutator
 | Changes the maximum capacity of the heap.
 
-| *clear()*
-| VOID
+| `clear()`
+| `VOID`
 | Mutator
 | Clears the heap so it becomes empty with size 0.
 |===
@@ -2168,7 +2151,7 @@ In the EBNF above, the *type* terms form the key set, and the *accumType* terms 
 
 In GroupByAccum, the key types can be base type, tuple, or STRING COMPRESS. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
 
-[source,text]
+[source,gsql]
 ----
 
 Typedef tuple <id int, name string, age int> myTuple;
@@ -2192,29 +2175,29 @@ Functions that modify the GroupByAccum (mutator functions) can be used only unde
 ====
 
 |===
-| Function (KEY1..KEYn are the key types) | Return type | Accessor / Mutator | Description
+| Function (`KEY1..KEYn` are the key types) | Return type | Accessor / Mutator | Description
 
-| *size()*
-| INT
+| `size()`
+| `INT`
 | Accessor
 | Returns the number of elements in the heap.
 
-| *get(* KEY1 _key_value1_ , KEY2 _key_value2_ ... )
+| `get( KEY1 _key_value1_ , KEY2 _key_value2_ ... )`
 | element type(s) of the accumulator(s)
 | Accessor
 | Returns the values from each accumulator in the group associating with the given key(s). If the key(s) doesn't exist, return the default value(s) of the accumulator type(s).
 
-| *containsKey(* KEY1 _key_value1_ , KEY2 _key_value2_... *)*
-| BOOL
+| `containsKey( KEY1 _key_value1_ , KEY2 _key_value2_... )`
+| `BOOL`
 | Accessor
 | Returns true/false if the accumulator contains the key(s)
 
-| *clear()*
-| VOID
+| `clear()`
+| `VOID`
 | Mutator
 | Clears the heap so it becomes empty with size 0.
 
-| *remove* ( KEY1 _key_value1_ , KEY2 _key_value2_ ... *)*
+| `remove ( KEY1 _key_value1_ , KEY2 _key_value2_ ... )`
 | VOID
 | Mutator
 | Removes the group associating with the key(s)
@@ -2419,7 +2402,7 @@ ListAccum<ListAccum<INT>> @@matrix; # a 2-dimensional jagged array of integers. 
 Only ListAccum, ArrayAccum, MapAccum, and GroupByAccum can contain other accumulators. However, not all combinations of collection accumulators are allowed. The following constraints apply:
 
 . ListAccum: ListAccum is the only accumulator type that can be nested within ListAccum, up to a depth of 3:
-
++
 [source,text]
 ----
 ListAccum<ListAccum<INT>>
@@ -2428,7 +2411,7 @@ ListAccum<SetAccum<INT>> # illegal
 ----
 
 . MapAccum: All accumulator types, except for HeapAccum, can be nested within MapAccum as the value type. For example,
-
++
 [source,text]
 ----
 MapAccum<STRING, ListAccum<INT>>
@@ -2440,7 +2423,7 @@ MapAccum<SetAccum<INT>, INT> # illegal
 ----
 
 . GroupByAccum: All accumulator types, except for HeapAccum, can be nested within GroupByAccum as the accumulator type. For example:
-
++
 [source,text]
 ----
 GroupByAccum<INT a, STRING b, MaxAccum<INT> maxs, ListAccum<ListAccum<INT>> lists>
@@ -2448,7 +2431,7 @@ GroupByAccum<INT a, STRING b, MaxAccum<INT> maxs, ListAccum<ListAccum<INT>> list
 
 . ArrayAccum: Unlike the other accumulators in this list, where nesting is optional, nesting is mandatory for ArrayAccum. See the xref:querying:accumulators.adoc#_arrayaccum[ArrayAccum] section.
 
-It is legal to define nested ListAccums to form a multi-dimensional array. Note the declaration statements and the nested [ bracket ] notation in the example below:
+It is legal to define nested ListAccums to form a multidimensional array. Note the declaration statements and the nested [ bracket ] notation in the example below:
 
 [tabs]
 ====

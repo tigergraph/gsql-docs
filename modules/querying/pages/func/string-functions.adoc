@@ -117,9 +117,7 @@ Returns the position of a string within a list of strings separated by commas.
 
 If `string` is not found in `string_list`, this function returns -1.
 
-____
-*NOTE*: `find_in_set` does _not_ ignore whitespace after the comma. For example, `find_in_set("a", "b a, a") = 0`, indicating that "`a`" is not an element in the list. This happens because the second and third elements of the list are space+a, rather than a.
-____
+NOTE: `find_in_set` does _not_ ignore whitespace after the comma. For example, `find_in_set("a", "b a, a") = 0`, indicating that "`a`" is not an element in the list. This happens because the second and third elements of the list are space+a, rather than a.
 
 === Return type
 
@@ -216,7 +214,7 @@ insert("Complete blank.", 9, "every ") => "Complete every blank."
 
 === Syntax
 
-`instr (str, substr [, position, occurence])`
+`instr (str, substr [, position, occurrence])`
 
 === Description
 
@@ -554,10 +552,11 @@ The function begins scanning the string from its last character and removes all 
 | `STRING`
 
 | `set`
-| Optional. A string of characters. The distinct characters from the string form the set. If not specified, it defaults to a single space.
+| Optional.A string of characters.The distinct characters from the string form the set.If not specified, it defaults to a single space.
 | `STRING`
 |===
 
+[#_soundex]
 == soundex()
 
 === Syntax
@@ -566,7 +565,8 @@ The function begins scanning the string from its last character and removes all 
 
 === Description
 
-Returns a character string containing the https://en.wikipedia.org/wiki/Soundex#:~:text=Soundex is a phonetic algorithm,despite minor differences in spelling.&text=Improvements to Soundex are the basis for many modern phonetic algorithms.[Soundex] code of `str`. This function lets you compare words that are spelled differently, but sound alike in English.
+Returns a character string containing the https://en.wikipedia.org/wiki/Soundex[Soundex] code of `str`.
+This function lets you compare words that are spelled differently, but sound alike in English.
 
 Soundex is a phonetic algorithm defined in _The Art of Computer Programming_, Volume 3: Sorting and Searching, by Donald E. Knuth, as follows:
 

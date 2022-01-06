@@ -1,0 +1,12 @@
+# gsql-docs
+A source file repository for GSQL language reference and tutorials.
+
+The GSQL-Docs repository contains the source files for our documentation of GSQL features and syntax. The source files are built in link:https://docs.antora.org/antora/2.3/[Antora] and displayed to the end user in the link:https://docs.tigergraph.com/gsql-ref/current/intro/intro[GSQL Language Reference] page of the user-facing documentation site.
+
+It guides users through the process of creating graph schemas, loading data into a graph, and constructing and running queries. 
+
+This repository also contains a Tutorials section for introducing GSQL to new users and explaining how to use the most common commands on some sample datasets.
+
+Anybody may contribute to this repository with the goal of expanding and clarifying GSQL documentation for end users. 
+
+Contribute to this repository by making a branch and submitting a pull request with your proposed changes to the documentation. Please review the link:https://github.com/tigergraph/doc-site/blob/main/style-guide.adoc[TigerGraph Docs Style Guide] before making changes. 

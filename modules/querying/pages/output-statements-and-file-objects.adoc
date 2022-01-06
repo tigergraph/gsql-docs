@@ -1,12 +1,13 @@
 = Output Statements and FILE Objects
 
+[#_print_statement_api_v2]
 == `PRINT` Statement (API v2)
 
-The PRINT statement specifies output data. Each execution of a PRINT statement adds a JSON object to the results array which will be part of the query output. A PRINT statement can appear anywhere that query-body statements are permitted.
+The PRINT statement specifies output data.Each execution of a PRINT statement adds a JSON object to the results array which will be part of the query output.A PRINT statement can appear anywhere that query-body statements are permitted.
 
 [CAUTION]
 ====
-A PRINT statement does not trigger immediate output.  The full set of data from all PRINT statements is delivered at one time, when the query concludes.
+A PRINT statement does not trigger immediate output.The full set of data from all PRINT statements is delivered at one time, when the query concludes.
 
 A query can print a maximum of 2GB of data.
 

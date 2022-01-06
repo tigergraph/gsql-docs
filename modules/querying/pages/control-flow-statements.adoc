@@ -1,27 +1,32 @@
 = Control Flow Statements
+:description: Reference for control flow statements in the GSQL query language.
+:stem: latexmath
 
-The GSQL Query Language includes a comprehensive set of control flow statements to empower sophisticated graph traversal and data computation: IF/ELSE, CASE, WHILE, and FOREACH.
+The GSQL Query Language includes a comprehensive set of control flow statements to empower sophisticated graph traversal and data computation: `IF/ELSE`, `CASE`, `WHILE`, and `FOREACH`.
 
+[#_differences_in_block_syntax]
 == Differences in Block Syntax
 
 Note that any of these statements can be used as a query-body statement or as a DML-sub level statement.
 
-[CAUTION]
-====
-If the control flow statement is at the query-body level, then its block(s) of statements are query-body statements ( _queryBodyStmts_ ). In a _queryBodyStmts_ block _,_ each individual statement ends with a semicolon, so there is always a semicolon at the end.
+If the control flow statement is at the query-body level, then its block(s) of statements are query-body statements ( _queryBodyStmts_ ).
+In a _queryBodyStmts_ block _,_ each individual statement ends with a semicolon, so there is always a semicolon at the end.
 
-If the control flow statement is at the DML-sub level, then its block(s) of statements are DML-sub statements ( _dmlSubStmtList_ ). In a _dmlSubStmtList_ block, a comma separates statements, but there is no punctuation at the end.
-====
+If the control flow statement is at the DML-sub level, then its block(s) of statements are DML-sub statements ( _dmlSubStmtList_ ).
+In a _dmlSubStmtList_ block, a comma separates statements, but there is no punctuation at the end.
 
-The "Statement Types" subsection in the Chapter on "CREATE / INSTALL / RUN / SHOW / DROP QUERY" has a more detailed general example of the difference between queryBodyStmts and dmlSubStmts.
+For more detailed general example of the difference between query-body statements and DML-sub statements, see xref:query-operations.adoc#_statement_types[statement types].
 
-== IF Statement
+== `IF` Statement
 
-The IF statement provides conditional branching: execute a block of statements ( _queryBodyStmts_ or _dmlSubStmtList_ ) only if a given _condition_ is true. The IF statement allows for zero or more ELSE-IF clauses, followed by an optional ELSE clause. The IF statement can be used either at the query-body level or at the DML-sub-statement level. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
+The `IF` statement provides conditional branching: execute a block of statements ( `queryBodyStmts` or `dmlSubStmtList` ) only if a given _condition_ is true.
+The `IF` statement allows for zero or more `ELSE-IF` clauses, followed by an optional `ELSE` clause.
+The `IF` statement can be used either at the query-body level or at the DML-sub-statement level. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
-.IF syntax
 
-[source,gsql]
+=== Syntax
+.`IF` syntax
+[source,ebnf]
 ----
 queryBodyIfStmt := IF condition THEN queryBodyStmts
                  [ELSE IF condition THEN queryBodyStmts ]*
@@ -31,12 +36,12 @@ dmlSubIfStmt :=    IF condition THEN dmlSubStmtList
                  [ELSE dmlSubStmtList ] END
 ----
 
-
-
-If a particular IF condition is not true, then the flow proceeds to the next ELSE IF condition.  When a true condition is encountered, its corresponding block of statements is executed, and then the IF statement terminates (skipping any remaining ELSE-IF or ELSE clauses). If an ELSE-clause is present, its block of statements are executed if none of the preceding conditions are true. Overall, the functionality can be summarized as "execute the first block of statements whose conditional test is true."
+If an `IF` condition is not true, then the flow proceeds to the next `ELSE IF` condition.
+When a true condition is encountered, its corresponding block of statements is executed, and then the `IF` statement terminates (skipping any remaining `ELSE-IF` or `ELSE` clauses).
+If an `ELSE` clause is present, its block of statements are executed if none of the preceding conditions are true.
+Overall, the functionality can be summarized as "execute the first block of statements whose conditional test is true."
 
 .IF semantics
-
 [source,gsql]
 ----
 # if then
@@ -52,10 +57,14 @@ ELSE IF x == 7 THEN y = 5;   # y is 5  only if x is 7.
 ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
 ----
 
+=== Examples
 
-
+[tabs]
+====
+Query::
++
+--
 .Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level
-
 [source,gsql]
 ----
 # count the number of friends a person has, and optionally include coworkers in that count
@@ -74,11 +83,11 @@ CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRA
        PRINT @@numFriends, includeCoworkers;
 }
 ----
-
-
-
+--
+Results::
++
+--
 .Example 1 Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY countFriendsOf2("person2", true)
@@ -110,11 +119,15 @@ GSQL > RUN QUERY countFriendsOf2("person2", false)
   }]
 }
 ----
+--
+====
 
-
-
-.Example 2. IF-ELSE IF-ELSE at query-body level
-
+[tabs]
+====
+Query::
++
+--
+.Example 2. `IF-ELSE` at query-body level
 [source,gsql]
 ----
 # determine if a user is active in terms of social networking (i.e., posts frequently)
@@ -134,9 +147,11 @@ CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
     END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 2 Results for Query calculateActivity
 
 [source,gsql]
@@ -164,11 +179,15 @@ GSQL > RUN QUERY calculateActivity("person5")
   "results": [{"Semi-active": "Semi-active"}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 3. Nested IF at query-body level
-
 [source,gsql]
 ----
 # use a more advanced activity calculation, taking into account number of posts
@@ -200,11 +219,12 @@ CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
     END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 3 Results for Query calculateInDepthActivity
-
 [source,gsql]
 ----
 GSQL > RUN QUERY calculateInDepthActivity("person1")
@@ -219,11 +239,15 @@ GSQL > RUN QUERY calculateInDepthActivity("person1")
   "results": [{"Semi-active": "Semi-active"}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 4. Nested IF at DML-sub level
-
 [source,gsql]
 ----
 # give each user post an accumulated rating based on the subject and how many likes it has
@@ -249,11 +273,12 @@ CREATE QUERY ratePosts2() FOR GRAPH socialNet {
     PRINT results;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 4 Results for Query ratePosts2
-
 [source,gsql]
 ----
 GSQL > RUN QUERY ratePosts2()
@@ -314,16 +339,18 @@ GSQL > RUN QUERY ratePosts2()
   ]}]
 }
 ----
+--
+====
 
 
+== `CASE` Statement
 
-== CASE Statement
+The `CASE` statement provides conditional branching: execute a block of statements only if a given condition is true.
+`CASE` statements can be used as query-body statements or DML-sub-statements. (See <<_differences_in_block_syntax,note about differences in block syntax>>.)
 
-The CASE statement provides conditional branching: execute a block of statements only if a given condition is true. CASE statements can be used as query-body statements or DML-sub-statements. (See the https://doc.tigergraph.com/2.1.3/GSQL-Language-Reference-Part-2---Querying.html#GSQLLanguageReferencePart2-Querying-queryBlock_vs_DMLSub_warning[note about differences in block syntax].)
-
-.CASE syntax
-
-[source,gsql]
+=== Syntax
+.`CASE` syntax
+[source,ebnf]
 ----
 queryBodyCaseStmt := CASE  (WHEN condition THEN queryBodyStmts)+ [ELSE queryBodyStmts] END
                | CASE expr (WHEN constant  THEN queryBodyStmts)+ [ELSE queryBodyStmts] END
@@ -332,15 +359,18 @@ dmlSubCaseStmt := CASE     (WHEN condition THEN dmlSubStmtList)+ [ELSE dmlSubStm
 ----
 
 
+One `CASE` statement contains one or more `WHEN-THEN` clauses, each `WHEN` presenting one expression.
+The `CASE` statement may also have one `ELSE` clause whose statements are executed if none of the preceding conditions are true.
 
-One CASE statement contains one or more WHEN-THEN clauses, each WHEN presenting one expression. The CASE statement may also have one ELSE clause whose statements are executed if none of the preceding conditions are true.
+There are two syntaxes of the `CASE` statement: one equivalent to an if-else statement, and the other is structured like a switch statement.
+The if-else version evaluates the boolean _condition_ within each `WHEN` clause and executes the first block of statements whose _condition_ is true.
+The optional concluding `ELSE` clause is executed only if all `WHEN` clause conditions are false.
 
-There are two syntaxes of the CASE statement: one equivalent to an if-else statement, and the other is structured like a switch statement. The if-else version evaluates the boolean _condition_ within each WHEN-clause and executes the first block of statements whose _condition_ is true. The optional concluding ELSE-clause is executed only if all WHEN-clause conditions are false.
-
-The switch version evaluates the expression following the keyword WHEN and compares its value to the expression immediately following the keyword CASE. These expressions do not need to be boolean; the CASE statement compares pairs of expressions to see if their values are equal. The first WHEN-THEN clause to have an expression value equal to the CASE expression value is executed; the remaining clauses are skipped. The optional ELSE-clause is executed only if no WHEN-clause expression has a value matching the CASE value.
+The switch version evaluates the expression following the keyword `WHEN` and compares its value to the expression immediately following the keyword CASE.
+These expressions do not need to be boolean; the `CASE` statement compares pairs of expressions to see if their values are equal.
+The first `WHEN-THEN` clause to have an expression value equal to the CASE expression value is executed; the remaining clauses are skipped. The optional ELSE-clause is executed only if no WHEN-clause expression has a value matching the CASE value.
 
 .CASE Semantics
-
 [source,gsql]
 ----
 STRING drink = "Juice";
@@ -365,9 +395,14 @@ END
 ----
 
 
+=== Examples
 
+[tabs]
+====
+Query::
++
+--
 .Example 1. CASE as IF-ELSE
-
 [source,gsql]
 ----
 # Display the total number times connected users posted about a certain subject
@@ -389,11 +424,12 @@ CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR 
     PRINT @@topicSum;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 1 Results for Query userNetworkPosts
-
 [source,gsql]
 ----
 GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
@@ -408,11 +444,15 @@ GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
   "results": [{"@@topicSum": 3}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 2. CASE as switch
-
 [source,gsql]
 ----
 # tally male and female friends of the starting vertex
@@ -431,11 +471,12 @@ CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
 	PRINT @@males, @@females, @@unknown;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 2 Results for Query countGenderOfFriends
-
 [source,gsql]
 ----
 GSQL > RUN QUERY countGenderOfFriends("person4")
@@ -454,11 +495,15 @@ GSQL > RUN QUERY countGenderOfFriends("person4")
   }]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 3. Multiple CASE statements
-
 [source,gsql]
 ----
 # give each social network user a social impact score which accumulates
@@ -475,11 +520,12 @@ CREATE QUERY scoreSocialImpact() FOR GRAPH socialNet api("v2") {
        PRINT people[people.@socialImpact]; // api v2
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 3 Results for Query scoreSocialImpact
-
 [source,gsql]
 ----
 GSQL > RUN QUERY scoreSocialImpact()
@@ -535,11 +581,15 @@ GSQL > RUN QUERY scoreSocialImpact()
   ]}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 4. Nested CASE statements
-
 [source,gsql]
 ----
 # give each user post a rating based on the subject and how many likes it has
@@ -561,11 +611,12 @@ CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
   PRINT results[results.@rating]; // api v2
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 4 Results for Query ratePosts
-
 [source,gsql]
 ----
 GSQL > RUN QUERY ratePosts()
@@ -641,27 +692,29 @@ GSQL > RUN QUERY ratePosts()
   ]}]
 }
 ----
+--
+====
 
 
-
-== WHILE Statement
+== `WHILE` Statement
 
 The WHILE statement provides unbounded iteration over a block of statements. WHILE statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
+=== Syntax
 .WHILE syntax
-
-[source,gsql]
+[source,ebnf]
 ----
 queryBodyWhileStmt := WHILE condition [LIMIT simpleSize] DO queryBodyStmts END
 dmlSubWhileStmt :=    WHILE condition [LIMIT simpleSize] DO dmlSubStmtList END
 simpleSize := integer | varName | paramName
 ----
 
+The `WHILE` statement iterates over its body ( _queryBodyStmts_ or _dmlSubStmtList_ ) until the _condition_ evaluates to false or until the iteration limit is met.  A _condition_ is any expression that evaluates to a boolean.
+The condition is evaluated before each iteration. `CONTINUE` statements can be used to change the control flow within the while block. `BREAK` statements can be used to exit the while loop.
 
-
-The WHILE statement iterates over its body ( _queryBodyStmts_ or _dmlSubStmtList_ ) until the _condition_ evaluates to false or until the iteration limit is met.  A _condition_ is any expression that evaluates to a boolean.  The condition is evaluated before each iteration. `CONTINUE` statements can be used to change the control flow within the while block. `BREAK` statements can be used to exit the while loop.
-
-A WHILE statement may have an optional LIMIT clause.  LIMIT clauses has a constant positive integer value or integer variable to constrain the maximum number of loop iterations.  The example below demonstrates how the LIMIT behaves.
+A `WHILE` statement may have an optional `LIMIT` clause.
+`LIMIT` clauses has a constant positive integer value or integer variable to constrain the maximum number of loop iterations.
+The example below demonstrates how the `LIMIT` behaves.
 
 [CAUTION]
 ====
@@ -669,7 +722,6 @@ If a limit value is not specified, it is possible for a WHILE loop to iterate in
 ====
 
 .WHILE LIMIT semantics
-
 [source,gsql]
 ----
 # These three WHILE statements behave the same.  Each terminates when
@@ -692,12 +744,16 @@ WHILE v.size() !=0 DO
 END;
 ----
 
+=== Examples
 
+Below are a number of examples that demonstrate the use of `WHILE` statements.
 
-Below are a number of examples that demonstrate the use of WHILE statements.
-
+[tabs]
+====
+Query::
++
+--
 .Example 1. Simple WHILE loop
-
 [source,gsql]
 ----
 # find all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
@@ -717,11 +773,12 @@ CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
     PRINT reachableVertices;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .reachable Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY reachable("person1")
@@ -894,11 +951,15 @@ GSQL > RUN QUERY reachable("person1")
   ]}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 2. WHILE loop using a LIMIT
-
 [source,gsql]
 ----
 # find all vertices which are reachable within two hops from a starting seed vertex (i.e., breadth-first search)
@@ -918,11 +979,12 @@ CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
     PRINT reachableVertices;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .reachableWithinTwo Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY reachableWithinTwo("person1")
@@ -1086,16 +1148,17 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
   ]}]
 }
 ----
+--
+====
 
 
+== `FOREACH` Statement
 
-== FOREACH Statement
+The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
-The FOREACH statement provides bounded iteration over a block of statements. FOREACH statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
-
-.FOREACH syntax
-
-[source,gsql]
+=== Syntax
+.`FOREACH` syntax
+[source,ebnf]
 ----
 queryBodyForEachStmt := FOREACH forEachControl DO queryBodyStmts END
 dmlSubForEachStmt :=    FOREACH forEachControl DO dmlSubStmtList END
@@ -1107,9 +1170,8 @@ keyVar := name
 valueVar := name
 ----
 
-
-
-The formal syntax for forEachControl appears complex.  It can be broken down into the following cases:
+The formal syntax for forEachControl appears complex.
+It can be broken down into the following cases:
 
 * name IN setBagExpr
 * (key, value) pair IN setBagExpr // because it's a Map
@@ -1118,9 +1180,8 @@ The formal syntax for forEachControl appears complex.  It can be broken down int
 
 Note that setBagExpr includes container accumulators and explicit sets.
 
-[NOTE]
-====
-The FOREACH statement has the following restrictions:
+=== Limitations
+The `FOREACH` statement has the following restrictions:
 
 * In a DML-sub level FOREACH, it is never permissible to update the loop variable (the variable declared before IN, e.g., var in "FOREACH var IN setBagExpr").
 * In a query-body level FOREACH, in most cases it is not permissible to update the loop variable.  The following exceptions apply:
@@ -1128,22 +1189,28 @@ The FOREACH statement has the following restrictions:
  ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
 * A query-body-level FOREACH cannot iterate over a set or bag of constants. For example, FOREACH i in (1,2,3) is not supported. However, DML-sub FOREACH does support this.
+
+=== `FOREACH ... IN RANGE`
+
+The `FOREACH` statement has an optional `RANGE` clause `RANGE[expr, expr]`, which can be used to define the iteration collection.
+Optionally, the range may specify a step size:
+`RANGE[expr, expr].STEP(expr)`
+
+Each `expr` must evaluate to an integer.
+Any of the integers may be negative, but the step `expr` may not be 0.
+
+The clause `RANGE[a,b].STEP(c)`  produces the sequence of integers from `a` to `b`, inclusive, with step size `c`.
+That is,
+stem:[(a, a+c, a+2*c, a+3*c, ... a+k*c)], where k = the largest integer such that stem:[|k*c| ≤ |b-a|].
+
+If the `.STEP` method is not given, then the step size c = 1.
+
+[tabs]
 ====
-
-=== FOREACH ... IN RANGE
-
-The FOREACH statement has an optional RANGE clause RANGE[expr, expr], which can be used to define the iteration collection. Optionally, the range may specify a step size: +
-RANGE[expr, expr].STEP(expr)
-
-Each expr must evaluate to an integer. Any of the integers may be negative, but the step expr may not be 0.
-
-The clause RANGE[a,b].STEP(c)  produces the sequence of integers from a to b, inclusive, with step size c.  That is, +
-(a, a+c, a+2*c, a+3*c, ... a+k*c), where k = the largest integer such that |k*c| ≤ |b-a|.
-
-If the .STEP method is not given, then the step size c = 1.
-
-.Nested FOREACH IN RANGE with MapAccum
-
+Query::
++
+--
+.Nested `FOREACH IN RANGE` with MapAccum
 [source,gsql]
 ----
 CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
@@ -1163,11 +1230,12 @@ CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
   PRINT @@t;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results for Query foreachRangeEx
-
 [source,gsql]
 ----
 GSQL > RUN QUERY foreachRangeEx()
@@ -1182,11 +1250,15 @@ GSQL > RUN QUERY foreachRangeEx()
   "results": [{"@@t": [ 0, 0, 1, 0, 1, 2, 0, 1, 2 ]}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .FOREACH IN RANGE with step
-
 [source,gsql]
 ----
 CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
@@ -1197,11 +1269,13 @@ CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
   PRINT @@t;
 }
 ----
+The step value can be positive for an ascending range or negative for a descending range.
+If the step has the wrong polarity, then the loop has zero iterations; that is, the exit condition is already satisfied.
+--
 
-
-
-The step value can be positive for an ascending range or negative for a descending range.  If the step has the wrong polarity, then the loop has zero iterations; that is, the exit condition is already satisfied.
-
+Results::
++
+--
 .foreachRangeStep.json Results
 
 [source,gsql]
@@ -1242,13 +1316,18 @@ GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
   "results": [{"@@t": []}]
 }
 ----
-
+--
+====
 
 
 === Query-body-level FOREACH Examples
 
+[tabs]
+====
+Query::
++
+--
 .Example 1 - FOREACH with ListAccum
-
 [source,gsql]
 ----
 # Count the number of companies whose country matches the provided string
@@ -1270,11 +1349,12 @@ CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
   PRINT countryCount;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .companyCount Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY companyCount("us")
@@ -1300,11 +1380,15 @@ GSQL > RUN QUERY companyCount("can")
   "results": [{"countryCount": 1}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 2 - FOREACH with a seed set
-
 [source,gsql]
 ----
 #Find all company person who live in a given country
@@ -1327,11 +1411,12 @@ CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
   END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .employeesByCompany Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY employeesByCompany("us")
@@ -1468,11 +1553,15 @@ GSQL > RUN QUERY employeesByCompany("us")
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 3 - Nested FOREACH with MapAccum
-
 [source,gsql]
 ----
 # Count the number of employees from a given country and list their ids
@@ -1502,9 +1591,11 @@ CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
   END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .employeeByCountry Results
 
 [source,gsql]
@@ -1528,13 +1619,18 @@ GSQL > RUN QUERY employeeByCountry("us")
   ]
 }
 ----
-
+--
+====
 
 
 === DML-sub FOREACH Examples
 
-.ACCUM FOREACH
-
+[tabs]
+====
+Query::
++
+--
+.`ACCUM FOREACH`
 [source,gsql]
 ----
 # Show post topics liked by users and show total likes per topic
@@ -1566,9 +1662,11 @@ CREATE QUERY topicLikes() FOR GRAPH socialNet {
   PRINT @@likesByTopic;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results for Query topicLikes
 
 [source,gsql]
@@ -1590,11 +1688,15 @@ GSQL > RUN QUERY topicLikes()
   }}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 1 - POST-ACCUM FOREACH
-
 [source,gsql]
 ----
 #Show a summary of the number of friends all persons have by gender
@@ -1622,9 +1724,12 @@ CREATE QUERY friendGender() FOR GRAPH socialNet {
   PRINT @@femaleGenderCount;
 }
 ----
+--
 
 
-
+Results::
++
+--
 .Results for Query friendGender
 
 [source,gsql]
@@ -1644,19 +1749,22 @@ GSQL > RUN QUERY friendGender()
   ]
 }
 ----
+--
+====
 
 
+== `CONTINUE` and `BREAK` Statements
 
-== CONTINUE and BREAK Statements
+The `CONTINUE` and `BREAK` statements can only be used within a block of a `WHILE` or `FOREACH` statement.
+The `CONTINUE` statement branches control flow to the end of the loop, skipping any remaining statements in the current iteration, and proceeding to the next iteration.
+That is, everything in the loop block after the `CONTINUE` statement will be skipped, and then the loop will continue as normal.
 
-The CONTINUE and BREAK statements can only be used within a block of a WHILE or FOREACH statement.  The CONTINUE statement branches control flow to the end of the loop, skipping any remaining statements in the current iteration, and proceeding to the next iteration. That is, everything in the loop block after the CONTINUE statement will be skipped, and then the loop will continue as normal.
+The `BREAK` statement branches control flow out of the loop, i.e., it will exit the loop and stop iteration.
 
-The BREAK statement branches control flow out of the loop, i.e., it will exit the loop and stop iteration.
-
-Below are a number of examples that demonstrate the use of BREAK and CONTINUE.
+=== Examples
+Below are a number of examples that demonstrate the use of `BREAK` and `CONTINUE`.
 
 .Continue and Break Semantics
-
 [source,gsql]
 ----
 # While with a continue
@@ -1679,9 +1787,12 @@ END;
 ----
 
 
-
+[tabs]
+====
+Query::
++
+--
 .Example 1. Break
-
 [source,gsql]
 ----
 # find posts of a given person, and post of friends of that person, friends of friends, etc
@@ -1709,11 +1820,12 @@ CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
     PRINT @@degree;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Results of Query findDegreeOfCats
-
 [source,gsql]
 ----
 GSQL > RUN QUERY findDegreeOfCats("person2")
@@ -1739,11 +1851,15 @@ GSQL > RUN QUERY findDegreeOfCats("person4")
   "results": [{"@@degree": 0}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 2. findEnoughFriends.gsql: While loop using continue statement
-
 [source,gsql]
 ----
 # find all 3-hop friends of a starting vertex. count coworkers as friends
@@ -1777,11 +1893,12 @@ CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
     END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .findEnoughFriends.json Example 2 Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY findEnoughFriends("person1")
@@ -1905,11 +2022,15 @@ GSQL > RUN QUERY findEnoughFriends("person1")
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 3. While loop using break statement
-
 [source,gsql]
 ----
 # find at least the top-k companies closest to a given seed vertex, if they exist
@@ -1936,11 +2057,12 @@ CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
     PRINT @@companyList;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .Example 3. topkCompanies Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY topkCompanies("person1", 2)
@@ -1973,11 +2095,15 @@ GSQL > RUN QUERY topkCompanies("person2", 3)
   ]}]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 4 - Usage of CONTINUE in FOREACH
-
 [source,gsql]
 ----
 #List out all companies from a given country
@@ -2004,11 +2130,12 @@ CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
   END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .companyByCountry Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY companyByCountry("us")
@@ -2027,11 +2154,15 @@ GSQL > RUN QUERY companyByCountry("us")
   ]
 }
 ----
+--
+====
 
-
-
+[tabs]
+====
+Query::
++
+--
 .Example 5 - Usage of BREAK in FOREACH
-
 [source,gsql]
 ----
 #List all the persons located in the specified country
@@ -2058,11 +2189,12 @@ CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
   END;
 }
 ----
+--
 
-
-
+Results::
++
+--
 .employmentByCountry Result
-
 [source,gsql]
 ----
 GSQL > RUN QUERY employmentByCountry("us")
@@ -2084,5 +2216,6 @@ GSQL > RUN QUERY employmentByCountry("us")
   ]
 }
 ----
-
+--
+====
 

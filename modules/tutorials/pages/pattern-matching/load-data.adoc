@@ -6,7 +6,7 @@ Below, we use the GSQL loading language to define a loading job script, which en
 
 The script to load the LDBC-SNB data is below.
 
-.# GSQL script for loading LDBC-SNB data
+.GSQL script for loading LDBC-SNB data
 
 [source,gsql]
 ----
@@ -126,7 +126,7 @@ CREATE LOADING JOB load_ldbc_snb FOR GRAPH ldbc_snb {
 
 We have generated a data set with scale factor 1 (approximate 1GB). You can download it from https://s3-us-west-1.amazonaws.com/tigergraph-benchmark-dataset/LDBC/SF-1/ldbc_snb_data-sf1.tar.gz
 
-.# Linux Bash 
+.Linux Bash
 
 [source,bash]
 ----
@@ -137,7 +137,7 @@ wget https://s3-us-west-1.amazonaws.com/tigergraph-benchmark-dataset/LDBC/SF-1/l
 
 After downloading the raw file, run the tar command below to decompress the downloaded file.
 
-.# Linux Bash
+.Linux Bash
 
 [source,bash]
 ----
@@ -146,7 +146,7 @@ tar -xzf  ldbc_snb_data-sf1.tar.gz
 
 
 
-After decompressing the file, you will see a folder named "ldbc_snb_data". Within it, you will see two subfolders
+After decompressing the file, you will see a folder named "ldbc_snb_data". Within it, you will see two subfolders:
 
 * social_network
 * substitution_parameters
@@ -159,7 +159,7 @@ Download https://raw.githubusercontent.com/tigergraph/ecosys/ldbc/ldbc_benchmark
 
 Specify the environment variable *LDBC_SNB_DATA_DIR*  to point to your raw file folder un-tarred in the previous section. In our example below, the raw data is in */home/tigergraph/ldbc_snb_data/social_network,* so we use the export shell command to specify its location. Then, start your TigerGraph services if needed. Finally, run the *setup_schema.gsql* script to create your LDBC Social Network graph.
 
-.# Linux Bash
+.Linux Bash
 
 [source,bash]
 ----
@@ -173,11 +173,9 @@ gadmin start all
 gsql setup_schema.gsql
 ----
 
+Download the https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/gsql102/3.0/load_data.sh[loading job script] and invoke it on the command line.
 
-
-Download the https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/gsql102/3.0/load_data.sh[loading job script] and invoke it on the command line. #
-
-.# Linux Bash
+.Linux Bash
 
 [source,bash]
 ----

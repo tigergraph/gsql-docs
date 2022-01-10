@@ -552,7 +552,7 @@ TYPEDEF TUPLE <FLOAT weight> EDGE_WEIGHT
 MinAccum<EDGE_WEIGHT> @@AccTest;
 ----
 
-Then the `weight` field of the tuple can be accessed directly from the `MacAccum` through the doc operator(`.`):
+Then the `weight` field of the tuple can be accessed directly from the `MinAccum` through the doc operator(`.`):
 
 [source,cpp]
 ----

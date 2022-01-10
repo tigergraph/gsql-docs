@@ -207,7 +207,8 @@ Here are the ingredients for a dynamic query:
 * *Attribute names*.The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
 * `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
 
-Here is a simple example to demonstrate how to apply Dynamic GSQL Query techniques.Here is the PageRank algorithm from our GSQL Graph Algorithm library.Here is it written with schema information embedded statically in the query:
+The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library. 
+The query is written with schema information embedded statically in it:
 
 * graph name = social
 * vertex type = Page

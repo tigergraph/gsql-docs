@@ -29,7 +29,23 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 === Step 2: Define C{pp} function
 
-Define the C{pp} function inside the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`. Only `bool`, `int`, `float`, `double`, and `string` (NOT `std::string`) are allowed as function arguments. In addition to these data types, functions can also return xref:accumulators.adoc[accumulators]. Any C{pp} data type is allowed inside a function body.
+Define the C{pp} function inside the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`.
+
+Only `bool`, `int`, `float`, `double`, and `string` (NOT `std::string`) are allowed as function arguments or returns. Any C{pp} data type is allowed inside a function body.
+
+.Allowed Data Types
+|===
+|Data Type | Argument | Return | Function Body
+| `bool` | Yes | Yes | Yes
+| `int` | Yes | Yes | Yes
+| `float` | Yes | Yes | Yes
+| `double` | Yes | Yes | Yes
+| `string` | Yes | Yes | Yes
+| `std::string` | *No* | *No* | Yes
+| xref:accumulators.adoc[Accumulators] | Yes | Yes | Yes
+
+| All other C{pp} data types | *No* | *No* | Yes
+|===
 
 If the function requires a user-defined struct or helper function, define it in the `ExprUtil` file you downloaded in Step 1.
 
@@ -54,9 +70,7 @@ inline string reverse(string str){
 
 [CAUTION]
 ====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether user-defined or not. Therefore, please test each new query UDF after adding it. One way of testing a function is to make a new file `test.cpp` and compile it.
-
-You might need to remove the included header `#include <gle/engine/cpplib/headers.hpp>` in `ExprFunctions.hpp` and `ExprUtil.hpp` in order to compile.
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether user-defined or not.
 ====
 
 .test.cpp

@@ -2,15 +2,17 @@
 
 == Data Set
 
-We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmark] (LDBC SNB) data set. This data set models a typical social forum, where communities of persons can post messages on a forum to discuss a topic. It comes with a data generator, which allows you to generate data at different scale factors. Scale factor 1 generates roughly 1GB of raw data, scale factor 10 generates roughly 10GB of raw data, etc.
+We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmark] (LDBC SNB) data set. This data set models a typical online forum where users post messages and discuss topics. It comes with a data generator, which allows you to generate data at different scale factors. Scale factor 1 generates roughly 1GB of raw data, scale factor 10 generates roughly 10GB of raw data, and so on.
 
 image::screen-shot-2019-05-15-at-5.05.00-pm.png[Figure 1. LDBC SNB Schema]
 
-Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]). It models the activities and relationships of social forum participants. For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment. A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company. A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass. The relationships between entities are modeled as directed edges, except person KNOWS person is modeled as an undirected edge. For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, hasMember and hasModerator.
+Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]). It models the activities and relationships of social forum participants. For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment.
+
+A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company. A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass. The relationships between entities are modeled as directed edges, except Person KNOWS Person is modeled as an undirected edge. For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, hasMember and hasModerator.
 
 [NOTE]
 ====
-LDBC SNB schema uses *inheritance* to model certain relationships:
+The LDBC SNB schema uses *inheritance* to model certain relationships:
 
 * *Message* is the superclass of Post and Comment.
 * *Place* is the superclass of City, Country, and Continent.
@@ -18,12 +20,12 @@ LDBC SNB schema uses *inheritance* to model certain relationships:
 
 We do not use the superclasses in our graph model. When there is an edge type connecting an entity to a superclass, we instead create an edge type from the entity to each of the subclasses of the superclass. For example, Message has an _isLocatedIn_ relationship to Country. Since Message has two subclasses, Post and Comment, both connected with Country by the _isLocatedIn_ relationship, we create an edge type IS_LOCATED_IN, connecting both vertex type pairs using the *compound edge type* available in TigerGraph 3.0.
 
-* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN ( *FROM* Comment, *TO* Country                                                                              | *FROM* Post,          *TO* Country )
+* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN ( *FROM* Comment, *TO* Country | *FROM* Post, *TO* Country )
 ====
 
 [NOTE]
 ====
-This new DDL syntax allows a general edge type to be defined over multiple vertex pairs. For example, there are many relationships in the LDBC schema all called _isLocatedIn_ which connect something to a geographical entity. We can model them all as a single edge type IS_LOCATED_IN. The result is a more succinct graph model and less GSQL code when expressing pattern matching queries.
+This new DDL syntax allows a general edge type to be defined over multiple vertex pairs. For example, there are many relationships in the LDBC schema all called _isLocatedIn_. These connect something to a geographical entity. We can model them all as a single edge type IS_LOCATED_IN. The result is a more succinct graph model and more concise GSQL code when expressing pattern matching queries.
 
 * *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN (*FROM* Comment, *TO* Country | *FROM* Post, *TO* Country | *FROM* Company, *TO* Country | *FROM* Person, *TO* City | *FROM* University, *TO* City) *WITH* *REVERSE_EDGE*="IS_LOCATED_IN_REVERSE"
 ====

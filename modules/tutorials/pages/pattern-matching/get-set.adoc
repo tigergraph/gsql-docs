@@ -2,14 +2,9 @@
 
 == Introduction
 
-In this tutorial, we will show you how to write and run Pattern Matching queries. Pattern Matching is available in TigerGraph v2.4+.
+In this tutorial, we will show you how to write and run Pattern Matching queries.
 
 We assume you have finished xref:tutorials:gsql-101/README.adoc[GSQL 101]. If not, please complete GSQL 101 first.
-
-[NOTE]
-====
-This tutorial was updated for TigerGraph 3.0. If you are using an older version, please change to the documentation for that version.
-====
 
 === What is a Graph Pattern?
 
@@ -33,13 +28,15 @@ Pattern matching is the process of finding subgraphs in a data graph that confor
 
 == Prepare Your TigerGraph Environment
 
-We assume you are running your own TigerGraph instance as the sole user with full privileges. If you are on a multiuser Enterprise Edition, consult with your DB administrator. You need to have Designer or Admin privilege on an empty graph. At various points in this tutorial, there are links to download files. Most are small, but the graph data file is 1GB when uncompressed.
+We assume you are running your own TigerGraph instance as the sole user with full privileges. If you are on a multiuser Enterprise Edition, consult with your DB administrator. You need to have Designer or Admin privileges on an empty graph.
+
+At various points in this tutorial, there are links to download files. Most are small, but note that the graph data file is 1GB when uncompressed.
 
 First, let's check that you can access GSQL, and that your version is 3.0 or higher.
 
 . Open a Linux shell.
 . Type `gsql` as below. A GSQL shell prompt should appear as below.
-. Type version in GSQL shell. It should show 2.4 or higher as below. If not, please download and install the latest version from https://www.tigergraph.com/download/
+. Type `version` in GSQL shell. It should show 2.4 or higher as below. If not, please download and install the latest version from https://www.tigergraph.com/download/
 +
 .Linux Shell
 +
@@ -50,16 +47,14 @@ GSQL > version
 GSQL version: 3.0
 ----
 +
-
-
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
+. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the documentation on xref:tigergraph-server:system-management:management-with-gadmin.adoc[managing TigerGraph with gadmin].
 . You need to start from an empty data catalog. If necessary, run `drop all` to clear the catalog first.
 
 === Cheatsheet
 
 The following general use commands were introduced in xref:tutorials:gsql-101/README.adoc[GSQL 101].
 
-* The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privilege to run most gadmin commands.
+* The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privileges to run most gadmin commands.
 * The *`GSQL>`* prefix indicates GSQL shell commands.
 
 [width="100%",cols="<50%,<50%",options="header",]
@@ -74,11 +69,9 @@ The following general use commands were introduced in xref:tutorials:gsql-101/RE
 some statuses to be flagged in red.)
 |% gadmin restart |Restart TigerGraph services
 |GSQL> ls |List the graph schema, loading jobs, and queries
-|GSQL> show user |Show your user name and roles
+|GSQL> show user |Show your username and roles
 |GSQL> drop all a|
-Delete the entire schema, all data, all
-
-jobs, and all queries
+Delete the entire schema, all data, all jobs, and all queries
 
 |GSQL> exit |Exit GSQL interactive shell
 |===

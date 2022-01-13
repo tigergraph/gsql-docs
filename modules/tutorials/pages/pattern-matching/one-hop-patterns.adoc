@@ -97,13 +97,13 @@ Performance may be better when types are explicitly provided.
  ** Any right directed edge with source in X and target in Y.
 . `FROM X:x - (<_:e) - Y:y`
  ** Any left directed edge with source in Y and target in X.
-. `+FROM X:x - ((<_/_):e) - Y:y+`
- ** Any left directed or any undirected; `|` means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern `+(<_/_)+`.
+. `+FROM X:x - ((<_|_):e) - Y:y+`
+ ** Any left directed or any undirected; `|` means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern `+(<_|_)+`.
 . `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
  ** Any one of the three edge patterns.
 . `FROM X:x - () - Y:y`
  ** any edge (directed or undirected)
- ** Same as `+(<_/_>|_)+`
+ ** Same as `+(<_|_>|_)+`
 
 == Entering Pattern Match Syntax Mode
 

@@ -4,19 +4,23 @@ This page lists all built-in edge methods that can be accessed by edge aliases u
 
 == `getAttr()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `e.getAttr( attrName, attrType )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the value of an attribute of the edge.
 
-=== Return type
+[discrete]
+===  Return type
 
 The data type of the attribute itself.
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -30,7 +34,8 @@ The data type of the attribute itself.
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 
 If we have the following edge:
 
@@ -58,37 +63,45 @@ e.getAttr("rating", "DOUBLE") -> 5.2
 
 == `isDirected()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `e.isDirected()`
 
-=== Description
+[discrete]
+===  Description
 
 Returns a boolean value indicating whether the edge is directed or undirected.
 
-=== Return type
+[discrete]
+===  Return type
 
 `BOOL`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 None.
 
 == `setAttr()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `e.setAttr( attrName, attrNewValue )`
 
-=== Description
+[discrete]
+===  Description
 
 Sets an attribute of an edge to a new value.
 
-=== Return type
+[discrete]
+===  Return type
 
 No return value.
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -102,8 +115,10 @@ No return value.
 | The type of the attribute. 
 |===
 
-=== Example
-====
+[discrete]
+===  Example
+[discrete]
+=== =
 [source,gsql]
 ----
 CREATE QUERY setAttrExample(STRING attr){ <1>
@@ -118,4 +133,5 @@ CREATE QUERY setAttrExample(STRING attr){ <1>
 Therefore, in this example we are passing a string value in the query parameter `attr`.
 The string value should be the name of the attribute you want to call the function with.
 <2> Selected edges will have their specified attribute set to `TRUE`.
-====
+[discrete]
+=== =

@@ -13,7 +13,7 @@ Below are the steps to add a Query UDF to GSQL:
 
 === Step 1: Download current query UDF file
 
-Use the `GET ExprFunctions` command in GSQL to download the current list of functions into a local file. The path is not important (as you will be reuploading them later) but the file extension must be `.hpp`:
+Use the `GET ExprFunctions` command in GSQL to download the current list of functions into a local file. The path can be absolute or relative to your current directory, but the file extension must be `.hpp`:
 
 [source,gsql]
 ----
@@ -98,7 +98,9 @@ GSQL > PUT ExprUtil FROM "/path/to/utils_file.hpp"
 PUT ExprUtil successfully.
 ----
 
-The `PUT` command will automatically upload the files to all nodes in a cluster, overwriting any existing files that contain UDFs. Once the files are uploaded, you will be able to call the query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or executing GSQL scripts from a bash shell.
+The `PUT` command will automatically upload the files to all nodes in a cluster, overwriting any existing files that contain UDFs.
+
+Once the files are uploaded, you will be able to call the query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell. If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
 
 .Example of a GSQL query that uses the UDF
 
@@ -123,14 +125,14 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
 
 Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1.
 
-Start by downloading the current UDF file with the `GET` command. Here the file name is `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`. Only the file contents and extension are important, not the name.
+Start by downloading the current UDF file with the `GET` command. Here the file name is `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`. Any name can be used as long as the file has the correct extension and contents.
 
 [source,gsql]
 ----
 GSQL > GET ExprFunctions TO "/home/tigergraph/documents/udf.hpp"
 ----
 
-In the downloaded file, add the function definition for the `rng()` function and add the necessary include directives at the top:
+In the downloaded file, add the function definition for the `rng()` function. The necessary include directives at the top will be added automatically when you upload the file to the server.
 
 .udf.hpp
 
@@ -138,7 +140,7 @@ In the downloaded file, add the function definition for the `rng()` function and
 ----
 // Some code is left out for simplicity
 
-// Copyright (c) 2015-2021, TigerGraph Inc.
+// Copyright (c) 2015-2022, TigerGraph Inc.
 
 #ifndef EXPRFUNCTIONS_HPP_
 #define EXPRFUNCTIONS_HPP_
@@ -156,8 +158,6 @@ In the downloaded file, add the function definition for the `rng()` function and
 
 #include "ExprUtil.hpp"
 
-  // other UDFs ...
-
   inline double rng() {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -165,8 +165,6 @@ In the downloaded file, add the function definition for the `rng()` function and
 
     return distribution(gen);
   }
-
-  // other UDFs ...
 
 #endif /* EXPRFUNCTIONS_HPP_ */
 ----

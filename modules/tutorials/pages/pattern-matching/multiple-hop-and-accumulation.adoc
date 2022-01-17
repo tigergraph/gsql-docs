@@ -17,7 +17,7 @@ As you see, a 2-hop pattern is a simple concatenation and merging of two 1-hop p
 
 [source,gsql]
 ----
-FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z
+FROM X:x -(E1:e1)- Y:y -(E2>:e2)- Z:z
 ----
 
 Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each pair of adjacent hops sharing one end point. Below, Y:y and Z:z are the connecting end points.
@@ -27,7 +27,7 @@ Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each p
 
 [source,gsql]
 ----
-FROM X:x - (E2>:e2) - Y:y - (<E3:e3) - Z:z - (E4:e4) - U:u
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u
 ----
 
 In general, we can connect N 1-hop patterns into an N-hop pattern. The database will search the graph topology to find subgraphs that match this N-hop pattern.
@@ -39,7 +39,7 @@ A multi-hop pattern has two endpoint vertex sets and one or more intermediate ve
 
 [source,gsql]
 ----
-FROM X:x - (E1.E2>) - Z:z
+FROM X:x -(E1.E2>)- Z:z
 ----
 
 [CAUTION]
@@ -86,19 +86,19 @@ The SELECT clause specifies the output vertex set of a SELECT statement. For a m
 ----
 #select starting end point x
 SELECT x
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select y
 SELECT y
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y- (<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select z
 SELECT z
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select ending end point u
 SELECT u
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 ----
 
 
@@ -113,11 +113,11 @@ For a multiple-hop pattern, if you don't need to refer to the intermediate verte
 ----
 #select starting end point x
 SELECT x
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #if we don't need to access y, z, we can write
 SELECT u
-FROM X:x-(E2>.<E3.E4)-U:u;
+FROM X:x -(E2>.<E3.E4)- U:u;
 ----
 
 
@@ -128,7 +128,7 @@ Each predicate (simple true/false condition) can refer to any of the aliases in 
 
 [source,gsql]
 ----
-FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
+FROM X1:x1 -(E1:e1)- X2:x2 -(E2:e2)- X3:x3 -(E3:e3)- X4:x4
 ----
 
 .WHERE Clause Support both Local Predicate and Cross-hop predicates.
@@ -142,7 +142,7 @@ FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 # x2.@cnt != x4.@cnt is a cross-hop predicate
 # (x1.salary + x3.salary) < x4.salary is a cross-hop predicate
 SELECT x
-FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
+FROM X1:x1 -(E1:e1)- X2:x2 -(E2:e2)- X3:x3 -(E3:e3)- X4:x4
 WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 ----
 
@@ -153,7 +153,7 @@ WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 GSQL's pattern matching syntax provides the essentials for a regular expression language for paths in graphs.  Consider the three basic requirements for a regular expression language:
 
 . *The empty set* --> A path of length zero (no match)
-. *Concatenation* --> Combine paths together. You can write an N-hop pattern, and M-hop pattern, and then combine them to have an (N+M)-hop pattern.
+. *Concatenation* --> Form a longer path by chaining one path after another one. You can write an N-hop pattern and an M-hop pattern, then combine them to have an (N+M)-hop pattern.
 . *Alternation (either-or)* --> You can use alternation for both vertex sets and edge sets, e.g. `FROM (Source1 | Source2) -(Edge1> | <Edge 2)- (Target1 | Target2)` Note: This is not the same as  `FROM (Source1 -(Edge1>)- Target 1)   |   (Source2 -(<Edge2)- Target 2)` The latter can be achieved by writing two SELECT query blocks and getting the UNION of their results.
 
 == Working with Your Pattern Matches
@@ -210,7 +210,7 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @cnt2;
 
   R   =  SELECT s
-         FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+         FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
          WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
                AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
          ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
@@ -278,7 +278,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
   TagClass1 =
        SELECT t
-       FROM TagClass:s-(IS_SUBCLASS_OF>.IS_SUBCLASS_OF>.IS_SUBCLASS_OF>)-TagClass:t
+       FROM TagClass:s -(IS_SUBCLASS_OF>.IS_SUBCLASS_OF>.IS_SUBCLASS_OF>)- TagClass:t
        WHERE s.name == "TennisPlayer";
 
   PRINT TagClass1;
@@ -337,7 +337,7 @@ INTERPRET QUERY () SYNTAX v2{
 
   accMsgContinent =
                  SELECT s
-                 FROM (Comment|Post):s-(IS_LOCATED_IN>.IS_PART_OF>)-Continent:t
+                 FROM (Comment|Post):s -(IS_LOCATED_IN>.IS_PART_OF>)- Continent:t
                  WHERE year(s.creationDate) == 2011 AND month(s.creationDate) == 1
                  ACCUM s.@continentName = t.name
                  ORDER BY s.creationDate DESC
@@ -434,7 +434,7 @@ INTERPRET QUERY () SYNTAX v2{
 
   FavoriteAuthors =
             SELECT t
-            FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+            FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
             WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
                       AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
             ACCUM t.@likesCnt +=1;
@@ -531,7 +531,7 @@ INTERPRET QUERY () SYNTAX v2 {
         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" AND t.lastName LIKE "S%";
 
   Alumni = SELECT p
-           FROM Person:p -(STUDY_AT>) -:u - (<STUDY_AT)- F:s
+           FROM Person:p -(STUDY_AT>)- :u -(<STUDY_AT)- F:s
            WHERE s != p
            Per (p)
            POST-ACCUM @@cnt+=1;
@@ -553,7 +553,7 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-*Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that members from groups A and B studied at.
+*Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that were attended by members from both A and B.
 
 [source,gsql]
 ----
@@ -608,11 +608,11 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
+          :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
 
   A = SELECT p
-      FROM A:p -(LIKES>) -:msg - (HAS_CREATOR>) - A:p2
+      FROM A:p -(LIKES>)- :msg -(HAS_CREATOR>)- A:p2
       WHERE p2 != p
       Per (p, p2)
       ACCUM @@cnt +=1;

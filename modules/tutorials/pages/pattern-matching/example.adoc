@@ -8,7 +8,7 @@ In this example, we want to recommend some messages (comments or posts) to the p
 
 How do we do this?
 
-One way is to find others who like the same messages Viktor likes, then recommend the messages that Others like but Viktor has not seen. The pattern can be sketched out as follows:
+One way is to find others who like the same messages Viktor likes, then recommend the messages that others like but Viktor has not seen. The pattern can be sketched out as follows:
 
 * Viktor - (Likes>) - Message - (<Likes) - Others
 * Others - (Likes>) - NewMessage
@@ -74,7 +74,7 @@ INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 
 
 
-You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
+You can copy the above GSQL script to a file named app1.gsql and invoke this script file in the command line.
 
 .Linux Bash
 
@@ -85,7 +85,7 @@ gsql app1.gsql
 
 
 
-. Output of App1
+.Output of App1
 
 [source,coffeescript]
 ----
@@ -126,7 +126,9 @@ The query RecommendMessage has been added!
 [discrete]
 ==== Install the query
 
-When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, and we can set the syntax version and install it.
+When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably. When we ran `CREATE QUERY RecommendMessage...`, this added RecommendMessage as a query string to the catalog.
+
+To install the query as a compiled procedure, we first set the syntax version and then run the `INSTALL QUERY` command. If you don't explicitly set the syntax version, then the query will be installed using the syntax version specified in the query itself, if provided, or using the default syntax version.
 
 .GSQL Prepare to Install Query
 
@@ -183,7 +185,7 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
 
 
 
-The above uses log-cosine as a similarity measurement. We can also use cosine similarity by using two persons' liked messages.
+The above uses log-cosine as a similarity measurement. We can also use cosine similarity by looking at two persons' liked messages.
 
 .GSQL Recommendation Algorithm 2
 

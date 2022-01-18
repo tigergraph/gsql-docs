@@ -31,7 +31,7 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 Define the C{pp} function inside the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`.
 
-Only `bool`, `int`, `float`, `double`, and `string` (NOT `std::string`) are allowed as function arguments or returns. Any C{pp} data type is allowed inside a function body.
+Below is a list of data types and where each is allowed in a function. 
 
 .Allowed Data Types
 |===

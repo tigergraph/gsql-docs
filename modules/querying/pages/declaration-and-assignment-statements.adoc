@@ -165,7 +165,7 @@ CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
 Local base type variables are block-scoped and are accessible in the block where they are declared only.
-Within a local base type variable's scope, you cannot another local base type variable, local container variable, or local tuple variable with the same name at the same level.
+Within a local base type variable's scope, you cannot declare another local base type variable, local container variable, or local tuple variable with the same name at the same level.
 However, you can declare a local base type variable or local container variable with the same name at a lower level, where the lower-level declaration will take precedence over the previous declaration.
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.

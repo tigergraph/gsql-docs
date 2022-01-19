@@ -18,6 +18,8 @@ Use the `GET ExprFunctions` command in GSQL to download the current list of func
 [source,gsql]
 ----
 GSQL > GET ExprFunctions TO "/example/path/to/ExprFunctions.hpp"
+GSQL > GET ExprFunctions TO "./ExprFunctions.hpp"
+
 ----
 
 If your query UDF requires a user-defined struct or helper function, also use the `GET ExprUtil` command to download the current `ExprUtil` file:
@@ -31,7 +33,7 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 Define the C{pp} function inside the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`.
 
-Below is a list of data types and where each is allowed in a function. 
+Below is a list of data types and where each is allowed in a function.
 
 .Allowed Data Types
 |===
@@ -70,21 +72,9 @@ inline string reverse(string str){
 
 [CAUTION]
 ====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether user-defined or not.
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
 ====
 
-.test.cpp
-
-[source,gsql]
-----
-#include "ExprFunctions.hpp"
-#include <iostream>
-int main () {
-  std::cout << to_string (123) << std::endl;    // to_string and str_to_int are two built-in functions in ExprFunction.hpp
-  std::cout << str_to_int ("123") << std::endl;
-  return 0;
-}
-----
 
 === Step 3: Upload files
 
@@ -125,63 +115,54 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
 
 Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1.
 
-Start by downloading the current UDF file with the `GET` command. Here the file name is `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`. Any name can be used as long as the file has the correct extension and contents.
+Start by downloading the current UDF file with the `GET` command. In this example, we will place our download in the working directory and use the name `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`.
 
 [source,gsql]
 ----
-GSQL > GET ExprFunctions TO "/home/tigergraph/documents/udf.hpp"
+GSQL > GET ExprFunctions TO "./udf.hpp"
 ----
 
-In the downloaded file, add the function definition for the `rng()` function. The necessary include directives at the top will be added automatically when you upload the file to the server.
+In the downloaded file, add the function definition for the `rng()` function.
 
 .udf.hpp
 
 [source,c++]
 ----
-// Some code is left out for simplicity
-
-// Copyright (c) 2015-2022, TigerGraph Inc.
-
-#ifndef EXPRFUNCTIONS_HPP_
-#define EXPRFUNCTIONS_HPP_
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string>
-#include <gle/engine/cpplib/headers.hpp>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <random> // include statement for rng()
-#include <vector>
-#include <map>
-
-#include "ExprUtil.hpp"
-
-  inline double rng() {
+inline double rng() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution < double > distribution(0.0, 1.0);
 
     return distribution(gen);
-  }
+    }
 
-#endif /* EXPRFUNCTIONS_HPP_ */
 ----
 
 After adding your query, use the `PUT` command to upload the file. This will upload the file to all nodes in a cluster:
 
 [source,gsql]
 ----
-GSQL > PUT ExprFunction FROM "/path/to/udf.hpp"
+GSQL > PUT ExprFunctions FROM "./udf.hpp"
 PUT ExprFunctions successfully.
 ----
 
-The UDF has now been added to GSQL. You can `INSTALL` and `RUN` the function in GSQL queries.
+The UDF has now been added to GSQL. You can add it to a query, then run the commands `INSTALL QUERY` and `RUN QUERY` to test the `rng()` function. The following commands demonstrate the process with a one-line query called `rngExample` that simply prints the output of the new function `rng()`.
 
 [source,gsql]
 ----
-GSQL > RUN QUERY rng()
+GSQL > CREATE QUERY rngExample() FOR GRAPH example_graph {PRINT rng();}
+Successfully created queries: [rngExample].
+
+GSQL > INSTALL QUERY rngExample
+Start installing queries, about 1 minute ...
+rngExample query: curl -X GET 'http://127.0.0.1:9000/query/example_graph/rngExample'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+Select 'm1' as compile server, now connecting ...
+Node 'm1' is prepared as compile server.
+
+[=========================================================================================] 100% (1/1)
+Query installation finished.
+
+GSQL > RUN QUERY rngExample()
 {
   "error": false,
   "message": "",

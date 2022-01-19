@@ -1,6 +1,8 @@
 = Declaration and Assignment Statements
+:description: Declaration and assignment statements in the GSQL querying language.
 
-In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment. This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
+In GSQL, different types of variables and objects follow different rules when it comes to variable declaration and assignment.
+This section discusses the different types of declaration and assignment statements and covers the following subset of the EBNF syntax:
 
 .EBNF for declaration and assignment
 [source,ebnf]
@@ -163,7 +165,7 @@ CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
 Local base type variables are block-scoped and are accessible in the block where they are declared only.
-Within a local base type variable's scope, you cannot another local base type variable with the same name at the same level.
+Within a local base type variable's scope, you cannot another local base type variable, local container variable, or local tuple variable with the same name at the same level.
 However, you can declare a local base type variable or local container variable with the same name at a lower level, where the lower-level declaration will take precedence over the previous declaration.
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
@@ -280,7 +282,7 @@ SET<INT> set1 = (1, 2, 3) <1>
 ====
 
 Local container variables are block-scoped and are accessible in the block where they are declared only.
-Within a local container variable’s scope, you cannot another local container variable or local base type variable with the same name at the same level.
+Within a local container variable’s scope, you cannot another local container variable, local tuple variable, or local base type variable with the same name at the same level.
 However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
 
 In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.
@@ -360,6 +362,49 @@ returns(SetAccum<tuple<int, string>>){
 ----
 --
 ====
+
+=== Local tuple variable
+Variables declared inside a DML-block storing tuple values are called _local tuple variables_.
+The value for a local tuple variable is assigned at declaration and cannot be updated afterwards.
+
+Local tuple variables are block-scoped and are accessible in the block where they are declared only.
+Within a local tuple variable’s scope, you cannot another local tuple variable, local container variable, or local base type variable with the same name at the same level.
+However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
+
+You can declare tuple variables of defined types and anonymous types.
+
+==== Syntax
+[,ebnf]
+----
+assignDeclLocalTuple := (tupleTypeName | anonymousTupleType) localTupleVal = expr
+----
+
+==== Example
+
+[,gsql]
+----
+CREATE QUERY testUDF() FOR GRAPH poc_graph {
+  typedef tuple<int i, string s> mainTuple;
+  SetAccum<mainTuple> @@setAcc;
+  SetAccum<mainTuple> @@setAcc2;
+
+  L0 = { person.* };
+  L1 = SELECT p
+    FROM L0:p
+    WHERE p.name == "Charlie"
+      ACCUM
+        mainTuple a = mainTuple(1, "well"), <1>
+        @@setAcc += a,
+        tuple<int, string> b = mainTuple(2, "good"), <2>
+        @@setAcc2 += b;
+
+  PRINT @@setAcc;
+  PRINT @@setAcc2;
+}
+----
+<1> This statement defines a local tuple variable `a` with a defined tuple type.
+<2> This statement defines a local tuple variable `b` with an anonymous tuple type.
+Beside using another tuple type, you can also return an anonymous tuple from a xref:operators-and-expressions.adoc#_subqueries[subquery] to assign value to the local tuple variable.
 
 === Vertex Set Variable Declaration and Assignment
 

@@ -282,7 +282,7 @@ SET<INT> set1 = (1, 2, 3) <1>
 ====
 
 Local container variables are block-scoped and are accessible in the block where they are declared only.
-Within a local container variable’s scope, you cannot another local container variable, local tuple variable, or local base type variable with the same name at the same level.
+Within a local container variable’s scope, you cannot declare another local container variable, local tuple variable, or local base type variable with the same name at the same level.
 However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
 
 In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.
@@ -365,10 +365,11 @@ returns(SetAccum<tuple<int, string>>){
 
 === Local tuple variable
 Variables declared inside a DML-block storing tuple values are called _local tuple variables_.
-The value for a local tuple variable is assigned at declaration and cannot be updated afterwards.
+The value of a local tuple variable is assigned at declaration.
+The value of a local tuple variable can be updated inside an `ACCUM` or `POST-ACCUM` clause and the change will take place immediately.
 
 Local tuple variables are block-scoped and are accessible in the block where they are declared only.
-Within a local tuple variable’s scope, you cannot another local tuple variable, local container variable, or local base type variable with the same name at the same level.
+Within a local tuple variable’s scope, you cannot declare another local tuple variable, local container variable, or local base type variable with the same name at the same level.
 However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
 
 You can declare tuple variables of defined types and anonymous types.

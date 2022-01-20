@@ -265,6 +265,7 @@ fileDeclStmt := FILE fileVar "(" filePath ")"
 fileVar := name
 
 localVarDeclStmt := baseType varName "=" expr
+assignDeclLocalTuple := (tupleTypeName | anonymousTupleType) localTupleVal "=" expr
 
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"]
                    "=" (seedSet | simpleSet | selectBlock)

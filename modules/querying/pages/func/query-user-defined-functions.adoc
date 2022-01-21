@@ -35,9 +35,11 @@ Define the C{pp} function inside the UDF file you just downloaded in Step 1. The
 
 Below is a list of data types and where each is allowed in a function.
 
+[header=true]
 .Allowed Data Types
 |===
 |Data Type | Argument | Return | Function Body
+
 | `bool` | Yes | Yes | Yes
 | `int` | Yes | Yes | Yes
 | `float` | Yes | Yes | Yes

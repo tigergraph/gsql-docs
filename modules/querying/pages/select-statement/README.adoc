@@ -1,20 +1,18 @@
 = SELECT Statement
-
-
-This section discusses the SELECT statement in-depth and covers the following EBNF syntax. Note that there are now two forms for a SELECT statement, the classic GSQL form `gsqlSelectBlock`, and the new SQL-like form `sqlSelectBlock`. Since GSQL has always been similar to SQL in many ways, there are only a few differences to know about.
+:description: Reference documentation for GSQL's SELECT statement.
 
 == Overview
+The `SELECT` statement is an assignment statement with a `SELECT` block on the right-hand side.
 
 The `SELECT` block uses a _path pattern_ to select some of the graph's vertices and edges.
 There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set.
 The final output of a query is either a vertex set known as the _result set_ or a table.
 
-[WARNING]
-====
-Size limitation
 
-There is a maximum size limit of 2 GB for the result set of a SELECT block . If the result of the SELECT block is larger than 2 GB, the system will return no data. NO error message is produced.
-====
+There is a maximum size limit of 2 GB for the result set of a `SELECT` block.
+If the result of the `SELECT` block is larger than 2 GB, the system will return no data.
+No error message is produced.
+
 
 .EBNF for GSQL Select Statement
 [source,ebnf]
@@ -33,7 +31,7 @@ gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
 ----
 
 
-The `SELECT` statement is an assignment statement with a `SELECT` block on the right-hand side.
+
 The initial clause is the `SELECT` clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output.
 
 The `SELECT` clause may contain only one item: a vertex alias defined in the FROM clause.
@@ -47,6 +45,7 @@ Overall, the `SELECT` block starts from a source set of vertices and returns a r
 Along the way, computations can be performed on the selected vertices and edges.
 
 
+[#_from_clause]
 == `FROM` Clause
 
 The `FROM` clause describes either a single hop or a multi-hop path pattern.
@@ -227,11 +226,27 @@ starBounds := CONST_INT ".." CONST_INT
 
 [discrete]
 ==== Pattern concatenation
-The dot operator means concatenate the two edge patterns into one.
+The dot operator``.`` means concatenate the two edge patterns into one.
 Naturally, there must be a vertex joining the two edges, but it is omitted from the syntax.
 The dot operator is a shorthand, when you don’t care about the type of that intermediate vertex.
 `(A>.<B.C)` means a series of 3 edges, having the specifying types and directions.
 
+[discrete]
+==== Conjunctive Pattern Matching
+
+The optional repeating phrase `["," pathPattern]*` allows you to have multiple path patterns.
+They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
+
+[source,ebnf]
+----
+fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
+----
+
+Each step pattern or path pattern forms a match table, one row per matching path in the graph.
+Each vertex alias or edge alias is one column in the table.
+When we have a conjunctive path, each path must share at least one vertex alias with another path.
+This enables the two path sets (and match tables) to be joined.
+Formally, we make the natural join of the two tables.
 
 
 === Vertex and Edge Aliases
@@ -253,7 +268,7 @@ results = SELECT t FROM allVertices:s -()- :t;
 ----
 
 The following example shows an edge-based `SELECT` statement, declaring aliases for all three parts of the edge.
-In the ACCUM clause, the `e` and `t` aliases are assigned to local vertex and edge variables.
+In the `ACCUM` clause, the `e` and `t` aliases are assigned to local vertex and edge variables.
 
 .Edge variables
 [source,gsql]
@@ -269,103 +284,6 @@ results = SELECT v
 We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features only available to vertex and edge aliases.
 ====
 
-=== Pattern Matching (SYNTAX v2)
-
-We give a brief overview of Pattern Matching syntax and semantics in the FROM clause, from the perspective of the formal notation and how the rules can be inferred from that. For a more practical explanation of Pattern Matching, we recommend the xref:tutorials:pattern-matching/README.adoc[].
-
-There are three options for the syntax of the pattern in a FROM clause:
-
-[source,ebnf]
-----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
-----
-
-. `step` pattern, SYNTAX v1. This is the default syntax from classic GSQL.
-. `stepV2` pattern, SYNTAX v2. The query or the GSQL session must xref:tutorials:pattern-matching/README.adoc[specify that SYNTAX v2 is to be used]. This is still a 1-Hop query, but there are two differences:
- ** The source vertex set now has the same flexibility as the target vertex. It is not necessary to create a seedSet. Instead, the source can be one or more vertex types, given either statically or dynamically as string parameters, or the special symbol `ANY` or `_`.
- ** The arrowhead `+-( )->+` should not be used between the edge set and the target set. Simple use a dash `-( )-`.
-. One or more `pathPattern` s.
-
-A pathPattern begins with a `stepVertexSet` and then has one or more hops across and edge set to a target set: `-(pathEdgePattern)-setVertexSet.`
-
-[source,ebnf]
-----
-pathPattern := stepVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
-----
-
-We have already studied stepVertexSet. Now we will look at the options for `pathEdgePattern` and their meanings.
-
-[source,ebnf]
-----
-pathEdgePattern := atomicEdgePattern
-                 | "(" pathEdgePattern ")"
-                 | pathEdgePattern "." pathEdgePattern
-                 | disjPattern
-                 | starPattern
-
-atomicEdgePattern  := atomicEdgeType		
-        	        | atomicEdgeType ">"	
-        	        | "<" atomicEdgeType	
-
-atomicEdgeType := "_" | ANY | edgeSetType
-edgeSetType := edgeType | paramName | globalAccumName
-----
-
-The most basic form for a `pathEdgePattern` is an `atomicEdgePattern`. This in turn can be, similar to `stepVertexSet`, one of the following:
-
-* "_" or "ANY"
-* an edgeType, a string parameter, or a global SetAccum accumulator.
-
-==== Edge Direction
-
-Moreover, an `atomicEdgePattern` can have either a left pointer "<" on the left or a right pointer ">" on the right. These indicate edge direction, of course. If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
-
-* A> is a rightward facing A edge
-* <B is a leftward facing B edge
-* C is an undirected C edge. If C is actually a directed edge type, then there is no match.
-
-==== Disjunction, Repeats, and Dot Concatenation
-
-Looking at the remaining options for pathEdgePattern, we see that we can have parentheses around it, we can use a dot "." between two pathEdgePatterns, or we can have a disjPattern or starPattern.
-
-*disjPattern* is how we write "either this edge pattern or that edge pattern""
-
-[source,ebnf]
-----
-disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
-----
-
-For example, we can combine the three direction-specfic examples from above: `(A> | <B | C)`
-
-**starPatter**n explains how the Kleene star and min..max range specifiers can be used to say "repeat this edge pattern from min to max times."
-
-[source,ebnf]
-----
-starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
-
-starBounds := CONST_INT ".." CONST_INT
-            | CONST_INT ".."
-            | ".." CONST_INT
-            | CONST_INT
-----
-
-For example,`(A> | <B | C)*2..4` means "a series of 2 to 4 adjacent edges, where each edge has type A>, <B, or C. Note that we do not have to use the same edge type for all the repeats. Either iteration can select an option from `disjPattern`.
-
-*The dot operator* means concatenate the two edge patterns into one. Naturally, there must be a vertex joining the two edges, but it is omitted from the syntax. The dot operator is a shorthand, when you don't care about the type of that intermediate vertex. +
-`(A>.<B.C)` means a series of 3 edges, having the specifying types and directions.
-
-=== Conjunctive Pattern Matching
-
-The optional repeating phrase `["," pathPattern]*` allows you to have multiple pathPatterns. They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
-
-[source,ebnf]
-----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
-----
-
-Recall that each step pattern or path pattern forms a match table, one row per matching path in the graph. Each vertex alias or edge alias is one column in the table.  When we have a conjunctive path, each path must share at least one vertex alias with another path. This enables the two path sets (and match tables) to be joined. Formally, we make the natural join of the two tables.
-
-This explains all of the syntax for the FROM clause with SYNTAX v2 (Pattern Matching). The other significant area to consider for SYNTAX v2 is the ACCUM and POST-ACCUM clauses.
 
 == `SAMPLE` Clause
 
@@ -435,13 +353,13 @@ CREATE QUERY sampleEx3() FOR GRAPH computerNet
     start = {computer.*};
 
     # Sample one outgoing edge per source vertex = Random Walk
-    absSample = SELECT v FROM start:s -(:e)-> :v
+    absSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
              ACCUM @@absEdges += (s.id -> v.id),
                    @@totalAbs += 1;
     PRINT @@totalAbs, @@absEdges;
 
-    pctSample = SELECT v FROM start:s -(:e)-> :v
+    pctSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
              ACCUM @@pctEdges += (s.id -> v.id),
                    @@totalPct += 1;
@@ -702,7 +620,7 @@ whereClause := WHERE condition
 The `WHERE` clause uses a boolean condition to test each vertex or edge in the `FROM` set (or the sampled vertex and edge sets, if the `SAMPLE` clause was used).
 If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set.
 
-The expression may use constants or any variables or parameters within the scope of the `SELECT`, arithmetic operators `(+, -, \*, /,%), comparison operators (`==, !=, <, <=, >,>=`), boolean operators (AND, OR, NOT), set operators (IN, NOT IN) and parentheses to enforce precedence.
+The expression may use constants or any variables or parameters within the scope of the `SELECT`, arithmetic operators, comparison operators, boolean operators, set operators and parentheses to enforce precedence.
 
 The `WHERE` conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the `FROM` clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.)
 For a more formal explanation of condition, see the EBNF definitions of `condition` and `expr`.
@@ -1181,7 +1099,7 @@ The statements in an `ACCUM` clause are applied for every edge in an edge-induce
 
 If there is more than one statement in the `ACCUM` clause, the statements are separated by commas and executed sequentially for each selected element.
 However, the TigerGraph system uses parallelism to improve performance.
-Within an ACCUM clause, each edge is handled by a separate process.
+Within an `ACCUM` clause, each edge is handled by a separate process.
 As such, there is no fixed order in which the edges are processed within the `ACCUM` clause and the edges should not be treated as executing sequentially.
 The accumulators are mutex variables shared among each of these processes.
 The results of any accumulation within the `ACCUM` clause is not complete until all edges are traversed.
@@ -1424,7 +1342,7 @@ The following uses are NOT supported:
 * Using a global vertex-holding accumulator is not a route to activation.
 * If a vertex is being indirectly activated by assigning it to a local variable (e.g., a variable declaring in ACCUM or POST-ACCUM), note the following rule, which always applies to all local variables:
  ** A local variable can be declared and initialized in an ACCUM block once.
-It cannot be redeclared or reassigned later in the ACCUM block.
+It cannot be declared again or reassigned later in the ACCUM block.
 ====
 
 The following query demonstrates updates to indirectly activated vertices.
@@ -2456,7 +2374,7 @@ The optional `ORDER BY` clause sorts the result set.
 orderClause := ORDER BY expr [ASC | DESC] ["," expr [ASC | DESC]]*
 ----
 
-`ASC` specifies ascending order (least value first), and `DESC` specifies descending order (greatest value first).
+`ASC` specifies ascending order, and `DESC` specifies descending order.
 If neither is specified, then ascending order is used.
 
 Each expression must refer to the attributes or accumulators of a member of the result set, and the expression must evaluate to a sortable value (e.g., a number or a string).
@@ -2664,7 +2582,7 @@ If k=5 and the tentative result set has at least 5 items, then the final result 
 
 Case 2: LIMIT j, k
 
-* When a comma separates two expressions, LIMIT treats the first expression *j* as an offset.  That is, it skips the first *j* items in the list.  The second expr *k* tells the maximum number of items items to include. If the list has at least 7 items, then LIMIT 2, 5 would return [ v_3 , v_4 , v_5, v_6  _,_ v_7 ].
+* When a comma separates two expressions, LIMIT treats the first expression *j* as an offset.  That is, it skips the first *j* items in the list.  The second expr *k* tells the maximum number of items to include. If the list has at least 7 items, then LIMIT 2, 5 would return [ v_3 , v_4 , v_5, v_6  _,_ v_7 ].
 
 Case 3: LIMIT k OFFSET j
 
@@ -2674,7 +2592,8 @@ If any of the expressions evaluate to a negative integer, the results are undefi
 
 [NOTE]
 ====
-`OFFSET` is intended for result sets which are in a known order. It is a compile time error to use OFFSET without the ORDER BY clause.
+`OFFSET` is intended for result sets which are in a known order.
+It is a compile-time error to use OFFSET without the ORDER BY clause.
 ====
 
 The following examples demonstrate the various forms of the LIMIT clause.

@@ -143,7 +143,7 @@ CREATE QUERY countEmploymentRelationships() FOR GRAPH workNet {
 
   start = {company.*};
 
-  companies = SELECT s FROM start:s -(worksFor)-> :t
+  companies = SELECT s FROM start:s -(worksFor)- :t
           ACCUM @@globalRelationshipCount += 1,
                 localRelationshipCount = localRelationshipCount + 1;
 
@@ -570,7 +570,7 @@ CREATE QUERY minMaxAccumVertex() FOR GRAPH socialNet api("v2") {
   MaxAccum<VERTEX> @maxVertex;
   allUser = {person.*};
   allUser = SELECT src
-            FROM allUser:src -(posted)-> post:tgt
+            FROM allUser:src -(posted>)- post:tgt
             ACCUM src.@maxVertex += tgt
             ORDER BY src.id;
   PRINT allUser[allUser.@maxVertex]; // api v2
@@ -1888,7 +1888,7 @@ CREATE QUERY arrayAccumLocal() FOR GRAPH socialNet api("v2") {
 	Persons = {person.*};
 	
 	Persons = SELECT s
-		FROM Persons:s -(:e)-> :t
+		FROM Persons:s -(:e)- :t
 		ACCUM CASE e.type
 			WHEN "friend" THEN s.@edgesByType[0] += 1
 			WHEN "liked"  THEN s.@edgesByType[1] += 1

@@ -513,9 +513,9 @@ Query::
 CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
 {
     allVertices = {ANY};
-    results = SELECT v FROM allVertices:s -(:e)-> post:v WHERE v.subject == "coffee";
+    results = SELECT v FROM allVertices:s -(:e)- post:v WHERE v.subject == "coffee";
     PRINT results;
-    results = SELECT v FROM allVertices:s -(:e)-> :v WHERE v.type == "post" AND v.subject == "coffee";
+    results = SELECT v FROM allVertices:s -(:e)- :v WHERE v.type == "post" AND v.subject == "coffee";
     PRINT results;
 }
 ----
@@ -570,7 +570,7 @@ The tick operator ( ' ) can be used to read the value of an accumulator as it wa
 [source,gsql]
 ----
 v = SELECT s
-    FROM start:s - (e_type:e) -> :t
+    FROM start:s - (e_type:e) - :t
     ACCUM t.@received_score += s.@score/(s.outdegree(e_type))
     POST-ACCUM s.@score = (1.0 - damping) + damping * s.@received_score,
                s.@received_score = 0,
@@ -933,8 +933,8 @@ CREATE QUERY expressionEx() FOR GRAPH workNet {
 
   seed = {ANY};
 
-  company1 = SELECT t FROM seed:s -(worksFor)-> :t WHERE (s.id == "company1");
-  company2 = SELECT t FROM seed:s -(worksFor)-> :t WHERE (s.id == "company2");
+  company1 = SELECT t FROM seed:s -(worksFor)- :t WHERE (s.id == "company1");
+  company2 = SELECT t FROM seed:s -(worksFor)- :t WHERE (s.id == "company2");
 
   #expr := setBagExpr
   worksForBoth = company1 INTERSECT company2;
@@ -943,7 +943,7 @@ CREATE QUERY expressionEx() FOR GRAPH workNet {
   #expr := name "." "type"
   employees = SELECT s FROM seed:s WHERE (s.type == "person");
 
-  employees = SELECT s FROM employees:s -(worksFor)-> :t
+  employees = SELECT s FROM employees:s -(worksFor)- :t
 
     ACCUM
       #expr := name "." ["@"] name
@@ -1334,7 +1334,7 @@ CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
 
   start = {person.*};
 
-  employees = SELECT s FROM start:s -(worksFor)-> :t
+  employees = SELECT s FROM start:s -(worksFor)- :t
   	          ACCUM #exprStmnt := name "."localAccumName ("+="| "=") expr
                     s.@employers += t.id,
        		        #exprStmnt := name ["<" type ["," type"]* ">"] "(" [argList] ")"

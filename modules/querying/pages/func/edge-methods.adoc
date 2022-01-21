@@ -109,7 +109,7 @@ No return value.
 CREATE QUERY setAttrExample(STRING attr){ <1>
     Current = {v_type.*}
     S = SELECT s
-            FROM Current:s -(e_type:e) -> v_type:t
+            FROM Current:s -(e_type:e) - v_type:t
             WHERE t.attribute1 == "example_value"
             ACCUM e.setAttr(attr, TRUE); <2>
 }

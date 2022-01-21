@@ -321,7 +321,7 @@ CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
       ACCUM @@setOfVertices += s;
 
   B = SELECT t
-      FROM Seed:s - (posted:e) -> post:t
+      FROM Seed:s - (posted>:e) - post:t
       ACCUM s.@postedSet += e,
         @@testMap += (s -> t);
 

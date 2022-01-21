@@ -421,7 +421,7 @@ CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
   # Search person p's orders to record ticker, price, and order time.
   # Note that the tuple gathers info from both edges and vertices.
   orders = SELECT t
-      FROM INIT:s -(makeOrder:e)->stockOrder:t
+      FROM INIT:s -(makeOrder:e)-stockOrder:t
       ACCUM @@orderRecords += ORDER_RECORD(t.ticker, t.price, e.orderTime);
 
   PRINT @@portf, @@info;

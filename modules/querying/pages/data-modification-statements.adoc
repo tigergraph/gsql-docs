@@ -43,7 +43,7 @@ CREATE QUERY deleteEx() FOR GRAPH workNet {
 # Delete all "worksFor" edges where the person's location is "us"
 CREATE QUERY deleteEx2() FOR GRAPH workNet {
   S = {person.*};
-  DELETE e FROM S:s -(worksFor:e)-> company:t
+  DELETE e FROM S:s -(worksFor:e)- company:t
     WHERE s.locationId == "us";
 }
 ----
@@ -63,7 +63,7 @@ CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
     WHERE s.locationId == loc;
   PRINT SV.size() AS numVertices;
 
-  SE = SELECT s FROM Start:s -(worksFor:e)-> company:t
+  SE = SELECT s FROM Start:s -(worksFor:e)- company:t
     WHERE s.locationId == loc
     ACCUM @@selEdge += e;
   PRINT @@selEdge.size() AS numEdges;
@@ -199,12 +199,12 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 	# Best practice is to delete a vertex in a POST-ACCUM, which only
 	# occurs once for each vertex v, guaranteeing that a vertex is not
 	# deleted more than once
-	postAccumDeletedPosts = SELECT v FROM start -(posted:e)-> post:v
+	postAccumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
 	       	 POST-ACCUM DELETE (v);
 	
 	# Possible, but not recommended as the DML-sub DELETE statement occurs
 	# once for each edge of the vertex v
-	accumDeletedPosts = SELECT v FROM start -(posted:e)-> post:v
+	accumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
 	       	 ACCUM DELETE (v);
 }
 
@@ -212,7 +212,7 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 CREATE QUERY selectUserPosts(vertex<person> seed) FOR GRAPH socialNet {
     start = {seed};
 
-    userPosts = SELECT v FROM start -(posted:e)-> post:v;
+    userPosts = SELECT v FROM start -(posted>:e)- post:v;
     PRINT userPosts;
 }
 ----
@@ -393,7 +393,7 @@ CREATE QUERY whoWorksForCompany(STRING comp) FOR GRAPH workNet {
 
   Pers = {person.*};
   S = SELECT s
-    FROM Pers:s -(worksFor:e)-> :t
+    FROM Pers:s -(worksFor:e)- :t
     WHERE t.id == comp
     ACCUM @@setEdge += e;
   PRINT @@setEdge;
@@ -591,7 +591,7 @@ CREATE QUERY updateEx3() FOR GRAPH workNet{
   S = {person.*};
 
   # update edge and target vertices' attribute
-  UPDATE e FROM S:s - (worksFor:e) -> :t
+  UPDATE e FROM S:s - (worksFor:e) - :t
   SET e.startYear = e.startYear + 1, // Incremental change
       e.fullTime = false
   WHERE s.locationId == "us";

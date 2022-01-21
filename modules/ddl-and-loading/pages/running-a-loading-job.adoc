@@ -35,6 +35,7 @@ xref:defining-a-graph-schema.adoc#_drop_all[DROP ALL] clears both the data and t
 
 Running a loading job executes a previously installed loading job.  The job reads lines from an input source, parses each line into data tokens, and applies loading rules and conditions to create new vertex and edge instances to store in the graph data store. The input sources could be defined in the load job or could be provided when running the job. Additionally, loading jobs can also be run by submitted an HTTP request to the REST{pp} server.
 
+[#_run_loading_job]
 === RUN LOADING JOB
 
 .RUN LOADING JOB syntax for concurrent loading

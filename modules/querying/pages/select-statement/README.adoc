@@ -81,14 +81,88 @@ Notice that a path pattern can be just a single step vertex set; the subsequent 
 pathPattern :=  stepVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
 ----
 
-==== Step vertex set
-A vertex set that represents a step in a path pattern.
+[#_source_vertex_set]
+==== Source vertex set
+The source vertex set is the vertex set from which a path pattern starts.
 A step vertex set can be denoted by one of the following:
 
 * `_` or `ANY`, or omitted.
 If the step vertex type is omitted, you must give the step vertex set an alias.
 * Vertex type
-* A parameter
+* A vertex set variable
+
+Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
+
+.EBNF for source vertex set
+[,ebnf]
+----
+sourceVertexSet := [sourceVertexTypes] [":" vertexAlias]
+sourceVertexTypes := "_" | ANY | "(" sourceVertexSetType ["|" sourceVertexSetType]* ")"
+sourceVertexSetType := vertexType | vertexSetVariableName
+----
+
+Belows are a few examples of valid source vertex sets in `SELECT` statements:
+
+[tabs]
+====
+Vertex type::
++
+--
+[.wrap,gsql]
+----
+Result = SELECT tgt
+    FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src <1>
+    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+    ACCUM CASE WHEN src.type == "Comment" THEN
+        tgt.@commentCnt += 1
+        WHEN src.type == "Post" THEN
+            tgt.@postCnt += 1
+        END;
+----
+<1> `Person` is a vertex type.
+`(Comment | POST)` combines two vertex types.
+--
+Any type::
++
+--
+You can use `_` or `ANY` to represent any vertex types.
+You can also choose to omit the step vertex type altogether to represent any vertex type.
+If you choose to omit the type, you must give the step vertex set an alias.
+
+[.wrap,gsql]
+----
+Result = SELECT s
+    FROM :s -(<LIKES)- Person:tgt
+    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+----
+--
+Vertex set::
++
+--
+A step vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    seedSet = { seed };
+    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends;
+}
+----
+--
+====
+
+==== Step vertex set
+A vertex set that represents a step in a path pattern.
+Compared with <<_source_vertex_set,source vertex set>>, step vertex sets have more flexibility in how they are denoted.
+A step vertex set can be denoted by one of the following:
+
+* `_` or `ANY`, or omitted.
+If the step vertex type is omitted, you must give the step vertex set an alias.
+* Vertex type
+* A vertex set variable
 * A global accumulator
 
 Optionally, you can give a step vertex set an alias by appending the alias after a colon``:``.
@@ -100,7 +174,7 @@ Optionally, you can give a step vertex set an alias by appending the alias after
 stepVertexSet := [stepVertexTypes] [":" vertexAlias]
 stepVertexTypes := atomicVertexType | "(" vertexSetType ["|" vertexSetType]* ")"
 atomicVertexType := "_" | ANY | vertexSetType
-vertexSetType := vertexType | paramName | globalAccumName
+vertexSetType := vertexType | vertexSetVariableName | globalAccumName
 ----
 
 Belows are a few examples of valid step vertex sets in `SELECT` statements:
@@ -138,15 +212,40 @@ Result = SELECT s
     WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
 ----
 --
-Parameter::
+Vertex set::
 +
 --
-A step vertex set and also be represented by a query parameter that is either a vertex or vertex set.
+A step vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    seedSet = { seed };
+    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends;
+}
+----
 --
 Global accumulator::
 +
 --
-A step vertex set can also be presented by a global accumulator that is a collector of vertices.
+A step vertex set can be represented by a global accumulator.
+It can be an accumulator of strings (the strings are vertex types) or vertices, but they must be a `SetAccum`, `BagAccum` or `ListAccum`.
+
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    SetAccum<VERTEX> @@seedBag;
+    @@seedBag += seed;
+    friends = SELECT s FROM :s -((friend | coworker):e)- @@seedBag:v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends, includeCoworkers;
+}
+----
 --
 ====
 
@@ -236,6 +335,7 @@ The dot operator is a shorthand, when you don’t care about the type of that in
 
 The optional repeating phrase `["," pathPattern]*` allows you to have multiple path patterns.
 They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
+See xref:tutorials:pattern-matching/adv/conjunctive-pattern-matching.adoc[] for more details.
 
 [source,ebnf]
 ----

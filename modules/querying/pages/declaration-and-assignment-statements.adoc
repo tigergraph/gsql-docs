@@ -363,6 +363,7 @@ returns(SetAccum<tuple<int, string>>){
 --
 ====
 
+[#_local_tuple_variable]
 === Local tuple variable
 Variables declared inside a DML-block storing tuple values are called _local tuple variables_.
 The value of a local tuple variable is assigned at declaration.

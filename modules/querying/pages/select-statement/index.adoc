@@ -2,6 +2,9 @@
 :description: Reference documentation for GSQL's SELECT statement.
 :page-aliases: select-statement:readme.adoc
 
+NOTE: This page discusses the `SELECT` statement in GSQL Syntax V2, which is the default syntax for TigerGraph version 3.5 and above.
+To learn about the `SELECT` statement in the legacy V1 syntax, see xref:querying:select-statement/select-statement-v1.adoc[]
+
 == Overview
 The `SELECT` statement is an assignment statement with a `SELECT` block on the right-hand side.
 

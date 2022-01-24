@@ -135,7 +135,7 @@ CREATE QUERY baseTypeVariable() {
 }
 ----
 
-When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exitng the clause.
+When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exiting the clause.
 Therefore, if there are multiple assignment statements for the same base type variable in an `ACCUM` or `POST-ACCUM` clause, only the last one will take effect.
 
 For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends.
@@ -163,7 +163,7 @@ CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
 Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
 Local base type variables are block-scoped and are accessible in the block where they are declared only.
-Within a local base type variable's scope, you cannot another local base type variable with the same name at the same level.
+Within a local base type variable's scope, you cannot declare another local base type variable with the same name at the same level.
 However, you can declare a local base type variable or local container variable with the same name at a lower level, where the lower-level declaration will take precedence over the previous declaration.
 
 In a `POST-ACCUM` clause, each local base type variable may only be used in source vertex statements or only in target vertex statements, not both.
@@ -280,7 +280,7 @@ SET<INT> set1 = (1, 2, 3) <1>
 ====
 
 Local container variables are block-scoped and are accessible in the block where they are declared only.
-Within a local container variable’s scope, you cannot another local container variable or local base type variable with the same name at the same level.
+Within a local container variable’s scope, you cannot declare another local container variable or local base type variable with the same name at the same level.
 However, you can declare a variable with the same name at a lower level, where the lower-level declaration will override the previous declaration.
 
 In a `POST-ACCUM` clause, each local container variable may only be used in source vertex statements or only in target vertex statements, not both.

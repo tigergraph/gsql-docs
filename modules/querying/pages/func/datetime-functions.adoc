@@ -1,21 +1,31 @@
 = Datetime Functions
 
-This page lists `DATETIME` functions that are available in the GSQL query language. Every function in this page either takes a `DATETIME` object as its argument or return a `DATETIME` object.
+This page lists `DATETIME` functions that are available in the GSQL query language. Examples of `DATETIME` functions are converting to different locale formats, extracting days or months, calculating the difference between two values and returning the current time.
+
+Every function on this page either takes a `DATETIME` object as its argument or returns a `DATETIME` object.
+
+For type conversion functions, such as converting a `DATETIME` to a `STRING`, please see the xref:func/type-conversion-functions.adoc[] page.
 
 == `datetime_add()`
 
+[discrete]
 === Syntax
 
 `datetime_add( date, INTERVAL int_value time_unit )`
 
+[discrete]
 === Description
 
-Calculates a new `DATETIME` from a specified datepart multiplied by a specified amount, added to a specified `DATETIME`.`INTERVAL` is a keyword that must be exactly entered. `time_unit` is one of the keywords `YEAR`, `MONTH`, `DAY`, `HOUR`, `MINUTE`, or `SECOND`.
+Calculates a new `DATETIME` from a specified datepart multiplied by a specified amount, added to a specified `DATETIME`.
 
+`INTERVAL` is a keyword that must be entered exactly as shown. `time_unit` is one of the keywords `YEAR`, `MONTH`, `DAY`, `HOUR`, `MINUTE`, or `SECOND`.
+
+[discrete]
 === Return type
 
 `DATETIME`
 
+[discrete]
 === Parameters
 
 |===
@@ -30,6 +40,7 @@ Calculates a new `DATETIME` from a specified datepart multiplied by a specified 
 | `INT`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -40,18 +51,22 @@ datetime_add(to_datetime("1970-01-01 00:00:00"), INTERVAL 1 MONTH)
 
 == `datetime_diff()`
 
+[discrete]
 === Syntax
 
 `datetime_diff( date1, date2 )`
 
+[discrete]
 === Description
 
-Calculates the difference in seconds between two `DATETIME` values
+Calculates the difference in seconds between two `DATETIME` values.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -66,6 +81,7 @@ Calculates the difference in seconds between two `DATETIME` values
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -76,18 +92,22 @@ datetime_diff(to_datetime("2020-01-01 00:00:00"), to_datetime("2020-02-03 04:13:
 
 == `datetime_format()`
 
+[discrete]
 === Syntax
 
 `datetime_format(date[, str])`
 
+[discrete]
 === Description
 
-Print a `DATETIME` value in a specific format indicated by a string.
+Prints a `DATETIME` value in a specific format indicated by a provided string.
 
+[discrete]
 === Return type
 
 `STRING`
 
+[discrete]
 === Parameters
 [width="100%",cols="1,2,1",options="header",]
 |===
@@ -111,6 +131,7 @@ The default value for this parameter is `+"%Y-%m-%d %H:%M:%S"+`
 |`+DATETIME+`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -121,18 +142,24 @@ datetime_format(to_datetime("2020-01-02 05:30:12"), "hi, it's %Y-%m-%d")
 
 == `datetime_sub( )`
 
+[discrete]
 === Syntax
 
 `datetime_sub(date, INTERVAL int_value time_unit)`
 
+[discrete]
 === Description
 
-Calculates a new `DATETIME` from a specified datepart multiplied by a specified amount, subtracted from a specified `DATETIME`.`INTERVAL` is a keyword that must be exactly entered. `time_unit` is one of the keywords `YEAR`, `MONTH`, `DAY`, `HOUR`, `MINUTE`, or `SECOND`.
+Calculates a new `DATETIME` from a specified datepart multiplied by a specified amount, subtracted from a specified `DATETIME`.
 
+`INTERVAL` is a keyword that must be entered exactly as shown. `time_unit` is one of the keywords `YEAR`, `MONTH`, `DAY`, `HOUR`, `MINUTE`, or `SECOND`.
+
+[discrete]
 === Return type
 
 `DATETIME`
 
+[discrete]
 === Parameters
 
 |===
@@ -147,6 +174,7 @@ Calculates a new `DATETIME` from a specified datepart multiplied by a specified 
 | `INT`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -156,18 +184,22 @@ datetime_add(to_datetime("1970-02-01 00:00:00"), INTERVAL 1 MONTH) -> 1970-01-01
 
 == `datetime_to_epoch()`
 
+[discrete]
 === Syntax
 
 `datetime_to_epoch( date )`
 
+[discrete]
 === Description
 
 Converts a `DATETIME` value to epoch time.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -178,6 +210,7 @@ Converts a `DATETIME` value to epoch time.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -187,18 +220,22 @@ datetime_to_epoch(to_datetime("1970-01-01 00:01:00")) -> 60
 
 == `day()`
 
+[discrete]
 === Syntax
 
 `day( date )`
 
+[discrete]
 === Description
 
 Returns the day of the month of a `DATETIME` value.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -209,6 +246,7 @@ Returns the day of the month of a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -218,18 +256,22 @@ day(to_datetime("1973-01-05 00:00:00")) -> 5
 
 == `epoch_to_datetime()`
 
+[discrete]
 === Syntax
 
 `epoch_to_datetime(int_value)`
 
+[discrete]
 === Description
 
 Converts an epoch time value to a `DATETIME` value.
 
+[discrete]
 === Return type
 
 `DATETIME`
 
+[discrete]
 === Parameters
 
 |===
@@ -240,6 +282,7 @@ Converts an epoch time value to a `DATETIME` value.
 | `INT`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -249,18 +292,22 @@ epoch_to_datetime(1) -> 1970-01-01 00:00:01
 
 == `hour()`
 
+[discrete]
 === Syntax
 
 `hour(date)`
 
+[discrete]
 === Description
 
 Extracts the hour of the day from a `DATETIME` value.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -271,6 +318,7 @@ Extracts the hour of the day from a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -280,18 +328,22 @@ hour(to_datetime("1980-01-01 15:01:02")) -> 15
 
 == `minute()`
 
+[discrete]
 === Syntax
 
 `minute(date)`
 
+[discrete]
 === Description
 
 Extracts the minute of the hour from a `DATETIME` value.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -302,6 +354,7 @@ Extracts the minute of the hour from a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -311,16 +364,20 @@ minute(to_datetime("1980-02-05 03:04:05")) -> 4
 
 == `month()`
 
+[discrete]
 === Syntax
 
 `month(date)`
 
+[discrete]
 === Description
 
 Extracts the month of the year from a `DATETIME` value.
 
+[discrete]
 === Return type
 
+[discrete]
 === Parameters
 
 |===
@@ -331,6 +388,7 @@ Extracts the month of the year from a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -340,22 +398,27 @@ month(to_datetime("1980-02-05 03:04:05")) -> 2
 
 == `now()`
 
+[discrete]
 === Syntax
 
 `now()`
 
+[discrete]
 === Description
 
-Returns the current UTC time in `DATETIME`
+Returns the current UTC time in `DATETIME`.
 
+[discrete]
 === Return type
 
 `DATETIME`
 
+[discrete]
 === Parameters
 
 None.
 
+[discrete]
 === Example
 [source,text]
 ----
@@ -364,18 +427,22 @@ now() => "2021-11-13 00:32:16"
 
 == `second()`
 
+[discrete]
 === Syntax
 
 `second(date)`
 
+[discrete]
 === Description
 
-Extracts the second from a `DATETIME` value.
+Extracts the seconds value from a `DATETIME` value.
 
+[discrete]
 === Return type
 
 `INT`
 
+[discrete]
 === Parameters
 
 |===
@@ -386,6 +453,7 @@ Extracts the second from a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]
@@ -395,16 +463,20 @@ second(to_datetime("1980-02-05 03:04:05")) -> 5
 
 == `year()`
 
+[discrete]
 === Syntax
 
 `year(date)`
 
+[discrete]
 === Description
 
 Extracts the year from a `DATETIME` value.
 
+[discrete]
 === Return type
 
+[discrete]
 === Parameters
 
 |===
@@ -415,6 +487,7 @@ Extracts the year from a `DATETIME` value.
 | `DATETIME`
 |===
 
+[discrete]
 === Example
 
 [source,text]

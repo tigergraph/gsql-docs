@@ -178,10 +178,11 @@ produces a match table with 3 columns: A, B, and C. Each row is a tuple (A,B,C) 
 
 [NOTE]
 ====
-The ACCUM clause iterates through ALL matches. If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than that number of matches.
+The `ACCUM` clause iterates through *all* matches.
+If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than the number of matches.
 ====
 
-For example, consider
+For example, consider the following clauses:
 
 [source,gsql]
 ----
@@ -190,16 +191,28 @@ WHERE C.email = "Andy@www.com"
 ACCUM C.@patternCount += 1
 ----
 
-This finds the friends of the friends of Andy@www.com.Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+This finds the friends of the friends of `Andy@www.com`.
+Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.
+The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.
+This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.
+There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+
 
 [#_post_accum_clause]
-=== POST-ACCUM Clause
+=== `POST-ACCUM` Clause
 
-At the end of the ACCUM clause, all the requested accumulation (+=) operators are processed in bulk, and the updated values are now visible.You can now use POST-ACCUM clauses to perform a second, different round of computation on the results of your pattern matching.
+At the end of the `ACCUM` clause, all the requested accumulation (`+=`) operators are processed in bulk, and the updated values are now visible.
+You can now use `POST-ACCUM` clauses to perform a second, different round of computation on the results of your pattern matching.
 
-The *ACCUM* clause executes *for each full path* that matches the pattern in the FROM clause.In contrast, the  *POST-ACCUM* clause executes *for each vertex* in one vertex set (e.g. one vertex column in the matching table); its statements can access the aggregated accumulator result computed in the ACCUM clause.If you want to perform per-vertex updates for more than one vertex alias, you should use a separate POST-ACCUM clause for each vertex alias.The multiple POST-ACCUM clauses are processed in parallel; it doesn't matter in what order you write them.(For each binding, the statements within a clause are executed in order.)
+The `ACCUM` clause executes *for each full path* that matches the pattern in the `FROM` clause.
+In contrast, the  `POST-ACCUM` clause executes *for each vertex* in one vertex set (e.g. one vertex column in the matching table); its statements can access the aggregated accumulator result computed in the `ACCUM` clause.
+If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
+The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
+(For each binding, the statements within a clause are executed in order.)
 
-For example, below we have two POST-ACCUM clauses.The first one iterates through s, and for each s, we do `s.@cnt2 += s.@cnt1`.The second POST-ACCUM iterations through t.
+For example, below we have two `POST-ACCUM` clauses.
+The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
+The second `POST-ACCUM` iterations through `t`.
 
 [source,gsql]
 ----
@@ -250,7 +263,7 @@ Using graph 'ldbc_snb'
 }
 ----
 
-However, the following is not allowed, since it involves two aliases (t and s) in one POST-ACCUM clause.
+However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
 
 [source,gsql]
 ----

@@ -1156,7 +1156,8 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
 
 The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
 
-The iterating variable is treated as a copy existing only in the `FOREACH` statement. Modifying it will not modify any elements in a set.
+The iterating variable is treated as a copy existing only in the `FOREACH` statement. 
+Modifying it will not modify any elements in the set or bag expression follwoing the keyword `IN`.
 
 === Syntax
 .`FOREACH` syntax

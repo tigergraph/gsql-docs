@@ -1211,61 +1211,24 @@ The above query is compilable. However, if we use line 5 as the `WHERE` clause i
 The edge-type conflict checking detects an error, because it uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
 ====
 
-== `ACCUM` and `POST-ACCUM` Clauses
 
-The optional `ACCUM` and `POST-ACCUM` clauses enable sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding `FROM`, `SAMPLE`, and `WHERE` clauses.
-A query can contain one or both of these clauses.
-The statements in an `ACCUM` clause are applied for every edge in an edge-induced selection or every vertex in a vertex-induced selection.
+== `ACCUM` clause
 
-If there is more than one statement in the `ACCUM` clause, the statements are separated by commas and executed sequentially for each selected element.
-However, the TigerGraph system uses parallelism to improve performance.
-Within an `ACCUM` clause, each edge is handled by a separate process.
-As such, there is no fixed order in which the edges are processed within the `ACCUM` clause and the edges should not be treated as executing sequentially.
-The accumulators are mutex variables shared among each of these processes.
-The results of any accumulation within the `ACCUM` clause is not complete until all edges are traversed.
-Any inspection of an intermediate result within the ACCUM is incomplete and may not be that meaningful.
+The `ACCUM` clause enables sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding `FROM`, `SAMPLE`, and `WHERE` clauses.
 
-[WARNING]
-====
-The statements within the `ACCUM` clause are executed sequentially for a given vertex or edge.
-However, there is no fixed order in which a vertex set or edge set is processed.
-====
-
-The optional `POST-ACCUM` clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses.
-`POST-ACCUM` can be used without `ACCUM`.
-If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
-
-[WARNING]
-====
-Statements within a `POST-ACCUM` clause can refer to either source vertices or target vertices but not both.
-====
-
-Since the `ACCUM` clause iterates over edges, and often two edges will connect to the same source vertex or to the same target vertex, the ACCUM clause can be repeated multiple times for one vertex.
-
-[WARNING]
-====
-Operations that are to be performed exactly once per vertex should be performed in the POST-ACCUM clause.
-====
-
-The primary purpose of the `ACCUM` or `POST-ACCUM` clause is to collect information about the graph by updating xref:accumulators.adoc[accumulators] (via `+=` or `=`).
+=== Syntax
+The primary purpose of the `ACCUM` clause is to collect information about the graph by updating xref:accumulators.adoc[accumulators] (via `+=` or `=`).
 However, other kinds of statements (e.g., branching, iteration, local assignments) are permitted to support more complex computations or to log activity.
 
-The EBNF syntax below defines the allowable kinds of statements that can occur within an `ACCUM` or `POST-ACCUM`.
-The *dmlSubStmt* list is similar to the *queryBodyStmt* list which applies to statements outside a `SELECT` block; it is important to note the differences.
-Each of these statement types is discussed in one of the main sections of this reference document.
+The EBNF syntax below defines the allowable kinds of statements that can occur within an `ACCUM` clause.
 
-.EBNF for `ACCUM` and `POST-ACCUM` Clauses
-[source,ebnf]
+
+.EBNF for `ACCUM` clause
+[.wrap,ebnf]
 ----
-accumClause := [perClauseV2] ACCUM dmlSubStmtList
-
-perClauseV2 := PER "(" alias ["," alias] ")"
-
-postAccumClause := POST-ACCUM dmlSubStmtList
-
+accumClause := [perClauseV2] ACCUM dmlSubStmtList <1>
 dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
-
-dmlSubStmt := assignStmt           // Assignment
+dmlSubStmt := assignStmt           // Assignment  <2> <3>
             | funcCallStmt         // Function Call
             | gAccumAccumStmt      // Assignment
             | lAccumAccumStmt      // Assignment
@@ -1283,34 +1246,22 @@ dmlSubStmt := assignStmt           // Assignment
             | printlnStmt          // Output
             | logStmt              // Output
 ----
-
-
-
-[WARNING]
-====
-DML-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt).
-Global accumulators may perform accumulation `+=` but not assignment `=` within these clauses.
-====
-
-[WARNING]
-====
-There are additional restrictions on dml-sub level statements:
-
-* Global variable assignment is permitted in `ACCUM` or `POST-ACCUM` clauses, but the change in value will not take place until the query completes.
+<1> DML-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt).
+Global accumulators may perform accumulation `+=` but not assignment `=` within an `ACCUM` clause.
+<2> Global variable assignment is permitted in an `ACCUM` clause, but the change in value will not take place until the query completes.
 Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
-* Vertex attribute assignment `=` is not permitted in an ACCUM clause. However, edge attribute assignment is permitted.
+<3> Vertex attribute assignment `=` is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted.
 This is because the `ACCUM` clause iterates over an edge set.
 Vertex attribute assignment is permitted in the `POST-ACCUM` clause.
 Like all updates, the change in value does not take place until the query completes.
-====
 
-=== `ACCUM` clause iteration model
+=== Iteration model
 
 The `ACCUM` clause is executed once (in parallel) for each set of vertices and edges in the graph which match the pattern and constraints given in the `FROM` and `WHERE` clauses.
 You can think of `FROM-WHERE` as producing a virtual table.
 The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
 
-A simple 1-hop pattern, which could be syntax v1 or v2, looks like this:
+For a simple 1-hop pattern below:
 
 [source,gsql]
 ----
@@ -1322,17 +1273,30 @@ Each row is a tuple (A,B,C) where there is a `has_lived_in` edge B from a `Perso
 We say that the match table provides a _binding_ between the pattern aliases and graph's vertices and edges.
 A multi-hop pattern simply has more columns than a 1-hop pattern.
 
+Since the `ACCUM` clause iterates over edges, and often two edges will connect to the same source vertex or to the same target vertex, the `ACCUM` clause can be repeated multiple times for one vertex.
+Operations that are to be performed exactly once per vertex should be performed in the <<_post_accum_clause, `POST-ACCUM` clause>>.
+
+==== Parallelism in `ACCUM` clause
+TigerGraph uses parallelism to improve performance.
+The statements within the `ACCUM` clause are executed sequentially for a given vertex or edge.
+However, there is no fixed order in which a vertex set or edge set is processed.
+
+Within an `ACCUM` clause, each edge is handled by a separate process.
+As such, there is no fixed order in which the edges are processed within the `ACCUM` clause and the edges should not be treated as executing sequentially.
+The accumulators are mutex variables shared among each of these processes.
+The results of any accumulation within the `ACCUM` clause is not complete until all edges are traversed.
+Any inspection of an intermediate result within the `ACCUM` clause is incomplete and may not be that meaningful.
+
 [NOTE]
 ====
 The `ACCUM` clause iterates through *all* matches.
 If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than the number of matches.
-====
 
 For example, consider the following clauses:
 
 [source,gsql]
 ----
-FROM Person:A -(KNOWS.KNOWS)- Person.C
+FROM Person:A -(KNOWS.KNOWS)- Person:C
 WHERE C.email = "Andy@www.com"
 ACCUM C.@patternCount += 1
 ----
@@ -1342,96 +1306,7 @@ Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.
 The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.
 This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.
 There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
-
-=== `POST-ACCUM` iteration model
-
-At the end of the `ACCUM` clause, all the requested accumulation (`+=`) operators are processed in bulk, and the updated values are now visible.
-You can now use `POST-ACCUM` clauses to perform a second, different round of computation on the results of your pattern matching.
-
-The `ACCUM` clause executes *for each full path* that matches the pattern in the `FROM` clause.
-In contrast, the  `POST-ACCUM` clause executes *for each vertex* in one vertex set (e.g. one vertex column in the matching table); its statements can access the aggregated accumulator result computed in the `ACCUM` clause.
-If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
-The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
-(For each binding, the statements within a clause are executed in order.)
-
-For example, below we have two `POST-ACCUM` clauses.
-The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
-The second `POST-ACCUM` iterations through `t`.
-
-[source,gsql]
-----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @cnt1;
-  SumAccum<int> @cnt2;
-
-  R   =  SELECT s
-         FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
-         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-               AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
-         ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
-         POST-ACCUM s.@cnt2 += s.@cnt1 //execute once per s.
-         POST-ACCUM t.@cnt2 +=1;//execute once per t
-
-  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
-}
-----
-
-which produces the result
-
-[source,gsql]
-----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [
-    {"R": [{
-      "v_id": "28587302323577",
-      "attributes": {
-        "R.firstName": "Viktor",
-        "R.@cnt1": 3,
-        "R.lastName": "Akhiezer",
-        "R.@cnt2": 3
-      },
-      "v_type": "Person"
-    }]},
-  ]
-}
-----
-
-However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
-
-[source,gsql]
-----
- POST-ACCUM t.@cnt1 += 1,
-            s.@cnt1 += 1
-----
-
-Also, you may not use more than one alias in a single assignment. The following is not allowed:
-
-[source,gsql]
-----
- POST-ACCUM t.@cnt1 += s.@cnt + 1
-----
-
-=== `PER` clause
-
-The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
-The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row `PER <alias>`.
-For more information see xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
-
-=== Multiple `POST-ACCUM` clauses
-
-A `SELECT` statement can have multiple `POST-ACCUM` clauses. Each `POST-ACCUM` may refer to only one vertex alias.
-See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[`POST-ACCUM` section in the Pattern Matching] tutorial.
+====
 
 === Edge/Vertex Type Inference and Conflict
 
@@ -1490,12 +1365,101 @@ The above query is compilable.
 However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `liked` edges doesn't support `t.gender` and `friend` edges doesn't support e.actionTime.
 ====
 
-If multiple source/target vertex types are specified in edge-induced selection and the `POST-ACCUM` clauses accesses source/target vertex, each ACCUM statement in `POST-ACCUM` clause checks whether source/target vertex types are conflicted.
-If only a subset of source/target vertex types are effective in a POST-ACCUM statement, this statement is not executed on other source/target vertex types.
+
+[#_post_accum_clause]
+== `POST-ACCUM` clause
+The optional `POST-ACCUM` clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses.
+`POST-ACCUM` can be used without `ACCUM`.
+If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
+
+Each `POST-ACCUM` clause may reference one vertex alias only.
+However, a `SELECT` statement can have multiple `POST-ACCUM` clauses.
+The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
+
+=== Syntax
+
+.EBNF for `POST-ACCUM` clause
+[.wrap,gsql]
+----
+postAccumClause := POST-ACCUM dmlSubStmtList
+dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
+dmlSubStmt := assignStmt           // Assignment
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | dmlSubCaseStmt       // Control Flow
+            | dmlSubIfStmt         // Control Flow
+            | dmlSubWhileStmt      // Control Flow
+            | dmlSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | dmlSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
+
+=== Iteration model
+
+The `ACCUM` clause executes *for each full path* that matches the pattern in the `FROM` clause.
+In contrast, the  `POST-ACCUM` clause executes *for each vertex* in one vertex set; its statements can access the aggregated accumulator result computed in the `ACCUM` clause.
+
+You can think of the matching result of the `FROM` clause and the `WHERE` clause as a virtual table.
+The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
+A `POST-ACCUM` clause acts like a `FOREACH` loop on the one of the columns of vertex result set specified in the `SELECT` clause and only occurs once for each vertex.
+
+If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
 
 
+For example, below we have two `POST-ACCUM` clauses.
+The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
+The second `POST-ACCUM` iterations through `t`.
 
-=== Rules for Updating Vertex-Attached Accumulators
+[source,gsql]
+----
+INTERPRET QUERY () {
+
+  SumAccum<int> @cnt1;
+  SumAccum<int> @cnt2;
+
+  R   =  SELECT s
+    FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+      AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
+    ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
+    POST-ACCUM s.@cnt2 += s.@cnt1 //execute once per s.
+    POST-ACCUM t.@cnt2 +=1;//execute once per t
+
+  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
+}
+----
+
+However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
+
+[source,gsql]
+----
+ POST-ACCUM t.@cnt1 += 1,
+            s.@cnt1 += 1
+----
+
+Also, you may not use more than one alias in a single assignment. The following is not allowed:
+
+[source,gsql]
+----
+ POST-ACCUM t.@cnt1 += s.@cnt + 1
+----
+
+
+=== Multiple `POST-ACCUM` clauses
+
+A `SELECT` statement can have multiple `POST-ACCUM` clauses. Each `POST-ACCUM` may refer to only one vertex alias.
+See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[`POST-ACCUM` section in the Pattern Matching] tutorial for more details.
+
+
+== Updating vertex-attached accumulators
 
 Vertices _referenced via a vertex-attached accumulator of a selected vertex_ may have their vertex-attached accumulators updated in the `ACCUM` clause (but not in the `POST-ACCUM` clause).
 That is, a vertex referenced by a selected vertex can be updated, with some limitations explained below.
@@ -2168,6 +2132,11 @@ GSQL > RUN QUERY personGender("Female")
 --
 ====
 
+=== `PER` clause
+
+The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
+The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row `PER <alias>`.
+For more information see xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
 
 == `HAVING` Clause
 

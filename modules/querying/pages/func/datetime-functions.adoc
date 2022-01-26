@@ -404,6 +404,7 @@ second(to_datetime("1980-02-05 03:04:05")) -> 5
 Extracts the year from a `DATETIME` value.
 
 === Return type
+`INT`
 
 === Parameters
 

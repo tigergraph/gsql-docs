@@ -124,7 +124,7 @@ The only option is v2.
 
 `SYNTAX syntaxName`:: Specifies the GSQL syntax version to be used by the query.
 See the
-xref:select-statement/README.adoc#_gsql_syntax_versions[GSQL syntax versions] for an outline of the differences.
+xref:querying:index.adoc#_gsql_syntax_versions[GSQL syntax versions] for an outline of the differences.
 See
 xref:tutorials:pattern-matching/README.adoc[Pattern Matching tutorial] for
 details on v2.
@@ -203,7 +203,7 @@ This means the query can be written and installed as a saved procedure without r
 Here are the ingredients for a dynamic query:
 
 * *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
-* *Vertex type and edge type in `SELECT` statements*.Typically, the xref:querying:select-statement/README.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.String or string set parameters can be used for edge and target types instead.
+* *Vertex type and edge type in `SELECT` statements*.Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.String or string set parameters can be used for edge and target types instead.
 * *Attribute names*.The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
 * `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
 
@@ -855,7 +855,7 @@ curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL
 
 Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries. Starting with TigerGraph 3.1, you can run queries in Detached Mode to enable background execution of long-running queries.
 
-Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:3.2@tigergraph-server:API:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:tigergraph-server:API:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
 
@@ -906,7 +906,7 @@ This is the latest API.
 |`schema` |Integer representing which version of the user’s graph schema
 is currently in use. When a `CREATE GRAPH` statement is executed, the
 version is initialized to 0. Each time a `SCHEMA_CHANGE JOB` is run, the
-schema value is incremented by 1 (e.g., 1, 2, etc.).
+schema value is incremented by 1 (e.g., 1, 2, etc.)
 |===
 
 Other top-level objects, such as "code" may appear in certain circumstances. Note that the top-level objects are enclosed in curly braces, meaning that they form an unordered set. They may appear in any order.

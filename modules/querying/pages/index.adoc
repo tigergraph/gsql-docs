@@ -1,4 +1,5 @@
 = Introduction
+:page-aliases: introduction-query.adoc
 
 The GSQL ® Query Language is a language for the exploration and analysis of large scale graphs. The high-level language makes it easy to perform powerful graph traversal queries in the TigerGraph system. By combining features familiar to database users and programmers with highly expressive new capabilities, the GSQL query language offers both easy authoring and powerful execution. A GSQL query contains one or more SELECT statements, where each SELECT statement describes a traversal over a set of vertices and edges in the graph or describes a selection of a subset of vertices.  By combining multiple SELECT statements, the user can map out query patterns to answer a virtually unlimited set of real-life data questions.
 
@@ -6,7 +7,31 @@ This document focuses on the formal specification for the GSQL Query Language. I
 
 link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Graph files and loading script].
 
-== Schemas for Example Graphs
+== GSQL syntax versions
+There are now two versions of the GSQL Query Language. Both are available in the product.
+The original version is called GSQL Syntax V1.
+GSQL Syntax V2 was introduced to provide more flexible and powerful xref:tutorials:pattern-matching/README.adoc[Pattern matching].
+A query indicates which grammar to use in the SYNTAX clause of the `CREATE QUERY` header.
+V2 is the default.
+
+As new features are being added to GSQL, some are available only in V2.
+
+The key differences between the two grammars:
+
+. SQL-like Tabular `SELECT` is only in Syntax V2
+. Multi-hop Pattern Matching is only in Syntax V2
+** In V2, each `SELECT` statement can traverse a multi-hop path.
+*** The traversal direction is under the control of the query writer, with arrowheads on each edge set to show the direction.
+*** There is no arrowhead outside the parentheses:
++
+`Start:s -( (ForwardEdge> | <BackwardEdge):e )- Target:t`
+
+*** Users can write paths that explicitly show multiple hops, and they can use a Kleene star (`*`) to indicate repetition. `Start:s -(Edge1>:e1)- Middle:m -(<Edge2:e2)- Target:t` or `Start:s -(Edge*1..3)- Target:t`
+** In V1 (default), each `SELECT` statement can traverse one hop (from a set of vertices to their adjacent vertices).
+*** To write a multi-hop query, you write a sequence of `SELECT` statements.
+*** The traversal action is from left to right, and the notation uses "ASCII art" to depict a connection, either with a rightward facing arrowhead or no arrowhead: `+Start:s -( Edges:e )-> Target:t+` or  `Start:s -( Edges:e )- Target:t`
+
+== Schemas for example graphs
 
 .Graph Schema: socialNet
 

@@ -1216,6 +1216,7 @@ The edge-type conflict checking detects an error, because it uses attributes fro
 
 The `ACCUM` clause enables sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding `FROM`, `SAMPLE`, and `WHERE` clauses.
 
+[discrete]
 === Syntax
 The primary purpose of the `ACCUM` clause is to collect information about the graph by updating xref:accumulators.adoc[accumulators] (via `+=` or `=`).
 However, other kinds of statements (e.g., branching, iteration, local assignments) are permitted to support more complex computations or to log activity.
@@ -1365,6 +1366,248 @@ The above query is compilable.
 However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `liked` edges doesn't support `t.gender` and `friend` edges doesn't support e.actionTime.
 ====
 
+[discrete]
+=== Examples
+
+This example uses `ACCUM` to find all the subjects a user posted about.
+
+[tabs]
+====
+Query::
++
+--
+.Vertex ACCUM Example
+[source,gsql]
+----
+# For each person, make a list of all their post subjects
+CREATE QUERY userPosts() FOR GRAPH socialNet {
+  ListAccum<STRING> @personPosts;
+  start = {person.*};
+
+  # Find all user post topics and append them to the vertex list accum
+  userPostings = SELECT s FROM start:s -(posted)- :g
+                 ACCUM s.@personPosts += g.subject;
+
+  PRINT userPostings;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query userPosts
+[source,gsql]
+----
+GSQL > RUN QUERY userPosts()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"userPostings": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@personPosts": ["cats"],
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["query languages"],
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": [ "cats", "tigergraph" ],
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["Graphs"],
+        "id": "person1"
+      },
+      "v_type": "person"
+    },
+/*** other vertices omitted ***/
+  ]}]
+}
+----
+--
+====
+
+This example shows each person's posted vertices and each person's like behaviors (liked edges).
+
+[tabs]
+====
+Query::
++
+--
+.`ACCUM<VERTEX>` and `ACCUM<EDGE>` Example
+[source,gsql]
+----
+# Show each user's post and liked post time
+CREATE QUERY userPosts2() FOR GRAPH socialNet {
+  ListAccum<VERTEX> @personPosts;
+  ListAccum<EDGE> @personLikedInfo;
+  start = {person.*};
+
+  # Find all user post topics and append them to the vertex list accum
+  userPostings = SELECT s FROM start:s -(posted)- :g
+                 ACCUM s.@personPosts += g;
+
+  userPostings = SELECT s from start:s -(liked:e)- :g
+                 ACCUM s.@personLikedInfo += e;
+
+  PRINT start;
+}
+----
+--
+
+Results::
++
+--
+.Results from Query userPosts2
+[source,gsql]
+----
+GSQL > RUN QUERY userPosts2()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"start": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@personPosts": ["3"],
+        "id": "person4",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person4",
+          "to_id": "4",
+          "attributes": {"actionTime": "2010-01-13 03:16:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": [ "9", "6" ],
+        "id": "person7",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person7",
+          "to_id": "10",
+          "attributes": {"actionTime": "2010-01-12 11:22:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["0"],
+        "id": "person1",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person1",
+          "to_id": "0",
+          "attributes": {"actionTime": "2010-01-11 11:32:00"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+/*** other vertices omitted ***/
+  ]}]
+}
+----
+--
+====
+
+This example counts the total number of times each topic is used.
+
+[tabs]
+====
+Query::
++
+--
+.Global ACCUM Example
+[source,gsql]
+----
+# Show number of total posts by topic
+CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
+  MapAccum<STRING, INT> @@postTopicCounts;
+  start = {person.*};
+
+  # Append subject and update the appearance count in the global map accum
+  posts = SELECT g FROM start -(posted)- :g
+		  ACCUM @@postTopicCounts += (g.subject -> 1);
+
+  PRINT @@postTopicCounts;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query userPostsByTopic
+[source,gsql]
+----
+GSQL > RUN QUERY userPostsByTopic()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"@@postTopicCounts": {
+    "cats": 5,
+    "coffee": 1,
+    "query languages": 1,
+    "Graphs": 2,
+    "tigergraph": 3
+  }}]
+}
+----
+--
+====
+
 
 [#_post_accum_clause]
 == `POST-ACCUM` clause
@@ -1457,6 +1700,181 @@ Also, you may not use more than one alias in a single assignment. The following 
 
 A `SELECT` statement can have multiple `POST-ACCUM` clauses. Each `POST-ACCUM` may refer to only one vertex alias.
 See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[`POST-ACCUM` section in the Pattern Matching] tutorial for more details.
+
+[discrete]
+=== Examples
+
+This is an example of using `ACCUM` and `POST-ACCUM` in conjunction.
+The `ACCUM` traverses the graph and finds all people who live and work in the same country.
+After this is determined, `POST-ACCUM` examines each vertex (person) to see if they work where they live.
+
+[tabs]
+====
+Query::
++
+--
+.Vertex `POST-ACCUM` Example
+[source,gsql]
+----
+#Show all person who both work and live in the same country
+CREATE QUERY residentEmployees() FOR GRAPH workNet {
+
+  ListAccum<STRING> @company;
+  OrAccum @worksAndLives;
+
+  start = {person.*};
+
+
+  employees = SELECT s FROM start:s -(worksFor)- :c
+              #If a person works for a company in the same country where they live
+              # add the company to the list
+              ACCUM CASE WHEN (s.locationId == c.country) THEN
+                           s.@company += c.id
+                         END
+
+              #Check each vertex and see if a person works where they live
+              POST-ACCUM CASE WHEN (s.@company.size() > 0) THEN
+                           s.@worksAndLives += True
+                         ELSE
+                           s.@worksAndLives += False
+                         END;
+
+  PRINT employees WHERE (employees.@worksAndLives == True);
+}
+----
+--
+
+Results::
++
+--
+.residentEmployees Result
+[source,gsql]
+----
+GSQL > RUN QUERY residentEmployees()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"employees": [
+    {
+      "v_id": "person11",
+      "attributes": {
+        "interestList": [
+          "sport",
+          "football"
+        ],
+        "skillSet": [10],
+        "skillList": [10],
+        "@worksAndLives": true,
+        "locationId": "can",
+        "interestSet": [ "football", "sport" ],
+        "id": "person11",
+        "@company": ["company5"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "interestList": [ "football", "sport" ],
+        "skillSet": [3],
+        "skillList": [3],
+        "@worksAndLives": true,
+        "locationId": "us",
+        "interestSet": [ "sport", "football" ],
+        "id": "person10",
+        "@company": ["company1"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "interestList": [ "management", "financial" ],
+        "skillSet": [ 3, 2, 1 ],
+        "skillList": [ 1, 2, 3 ],
+        "@worksAndLives": true,
+        "locationId": "us",
+        "interestSet": [ "financial", "management" ],
+        "id": "person1",
+        "@company": ["company1"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "interestList": ["engineering"],
+        "skillSet": [ 6, 5, 3, 2 ],
+        "skillList": [ 2, 3, 5, 6 ],
+        "@worksAndLives": true,
+        "locationId": "chn",
+        "interestSet": ["engineering"],
+        "id": "person2",
+        "@company": ["company2"]
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+This is an example of a `POST-ACCUM` only that counts the number people with a particular gender.
+
+[tabs]
+====
+Query::
++
+--
+.Global POST-ACCUM Example
+[source,gsql]
+----
+#Count the number of person of	a given	gender
+CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
+
+  SumAccum<INT> @@genderCount;
+
+  start = {ANY};
+
+  # Select all person vertices and check the gender attribute
+  friends = SELECT v FROM start:v
+            WHERE v.type == "person"
+
+            POST-ACCUM CASE WHEN (start.gender == gender) THEN
+                         @@genderCount += 1
+                       END;
+
+  PRINT @@genderCount;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query personGender
+[source,gsql]
+----
+GSQL > RUN QUERY personGender("Female")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"@@genderCount": 3}]
+}
+----
+--
+====
 
 
 == Updating vertex-attached accumulators
@@ -1607,532 +2025,7 @@ GSQL > RUN QUERY vUpdateIndirectAccess()
 ====
 
 
-=== `ACCUM` and `POST-ACCUM` Examples
-
-We now show several examples.
-This example demonstrates how `ACCUM` or `POST-ACCUM` can be used to count the number of vertices in the given set.
-
-[tabs]
-====
-Query::
-+
---
-.Accum and PostAccum Semantics
-[source,gsql]
-----
-#Show Accum PostAccum Behavior
-CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
-
-  SumAccum<INT> @@vertexOnlyAccum;
-  SumAccum<INT> @@vertexOnlyPostAccum;
-
-  SumAccum<INT> @@vertexOnlyWhereAccum;
-  SumAccum<INT> @@vertexOnlyWherePostAccum;
-
-  SumAccum<INT> @@sourceWithEdgeAccum;
-  SumAccum<INT> @@sourceWithEdgePostAccum;
-
-  SumAccum<INT> @@targetWithEdgeAccum;
-  SumAccum<INT> @@targetWithEdgePostAccum;
-
-  #Seed start set with all company vertices
-  start = {company.*};
-
-  #Select all vertices in source set start
-  selectVertexSet = SELECT v from start:v
-					#Happens once for each vertex discovered
-					ACCUM @@vertexOnlyAccum += 1
-
-					#Happens once for each vertex in the result set "v"
-					POST-ACCUM @@vertexOnlyPostAccum += 1;
-
-  #Select all vertices in source set start with a where constraint
-  selectVertexSetWhere = SELECT v from start:v WHERE (v.country == "us")
-						#Happens once for each vertex discovered that also
-						# meets the constraint condition
-						ACCUM @@vertexOnlyWhereAccum += 1
-			
-						#Happens once for each vertex in the result set "v"
-						POST-ACCUM @@vertexOnlyWherePostAccum += 1;
-
-  #Select all source "s" vertices in set start and explore all "worksFor" edge paths
-  selectSourceWithEdge = SELECT s from start:s -(worksFor)- :t
-		  		       	 #Happens once for each "worksFor" edge discovered
-						 ACCUM @@sourceWithEdgeAccum += 1
-
-						#Happens once for each vertex in result set "s" (source)
-						POST-ACCUM @@sourceWithEdgePostAccum += 1;
-
-  #Select all target "t" vertices found from exploring all "worksFor" edge paths from set start
-  selectTargetWithEdge = SELECT t from start:s -(worksFor)- :t
-						 #Happens once for each "worksFor" edge discovered	
-						 ACCUM @@targetWithEdgeAccum += 1
-
-						 #Happens once for each vertex in result set "t" (target)
-						 POST-ACCUM @@targetWithEdgePostAccum += 1;
-
-  PRINT @@vertexOnlyAccum;
-  PRINT @@vertexOnlyPostAccum;
-
-  PRINT @@vertexOnlyWhereAccum;
-  PRINT @@vertexOnlyWherePostAccum;
-
-  PRINT @@sourceWithEdgeAccum;
-  PRINT @@sourceWithEdgePostAccum;
-
-  PRINT @@targetWithEdgeAccum;
-  PRINT @@targetWithEdgePostAccum;
-}
-----
---
-
-Results::
-+
---
-.accumPostAccumSemantics Result
-[source,gsql]
-----
-GSQL > RUN QUERY accumPostAccumSemantics()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@vertexOnlyAccum": 5},
-    {"@@vertexOnlyPostAccum": 5},
-    {"@@vertexOnlyWhereAccum": 2},
-    {"@@vertexOnlyWherePostAccum": 2},
-    {"@@sourceWithEdgeAccum": 17},
-    {"@@sourceWithEdgePostAccum": 5},
-    {"@@targetWithEdgeAccum": 17},
-    {"@@targetWithEdgePostAccum": 12}
-  ]
-}
-----
---
-====
-
-
-This example uses `ACCUM` to find all the subjects a user posted about.
-
-[tabs]
-====
-Query::
-+
---
-.Vertex ACCUM Example
-[source,gsql]
-----
-# For each person, make a list of all their post subjects
-CREATE QUERY userPosts() FOR GRAPH socialNet {
-  ListAccum<STRING> @personPosts;
-  start = {person.*};
-
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g.subject;
-
-  PRINT userPostings;
-}
-----
---
-
-Results::
-+
---
-.Results for Query userPosts
-[source,gsql]
-----
-GSQL > RUN QUERY userPosts()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"userPostings": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "@personPosts": ["cats"],
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["query languages"],
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": [ "cats", "tigergraph" ],
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["Graphs"],
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-/*** other vertices omitted ***/
-  ]}]
-}
-----
---
-====
-
-
-This example shows each person's posted vertices and each person's like behaviors (liked edges).
-
-[tabs]
-====
-Query::
-+
---
-.`ACCUM<VERTEX>` and `ACCUM<EDGE>` Example
-[source,gsql]
-----
-# Show each user's post and liked post time
-CREATE QUERY userPosts2() FOR GRAPH socialNet {
-  ListAccum<VERTEX> @personPosts;
-  ListAccum<EDGE> @personLikedInfo;
-  start = {person.*};
-
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g;
-
-  userPostings = SELECT s from start:s -(liked:e)- :g
-                 ACCUM s.@personLikedInfo += e;
-
-  PRINT start;
-}
-----
---
-
-Results::
-+
---
-.Results from Query userPosts2
-[source,gsql]
-----
-GSQL > RUN QUERY userPosts2()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"start": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "@personPosts": ["3"],
-        "id": "person4",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person4",
-          "to_id": "4",
-          "attributes": {"actionTime": "2010-01-13 03:16:05"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": [ "9", "6" ],
-        "id": "person7",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person7",
-          "to_id": "10",
-          "attributes": {"actionTime": "2010-01-12 11:22:05"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["0"],
-        "id": "person1",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person1",
-          "to_id": "0",
-          "attributes": {"actionTime": "2010-01-11 11:32:00"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-/*** other vertices omitted ***/
-  ]}]
-}
-----
---
-====
-
-
-This example counts the total number of times each topic is used.
-
-[tabs]
-====
-Query::
-+
---
-.Global ACCUM Example
-[source,gsql]
-----
-# Show number of total posts by topic
-CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
-  MapAccum<STRING, INT> @@postTopicCounts;
-  start = {person.*};
-
-  # Append subject and update the appearance count in the global map accum
-  posts = SELECT g FROM start -(posted)- :g
-		  ACCUM @@postTopicCounts += (g.subject -> 1);
-
-  PRINT @@postTopicCounts;
-}
-----
---
-
-Results::
-+
---
-.Results for Query userPostsByTopic
-[source,gsql]
-----
-GSQL > RUN QUERY userPostsByTopic()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@postTopicCounts": {
-    "cats": 5,
-    "coffee": 1,
-    "query languages": 1,
-    "Graphs": 2,
-    "tigergraph": 3
-  }}]
-}
-----
---
-====
-
-
-This is an example of using `ACCUM` and `POST-ACCUM` in conjunction.
-The `ACCUM` traverses the graph and finds all people who live and work in the same country.
-After this is determined, `POST-ACCUM` examines each vertex (person) to see if they work where they live.
-
-[tabs]
-====
-Query::
-+
---
-.Vertex `POST-ACCUM` Example
-[source,gsql]
-----
-#Show all person who both work and live in the same country
-CREATE QUERY residentEmployees() FOR GRAPH workNet {
-
-  ListAccum<STRING> @company;
-  OrAccum @worksAndLives;
-
-  start = {person.*};
-
-
-  employees = SELECT s FROM start:s -(worksFor)- :c
-              #If a person works for a company in the same country where they live
-              # add the company to the list
-              ACCUM CASE WHEN (s.locationId == c.country) THEN
-                           s.@company += c.id
-                         END
-
-              #Check each vertex and see if a person works where they live
-              POST-ACCUM CASE WHEN (s.@company.size() > 0) THEN
-                           s.@worksAndLives += True
-                         ELSE
-                           s.@worksAndLives += False
-                         END;
-
-  PRINT employees WHERE (employees.@worksAndLives == True);
-}
-----
---
-
-Results::
-+
---
-.residentEmployees Result
-[source,gsql]
-----
-GSQL > RUN QUERY residentEmployees()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"employees": [
-    {
-      "v_id": "person11",
-      "attributes": {
-        "interestList": [
-          "sport",
-          "football"
-        ],
-        "skillSet": [10],
-        "skillList": [10],
-        "@worksAndLives": true,
-        "locationId": "can",
-        "interestSet": [ "football", "sport" ],
-        "id": "person11",
-        "@company": ["company5"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "id": "person10",
-        "@company": ["company1"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
-        "id": "person1",
-        "@company": ["company1"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "@worksAndLives": true,
-        "locationId": "chn",
-        "interestSet": ["engineering"],
-        "id": "person2",
-        "@company": ["company2"]
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
-----
---
-====
-
-
-This is an example of a `POST-ACCUM` only that counts the number people with a particular gender.
-
-[tabs]
-====
-Query::
-+
---
-.Global POST-ACCUM Example
-[source,gsql]
-----
-#Count the number of person of	a given	gender
-CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
-
-  SumAccum<INT> @@genderCount;
-
-  start = {ANY};
-
-  # Select all person vertices and check the gender attribute
-  friends = SELECT v FROM start:v
-            WHERE v.type == "person"
-
-            POST-ACCUM CASE WHEN (start.gender == gender) THEN
-                         @@genderCount += 1
-                       END;
-
-  PRINT @@genderCount;
-}
-----
---
-
-Results::
-+
---
-.Results for Query personGender
-[source,gsql]
-----
-GSQL > RUN QUERY personGender("Female")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@genderCount": 3}]
-}
-----
---
-====
-
-=== `PER` clause
+== `PER` clause
 
 The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
 The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row `PER <alias>`.

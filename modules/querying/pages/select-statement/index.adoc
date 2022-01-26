@@ -1,6 +1,6 @@
 = SELECT Statement
 :description: Reference documentation for GSQL's SELECT statement.
-:page-aliases: select-statement:readme.adoc
+:page-aliases: select-statement:readme.adoc, select-statement:README.adoc
 
 NOTE: This page discusses the `SELECT` statement in GSQL Syntax V2, which is the default syntax for TigerGraph version 3.5 and above.
 To learn about the `SELECT` statement in the legacy V1 syntax, see xref:querying:select-statement/select-statement-v1.adoc[]
@@ -1619,6 +1619,7 @@ Each `POST-ACCUM` clause may reference one vertex alias only.
 However, a `SELECT` statement can have multiple `POST-ACCUM` clauses.
 The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
 
+[discrete]
 === Syntax
 
 .EBNF for `POST-ACCUM` clause

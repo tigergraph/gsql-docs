@@ -50,7 +50,7 @@ Along the way, computations can be performed on the selected vertices and edges.
 
 
 [#_from_clause]
-== `FROM` Clause
+== `FROM` clause
 
 The `FROM` clause describes either a single hop or a multi-hop path pattern.
 Path patterns also have many other options for finer control and greater flexibility.
@@ -58,7 +58,7 @@ Path patterns also have many other options for finer control and greater flexibi
 .`FROM` clause
 [source,ebnf]
 ----
-fromClause := FROM ( stepV2 | pathPattern ["," pathPattern]*)
+fromClause := FROM ( pathPattern ["," pathPattern]*)
 ----
 
 A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
@@ -224,7 +224,7 @@ CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
 {
     SumAccum<INT> @@numFriends = 0;
     seedSet = { seed };
-    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
+    friends = SELECT v FROM :s -((friend | coworker):e)- seedSet:v
       ACCUM @@numFriends +=1;
     PRINT @@numFriends;
 }

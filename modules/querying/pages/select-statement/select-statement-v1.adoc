@@ -361,10 +361,10 @@ Target vertex type inference::
 --
 [source,gsql]
 ----
-resultSet3 = SELECT v FROM Source:v-(eType:e)->(V1|V2):t;
-resultSet4 = SELECT v FROM Source:v-(eType:e)->:t;
-resultSet5 = SELECT v FROM Source:v-(eType:e)->ANY:t;
-resultSet6 = SELECT v FROM Source:v-(eType:e)->_:t;
+resultSet3 = SELECT v FROM Source:v-(eType:e)-(V1|V2):t;
+resultSet4 = SELECT v FROM Source:v-(eType:e)-:t;
+resultSet5 = SELECT v FROM Source:v-(eType:e)-ANY:t;
+resultSet6 = SELECT v FROM Source:v-(eType:e)-_:t;
 ----
 --
 
@@ -373,10 +373,10 @@ Edge type inference::
 --
 [source,gsql]
 ----
-resultSet7 = SELECT v FROM Source:v-((E1|E2|E3):e)->tType:t;
-resultSet8 = SELECT v FROM Source:v-(:e)->tType:t;
-resultSet9 = SELECT v FROM Source:v-(_:e)->tType:t;
-resultSet10 = SELECT v FROM Source:v-(ANY:e)->tType:t;
+resultSet7 = SELECT v FROM Source:v-((E1|E2|E3):e)-tType:t;
+resultSet8 = SELECT v FROM Source:v-(:e)-tType:t;
+resultSet9 = SELECT v FROM Source:v-(_:e)-tType:t;
+resultSet10 = SELECT v FROM Source:v-(ANY:e)-tType:t;
 ----
 --
 ====
@@ -403,11 +403,11 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet  SYNTAX V1
 	# --- statements produce equivalent results
 	# select all 'post' vertices which can be reached from 'start' in one hop
 	# 	using an edge of type 'liked'
-	allPostsLiked = SELECT targetVertex FROM start -(liked:e)-> post:targetVertex;
+	allPostsLiked = SELECT targetVertex FROM start -(liked:e)- post:targetVertex;
 
 	# select all vertices of any type which can be reached from 'start' in one hop
 	# 	using an edge of type 'liked'
-	allPostsLiked = SELECT targetVertex FROM start -(liked:e)-> :targetVertex;
+	allPostsLiked = SELECT targetVertex FROM start -(liked:e)- :targetVertex;
 	# ----
 
 
@@ -415,12 +415,12 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet  SYNTAX V1
 	# start with the vertex set from above, and traverse all edges of type "posted"
   	# 	(locally those edges are just given a name 'e' in case they need accessed)
   	# 	and return all vertices of type 'post' which can be reached within one-hop of 'start' vertices
-	allPostsMade = SELECT targetVertex FROM start -(posted:e)-> post:targetVertex;
+	allPostsMade = SELECT targetVertex FROM start -(posted:e)- post:targetVertex;
 
 	# start with the vertex set from above, and traverse all edges of type "posted"
   	# 	(locally those edges are just given a name 'e' in case they need accessed)
   	# 	and return all vertices of any type which can be reached within one-hop of 'start' vertices
-	allPostsMade = SELECT targetVertex FROM start -(posted:e)-> :targetVertex;
+	allPostsMade = SELECT targetVertex FROM start -(posted:e)- :targetVertex;
 	# ----
 
 
@@ -429,18 +429,18 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet  SYNTAX V1
 	# 	using an edge of any type
 	# not equivalent to any statement. because it doesn't restrict the edge type,
 	# 	this will include any vertex connected by 'liked' or 'posted' edge types
-	allPostsLikedOrMade = SELECT t FROM start -(:e)-> t;
+	allPostsLikedOrMade = SELECT t FROM start -(:e)- t;
 
 	# select all vertices of type 'post' which can be reached from 'start' in one hop
 	#	using an edge of type either 'posted' or 'liked'
-	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)-> post:t;
+	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)- post:t;
 
 	# select all vertices of any type which can be reached from 'start' in one hop
 	#	using an edge of type either 'posted' or 'liked/
-	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)-> :t;
+	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)- :t;
 
 	#option for simplified parentheses in edge pattern:
-	allPostsLikedOrMade = SELECT t FROM start - (posted|liked)-> :t
+	allPostsLikedOrMade = SELECT t FROM start - (posted|liked)- :t
 	# ----
 
 	PRINT allPostsLiked;
@@ -609,14 +609,14 @@ CREATE QUERY printAllRelatedItems(vertex<person> seed) FOR GRAPH socialNet  SYNT
 	# -- statements produce equivalent output
 	# returns all vertices of type either 'person' or 'post' that can be reached
 	# 	from the sourceVertex set using one edge of any type
-	everythingRelated = SELECT v FROM sourceVertex -(:e)-> (person|post):v;
+	everythingRelated = SELECT v FROM sourceVertex -(:e)- (person|post):v;
 
 	# returns all vertices of any type that can be reached from the sourceVertex
 	# 	using one edge of any type
 	# this statement is equivalent to the above one because the graph schema only
 	#	has vertex types of either 'person' or 'post'. if there were more vertex
 	#	types present, these would not be equivalent.
-	everythingRelated = SELECT v FROM sourceVertex -(:e)-> :v;
+	everythingRelated = SELECT v FROM sourceVertex -(:e)- :v;
 	# --
 
 	PRINT everythingRelated;
@@ -760,7 +760,7 @@ The following example shows an edge-based SELECT statement, declaring aliases fo
 [source,gsql]
 ----
 results = SELECT v
-          FROM allVertices:s -(:e)-> :t
+          FROM allVertices:s -(:e)- :t
           ACCUM VERTEX v = t, EDGE eg = e;
 ----
 
@@ -834,13 +834,13 @@ CREATE QUERY sampleEx3() FOR GRAPH computerNet SYNTAX V1
     start = {computer.*};
 
     # Sample one outgoing edge per source vertex = Random Walk
-    absSample = SELECT v FROM start:s -(:e)-> :v
+    absSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
              ACCUM @@absEdges += (s.id -> v.id),
                    @@totalAbs += 1;
     PRINT @@totalAbs, @@absEdges;
 
-    pctSample = SELECT v FROM start:s -(:e)-> :v
+    pctSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
              ACCUM @@pctEdges += (s.id -> v.id),
                    @@totalPct += 1;
@@ -929,7 +929,7 @@ CREATE QUERY sampleEx1() FOR GRAPH workNet SYNTAX V1
 	# the 'beforeSample' result set encapsulates the normal functionality of
 	# a SELECT statement, where 'timesTraversedNoSample' vertex accumulator is increased for
 	# each edge incident to the vertex.
-	beforeSample = SELECT v FROM workers:t -(:e)-> :v
+	beforeSample = SELECT v FROM workers:t -(:e)- :v
 		       ACCUM v.@timesTraversedNoSample += 1;
 
 	# The 'afterSample' result set is formed by those vertices which can be
@@ -937,7 +937,7 @@ CREATE QUERY sampleEx1() FOR GRAPH workNet SYNTAX V1
 	# This is demonstrated by the values of 'timesTraversedWithSample' vertex accumulator, which
 	# is increased for each edge incident to the vertex which is used in the
 	# sample.
-	afterSample = SELECT v FROM workers:t -(:e)-> :v
+	afterSample = SELECT v FROM workers:t -(:e)- :v
 		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		# only use 1 edge from the source vertex
 		      ACCUM v.@timesTraversedWithSample += 1;
 
@@ -1101,8 +1101,8 @@ Using built-in vertex and edge attributes and functions, such as .type and .neig
 
 [source,gsql]
 ----
-resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)->(V1|V2):t;
-resultSet2 = SELECT v FROM S:v-(:e)->:t
+resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
+resultSet2 = SELECT v FROM S:v-(:e)-:t
 					 WHERE t.type IN ("V1", "V2") AND
 						   t IN v.neighbors("E1|E2|E3")
 ----
@@ -1383,7 +1383,7 @@ Query::
 CREATE QUERY fullTimeWorkers() FOR GRAPH workNet SYNTAX V1
 {
 	start = {person.*};
-	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)-> company:t
+	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)- company:t
 			WHERE e.fullTime;	# fullTime is a boolean attribute on the edge
 
 	PRINT fullTimeWorkers;
@@ -1551,7 +1551,7 @@ If multiple edge types are specified in edge-induced selection, the WHERE clause
 CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet SYNTAX V1 {
   allUser = {m1};
   FilteredUser = SELECT s
-      FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+      FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
       # WHERE e.actionTime > epoch_to_datetime(1) AND t.gender == "Male";
       WHERE ( e.type == "liked" AND e.actionTime > epoch_to_datetime(1) ) OR
             ( e.type == "friend" AND t.gender == "Male" )
@@ -1646,7 +1646,7 @@ To reference each element of the selected set, use the aliases defined in the FR
 
 [source,gsql]
 ----
-FROM source:s -(edgeTypes:e)-> targetTypes:t # edge-induced selection
+FROM source:s -(edgeTypes:e)- targetTypes:t # edge-induced selection
 FROM source:v                                # vertex-induced selection
 ----
 
@@ -1695,7 +1695,7 @@ CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet SYNT
   ListAccum<STRING> @@testList1, @@testList2, @@testList3;
   allUser = {m1};
   allUser = SELECT s
-         FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+         FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
          ACCUM @@testList1 += to_string(datetime_to_epoch(e.actionTime))
               ,@@testList2 += t.gender
              #,@@testList3 += to_string(datetime_to_epoch(e.actionTime)) + t.gender # illegal
@@ -1720,7 +1720,7 @@ CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet SYN
   ListAccum<STRING> @@testList1;
   allUser = {m1};
   allUser = SELECT s
-            FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+            FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
             ACCUM CASE
                     WHEN e.type == "liked" THEN    # for liked edges
                       @@testList1 += to_string(datetime_to_epoch(e.actionTime))
@@ -1806,7 +1806,7 @@ CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet SYNTAX V1 {
    Persons = {person.*};
    # To each post, attach a list of persons who liked the post
    likedPosts = SELECT p
-       FROM Persons:src -(liked:e)-> post:p
+       FROM Persons:src -(liked:e)- post:p
        ACCUM
        	p.@posters += src;
 
@@ -1939,7 +1939,7 @@ CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet SYNTAX V1 {
 						POST-ACCUM @@vertexOnlyWherePostAccum += 1;
 
   #Select all source "s" vertices in set start and explore all "worksFor" edge paths
-  selectSourceWithEdge = SELECT s from start:s -(worksFor)-> :t
+  selectSourceWithEdge = SELECT s from start:s -(worksFor)- :t
 		  		       	 #Happens once for each "worksFor" edge discovered
 						 ACCUM @@sourceWithEdgeAccum += 1
 
@@ -1947,7 +1947,7 @@ CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet SYNTAX V1 {
 						POST-ACCUM @@sourceWithEdgePostAccum += 1;
 
   #Select all target "t" vertices found from exploring all "worksFor" edge paths from set start
-  selectTargetWithEdge = SELECT t from start:s -(worksFor)-> :t
+  selectTargetWithEdge = SELECT t from start:s -(worksFor)- :t
 						 #Happens once for each "worksFor" edge discovered
 						 ACCUM @@targetWithEdgeAccum += 1
 
@@ -2016,7 +2016,7 @@ CREATE QUERY userPosts() FOR GRAPH socialNet SYNTAX V1 {
   start = {person.*};
 
   # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)-> :g
+  userPostings = SELECT s FROM start:s -(posted)- :g
                  ACCUM s.@personPosts += g.subject;
 
   PRINT userPostings;
@@ -2101,10 +2101,10 @@ CREATE QUERY userPosts2() FOR GRAPH socialNet SYNTAX V1 {
   start = {person.*};
 
   # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)-> :g
+  userPostings = SELECT s FROM start:s -(posted)- :g
                  ACCUM s.@personPosts += g;
 
-  userPostings = SELECT s from start:s -(liked:e)-> :g
+  userPostings = SELECT s from start:s -(liked:e)- :g
                  ACCUM s.@personLikedInfo += e;
 
   PRINT start;
@@ -2206,7 +2206,7 @@ CREATE QUERY userPostsByTopic() FOR GRAPH socialNet SYNTAX V1 {
   start = {person.*};
 
   # Append subject and update the appearance count in the global map accum
-  posts = SELECT g FROM start -(posted)-> :g
+  posts = SELECT g FROM start -(posted)- :g
 		  ACCUM @@postTopicCounts += (g.subject -> 1);
 
   PRINT @@postTopicCounts;
@@ -2261,7 +2261,7 @@ CREATE QUERY residentEmployees() FOR GRAPH workNet SYNTAX V1 {
   start = {person.*};
 
 
-  employees = SELECT s FROM start:s -(worksFor)-> :c
+  employees = SELECT s FROM start:s -(worksFor)- :c
               #If a person works for a company in the same country where they live
               # add the company to the list
               ACCUM CASE WHEN (s.locationId == c.country) THEN
@@ -2445,7 +2445,7 @@ CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet SYNTAX V1
 {
         SumAccum<int> @activityAmount;
         start = {person.*};
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
                           ACCUM v.@activityAmount +=1
 	                      HAVING v.@activityAmount >= activityThreshold;
         PRINT result;
@@ -2543,11 +2543,11 @@ CREATE QUERY printMemberActivity() FOR GRAPH socialNet SYNTAX V1
         start = {person.*};
 
 		### --- equivalent statements -----
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
 					      ACCUM v.@activityAmount +=1
 					      HAVING true;
 
-		result = SELECT v FROM start:v -(:e)-> post:tgt
+		result = SELECT v FROM start:v -(:e)- post:tgt
 					      ACCUM v.@activityAmount +=1;
 		### -----
 
@@ -2673,11 +2673,11 @@ CREATE QUERY activeMaleMembers() FOR GRAPH socialNet SYNTAX V1
     start = {person.*};
 
     ### --- statements produce equivalent results
-    result1 = SELECT v FROM start:v -(:e)-> post:tgt
+    result1 = SELECT v FROM start:v -(:e)- post:tgt
                       WHERE v.gender == "Male"
                       ACCUM v.@activityAmount +=1;
 
-    result2 = SELECT v FROM start:v -(:e)-> post:tgt
+    result2 = SELECT v FROM start:v -(:e)- post:tgt
                       ACCUM v.@activityAmount +=1
                       HAVING v.gender == "Male";
 
@@ -2780,7 +2780,7 @@ CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet SYNTAX V1
 {
         start = {person.*};
 
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
                           HAVING tgt.subject == "cats";
         PRINT result;
 }
@@ -2838,7 +2838,7 @@ CREATE QUERY topPopular() FOR GRAPH friendNet SYNTAX V1
 	SumAccum<INT> @numCoworkers;
 	start = {person.*};
 
-	result = SELECT v FROM start -((friend|coworker):e)-> person:v
+	result = SELECT v FROM start -((friend|coworker):e)- person:v
 	       	 ACCUM CASE WHEN e.type == "friend" THEN v.@numFriends += 1
 		       	    WHEN e.type == "coworker" THEN v.@numCoworkers += 1
 		       END
@@ -3001,9 +3001,9 @@ There are three forms:
 
 [source,gsql]
 ----
-result = SELECT v FROM S -(:e)-> :v LIMIT k;		  # case 1: k = Count
-result = SELECT v FROM S -(:e)-> :v LIMIT j, k; 	  # case 2: j = Offset from the start of the list, k = Count
-result = SELECT v FROM S -(:e)-> :v LIMIT k OFFSET j; # case 3: k = Count, j = Offset from the start of the list
+result = SELECT v FROM S -(:e)- :v LIMIT k;		  # case 1: k = Count
+result = SELECT v FROM S -(:e)- :v LIMIT j, k; 	  # case 2: j = Offset from the start of the list, k = Count
+result = SELECT v FROM S -(:e)- :v LIMIT k OFFSET j; # case 3: k = Count, j = Offset from the start of the list
 ----
 
 

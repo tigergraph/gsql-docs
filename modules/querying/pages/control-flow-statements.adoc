@@ -10,12 +10,12 @@ The GSQL Query Language includes a comprehensive set of control flow statements 
 Note that any of these statements can be used as a query-body statement or as a DML-sub level statement.
 
 If the control flow statement is at the query-body level, then its block(s) of statements are query-body statements ( _queryBodyStmts_ ).
-In a _queryBodyStmts_ block _,_ each individual statement ends with a semicolon, so there is always a semicolon at the end.
+In a _queryBodyStmts_ block, each individual statement ends with a semicolon, so there is always a semicolon at the end.
 
 If the control flow statement is at the DML-sub level, then its block(s) of statements are DML-sub statements ( _dmlSubStmtList_ ).
 In a _dmlSubStmtList_ block, a comma separates statements, but there is no punctuation at the end.
 
-For more detailed general example of the difference between query-body statements and DML-sub statements, see xref:query-operations.adoc#_statement_types[statement types].
+For more detailed general examples of the difference between query-body statements and DML-sub statements, see xref:query-operations.adoc#_statement_types[statement types].
 
 == `IF` Statement
 
@@ -362,13 +362,13 @@ dmlSubCaseStmt := CASE     (WHEN condition THEN dmlSubStmtList)+ [ELSE dmlSubStm
 One `CASE` statement contains one or more `WHEN-THEN` clauses, each `WHEN` presenting one expression.
 The `CASE` statement may also have one `ELSE` clause whose statements are executed if none of the preceding conditions are true.
 
-There are two syntaxes of the `CASE` statement: one equivalent to an if-else statement, and the other is structured like a switch statement.
+There are two syntax of the `CASE` statement: one equivalent to an if-else statement, and the other is structured like a switch statement.
 The if-else version evaluates the boolean _condition_ within each `WHEN` clause and executes the first block of statements whose _condition_ is true.
 The optional concluding `ELSE` clause is executed only if all `WHEN` clause conditions are false.
 
-The switch version evaluates the expression following the keyword `WHEN` and compares its value to the expression immediately following the keyword CASE.
+The switch version evaluates the expression following the keyword `WHEN` and compares its value to the expression immediately following the keyword `CASE`.
 These expressions do not need to be boolean; the `CASE` statement compares pairs of expressions to see if their values are equal.
-The first `WHEN-THEN` clause to have an expression value equal to the CASE expression value is executed; the remaining clauses are skipped. The optional ELSE-clause is executed only if no WHEN-clause expression has a value matching the CASE value.
+The first `WHEN-THEN` clause to have an expression value equal to the `CASE` expression value is executed; the remaining clauses are skipped. The optional `ELSE` clause is executed only if no `WHEN` clause expression has a value matching the `CASE` value.
 
 .CASE Semantics
 [source,gsql]
@@ -405,7 +405,7 @@ Query::
 .Example 1. CASE as IF-ELSE
 [source,gsql]
 ----
-# Display the total number times connected users posted about a certain subject
+# Display the total number of times connected users posted about a certain subject
 CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR GRAPH socialNet {
     SumAccum<INT> @@topicSum = 0;
     OrAccum @visited;
@@ -962,7 +962,7 @@ Query::
 .Example 2. WHILE loop using a LIMIT
 [source,gsql]
 ----
-# find all vertices which are reachable within two hops from a starting seed vertex (i.e., breadth-first search)
+# find all vertices reachable within two hops from a starting seed vertex (i.e., breadth-first search)
 CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
 {
     OrAccum @visited;
@@ -1152,9 +1152,11 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
 ====
 
 
+[#_foreach_statement]
 == `FOREACH` Statement
 
-The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
+The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements.
+See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].
 
 === Syntax
 .`FOREACH` syntax
@@ -1170,25 +1172,27 @@ keyVar := name
 valueVar := name
 ----
 
-The formal syntax for forEachControl appears complex.
-It can be broken down into the following cases:
+The formal syntax for `forEachControl` appears can be broken down into the following cases:
 
-* name IN setBagExpr
-* (key, value) pair IN setBagExpr // because it's a Map
-* name IN RANGE [ expr, expr ]
-* name IN RANGE [ expr, expr ].STEP ( expr )
+* `name IN setBagExpr`
+* `(key, value) pair IN setBagExpr` // because it's a Map
+* `name IN RANGE [ expr, expr ]`
+* `name IN RANGE [ expr, expr ].STEP ( expr )`
 
-Note that setBagExpr includes container accumulators and explicit sets.
+Note that `setBagExpr` includes container accumulators and explicit sets.
 
 === Limitations
 The `FOREACH` statement has the following restrictions:
 
-* In a DML-sub level FOREACH, it is never permissible to update the loop variable (the variable declared before IN, e.g., var in "FOREACH var IN setBagExpr").
-* In a query-body level FOREACH, in most cases it is not permissible to update the loop variable.  The following exceptions apply:
- ** If the iteration is over a ListAccum, its values can be updated.
- ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
+* In a DML-sub level `FOREACH`, it is never permissible to update the loop variable (the variable declared before `IN`, e.g., `var` in "`FOREACH var IN setBagExpr`").
+* In a query-body level `FOREACH`, in most cases it is not permissible to update the loop variable.
+The following exceptions apply:
+ ** If the iteration is over a `ListAccum`, its values can be updated.
+ ** If the iteration is over a `MapAccum`, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
-* A query-body-level FOREACH cannot iterate over a set or bag of constants. For example, FOREACH i in (1,2,3) is not supported. However, DML-sub FOREACH does support this.
+* A query-body-level `FOREACH` cannot iterate over a set or bag of constants.
+For example, `FOREACH` i in (1,2,3) is not supported.
+However, DML-sub `FOREACH` does support this.
 
 === `FOREACH ... IN RANGE`
 
@@ -1391,7 +1395,7 @@ Query::
 .Example 2 - FOREACH with a seed set
 [source,gsql]
 ----
-#Find all company person who live in a given country
+#Find all company employees who live in a given country
 CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
   ListAccum<VERTEX<company>> @@companyList;
   start = {ANY};
@@ -1767,7 +1771,7 @@ Below are a number of examples that demonstrate the use of `BREAK` and `CONTINUE
 .Continue and Break Semantics
 [source,gsql]
 ----
-# While with a continue
+# While loop with continue statement
 INT i = 0;
 INT nCount = 0;
 WHILE i < 10 DO
@@ -1777,7 +1781,7 @@ WHILE i < 10 DO
 END;
 # i is 10, nCount is 5 (skips the increment for every even i).
 
-# While with a break
+# While loop with a break statement
 i = 0;
 WHILE i < 10 DO
   IF (i == 5) { BREAK; }  # When i is 5 the loop is exited

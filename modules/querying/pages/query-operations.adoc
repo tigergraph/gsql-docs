@@ -655,6 +655,11 @@ to yield results. Certain cases may benefit more from this option than
 others – more detailed information is available on the next page:
 https://docs.tigergraph.com/dev/gsql-ref/querying/distributed-query-mode[Distributed
 Query Mode].
+| `-legacy`
+a| Install the query in legacy mode.
+The query will compile using the legacy compilation mode.
+
+The only user-facing different between the current compilation mode and the legacy mode is that the loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] is treated as a copy in the current compilation mode, while in legacy mode, changes to the loop variable will change the value in the set or bag expression. 
 |===
 
 === Optimize installed queries

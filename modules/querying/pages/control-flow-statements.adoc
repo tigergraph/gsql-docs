@@ -362,7 +362,7 @@ dmlSubCaseStmt := CASE     (WHEN condition THEN dmlSubStmtList)+ [ELSE dmlSubStm
 One `CASE` statement contains one or more `WHEN-THEN` clauses, each `WHEN` presenting one expression.
 The `CASE` statement may also have one `ELSE` clause whose statements are executed if none of the preceding conditions are true.
 
-There are two syntaxes of the `CASE` statement: one equivalent to an if-else statement, and the other is structured like a switch statement.
+There are two syntax of the `CASE` statement: one equivalent to an if-else statement, and the other is structured like a switch statement.
 The if-else version evaluates the boolean _condition_ within each `WHEN` clause and executes the first block of statements whose _condition_ is true.
 The optional concluding `ELSE` clause is executed only if all `WHEN` clause conditions are false.
 
@@ -1152,12 +1152,11 @@ GSQL > RUN QUERY reachableWithinTwo("person1")
 ====
 
 
+[#_foreach_statement]
 == `FOREACH` Statement
 
-The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements. (See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].)
-
-The iterating variable is treated as a copy existing only in the `FOREACH` statement. 
-Modifying it will not modify any elements in the set or bag expression follwoing the keyword `IN`.
+The `FOREACH` statement provides bounded iteration over a block of statements. `FOREACH` statements can be used as query-body statements or DML-sub-statements.
+See the xref:querying:control-flow-statements.adoc#_differences_in_block_syntax[note about differences in block syntax].
 
 === Syntax
 .`FOREACH` syntax
@@ -1173,25 +1172,27 @@ keyVar := name
 valueVar := name
 ----
 
-The formal syntax for forEachControl appears complex.
-It can be broken down into the following cases:
+The formal syntax for `forEachControl` appears can be broken down into the following cases:
 
-* name IN setBagExpr
-* (key, value) pair IN setBagExpr // because it's a Map
-* name IN RANGE [ expr, expr ]
-* name IN RANGE [ expr, expr ].STEP ( expr )
+* `name IN setBagExpr`
+* `(key, value) pair IN setBagExpr` // because it's a Map
+* `name IN RANGE [ expr, expr ]`
+* `name IN RANGE [ expr, expr ].STEP ( expr )`
 
-Note that setBagExpr includes container accumulators and explicit sets.
+Note that `setBagExpr` includes container accumulators and explicit sets.
 
 === Limitations
 The `FOREACH` statement has the following restrictions:
 
-* In a DML-sub level FOREACH, it is never permissible to update the loop variable (the variable declared before IN, e.g., var in "FOREACH var IN setBagExpr").
-* In a query-body level FOREACH, in most cases it is not permissible to update the loop variable.  The following exceptions apply:
- ** If the iteration is over a ListAccum, its values can be updated.
- ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
+* In a DML-sub level `FOREACH`, it is never permissible to update the loop variable (the variable declared before `IN`, e.g., `var` in "`FOREACH var IN setBagExpr`").
+* In a query-body level `FOREACH`, in most cases it is not permissible to update the loop variable.
+The following exceptions apply:
+ ** If the iteration is over a `ListAccum`, its values can be updated.
+ ** If the iteration is over a `MapAccum`, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
-* A query-body-level FOREACH cannot iterate over a set or bag of constants. For example, FOREACH i in (1,2,3) is not supported. However, DML-sub FOREACH does support this.
+* A query-body-level `FOREACH` cannot iterate over a set or bag of constants.
+For example, `FOREACH` i in (1,2,3) is not supported.
+However, DML-sub `FOREACH` does support this.
 
 === `FOREACH ... IN RANGE`
 

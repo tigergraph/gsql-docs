@@ -4,7 +4,7 @@
 
 In this tutorial, we will show you how to write and run Pattern Matching queries.
 
-We assume you have finished xref:tutorials:gsql-101/README.adoc[GSQL 101]. If not, please complete GSQL 101 first.
+We assume you have finished xref:tutorials:gsql-101/index.adoc[GSQL 101]. If not, please complete GSQL 101 first.
 
 === What is a Graph Pattern?
 
@@ -52,7 +52,7 @@ GSQL version: 3.0
 
 === Cheatsheet
 
-The following general use commands were introduced in xref:tutorials:gsql-101/README.adoc[GSQL 101].
+The following general use commands were introduced in xref:tutorials:gsql-101/index.adoc[GSQL 101].
 
 * The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privileges to run most gadmin commands.
 * The *`GSQL>`* prefix indicates GSQL shell commands.

@@ -20,7 +20,7 @@ Pattern matching queries support nested queries.
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-In classic GSQL queries, described in xref:tutorials:gsql-101/README.adoc[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query.
+In classic GSQL queries, described in xref:tutorials:gsql-101/index.adoc[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query.
 
 There the arrow `+->+` specifies the vertex flow from left to right and the parentheses `( )` enclose the edge types.
 

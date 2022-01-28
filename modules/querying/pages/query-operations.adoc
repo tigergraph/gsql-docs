@@ -154,7 +154,7 @@ CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
   users = {person.*};
   # body statements
   posts = SELECT p
-    FROM users:u-(posted)->:p
+    FROM users:u-(posted>)-:p
     WHERE u.id == uid;
   PRINT posts;
   RETURN posts.size();
@@ -185,7 +185,7 @@ CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int
   users = {person.*};
   # body statements
   posts = SELECT p
-    FROM users:u-(posted)->:p
+    FROM users:u-(posted>)-:p
     WHERE u.id == uid;
   PRINT posts;
   RETURN posts.size();
@@ -570,7 +570,7 @@ INTERPRET QUERY () FOR GRAPH socialNet {
   users = {person.*};
   # body statements
   posts = SELECT p
-    FROM users:u-(posted)->:p
+    FROM users:u-(posted>)-:p
     WHERE u.id == uid;
   PRINT posts, posts.size();
 }

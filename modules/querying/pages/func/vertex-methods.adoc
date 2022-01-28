@@ -443,7 +443,7 @@ CREATE QUERY exampleDifferencetags() {
   SetAccum<string> @vAcc;
   vSet = { any };
   vSet = SELECT s
-         FROM vSet:s -(_)-> :t
+         FROM vSet:s -(_)- :t
          WHERE t.type == "person"
          ACCUM s.@vAcc += s.differenceTags(t);
   PRINT vSet[vSet.@vAcc];
@@ -665,7 +665,7 @@ CREATE QUERY exampleIntersecttags() {
   SetAccum<string> @vAcc;
   vSet = { any };
   vSet = SELECT s
-         FROM vSet:s -(_)-> :t
+         FROM vSet:s -(_)- :t
          WHERE t.type == "person"
          ACCUM s.@vAcc += s.intersectTags(t);
   PRINT vSet[vSet.@vAcc];

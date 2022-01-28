@@ -6,9 +6,8 @@ We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmar
 
 image::screen-shot-2019-05-15-at-5.05.00-pm.png[Figure 1. LDBC SNB Schema]
 
-Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]). It models the activities and relationships of social forum participants. For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment.
+Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]). It models the activities and relationships of social forum participants. For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment. A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company. A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass. The relationships between entities are modeled as directed edges, except person KNOWS person is modeled as an undirected edge. For example, Person connects to Tag by the `HAS_INTEREST` edge. Forum connects to Person by two different edges, `HAS_MEMBER` and `HAS_MODERATOR`.
 
-A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company. A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass. The relationships between entities are modeled as directed edges, except Person KNOWS Person is modeled as an undirected edge. For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, hasMember and hasModerator.
 
 [NOTE]
 ====
@@ -70,7 +69,7 @@ Two  GSQL scripts for defining the LDBC-SNB schema are shown below. Choose the o
 
 [NOTE]
 ====
-In this method,  global vertex/edge type containers are created first. Next, graphs are created to group them. In other words, the global vertex/edge type containers can be shared across graphs.
+In this method,  global vertex/edge types are created first. Next, graphs are created to group them. In other words, the global vertex/edge types can be shared across graphs.
 ====
 
 .#LDBC-SNB schema
@@ -136,7 +135,7 @@ CREATE GRAPH ldbc_snb (*)
 
 [NOTE]
 ====
-In this method, an empty graph is created first. Next, local vertex/edge type containers are added to the empty graph via a schema change job. The vertex/egde type containers added this way will be private to the graph, no other graph can see them.
+In this method, an empty graph is created first. Next, local vertex/edge types are added to the empty graph via a schema change job. The vertex/egde types added this way will be private to the graph, no other graph can see them.
 ====
 
 .#LDBC-SNB schema

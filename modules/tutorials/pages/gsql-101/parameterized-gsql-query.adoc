@@ -18,10 +18,12 @@ Now, let's write our first GSQL query. We'll display all the direct (1-hop) neig
 [source,gsql]
 ----
 USE GRAPH social
+SET syntax_version="v2"
+
 CREATE QUERY hello(VERTEX<person> p) {
   Start = {p};
   Result = SELECT tgt
-           FROM Start:s-(friendship:e) ->person:tgt;
+           FROM Start:s -(friendship:e)- person:tgt;
   PRINT Result;
 }
 ----
@@ -32,9 +34,9 @@ This query features one SELECT statement.  The SELECT statements here are much m
 
 Next, the SELECT statement describes a 1-hop traversal according to the pattern described in the FROM clause:
 
-`+Start:s -(friendship:e)-> person:tgt+`
+`+Start:s -(friendship:e)- person:tgt+`
 
-This is basically the same syntax we used for the built-in select edges query.  Namely, we select all edges beginning from the given source set (Start), which have the given edge type (friendship) and which end at the given vertex type (person). A feature we haven't seen before is the use of vertex and edge set aliases defined by ":alias": "s" is the alias for the source vertex set, "e" is the edge set alias, and "tgt" is the target vertex set alias.
+The pattern means we select all edges beginning from the given source set (Start), which have the given undirected edge type (friendship) and which end at the given vertex type (person). Note that we can define vertex and edge set aliases using ":alias": "s" is the alias for the source vertex, "e" is the edge alias, and "tgt" is the target vertex alias.
 
 Refer back to the initial clause and the assignment ("[.code]``Result = SELECT tgt``"). Here we see the target set's  alias tgt.  This means that the SELECT statement should return the target vertex set (as filtered and processed by the full set of clauses in the SELECT query block) and assign that output set to the variable called Result.
 
@@ -50,7 +52,7 @@ Rather than defining our query in interactive mode, we can store the query in a 
 ----
 GSQL > @hello.gsql
 Using graph 'social'
-The query hello has been added!
+Successfully created queries: [hello].
 GSQL > ls
 ---- Graph social
 Vertex Types:
@@ -71,13 +73,16 @@ Jobs:
 
 Queries:
   - hello(vertex<person> p)
+
+SessionParameters:
+  - syntax_version: v2
 ----
 
 
 
 == Install a Query
 
-However, the query is not installed yet; it is not ready to run. In the GSQL shell, type the following command to installed the just added query "hello".
+However, the query is not installed yet. In the GSQL shell, type the following command to install the newly-added query "hello".
 
 .GSQL command
 
@@ -95,6 +100,8 @@ INSTALL QUERY hello
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
 hello query: curl -X GET 'http://127.0.0.1:9000/query/social/hello?p=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+Select 'm1' as compile server, now connecting ...
+Node 'm1' is prepared as compile server.
 
 [========================================================================================================] 100% (1/1)
 ----
@@ -200,17 +207,19 @@ Now, let's do a more advanced query. This time, we are going to learn to use the
 [source,gsql]
 ----
 USE GRAPH social
+SET syntax_version="v2"
+
 CREATE QUERY hello2 (VERTEX<person> p) {
   OrAccum  @visited = false;
   AvgAccum @@avgAge;
   Start = {p};
 
   FirstNeighbors = SELECT tgt
-                   FROM Start:s -(friendship:e)-> person:tgt
+                   FROM Start:s -(friendship:e)- person:tgt
                    ACCUM tgt.@visited += true, s.@visited += true;
 
   SecondNeighbors = SELECT tgt
-                    FROM FirstNeighbors -(:e)-> :tgt
+                    FROM FirstNeighbors -(:e)- :tgt
                     WHERE tgt.@visited == false
                     POST_ACCUM @@avgAge += tgt.age;
 
@@ -228,7 +237,7 @@ In the standard approach for this kind of graph traversal algorithm, you use a b
 
 We also want to compute one average, so we will define a global AvgAccum. The identifier for a global accumulator begins with two "@"s.
 
-After defining the Start set, we then have our first one 1-hop traversal. The SELECT and FROM clauses are the same as in our first example, but there is an additional ACCUM clause. The += operator within an ACCUM clause means that for each edge matching the FROM clause pattern, we accumulate the right-hand-side expression (true) to the left-hand-accumulator (tgt.@visited as well as s.@visited). Note that a source vertex or target vertex may be visited multiple times. Referring to Figure 1, if we start at vertex Tom, there are two edges incidents to Tom, so the ACCUM clause in the first SELECT statement will visit Tom two times. Since the accumulator type is OrAccum, the cumulative effect of the two traversals is the following:
+After defining the Start set, we then have our first one 1-hop traversal. The SELECT and FROM clauses are the same as in our first example, but there is an additional ACCUM clause. The += operator within an ACCUM clause means that for each edge matching the FROM clause pattern, we accumulate the right-hand-side expression (true) to the left-hand-accumulator (tgt.@visited as well as s.@visited). Note that a source vertex or target vertex may be visited multiple times. Referring to Figure 1, if we start at vertex Tom, there are two edges incidents to Tom, so the ACCUM clause in the first SELECT statement will visit Tom twice. Since the accumulator type is OrAccum, the cumulative effect of the two traversals is the following:
 
 Tom.@visited <== (initial value: false) OR (true) OR (true)
 

@@ -207,7 +207,7 @@ CREATE QUERY excpCountActivity(SET<VERTEX<person>> vSet, STRING eType) FOR GRAPH
 
   Start = vSet;
   Results = SELECT s
-    FROM Start:s -(:e)-> post:t
+    FROM Start:s -(:e)- post:t
     WHERE e.type == eType
     ACCUM @@allCount += (t.subject -> 1);
 
@@ -351,7 +351,7 @@ FOR GRAPH computerNet {
 
 		WHILE Start.size() != 0 AND NOT @@reached DO
 			Start = SELECT t
-				FROM Start:s -(:e)-> :t
+				FROM Start:s -(:e)- :t
 				WHERE t.@visited == false
 				ACCUM CASE
 					WHEN e.connectionSpeed < 0 THEN err = 1

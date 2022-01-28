@@ -74,7 +74,7 @@ For the pattern `1 - (_*) - 5` in Figure 3 above, you can see the following:
 In the early version of Pattern Matching (TigerGraph v2.4 to v2.6), there were a number of restrictions on the WHERE, ACCUM and POST-ACCUM clauses In TigerGraph 3.0, most of these restrictions are lifted.
 ====
 
-Each vertex set or edge set in a pattern (except edges with Kleene stars) can have an alias variable associated with it. When the query runs and finds matches, it associates, or binds, each alias to the matching vertices or edges in the graph.
+Each vertex set or edge set in a pattern (except edges with Kleene stars) can have an alias associated with it. When the query runs and finds matches, it associates, or binds, each alias to the matching vertices or edges in the graph.
 
 === SELECT Clause
 
@@ -185,8 +185,8 @@ For example, consider
 
 [source,gsql]
 ----
-FROM Person:A -(KNOWS.KNOWS)- Person.C
-WHERE C.email = "Andy@www.com"
+FROM Person:A -(KNOWS.KNOWS)- Person:C
+WHERE A.email = "Andy@www.com"
 ACCUM C.@patternCount += 1
 ----
 
@@ -249,19 +249,18 @@ Using graph 'ldbc_snb'
 }
 ----
 
-However, the following is not allowed, since it involves two aliases (t and s) in one POST-ACCUM clause.
+Each POST-ACCUM clause binds to one and only one vertex alias. Therefore, the following use cases are not allowed. since it involves two aliases (t and s) in one POST-ACCUM clause.
 
 [source,gsql]
 ----
- POST-ACCUM t.@cnt1 += 1,
-            s.@cnt1 += 1
-----
+ # not allowed because POST-ACCUM clause involves two aliases (t and s)
+ POST-ACCUM t.@cnt1 += 1, s.@cnt1 += 1
 
-Also, you may not use more than one alias in a single assignment. The following is not allowed:
-
-[source,gsql]
-----
+ # not allowed because multiple aliases are used in a single assignment
  POST-ACCUM t.@cnt1 += s.@cnt + 1
+
+ # not allowed because no vertex alias is bind to the POST-ACCUM
+ POST-ACCUM @@cnt += 1
 ----
 
 == Examples of Multiple Hop Pattern Match
@@ -523,21 +522,16 @@ USE GRAPH ldbc_snb
 
 # a computed vertex set F is used to constrain the second pattern.
 INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
   F  =  SELECT t
         FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :t
         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" AND t.lastName LIKE "S%";
 
   Alumni = SELECT p
-           FROM Person:p -(STUDY_AT>)- :u -(<STUDY_AT)- F:s
-           WHERE s != p
-           Per (p)
-           POST-ACCUM @@cnt+=1;
+           FROM Person:p -(STUDY_AT>) -:u - (<STUDY_AT)- F:s
+           WHERE s != p;
 
-  PRINT @@cnt;
 
+  PRINT Alumni.size() as cnt;
 }
 
 #result
@@ -549,7 +543,7 @@ INTERPRET QUERY () SYNTAX v2 {
     "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"@@cnt": 216}]
+  "results": [{"cnt": 216}]
 }
 ----
 
@@ -561,9 +555,6 @@ USE GRAPH ldbc_snb
 
 #A and B are used to constrain the third pattern.
 INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
   A  =  SELECT t
         FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
@@ -575,12 +566,9 @@ INTERPRET QUERY () SYNTAX v2 {
 
   Univ = SELECT u
          FROM A:p -(STUDY_AT>) -:u - (<STUDY_AT)- B:s
-         WHERE s != p
-         Per (u)
-         POST-ACCUM @@cnt+=1;
+         WHERE s != p;
 
-  PRINT @@cnt;
-
+  PRINT Univ.size() as cnt;
 }
 
 #result
@@ -592,7 +580,7 @@ INTERPRET QUERY () SYNTAX v2 {
     "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"@@cnt": 4}]
+  "results": [{"cnt": 4}]
 }
 ----
 
@@ -744,5 +732,3 @@ INTERPRET QUERY () SYNTAX v2 {
   ]
 }
 ----
-
-##

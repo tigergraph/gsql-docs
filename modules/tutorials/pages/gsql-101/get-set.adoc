@@ -25,8 +25,7 @@ The friendship loop shows that a friendship is between a person and another pers
 For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
 
 .person.csv
-
-[,coffeescript]
+[,csv]
 ----
 name,gender,age,state
 Tom,male,40,ca
@@ -41,8 +40,7 @@ Jack,male,26,fl
 
 
 .friendship.csv
-
-[,coffeescript]
+[,csv]
 ----
 person1,person2,date
 Tom,Dan,2017-06-03
@@ -78,7 +76,6 @@ GSQL >
 If this is your first time using GSQL, the TigerGraph data store is probably empty.  However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
 
 .GSQL shell - an empty database catalog
-
 [,text]
 ----
 GSQL > ls

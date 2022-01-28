@@ -15,7 +15,7 @@ We recommend you install jq and redirect the REST call result to jq before it is
 
 .Linux Shell
 
-[,gsql]
+[.wrap,bash]
 ----
 #get vertex cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
@@ -23,9 +23,9 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 
 
-[,gsql]
+[,javascript]
 ----
-#results
+// results
 {
   "version": {
     "edition": "enterprise",
@@ -45,7 +45,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 .Linux Shell
 
-[,gsql]
+[.wrap,bash]
 ----
 #get edge cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
@@ -79,7 +79,7 @@ If you want to lookup the details about a vertex with its primary_id, you can us
 
 .Linux Shell
 
-[,gsql]
+[.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
 ----
@@ -90,7 +90,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 .Linux Shell
 
-[,gsql]
+[.wrap,bash]
 ----
  curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom" | jq .
 ----
@@ -128,8 +128,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 In similar fashion, we can see details about edges.  To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
 
 .Linux Shell
-
-[,gsql]
+[.wrap,bash]
 ----
 #two parts
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
@@ -143,8 +142,7 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 *Example*. Find all friendship edges whose source vertex's primary_id is "Tom".
 
 .Linux Shell
-
-[,gsql]
+[.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | jq .
 ----
@@ -189,4 +187,4 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 }
 ----
 
-For more built-in REST endpoints, you can the xref:3.2@tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].
+For more built-in REST endpoints, you can the xref:tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].

@@ -14,7 +14,6 @@ A GSQL parameterized query has three steps.
 Now, let's write our first GSQL query. We'll display all the direct (1-hop) neighbors of a person, given as an input parameter.
 
 .GSQL command
-
 [source,gsql]
 ----
 USE GRAPH social
@@ -94,8 +93,7 @@ INSTALL QUERY hello
 
 
 .GSQL shell
-
-[source,coffeescript]
+[.wrap,gsql]
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
@@ -116,7 +114,7 @@ To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of 
 
 .GSQL command - run query examples
 
-[source,coffeescript]
+[.wrap,gsql]
 ----
 RUN QUERY hello("Tom")
 ----

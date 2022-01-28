@@ -12,7 +12,7 @@ The loading job below assumes that your data files are in the folder `/home/tige
 
 .GSQL commands to define a loading job
 
-[,gsql]
+[.wrap,gsql]
 ----
 USE GRAPH social
 BEGIN
@@ -40,8 +40,7 @@ Let's walk through the commands:
 When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
 
 .GSQL shell
-
-[,gsql]
+[.wrap,gsql]
 ----
 GSQL > USE GRAPH social
 Using graph 'social'
@@ -75,8 +74,7 @@ RUN LOADING JOB load_social
 The result is shown below.
 
 .GSQL shell
-
-[,bash]
+[.wrap,gsql]
 ----
 GSQL > run loading job load_social
 [Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobid" to track the loading progress again]

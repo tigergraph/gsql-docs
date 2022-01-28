@@ -160,8 +160,7 @@ GSQL's pattern matching syntax provides the essentials for a regular expression 
 
 The point of pattern matching is to identity sets of graph entities that match your input pattern.
 Once you've done that, GSQL enables you to do advanced and efficient computation on that data, from simply counting the matches to advanced algorithms and analytics.
-This section compares accumulation in the current Pattern Matching syntax to earlier versions, but it does not attempt to explain accumulators in full.
-You may want to consult the xref:tutorials:accumulators-tutorial.adoc[Accumulators Tutorial] and the GSQL Language Reference's section on  the xref:querying:select-statement/index.adoc#_accum_and_post_accum_clauses[ACCUM and POST-ACCUM clauses].
+This section compares accumulation in the current Pattern Matching syntax to earlier versions.
 
 === ACCUM Clause
 
@@ -179,7 +178,7 @@ produces a match table with 3 columns: A, B, and C. Each row is a tuple (A,B,C) 
 [NOTE]
 ====
 The `ACCUM` clause iterates through *all* matches.
-If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than the number of matches.
+If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than the total number of matches.
 ====
 
 For example, consider the following clauses:

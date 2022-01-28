@@ -257,8 +257,10 @@ The Source set is all Persons, but the pattern will not include all Persons. It 
 
 [CAUTION]
 ====
-The GSQL grammar allows the righthand enclosure to be either `)-` or +
-`+)->+`. Previously, we recommended the arrowhead `+)->+` . However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-` Syntax v2 has a specific semantic meaning for the arrowheads.
+The GSQL grammar allows the right-hand enclosure to be either `)-` or +
+`+)->+`. Previously, we recommended the arrowhead `+)->+` .
+However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-`.
+Syntax v2 has a specific semantic meaning for the arrowheads.
 ====
 
 === Edge Set and Target Vertex Set Options
@@ -271,7 +273,7 @@ The GSQL grammar allows the righthand enclosure to be either `)-` or +
 . The set specifier can be any of the following:
 ** *`"_"`* or *`"ANY"`* or <blank>, which means any edge/vertex.
 ** a named type (*`edgeType`* or *`vertexType`*)
-** a global SetAcum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
+** a global SetAccum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
 ** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:query-operations.adoc[*Dynamic Querying*].
 ** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
 ** The list of types must contain the same type of specifiers.
@@ -325,13 +327,15 @@ vertexSetType := vertexType | paramName | globalAccumName
 [NOTE]
 ====
 Parentheses are always needed around the edge type in a FROM clause: +
-FROM Source:s -(eType:e)- Target:t
+`FROM Source:s -(eType:e)- Target:t`
 
 Parentheses are also needed if a vertexEdgeType is the union of more than one or more individual edge types or vertex types: +
-FROM Source:s -((eType1 | eType2):e) - Target:t
+`FROM Source:s -((eType1 | eType2):e) - Target:t`
 
-Note the double set of parentheses for the edge specifier. If these is an edge alias, these parentheses are needed. If however there is no edge alias, it is legal to have just a single set of parentheses: +
-FROM Source:s -(eType1 | eType2) - Target:t
+Note the double set of parentheses for the edge specifier.
+If there is an edge alias, these parentheses are needed.
+If however there is no edge alias, it is legal to have just a single set of parentheses: +
+`FROM Source:s -(eType1 | eType2) - Target:t`
 ====
 
 Either the source vertex set ( s ) or target vertex set ( t ) can be used as the SELECT argument, which determines the result of the SELECT statement. Note the small difference in the two SELECT statements below.
@@ -741,7 +745,8 @@ GSQL > RUN QUERY printAllRelatedItems("person6")
 
 === Vertex and Edge Aliases
 
-Vertex and edge _aliases_ are declared within the FROM clause of a SELECT block, by using the character ":", followed by the alias name. Aliases can be accessed anywhere within the same SELECT block. They are used to reference a single selected vertex or edge of a set. It is through the vertex or edge aliases that attributes of these vertices or edges can be accessed.
+Vertex and edge _aliases_ are declared within the FROM clause of a SELECT block, by using the character ":", followed by the alias name. Aliases can be accessed anywhere within the same SELECT block. They are used to reference a single selected vertex or edge of a set.
+It is through the vertex or edge aliases that the attributes of these vertices or edges can be accessed.
 
 For example, the following code snippets show two different SELECT statements. The first SELECT statement starts from a vertex set called allVertices, and the vertex alias name *v* can access each individual vertex from allVertices. The second SELECT statement selects a set of edges. It can use the vertex alias *s* to reference the source vertices, or the alias *t* to reference the target vertices.
 
@@ -812,9 +817,10 @@ The expression following SAMPLE specifies the sample size, either an absolute nu
 Note: Currently, the WHEN condition that can be used with a SAMPLE clause is limited strictly to checking if the result of a function call on a vertex is greater than or greater than/equal to some number.
 ====
 
-Given that the sampling is random, some of the details of each of the example queries may change each time they are run.
+Given that the sampling is random, some details of each of the example queries may change each time they are run.
 
-The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges fro a source vertex. We use the computerNet graph (see Appendix D).  In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.  For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.  For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
+The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the computerNet graph (see Appendix D).
+In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.  For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.  For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
 
 [tabs]
 ====
@@ -1093,7 +1099,7 @@ whereClause := WHERE condition
 
 The WHERE clause uses a boolean condition to test each vertex or edge in the FROM set (or the sampled vertex and edge sets, if the SAMPLE clause was used).
 
-If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set. The expression may use constants or any variables or parameters within the scope of the SELECT, arithmetic operators (+, -, *, /,%), comparison operators (==, !=, <, <=, >,>=), boolean operators (AND, OR, NOT), set operators (IN, NOT IN) and parentheses to enforce precedence. The WHERE conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the FROM clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.) For a more formal explanation of condition, see the EBNF definitions of *condition* and *expr.*
+If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set. The expression may use constants or any variables or parameters within the scope of the SELECT, arithmetic operators (+, -, \*, /,%), comparison operators (==, !=, <, \<=, >,>=), boolean operators (AND, OR, NOT), set operators (IN, NOT IN) and parentheses to enforce precedence. The WHERE conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the FROM clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.) For a more formal explanation of condition, see the EBNF definitions of *condition* and *expr.*
 
 Using built-in vertex and edge attributes and functions, such as .type and .neighbors(), the WHERE clause can be used to implement sophisticated selection rules for the edge traversal.  In the following example, the selection conditions are completely specified in the WHERE clause, with no edge types or vertex types mentioned in the FROM clause.
 
@@ -1263,7 +1269,7 @@ WHERE NOT limitations
 The NOT operator may not be used in combination with the .type attribute selector. To check if an edge or vertex type is not equal to a given type, use the != operator. See the example below.
 ====
 
-The following example shows the equivalence of using WHERE as a type filter as well as its limitations.
+The following example shows the equivalence of using `WHERE` as a type filter as well as its limitations.
 
 [tabs]
 ====
@@ -1635,7 +1641,7 @@ Note that dml-sub-statements do not include global accumulator assignment statem
 There are additional restrictions on dml-sub level statements:
 
 * Global variable assignment is permitted in ACCUM or POST-ACCUM clauses, but the change in value will not take place until the query completes. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
-* Vertex attribute assignment "=" is not permitted in an ACCUM clause. However, edge attribute assignment is permitted. This is because the ACCUM clause iterates over an edge set. Vertex attribute attribute assignment is permitted in the POST-ACCUM clause. Like all updates, the change in value does not take place until the query completes.
+* Vertex attribute assignment "=" is not permitted in an ACCUM clause. However, edge attribute assignment is permitted. This is because the ACCUM clause iterates over an edge set. Vertex attribute assignment is permitted in the POST-ACCUM clause. Like all updates, the change in value does not take place until the query completes.
 ====
 
 === Aliases and ACCUM/POST-ACCUM Iteration Model
@@ -1758,7 +1764,8 @@ Beginning in v1.0, there are additional circumstances where a vertex-attached ac
 ** An accumulator containing tuple(s), where the tuple type contains a *VERTEX* field.
 * If a vertex V is selected, then not only can V's accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the ACCUM clause.
 * Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
-** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
+** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.
+The vertex can then be updated through the local vertex variable.
 
 [source,gsql]
 ----
@@ -1781,7 +1788,7 @@ ACCUM
 ====
 The following uses are NOT supported by the new rules:
 
-* Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside of a SELECT statement.
+* Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside a SELECT statement.
 * Passing a vertex into the query as an input parameter is not a route to activation.
 * Using a global vertex-holding accumulator is not a route to activation.
 * If a vertex is being indirectly activated by assigning it to a local variable (e.g., a variable declaring in ACCUM or POST-ACCUM), note the following rule, which always applies to all local variables:

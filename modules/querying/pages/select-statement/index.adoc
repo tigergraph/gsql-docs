@@ -36,9 +36,10 @@ gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
 
 
 
-The initial clause is the `SELECT` clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output.
+The initial clause is the `SELECT` clause: `SELECT vertexAlias`.
+Its purpose is to specify which set of vertices from the `FROM` clause is to become the output.
 
-The `SELECT` clause may contain only one item: a vertex alias defined in the FROM clause.
+The `SELECT` clause may contain only one item: a vertex alias defined in the `FROM` clause.
 The vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint.
 
 The <<_from_clause,`FROM` clause>> defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertex alias.
@@ -52,7 +53,7 @@ Along the way, computations can be performed on the selected vertices and edges.
 [#_from_clause]
 == `FROM` clause
 
-The `FROM` clause describes either a single hop or a multi-hop path pattern.
+The `FROM` clause describes either a single _hop_ or a multi-hop _path pattern_.
 Path patterns also have many other options for finer control and greater flexibility.
 
 .`FROM` clause
@@ -61,7 +62,7 @@ Path patterns also have many other options for finer control and greater flexibi
 fromClause := FROM ( pathPattern ["," pathPattern]*)
 ----
 
-A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
+A _hop_ or _step_ consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
 
 
 === Path pattern
@@ -90,7 +91,7 @@ If the source vertex type is omitted, you must give the source vertex set an <<_
 * A vertex set variable
 
 Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
-Although declaring an alias is optional, TigerGraph strongly suggests that you declare them.
+Although declaring an alias is optional, it is strongly recommended that you declare them.
 In the later clauses of the `SELECT` block , you can only refer to vertex sets in the `FROM` clause by their aliases.
 
 .EBNF for source vertex set
@@ -291,16 +292,17 @@ An atomic edge pattern can be one of the following:
 * An edge type, a string parameter, or a global `SetAccum` accumulator.
 
 Moreover, an atomic edge pattern can have either a left pointer `<` on the left or a right pointer `>` on the right.
-These indicate edge direction, of course. If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
+These indicate edge direction, of course.
+If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
 
 * `A>` is a rightward facing A edge
 * `<B` is a leftward facing B edge
 * C is an undirected C edge.
-If C is actually a directed edge type, then there is no match
+If C is actually a directed edge type, then there is no match.
 
 [discrete]
 ==== Disjunction pattern
-Pattern disjunction allows a path edge pattern to indicate a `OR` relationship between two or more atomic patterns.
+Pattern disjunction allows a path edge pattern to indicate an `OR` relationship between two or more atomic patterns.
 If an edge matches any of the atomic patterns, the edge matches the path edge pattern.
 
 .EBNF for disjunction pattern
@@ -329,12 +331,12 @@ starBounds := CONST_INT ".." CONST_INT
 [discrete]
 ==== Pattern concatenation
 The dot operator``.`` means concatenate the two edge patterns into one.
-Naturally, there must be a vertex joining the two edges, but it is omitted from the syntax.
+The vertex joining the two edges is omitted from the syntax.
 The dot operator is a shorthand, when you don’t care about the type of that intermediate vertex.
-`(A>.<B.C)` means a series of 3 edges, having the specifying types and directions.
+`(A>.<B.C)` means a series of 3 edges, having the specified types and directions.
 
 For example, the following `FROM` clauses produce the same source and target vertex sets.
-While the second `FROM` clause is more concise, you also do not have access to the intermediate vertex and edge sets.
+While the second `FROM` clause is more concise, it does not give you access to the intermediate vertex and edge sets.
 
 [.wrap,gsql]
 ----
@@ -370,13 +372,13 @@ Formally, we make the natural join of the two tables.
 [#_vertex_and_edge_aliases]
 === Vertex and Edge Aliases
 
-Vertex and edge _aliases_ are declared within the `FROM` clause of a `SELECT` block, by using the character `:`, followed by the alias name.
+Vertex and edge _aliases_ are declared within the `FROM` clause of a `SELECT` block, by using the colon `:`, followed by the alias name.
 Aliases can be accessed anywhere within the same `SELECT` block.
 They are used to reference a single selected vertex or edge of a set.
 It is through the vertex or edge aliases that the attributes of these vertices or edges can be accessed.
 
 For example, the following code snippets show two different `SELECT` statements.
-The first `SELECT` statement starts from a vertex set called allVertices, and the vertex alias name `v` can access each individual vertex from allVertices.
+The first `SELECT` statement starts from a vertex set called `allVertices`, and the vertex alias name `v` can access each individual vertex from `allVertices`.
 The second `SELECT` statement selects a set of edges.It can use the vertex alias `s` to reference the source vertices, or the alias `t` to reference the target vertices.
 
 .Vertex variables
@@ -438,7 +440,7 @@ sampleClause := SAMPLE ( expr | expr "%" ) EDGE WHEN condition <1>
 <3> Sample a percentage of edges incident to each target vertex.
 
 The expression following `SAMPLE` specifies the sample size, either an absolute number or a percentage of the population.
-The expression in a `SAMPLE` Clause must evaluate to a positive integer.
+The expression in a `SAMPLE` clause must evaluate to a positive integer.
 There are two sampling methods:
 
 * Sampling based on edge ID
@@ -452,7 +454,9 @@ Currently, the `WHEN` condition that can be used with a `SAMPLE` clause is limit
 Given that the sampling is random, some details of each of the example queries may change each time they are run.
 
 The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the computerNet graph (see Appendix D).
-In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.  For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.  For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
+In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.
+For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.
+For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
 
 [tabs]
 ====
@@ -737,9 +741,9 @@ whereClause := WHERE condition
 ----
 
 The `WHERE` clause uses a boolean condition to test each vertex or edge in the `FROM` set (or the sampled vertex and edge sets, if the `SAMPLE` clause was used).
-If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set.
+If the expression evaluates to false for vertex/edge X, then X is excluded from further consideration in the result set.
 
-The expression may use constants or any variables or parameters within the scope of the `SELECT`.
+The expression may use constants or any variables or parameters within the scope of the `SELECT` block.
 The expression may use arithmetic operators, comparison operators, boolean operators, set operators and parentheses to enforce precedence.
 
 The `WHERE` conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the `FROM` clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.)
@@ -1017,7 +1021,7 @@ GSQL > RUN QUERY findFemaleMembers()
 ====
 
 
-The following example uses edge attributes to determine which workers are registered as full time for some company.
+The following example uses edge attributes to determine which workers are registered as full time for any company.
 
 [tabs]
 ====
@@ -1311,7 +1315,7 @@ There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identitie
 
 === Edge/Vertex Type Inference and Conflict
 
-If multiple edge types are specified in an `ACCUM` clause, each `ACCUM` statement in `ACCUM` clause checks whether edge types are conflicted.
+If multiple edge types are specified in an `ACCUM` clause, each `ACCUM` statement in the `ACCUM` clause checks whether edge types are conflicted.
 If only a subset of edge types are effective in an `ACCUM` statement, this statement is not executed on other edge types.
 For example:
 
@@ -1826,7 +1830,7 @@ GSQL > RUN QUERY residentEmployees()
 --
 ====
 
-This is an example of a `POST-ACCUM` only that counts the number people with a particular gender.
+This is an example of a `POST-ACCUM` only that counts the number of people with a particular gender.
 
 [tabs]
 ====
@@ -2029,8 +2033,10 @@ GSQL > RUN QUERY vUpdateIndirectAccess()
 == `PER` clause
 
 The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
-The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row `PER <alias>`.
-For more information see xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
+
+The `FROM` clause of a `SELECT` statement produces a match table.
+The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row per alias.
+For more information see the xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
 
 == `HAVING` Clause
 
@@ -2048,7 +2054,7 @@ The condition in a `HAVING` clause is applied to each vertex in the `SELECT` set
 The `HAVING` clause is intended to test one or more of the accumulator variables that were updated in the `ACCUM` or `POST-ACCUM` clause, though the condition may be anything that equates to a boolean value.
 If the condition is false for a particular vertex, then that vertex is excluded from the result set.
 
-The following example demonstrates using the HAVING clause to constrain a result set based on the vertex accumulator variable which was updated during the ACCUM clause.
+The following example demonstrates using the `HAVING` clause to constrain a result set based on the vertex accumulator variable which was updated during the `ACCUM` clause.
 
 [tabs]
 ====
@@ -2141,7 +2147,7 @@ GSQL > RUN QUERY activeMembers(3)
 ====
 
 
-If the activityThreshold parameter is set to 2, the query would return 8 vertices. With `activityThreshold = 4`, the query would return no vertices.
+If the `activityThreshold` parameter is set to 2, the query would return 8 vertices. With `activityThreshold = 4`, the query would return no vertices.
 
 The following example demonstrates the equivalence of a `SELECT` statement in which the condition for the `HAVING` clause is always true.
 
@@ -2640,11 +2646,15 @@ If k=5 and the tentative result set has at least 5 items, then the final result 
 
 Case 2: `LIMIT j, k`
 
-* When a comma separates two expressions, LIMIT treats the first expression *j* as an offset.  That is, it skips the first *j* items in the list.  The second expr *k* tells the maximum number of items to include. If the list has at least 7 items, then LIMIT 2, 5 would return [ v_3 , v_4 , v_5, v_6  _,_ v_7 ].
+* When a comma separates two expressions, `LIMIT` treats the first expression *j* as an offset.
+That is, it skips the first *j* items in the list.
+The second expr *k* tells the maximum number of items to include. If the list has at least 7 items, then `LIMIT 2, 5` would return `[ v_3 , v_4 , v_5, v_6  _,_ v_7 ]`.
 
 Case 3: `LIMIT k OFFSET j`
 
-* The behavior of Case 3 is the same as that of Case 2, except that the syntax is different.  The keyword OFFSET separates the two expressions, and the count comes before the offset, rather than vice versa. If the list has at least 7 items, then LIMIT 5 OFFSET 2 would return [ v_3 , v_4 , v_5, v_6 , v_7 ].
+* The behavior of Case 3 is the same as that of Case 2, except that the syntax is different.
+The keyword `OFFSET` separates the two expressions, and the count comes before the offset, rather than vice versa.
+If the list has at least 7 items, then `LIMIT 5 OFFSET 2` would return `[ v_3 , v_4 , v_5, v_6 , v_7 ]`.
 
 If any of the expressions evaluate to a negative integer, the results are undefined.
 
@@ -2785,7 +2795,7 @@ GSQL > RUN QUERY limitEx2(2,3)
 
 The following example shows the alternative syntax for a result size limit with an offset.
 This time we try larger values for offset and size.
-In a large data set, limitTest(5,20) might return 20 vertices, but since we don't have 25 vertices in the original data, the output was fewer than 20 vertices.
+In a large data set, `limitTest(5,20)` might return 20 vertices, but since we don't have 25 vertices in the original data, the output is fewer than 20 vertices.
 
 [tabs]
 ====

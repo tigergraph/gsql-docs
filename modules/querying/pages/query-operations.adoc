@@ -203,8 +203,11 @@ This means the query can be written and installed as a saved procedure without r
 Here are the ingredients for a dynamic query:
 
 * *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
-* *Vertex type and edge type in `SELECT` statements*.Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.String or string set parameters can be used for edge and target types instead.
-* *Attribute names*.The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
+* *Vertex type and edge type in `SELECT` statements*.
+Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
+String or string set parameters can be used for edge and target types instead.
+* *Attribute names*.
+The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
 * `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
 
 The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library. 

@@ -3,14 +3,14 @@
 
 The GSQL ® Query Language is a language for the exploration and analysis of large scale graphs. The high-level language makes it easy to perform powerful graph traversal queries in the TigerGraph system. By combining features familiar to database users and programmers with highly expressive new capabilities, the GSQL query language offers both easy authoring and powerful execution. A GSQL query contains one or more SELECT statements, where each SELECT statement describes a traversal over a set of vertices and edges in the graph or describes a selection of a subset of vertices.  By combining multiple SELECT statements, the user can map out query patterns to answer a virtually unlimited set of real-life data questions.
 
-This document focuses on the formal specification for the GSQL Query Language. It includes example queries that demonstrate the language, each of which works on one of the following six graphs:**`workNet`, `socialNet`, `friendNet`, `computerNet`, `minimalNet`,** and *`investmentNet`* . Their schemas are shown below. Appendix D lists the full command and data files to create and load these graphs with small sets of data (~10 to 20 vertices). The data sets are small so that you can understand the result of each query example. The tarball file *`gsql_ref_examples_2.0.tar.gz`* (linked below) contains all of the graph schemas, data files, and queries.
+This document focuses on the formal specification for the GSQL Query Language. It includes example queries that demonstrate the language, each of which works on one of the following six graphs:**`workNet`, `socialNet`, `friendNet`, `computerNet`, `minimalNet`,** and *`investmentNet`* . Their schemas are shown below. Appendix D lists the full command and data files to create and load these graphs with small sets of data (~10 to 20 vertices). The data sets are small so that you can understand the result of each query example. The tarball file *`gsql_ref_examples_2.0.tar.gz`* (linked below) contains all graph schemas, data files, and queries.
 
 link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Graph files and loading script].
 
 == GSQL syntax versions
 There are now two versions of the GSQL Query Language. Both are available in the product.
 The original version is called GSQL Syntax V1.
-GSQL Syntax V2 was introduced to provide more flexible and powerful xref:tutorials:pattern-matching/README.adoc[Pattern matching].
+GSQL Syntax V2 was introduced to provide more flexible and powerful xref:tutorials:pattern-matching/README.adoc[pattern matching].
 A query indicates which grammar to use in the SYNTAX clause of the `CREATE QUERY` header.
 V2 is the default.
 

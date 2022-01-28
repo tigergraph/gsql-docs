@@ -2,7 +2,7 @@
 
 == Multiple Hop Pattern Shortest Path Semantics
 
-Repeating the same hop is useful sometimes, but the real power of pattern matching comes from expressing multi-hop patterns, with specific characteristics for each hop. For example, the well-known product recommendation phrase "People who bought this product also bought this other product", is expressed by the following 2-hop pattern:
+Repeating the same hop is useful sometimes, but the real power of pattern matching comes from expressing multi-hop patterns, with specific characteristics for each hop. For example, the well-known product recommendation phrase "People who bought this product also bought this other product" is expressed by the following 2-hop pattern:
 
 [source,gsql]
 ----
@@ -17,7 +17,7 @@ As you see, a 2-hop pattern is a simple concatenation and merging of two 1-hop p
 
 [source,gsql]
 ----
-FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z
+FROM X:x -(E1:e1)- Y:y -(E2>:e2)- Z:z
 ----
 
 Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each pair of adjacent hops sharing one end point. Below, Y:y and Z:z are the connecting end points.
@@ -27,19 +27,19 @@ Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each p
 
 [source,gsql]
 ----
-FROM X:x - (E2>:e2) - Y:y - (<E3:e3) - Z:z - (E4:e4) - U:u
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u
 ----
 
-In general, we can connect N 1-hop patterns into a N-hop pattern. The database will search the graph topology to find subgraphs that match this N-hop pattern.
+In general, we can connect N 1-hop patterns into an N-hop pattern. The database will search the graph topology to find subgraphs that match this N-hop pattern.
 
 [discrete]
 ==== Unnamed Intermediate Vertex Set
 
-A multi-hop pattern has two endpoint vertex sets and one or more intermediate vertex sets. If the query does not need to express any conditions for an intermediate vertex set, then the vertex set can be omitted and the two surrounding edge sets can be joined with a simple ".". For example, in the 2-hop pattern example above, if we do not need to specify the type of the intermediate vertex Y, nor need to refer to it in any of the query's other clauses (such as WHERE or ACCUM), then the pattern can be reduced as follows:
+A multi-hop pattern has two endpoint vertex sets and one or more intermediate vertex sets. If the query does not need to express any conditions for an intermediate vertex set, then the vertex set can be omitted and the two surrounding edge sets can be joined with a simple `.`. For example, in the 2-hop pattern example above, if we do not need to specify the type of the intermediate vertex Y, nor need to refer to it in any of the query's other clauses (such as WHERE or ACCUM), then the pattern can be reduced as follows:
 
 [source,gsql]
 ----
-FROM X:x - (E1.E2>) - Z:z
+FROM X:x -(E1.E2>)- Z:z
 ----
 
 [CAUTION]
@@ -86,26 +86,26 @@ The SELECT clause specifies the output vertex set of a SELECT statement. For a m
 ----
 #select starting end point x
 SELECT x
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select y
 SELECT y
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y- (<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select z
 SELECT z
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #select ending end point u
 SELECT u
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 ----
 
 
 
 === FROM Clause
 
-For a multiple-hop pattern, if you don't need to refer to the intermediate vertex points, you can just use "." to connect the edge patterns, giving a more succinct representation. For example, below we remove y and z, and connect E2>, <E3 and E4 using the period symbol. Note that you cannot have an alias for a multi-hop sequence like E2>.<E3.E4.
+For a multiple-hop pattern, if you don't need to refer to the intermediate vertex points, you can just use `.` to connect the edge patterns, giving a more succinct representation. For example, below we remove y and z, and connect E2>, <E3 and E4 using the period symbol. Note that you cannot have an alias for a multi-hop sequence like E2>.<E3.E4.
 
 .Omitting intermediate vertex y and z.
 
@@ -113,22 +113,22 @@ For a multiple-hop pattern, if you don't need to refer to the intermediate verte
 ----
 #select starting end point x
 SELECT x
-FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u;
 
 #if we don't need to access y, z, we can write
 SELECT u
-FROM X:x-(E2>.<E3.E4)-U:u;
+FROM X:x -(E2>.<E3.E4)- U:u;
 ----
 
 
 
 === WHERE Clause
 
-Beginning with TigerGraph v3.0, each predicate (simple true/false condition) can refer to any of the aliases in the path. As with any database query, more complex conditions may not be as performant as simpler queries with simpler, more local predicate conditions. Consider the pattern and query below:
+Each predicate (simple true/false condition) can refer to any of the aliases in the path. As with any database query, more complex conditions may not be as performant as simpler queries with simpler, more local predicate conditions. Consider the pattern and query below:
 
 [source,gsql]
 ----
-FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
+FROM X1:x1 -(E1:e1)- X2:x2 -(E2:e2)- X3:x3 -(E3:e3)- X4:x4
 ----
 
 .WHERE Clause Support both Local Predicate and Cross-hop predicates.
@@ -142,7 +142,7 @@ FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 # x2.@cnt != x4.@cnt is a cross-hop predicate
 # (x1.salary + x3.salary) < x4.salary is a cross-hop predicate
 SELECT x
-FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
+FROM X1:x1 -(E1:e1)- X2:x2 -(E2:e2)- X3:x3 -(E3:e3)- X4:x4
 WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 ----
 
@@ -153,7 +153,7 @@ WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 GSQL's pattern matching syntax provides the essentials for a regular expression language for paths in graphs.  Consider the three basic requirements for a regular expression language:
 
 . *The empty set* --> A path of length zero (no match)
-. *Concatenation* --> Form a path by adding one on two another. You can write an N-hop pattern, and M-hop pattern, and then combine them to have a (N+M)-hop pattern.
+. *Concatenation* --> Form a longer path by chaining one path after another one. You can write an N-hop pattern and an M-hop pattern, then combine them to have an (N+M)-hop pattern.
 . *Alternation (either-or)* --> You can use alternation for both vertex sets and edge sets, e.g. `FROM (Source1 | Source2) -(Edge1> | <Edge 2)- (Target1 | Target2)` Note: This is not the same as  `FROM (Source1 -(Edge1>)- Target 1)   |   (Source2 -(<Edge2)- Target 2)` The latter can be achieved by writing two SELECT query blocks and getting the UNION of their results.
 
 == Working with Your Pattern Matches
@@ -165,14 +165,9 @@ You may want to consult the xref:tutorials:accumulators-tutorial.adoc[Accumulato
 
 === ACCUM Clause
 
-[NOTE]
-====
-TigerGraph 3.0 removes the Pattern Matching (SYNTAX v2)-related restrictions on the ACCUM and POST-ACCUM clause.
-====
+Just as in classic GSQL syntax, the ACCUM clause is executed once (in parallel) for each set of vertices and edges in the graph which match the pattern and constraints given in the FROM and WHERE clauses. You can think of FROM-WHERE as producing a virtual table. The columns of this matching table are the alias variables from the FROM clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
 
-Just as in classic GSQL syntax, the ACCUM clause it executed once (in parallel) for each set of vertices and edges in the graph which match the pattern and constraints given in the FROM and WHERE clauses. You can think of FROM-WHERE as producing a virtual table. The columns of this matching table are the alias variables from the FROM clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
-
-A simple pattern 1-hop pattern, which could be syntax v1 or v2, like this:
+A simple 1-hop pattern, which could be syntax v1 or v2, looks like this:
 
 [source,gsql]
 ----
@@ -186,7 +181,7 @@ produces a match table with 3 columns: A, B, and C. Each row is a tuple (A,B,C) 
 The ACCUM clause iterates through ALL matches. If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than that number of matches.
 ====
 
-For, example, consider
+For example, consider
 
 [source,gsql]
 ----
@@ -195,18 +190,13 @@ WHERE A.email = "Andy@www.com"
 ACCUM C.@patternCount += 1
 ----
 
-This asks who are the friends of friends of Andy@www.com. Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy. The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy. This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query. There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+This finds the friends of the friends of Andy@www.com. Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy. The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy. This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query. There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
 
 === POST-ACCUM Clause
 
-[NOTE]
-====
-As of TigerGraph 3.0, Pattern Matching (V2) syntax supports multiple POST-ACCUM clauses.
-====
-
 At the end of the ACCUM clause, all the requested accumulation (+=) operators are processed in bulk, and the updated values are now visible.  You can now use POST-ACCUM clauses to perform a second, different round of computation on the results of your pattern matching.
 
-The *ACCUM* clause executes *for* *each full path* that matches the pattern in the FROM clause. In contrast, the  *POST-ACCUM* clause executes *for each vertex* in one vertex set (e.g. one vertex column in the matching table); its statements can access the aggregated accumulator result computed in the ACCUM clause. New for v3.0, if you want to perform per-vertex updates for more than one vertex alias, you should use a separate POST-ACCUM clause for each vertex alias. The multiple POST-ACCUM clauses are processed in parallel; it doesn't matter in what order you write them. (For each binding, the statements within a clause are executed in order.)
+The *ACCUM* clause executes *for each full path* that matches the pattern in the FROM clause. In contrast, the  *POST-ACCUM* clause executes *for each vertex* in one vertex set (e.g. one vertex column in the matching table); its statements can access the aggregated accumulator result computed in the ACCUM clause. If you want to perform per-vertex updates for more than one vertex alias, you should use a separate POST-ACCUM clause for each vertex alias. The multiple POST-ACCUM clauses are processed in parallel; it doesn't matter in what order you write them. (For each binding, the statements within a clause are executed in order.)
 
 For example, below we have two POST-ACCUM clauses. The first one iterates through s, and for each s, we do `s.@cnt2 += s.@cnt1`. The second POST-ACCUM iterations through t.
 
@@ -220,7 +210,7 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @cnt2;
 
   R   =  SELECT s
-         FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+         FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
          WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
                AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
          ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
@@ -277,7 +267,7 @@ Each POST-ACCUM clause binds to one and only one vertex alias. Therefore, the fo
 
 *Example 1.* Find the 3rd superclass of the Tag class whose name is "TennisPlayer".
 
-.Example1. Succinct Representation Of Multiple-hop Pattern
+.Example 1. Succinct Representation Of Multiple-hop Pattern
 
 [source,gsql]
 ----
@@ -287,7 +277,7 @@ INTERPRET QUERY () SYNTAX v2 {
 
   TagClass1 =
        SELECT t
-       FROM TagClass:s-(IS_SUBCLASS_OF>.IS_SUBCLASS_OF>.IS_SUBCLASS_OF>)-TagClass:t
+       FROM TagClass:s -(IS_SUBCLASS_OF>.IS_SUBCLASS_OF>.IS_SUBCLASS_OF>)- TagClass:t
        WHERE s.name == "TennisPlayer";
 
   PRINT TagClass1;
@@ -305,9 +295,7 @@ You can copy the above GSQL script to a file named example1.gsql, and invoke thi
 gsql example1.gsql
 ----
 
-
-
-. Output of Example 1
+.Output of Example 1
 
 [source,coffeescript]
 ----
@@ -336,7 +324,7 @@ Using graph 'ldbc_snb'
 
 *Example 2.* Find in which continents were the 3 most recent messages in Jan 2011 created.
 
-.Example1. Disjunction In A Succinct Representation Of Multiple-hop Pattern
+.Example 2. Disjunction in a Succinct Representation of a Multiple-hop Pattern
 
 [source,gsql]
 ----
@@ -348,7 +336,7 @@ INTERPRET QUERY () SYNTAX v2{
 
   accMsgContinent =
                  SELECT s
-                 FROM (Comment|Post):s-(IS_LOCATED_IN>.IS_PART_OF>)-Continent:t
+                 FROM (Comment|Post):s -(IS_LOCATED_IN>.IS_PART_OF>)- Continent:t
                  WHERE year(s.creationDate) == 2011 AND month(s.creationDate) == 1
                  ACCUM s.@continentName = t.name
                  ORDER BY s.creationDate DESC
@@ -432,7 +420,7 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 3.* Find Viktor Akhiezer's favorite author of 2012 whose last name begins with character 'S'. Also find how many LIKES Viktor has given to the author's post or comment.
+*Example 3.* Find Viktor Akhiezer's favorite author of 2012 whose last name begins with the letter 'S'. Also find how many LIKES Viktor has given to the author's post or comment.
 
 .Example 3. Multiple-hop Pattern With Accumulator Applied To All Matched Paths
 
@@ -445,7 +433,7 @@ INTERPRET QUERY () SYNTAX v2{
 
   FavoriteAuthors =
             SELECT t
-            FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+            FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
             WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
                       AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
             ACCUM t.@likesCnt +=1;
@@ -516,9 +504,9 @@ Using graph 'ldbc_snb'
 
 == Multi-Block Queries
 
-We have shown how complex multi-hop patterns, containing even a conjunctive of patterns, can be expressed in a single FROM clause of a single SELECT query. There are times, however, when it is better or necessary to write query as more than one SELECT block. This could be because of the need to do computation and decision matching in stages, to make the query easier to read, or to optimize performance.
+We have shown how complex multi-hop patterns, containing even a conjunctive of patterns, can be expressed in a single FROM clause of a single SELECT query. There are times, however, when it is better or necessary to write a query with more than one SELECT block. This could be because of the need to do computation and decision matching in stages, to make the query easier to read, or to optimize performance.
 
-Regardless of the reason, GSQL has always supported writing procedural queries containing multiple SELECT query blocks. Moreover, each SELECT statement outputs a vertex set. This vertex set can be used in the FROM clause of an subsequence SELECT block.
+Regardless of the reason, GSQL has always supported writing procedural queries containing multiple SELECT query blocks. Moreover, each SELECT statement outputs a vertex set. This vertex set can be used in the FROM clause of a subsequent SELECT block.
 
 For example, if Set1, Set2, and Set3 were the outputs of three previous SELECT blocks in this query, then each of these FROM clauses can take place later in the query:
 
@@ -526,7 +514,7 @@ For example, if Set1, Set2, and Set3 were the outputs of three previous SELECT b
 * `FROM     :x1 -(mh1)- :x2 -(mh2)- Set3:x3`
 * `FROM     Set2:x1 -(mh1)- :x2 -(mh2)- Set2:x3`
 
-*Example 1.* Find Viktor Akhiezer's liked messages' authors, whose last name starts with letter S. Find these authors alumni count.
+*Example 1.* Find Viktor Akhiezer's liked messages whose authors' last names begin with S. Find these authors' alumni count.
 
 [source,gsql]
 ----
@@ -541,6 +529,7 @@ INTERPRET QUERY () SYNTAX v2 {
   Alumni = SELECT p
            FROM Person:p -(STUDY_AT>) -:u - (<STUDY_AT)- F:s
            WHERE s != p;
+
 
   PRINT Alumni.size() as cnt;
 }
@@ -558,13 +547,13 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-*Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the common universities that both A and B have members studied at.
+*Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that were attended by members from both A and B.
 
 [source,gsql]
 ----
 USE GRAPH ldbc_snb
 
-#A and B are used to constraint the third pattern.
+#A and B are used to constrain the third pattern.
 INTERPRET QUERY () SYNTAX v2 {
   A  =  SELECT t
         FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
@@ -595,7 +584,7 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-*Example 3.* Find Viktor Akhiezer's liked posts' authors A. See how many pair of persons in A that one person likes a message authored by another person.
+*Example 3.* Find Viktor Akhiezer's liked posts' authors A. See how many pairs of persons exist in A such that one person likes a message authored by another person.
 
 [source,gsql]
 ----
@@ -607,11 +596,11 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
+          :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
 
   A = SELECT p
-      FROM A:p -(LIKES>) -:msg - (HAS_CREATOR>) - A:p2
+      FROM A:p -(LIKES>)- :msg -(HAS_CREATOR>)- A:p2
       WHERE p2 != p
       Per (p, p2)
       ACCUM @@cnt +=1;
@@ -634,7 +623,7 @@ INTERPRET QUERY () SYNTAX v2 {
 }
 ----
 
-*Example 4.* Find how many messages are created and liked by the same person whose first name begins with letter T.
+*Example 4.* Find how many messages are created and liked by the same person whose first name begins with the letter T.
 
 [source,gsql]
 ----
@@ -743,5 +732,3 @@ INTERPRET QUERY () SYNTAX v2 {
   ]
 }
 ----
-
-##

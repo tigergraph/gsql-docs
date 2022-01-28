@@ -8,13 +8,17 @@ In this example, we want to recommend some messages (comments or posts) to the p
 
 How do we do this?
 
-One way is to find Others who likes the same messages Viktor likes. And then recommend the messages that Others like but Viktor have not seen. The pattern is roughly like below
+One way is to find others who like the same messages Viktor likes, then recommend the messages that others like but Viktor has not seen. The pattern can be sketched out as follows:
 
 * Viktor - (Likes>) - Message - (<Likes) - Others
 * Others - (Likes>) - NewMessage
 * Recommend NewMessage to Viktor
 
-However, this is too fine granularity, and we are overfitting the message level data with a collaborative filtering algorithm. The intuition is that two persons are similar to each other when their "liked" messages fall into the same category (tag). This makes more sense and common than finding two persons that "likes" the same set of messages. As a result,  one way to avoid this overfitting is to go one level above. That is, instead of finding common messages as a similarity base, we find common messages'  tags as a similarity base. Person A and Person B are similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
+However, this is too granular. We are overfitting the message-level data with a collaborative filtering algorithm.
+
+Intutively, two persons are similar to each other when their "liked" messages fall into the same category - here represented by the set of tags attached to each message.
+
+As a result, one way to avoid overfitting is to go one level upward. Instead of looking at common messages, we look at their tags. We consider Person A and Person B  similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
 
 * Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others
 * Others - (Likes>) -  NewMessage
@@ -22,8 +26,8 @@ However, this is too fine granularity, and we are overfitting the message level 
 
 *GSQL. RecommendMessage Application.*
 
-This time, we create the query first, and interpret the query by calling the query name with parameters. +
-If we are satisfied with this query, we can use "install query queryName" to get the compiled query installed which has the best performance.
+This time, we create the query first and interpret the query by calling the query name with parameters. +
+If we are satisfied with this query, we can use `INSTALL QUERY queryName` to install the query, increasing performance.
 
 .GSQL Recommendation Algorithm 
 
@@ -70,7 +74,7 @@ INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 
 
 
-You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
+You can copy the above GSQL script to a file named app1.gsql and invoke this script file in the command line.
 
 .Linux Bash
 
@@ -81,7 +85,7 @@ gsql app1.gsql
 
 
 
-. Output of App1
+.Output of App1
 
 [source,coffeescript]
 ----
@@ -122,13 +126,15 @@ The query RecommendMessage has been added!
 [discrete]
 ==== Install the query
 
-When you are satisfied with your query  in the GSQL interpret mode,  you can now install it as a generic service which has a much faster speed.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, we can set the syntax version and install it.
+When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably. When we ran `CREATE QUERY RecommendMessage...`, this added RecommendMessage as a query string to the catalog.
 
-.GSQL Prepare Install Query
+To install the query as a compiled procedure, we first set the syntax version and then run the `INSTALL QUERY` command. If you don't explicitly set the syntax version, then the query will be installed using the syntax version specified in the query itself, if provided, or using the default syntax version.
+
+.GSQL Prepare to Install Query
 
 [source,coffeescript]
 ----
-#before install the query, need to set the syntax version
+#before installing the query, need to set the syntax version
 SET syntax_version="v2"
 USE GRAPH ldbc_snb
 
@@ -179,20 +185,7 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
 
 
 
-.Linux Bash:  Shutdown The System
-
-[source,coffeescript]
-----
-#when you are not using the TigerGraph System on your laptop,
-# to save resource, you can stop it by
-gadmin stop
-#when you need to start it again, use
-gadmin start
-----
-
-
-
-The above use log-cosine as a similarity measurement. We can also use cosine similarity by using two persons liked messages.
+The above uses log-cosine as a similarity measurement. We can also use cosine similarity by looking at two persons' liked messages.
 
 .GSQL Recommendation Algorithm 2
 
@@ -214,7 +207,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
   float sqrtOfInputPersonMsgCnt;
 
    #1. mark messages liked by input user
-   #2. find common msg between input user and other persons
+   #2. find common messages between input user and other persons
     Others =
        SELECT p
        FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
@@ -232,7 +225,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
         ACCUM o.@MsgCnt += 1
         POST-ACCUM o.@SimilarityScore = o.@MsgInCommon/(sqrtOfInputPersonMsgCnt * sqrt(o.@MsgCnt));
 
-   #recommend new messages to input user that have not liked by him.
+   #recommend new messages to input user that have not been liked by him.
     RecommendedMessage =
              SELECT msg
              FROM Others:o-(LIKES>) - :msg

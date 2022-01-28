@@ -1,6 +1,8 @@
 = Operators and Expressions
 
-An _expression_ is a combination of fixed values, variables, operators, function calls, and groupings that specify a computation, resulting in a data value. This section of the specification describes the literals (fixed values), operators, and functions available in the GSQL query language. It covers the subset of the EBNF definitions shown below. However, more so than in other sections of the specification, syntax alone is not an adequate description. The semantics (functionality) of the particular operators and functions are an essential complement to the syntax.
+An _expression_ is a combination of fixed values, variables, operators, function calls, and groupings that specify a computation, resulting in a data value. This section of the specification describes the literals (fixed values), operators, and functions available in the GSQL query language. It covers the subset of the EBNF definitions shown below.
+
+However, more so than in other sections of the specification, syntax alone is not an adequate description. The semantics (functionality) of the particular operators and functions are an essential complement to the syntax.
 
 .EBNF for Operations, Functions, and Expressions
 [source,ebnf]
@@ -106,7 +108,7 @@ Each primitive data type supports constant values:
 
 == Operators
 
-An operator is a keyword token that performs a specific computational function to return a resulting value, using the adjacent expressions (its operands) as input values.  An operator is similar to a function in that both compute a result from inputs, but syntactically they are different. The most familiar operators are the mathematical operators for addition  `+`  and subtraction  `-` .
+An operator is a keyword token that performs a specific computational function to return a resulting value, using the adjacent expressions (its operands) as input values.  Both operators and functions compute a result from one or more inputs, but syntactically they are different. The most familiar operators are the mathematical operators for addition  `+`  and subtraction  `-` .
 
 [NOTE]
 ====
@@ -115,7 +117,7 @@ Tip: The operators listed in this section are designed to behave like the operat
 
 === Mathematical Operators and Expressions
 
-We support the following standard mathematical operators and meanings. The latter four ("<<" | ">>" | "&" | "|") are for bitwise operations.  See the section below: "Bit Operators".
+We support the following standard mathematical operators and meanings. The latter four (`<<` `>>`  `&` `|`) are for bitwise operations.  See the section below: "Bit Operators".
 
 [source,ebnf]
 ----
@@ -212,11 +214,11 @@ GSQL > RUN QUERY mathOperators()
 
 === Boolean Operators
 
-We support the standard Boolean operators and standard order of precedence: AND, OR, NOT
+We support the standard Boolean operators and standard order of precedence: `AND`, `OR`, `NOT`
 
 === Bit Operators
 
-Bit operators (<<, >>, &, and |) operate on integers and return an integer.
+Bit operators (`<<` `>>` `&` `|`) operate on integers and return an integer.
 
 .Bit Operators
 [source,gsql]
@@ -234,7 +236,18 @@ CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
 
 === String Operators
 
-Operator + can be used for concatenating strings.
+The `+` operator can be used for concatenating strings.
+
+[source,gsql]
+----
+CREATE QUERY concatTest() FOR GRAPH minimalNet{
+  STRING firstString, secondString, thirdString;
+  firstString = "first string";
+  secondString = "second string";
+  thirdString = firstString + " " + secondString;
+  PRINT thirdString;   # "first string second string"
+}
+----
 
 === Tuple Fields
 
@@ -270,9 +283,9 @@ The comparison operators treat the STRING COMPRESS type as though it is STRING t
 
 === BETWEEN expr AND expr
 
-The expression expr1 BETWEEN expr2 AND expr3 is true if the value expr1 is in the range from expr2 to expr3, including the endpoint values. Each expression must be numeric.
+The expression `expr1 BETWEEN expr2 AND expr3` is `true` if the value expr1 is in the range from expr2 to expr3, including the endpoint values. Each expression must be numeric.
 
-" expr1 BETWEEN expr2 AND expr3 " is equivalent to " expr1 <= expr3 AND expr1 >= expr2".
+`expr1 BETWEEN expr2 AND expr3` is equivalent to `expr1 <= expr3 AND expr1 >= expr2`.
 
 .BETWEEN AND example
 
@@ -360,7 +373,9 @@ expr [NOT] LIKE expr [ESCAPE escape_char]
 
 The `LIKE` operator is used for string pattern matching and can only be used in `WHERE` clauses. The expression `string1 LIKE string_pattern` evaluates to boolean true if `string1` matches the pattern in `string_pattern`; otherwise, it is false.
 
-Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (``<char_list>``indicates a placeholder):
+Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. `string_pattern` cannot be the result of concatenating other strings, nor can it be a function call.
+
+A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (``<char_list>``indicates a placeholder):
 
 |===
 | Character or syntax | Description | Example
@@ -410,7 +425,7 @@ The first `"%"` has its usual pattern-matching meaning "zero or more characters"
 
 [tabs]
 ====
-Query::
+Query Without Parameters::
 +
 --
 .Example query using LIKE operator
@@ -420,13 +435,28 @@ CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
   /* Write query logic here */
   posts = {post.*};
 	aPosts = SELECT v FROM posts:v		
-                WHERE v.subject LIKE "%a%";  // Return all posts that has the
-                                             // character "a" in its subject
+                WHERE v.subject LIKE "%a%";  // Returns all posts with the character "a" in the subject
 	PRINT aPosts;
 }
 ----
 --
-
+Query With Parameters::
++
+--
+.Example parameterized query
+[source,gsql]
+----
+CREATE QUERY printPosts(STRING searchString) FOR GRAPH socialNet {
+  /* Write query logic here */
+  STRING searchParam;
+  searchParam = "%" + searchString + "%";
+  posts = {post.*};
+	aPosts = SELECT v FROM posts:v
+                WHERE v.subject LIKE searchParam;  // Returns all posts with the searchString in the subject
+	PRINT aPosts;
+}
+----
+--
 Results::
 +
 --
@@ -565,7 +595,7 @@ This section describes functions that apply to all or most accumulators. Other a
 
 ==== Previous value of accumulator
 
-The tick operator ( ' ) can be used to read the value of an accumulator as it was at the start an ACCUM clause, before any changes that took place within the ACCUM clause. It can only be used in the POST-ACCUM clause. A typical use is to compare the value of the accumulator before and after the ACCUM clause.  The PageRank algorithm provides a good example:
+The tick operator `'` can be used to read the value of an accumulator as it was at the start an ACCUM clause, before any changes that took place within the ACCUM clause. It can only be used in the POST-ACCUM clause. A typical use is to compare the value of the accumulator before and after the ACCUM clause.  The PageRank algorithm provides a good example:
 
 [source,gsql]
 ----
@@ -699,9 +729,9 @@ For example , suppose setBagExpr_A is ("a", "b", "c")
 "d" NOT IN setBagExpr_A        => true
 ----
 
-The IN and NOT IN operators support all base types on the left-hand side, and any set/bag expression on the right-hand side. The base type must be the same as the accumulator's element type. IN and NOT IN return a BOOL value.
+The `IN` and `NOT IN` operators support all base types on the left-hand side, and any set/bag expression on the right-hand side. The base type must be the same as the accumulator's element type. `IN` and `NOT IN` return a `BOOL` value.
 
-The following example uses NOT IN to exclude neighbors that are on a blocked list.
+The following example uses `NOT IN` to exclude neighbors that are on a blocked list.
 
 ==== Example
 [tabs]
@@ -753,7 +783,9 @@ GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
 
 == Subqueries
 
-A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery. A subquery acts as a callable function in GSQL. They take parameters, perform a set of actions, and return a value at the end. A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query. Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
+A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery.
+
+Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value. A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query. Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
 
 A subquery must be created before the query that calls the subquery. A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
@@ -787,12 +819,47 @@ A subquery parameter can only be one of the following types:
 
 A subquery's return value can be any base type or accumulator type with the following exceptions.
 
-* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level].
+* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level].
 * If the return type is a `BagAccum`. `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
 
-=== *Recursive subqueries*
+==== Example
+The following query uses a subquery that returns an anonymous tuple:
 
-Recursion is supported for subqueries and a subquery can call itself. Here is an example of a recursive subquery: The following subquery takes a set of persons as starting points, and returns all the friends within a given distance.
+[tabs]
+====
+Subquery::
++
+--
+[,gsql]
+----
+CREATE QUERY subQuery(vertex x) RETURNS (ListAccum<tuple<int, string, double>>){
+    typedef tuple<int a, string b, double c> MyTuple;
+    ListAccum<MyTuple> @@res;
+    RETURN @@res;
+}
+----
+--
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY mainQuery() {
+  TYPEDEF tuple<INT a, STRING b, DOUBLE c> myTuple1;
+  ListAccum<myTuple1> @@Acc1;
+  V = SELECT src FROM xxxx:src
+    // put the elemetns which returned from the subQuery
+    // to the end of the @@Acc1
+    ACCUM @@Acc1 += subQuery(src);
+  PRINT @@Acc1;
+}
+----
+--
+====
+
+=== Recursive subqueries
+
+Recursion is supported for subqueries and a subquery can call itself. The following example subquery takes a set of persons as starting points, and returns all the friends within a given distance.
 
 [NOTE]
 ====
@@ -841,7 +908,7 @@ CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH fri
 Result::
 +
 --
-Test cases: Starting from `person1`, search to a distance of 1 and a distance of 2.
+Test cases: Starting from `person1`, search to a distance of `1` and a distance of `2`.
 
 .`GSQL> RUN QUERY findFriendsInDistance("person1", 1)`
 [source,bash]

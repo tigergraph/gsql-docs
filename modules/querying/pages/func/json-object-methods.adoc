@@ -4,19 +4,23 @@ This page lists the methods of a JSON object variable. Methods can be accessed u
 
 == `containsKey()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.containsKey( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns a boolean value indicating whether the JSON object contains a specified key.
 
-=== Return type
+[discrete]
+===  Return type
 
 `BOOL`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -26,7 +30,8 @@ Returns a boolean value indicating whether the JSON object contains a specified 
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 If we have the following JSON object represented by the variable `han`:
 
 [source,json]
@@ -47,20 +52,24 @@ han.containsKey("isJedi") -> false
 
 == `getBool()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getBool( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the boolean value associated with a specified key.
 If the key provided is associated with a non-boolean value, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `BOOL`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -70,7 +79,8 @@ If the key provided is associated with a non-boolean value, the function will ra
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 If we have the following JSON object represented by the variable `han`:
 
 [source,json]
@@ -91,20 +101,24 @@ han.getBool("isJedi") -> false
 
 == `getDouble()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getDouble( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the double value associated with a specified key.
 If the key provided is associated with a non-double value, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `DOUBLE`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -116,20 +130,24 @@ If the key provided is associated with a non-double value, the function will rai
 
 == `getInt()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getInt( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the integer value associated with a specified key.
 If the key provided is associated with a non-int value, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `INT`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -141,20 +159,24 @@ If the key provided is associated with a non-int value, the function will raise 
 
 == `getJsonArray()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getJsonArray( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the JSON array value associated with a specified key.
 If the key provided is associated with a value whose type is not JSON array, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `JSONARRAY`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -166,20 +188,24 @@ If the key provided is associated with a value whose type is not JSON array, the
 
 == `getJsonObject()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getJsonObject( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the value associated with a specified key.
 If the key provided is associated with value whose type is not JSON object, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `JSONOBJECT`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -191,20 +217,24 @@ If the key provided is associated with value whose type is not JSON object, the 
 
 == `getString()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `jsonobject.getString( keyStr )`
 
-=== Description
+[discrete]
+===  Description
 
 Returns the string value associated with a specified key.
 If the key provided is associated with a non-string value, the function will raise a runtime error.
 
-=== Return type
+[discrete]
+===  Return type
 
 `STRING`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type

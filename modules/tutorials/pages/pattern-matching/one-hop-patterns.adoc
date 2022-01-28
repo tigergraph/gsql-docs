@@ -13,25 +13,33 @@ Currently, pattern matching may only be used in read-only queries. DML support w
 
 [NOTE]
 ====
-Pattern matching queries support nested queries
+Pattern matching queries support nested queries.
 ====
 
 == 1-Hop Pattern
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
+
 [NOTE]
 ====
-In classic GSQL queries, we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
+In classic GSQL queries, we used the punctuation `-( )->`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
 
+
+There the arrow `+->+` specifies the vertex flow from left to right and the parentheses `( )` enclose the edge types.
+
+.Classic GSQL Example
 [source,gsql]
 ----
 /* Classic GSQL example */
+
 Person:p -(LIKES:e)-> Message:m
 ----
 ====
 
-In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, where the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
+In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern.
+
+Here the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
 
 * For an undirected edge E, no added decoration:    `E`
 * For a directed edge E from left to right, use a suffix:  `E>`
@@ -39,15 +47,17 @@ In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, w
 
 ‌For example, in the LDBC SNB schema, there are two directed relationships between Person and Message: person _LIKES_ message, and message _HAS_CREATOR_ person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
 
+.Pattern Example
 [source,gsql]
 ----
-Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* Pattern example */
+Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
 ----
 
 [discrete]
 ==== Edge Type Wildcards
 
 The underscore `\_` is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `\_>` or `<_` or `_` +
+
 The empty parentheses `()` means any edge, directed or undirected.
 
 [discrete]
@@ -95,13 +105,14 @@ Performance may be better when types are explicitly provided.
  ** Any right directed edge with source in X and target in Y.
 . `FROM X:x - (<_:e) - Y:y`
  ** Any left directed edge with source in Y and target in X.
-. `FROM X:x - ((<_|_):e) - Y:y`
- ** Any left directed or any undirected; "|" means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern (<_|_).
+. `+FROM X:x - ((<_|_):e) - Y:y+`
+ ** Any left directed or any undirected; `|` means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern `+(<_|_)+`.
 . `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
  ** Any one of the three edge patterns.
 . `FROM X:x - () - Y:y`
  ** any edge (directed or undirected)
  ** Same as `(<\_|_>|_)`
+
 
 == Entering Pattern Match Syntax Mode
 
@@ -141,7 +152,7 @@ CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
 
 == Running Anonymous Queries Without Installing
 
-In this tutorial, we will use Interpreted Mode for GSQL, introduced in TigerGraph 2.4. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+In this tutorial, we will use Interpreted Mode for GSQL. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
 
 To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
 
@@ -152,15 +163,12 @@ INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
 
 [CAUTION]
 ====
-Recommendation: Increase the query timeout threshold.
-
 Interpreted queries may run slower than installed queries, so we recommend increasing the query timeout threshold:
 
-.GSQL: Set Longer Timeout
+.GSQL: Set Query Timeout to 1 Minute
 
 [source,coffeescript]
 ----
-# set query time out to 1 minutes
 # 1 unit is 1 millisecond
 SET query_timeout = 60000
 ----
@@ -172,7 +180,7 @@ SET query_timeout = 60000
 
 *Example 1*. Find persons who know the person named "Viktor Akhiezer" and return the top 3 oldest such persons.
 
-.Example 1. Left Directed Edge Pattern
+.Example 1. Left-Directed Edge Pattern
 
 [source,gsql]
 ----
@@ -418,7 +426,7 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use wildcard "_" to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
+*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use the wildcard `+_+` to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
 
 .Example 5. Disjunctive 1-hop edge pattern.
 

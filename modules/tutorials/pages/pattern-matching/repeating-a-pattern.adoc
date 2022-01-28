@@ -1,6 +1,6 @@
 = Repeating a 1-Hop Pattern
 
-A common pattern is the two-step "Friend of a Friend". Or, how many entities might receive a message if it is passed up to three times? Do you have any known change of connections to a celebrity?
+A common pattern is the two-step "Friend of a Friend". Or, how many entities might receive a message if it is passed up to three times? Do you have any known connections to a celebrity?
 
 GSQL pattern matching makes it easy to express such variable-length patterns which repeat a single-hop. Everything else stays the same as introduced in the previous section, except we append an asterisk (or _Kleene star_ for you regular expressionists) and an optional _min..max_ range to an edge pattern.
 
@@ -356,7 +356,7 @@ Using graph 'ldbc_snb'
 
 *Example 5*. Find the superclasses at least one hop from the TagClass whose name is "TennisPlayer".
 
-.Example 5.  At Least 1 Repetition  Of A Directed Edge. 
+.Example 5.  At Least 1 Repetition Of A Directed Edge.
 
 [source,gsql]
 ----
@@ -441,7 +441,7 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 6*. Find the 3 most recent comments that are liked or created by Viktor Akhiezer, and the total number of comments related to (created or liked by) Viktor Akhiezer.
+*Example 6*. Find the 3 most recent comments that are liked or created by Viktor Akhiezer and the total number of comments liked or created by the same person.
 
 .Example 6.  Disjunctive 1-Repetition Directed Edge. 
 

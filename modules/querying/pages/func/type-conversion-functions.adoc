@@ -2,15 +2,18 @@
 
 The functions on this page are used to convert data from one type to another in the GSQL query language.
 
+[#_parse_json_array]
 == `parse_json_array()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `parse_json_array( str )`
 
-=== Description
+[discrete]
+===  Description
 
-Converts a string into a JSON array. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `{ }` and brackets `[ ]`, each value field must be one of the following:
+Converts a string into a JSON array. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `+{ }+` and brackets `[ ]`, each value field must be one of the following:
 
 * a string
 * a number
@@ -18,11 +21,13 @@ Converts a string into a JSON array. The string must be properly formatted, or t
 * a JSONOBJECT - Each key of a key-value pair must be a string in double quotes.
 * a JSON array
 
-=== Return type
+[discrete]
+===  Return type
 
 `JSONARRAY`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -32,22 +37,26 @@ Converts a string into a JSON array. The string must be properly formatted, or t
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 
 [source,javascript]
 ----
 parse_json_array("[123]") -> [123]
 ----
 
+[#_parse_json_object]
 == `parse_json_object()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `parse_json_object( str )`
 
-=== Description
+[discrete]
+===  Description
 
-Converts a string into a JSON object. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `{ }` and brackets `[ ]`, each value field must be one of the following:
+Converts a string into a JSON object. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `+{ }+` and brackets `[ ]`, each value field must be one of the following:
 
 * a string
 * a number
@@ -55,11 +64,13 @@ Converts a string into a JSON object. The string must be properly formatted, or 
 * a JSONOBJECT - Each key of a key-value pair must be a string in double quotes, and the quotes need to be escaped with a backlash-escape `\`. However, if you are supplying the string in GraphStudio as a parameter, you do not need the backlash-escape since string values are not enclosed in double quotes.
 * a JSON array
 
-=== Return type
+[discrete]
+===  Return type
 
 `JSONOBJECT`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -69,7 +80,8 @@ Converts a string into a JSON object. The string must be properly formatted, or 
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 
 [source,javascript]
 ----
@@ -78,44 +90,52 @@ parse_json_object("{\"abc\":123}")  -> {"abc": 123}
 
 == `str_to_int ()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `str_to_int (str)`
 
-=== Description
+[discrete]
+===  Description
 
 Converts a string to an integer.
 
-=== Return type
+[discrete]
+===  Return type
 
 `INT`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
 
 | `str`
-| The string that contains an integer to convert to an integer
+| The string to be converted to an integer
 | `STRING`
 |===
 
 [#_to_datetime]
 == `to_datetime ()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `to_datetime ( str )`
 
-=== Description
+[discrete]
+===  Description
 
 Converts a string value into a `DATETIME` value.
 
-=== Return type
+[discrete]
+===  Return type
 
 `DATETIME`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -125,7 +145,8 @@ Converts a string value into a `DATETIME` value.
 | `STRING`
 |===
 
-=== Example
+[discrete]
+===  Example
 
 [source,javascript]
 ----
@@ -134,19 +155,23 @@ to_datetime("2020-01-02 01:02:03") -> 2020-01-02 01:02:03
 
 == `to_string()`
 
-=== Syntax
+[discrete]
+===  Syntax
 
 `to_string(num)`
 
-=== Description
+[discrete]
+===  Description
 
 Converts a number to a string.
 
-=== Return type
+[discrete]
+===  Return type
 
 `STRING`
 
-=== Parameters
+[discrete]
+===  Parameters
 
 |===
 | Parameter | Description | Data type

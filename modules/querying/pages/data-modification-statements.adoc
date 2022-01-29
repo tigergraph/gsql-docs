@@ -1,28 +1,39 @@
 = Data Modification Statements
 
-The GSQL language provides full support for vertex and edge insertion, deletion, and attribute update is provided. Therefore, the language is more than just a "query" language.
+The GSQL language provides full support for vertex and edge insertion, deletion, and attribute update.
 
-Each query is considered one transaction. Therefore, modifications to the graph data do not take effect until the entire query is completed (committed). Accordingly, any modification statement does not affect any other statements inside the same query.
+Each query is considered one transaction.
+Therefore, modifications to the graph data do not take effect until the entire query is completed (committed).
+Accordingly, any modification statement does not affect any other statements inside the same query.
 
-== Query-body DELETE Statement
+== Query-body `DELETE` Statement
 
-The query-body DELETE statement deletes a given set of edges or vertices. This statement can only be used as a query-body statement. (Deletion at the DML-sub level is served by the DML-sub DELETE statement, described next.
+The query-body `DELETE` statement deletes a given set of edges or vertices. This statement can only be used as a query-body statement.
+Deletion at the DML-sub level is served by the <<_dml_sub_delete_statement,DML-sub `DELETE` statement>>.
 
 [CAUTION]
 ====
-The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all of the edges which connect to it are automatically deleted as well.
+The GSQL `DELETE` operation is a cascading deletion.
+If a vertex is deleted, then all edges which connect to it are automatically deleted as well.
 ====
+
+[discrete]
+=== Syntax
 
 .EBNF
 [source,ebnf]
 ----
-queryBodyDeleteStmt := DELETE alias FROM pattern [whereClause]
-pattern := (vertexPattern | edgePattern)
+queryBodyDeleteStmt := DELETE alias FROM pathPattern [whereClause]
 ----
 
+The `FROM` clause in the `DELETE` statement follows the same rules as those in the `FROM` clause in a `SELECT` statement.
+However, the `FROM` clause in the `DELETE` statement only supports 1-hop, instead of multiple hops in the `SELECT` statement.
 
+The `WHERE` clause can filter the items in the path pattern.
+Below are two examples, one for deleting vertices and one for deleting edges.
 
-The vertexPattern and edgePattern terms in the FROM clause follow the same rules as those in the FROM clause in a SELECT statement. The WHERE clause can filter the items in the vertexPattern or edgePattern. Below are two examples, one for deleting vertices and one for deleting edges.
+[discrete]
+=== Examples
 
 .DELETE statement example
 [source,gsql]
@@ -43,14 +54,18 @@ CREATE QUERY deleteEx() FOR GRAPH workNet {
 # Delete all "worksFor" edges where the person's location is "us"
 CREATE QUERY deleteEx2() FOR GRAPH workNet {
   S = {person.*};
-  DELETE e FROM S:s -(worksFor:e)-> company:t
+  DELETE e FROM S:s -(worksFor:e)- company:t
     WHERE s.locationId == "us";
 }
 ----
 
 
 
-The following query can be used to observe the effect of the delete statements. This query counts the person vertices who work in the US ("us") and the worksFor edges for persons in the US.  When the initial workNet test data loaded, there are 5 persons and 9 worksFor edges for locationId = "us".  If query deleteEx2 is run, the worksAtUS query will then find the 5 persons but 0 worksFor edges.  Next, if the deleteEx query is run, the worksAtUS query will then find 0 persons and 0 worksFor edges.
+The following query can be used to observe the effect of the delete statements.
+This query counts the person vertices who work in the US and the `worksFor` edges for persons in the US.
+When the initial `workNet` test data loaded, there are 5 persons and 9 worksFor edges for locationId = "us".
+If query `deleteEx2` is run, the `worksAtUS` query will then find the 5 persons but 0 worksFor edges.
+Next, if the deleteEx query is run, the worksAtUS query will then find 0 persons and 0 worksFor edges.
 
 .Query to check the results of deleteEx and deleteEx2
 [source,gsql]
@@ -63,7 +78,7 @@ CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
     WHERE s.locationId == loc;
   PRINT SV.size() AS numVertices;
 
-  SE = SELECT s FROM Start:s -(worksFor:e)-> company:t
+  SE = SELECT s FROM Start:s -(worksFor:e)- company:t
     WHERE s.locationId == loc
     ACCUM @@selEdge += e;
   PRINT @@selEdge.size() AS numEdges;
@@ -72,7 +87,7 @@ CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
 
 
 
-For example, the following sequence of countAtLocation, deleteEx2, and deleteEx queries
+For example, the following sequence of `countAtLocation`, `deleteEx2`, and `deleteEx` queries
 
 [tabs]
 ====
@@ -164,19 +179,26 @@ Results::
 ====
 
 
-== DML-sub DELETE Statement
+[#_dml_sub_delete_statement]
+== DML-sub `DELETE` Statement
 
-DML-sub DELETE is a DML-sub statement which deletes one vertex or edge each time it is called.  (Deletion at the query-body level is served by the Query-body DELETE statement described above.) In practice, this statement resides within the body of a SELECT...ACCUM/POST-ACCUM clause, so it is called once for each member of a selected vertex set or edge set.
+DML-sub `DELETE` is a DML-sub statement which deletes one vertex or edge each time it is called.
+Deletion at the query-body level is served by the <<_query_body_delete_statement,Query-body DELETE statement>>.
 
-[CAUTION]
-====
-The GSQL DELETE operation is a cascading deletion. If a vertex is deleted, then all edges which connect to it are automatically deleted as well.
-====
+In practice, this statement resides within the body of a `SELECT...ACCUM/POST-ACCUM` clause, so it is called once for each member of a selected vertex set or edge set.
+
+The GSQL DELETE operation is a cascading deletion.
+If a vertex is deleted, then all edges which connect to it are automatically deleted as well.
+
 
 [NOTE]
 ====
-The ACCUM clause iterates over an edge set, which can encounter the same vertex multiple times. If you wish to delete a vertex, it is best practice to place the DML-sub DELETE statement in the POST-ACCUM clause rather than in the ACCUM clause.
+The `ACCUM` clause iterates over an edge set, which can encounter the same vertex multiple times.
+If you wish to delete a vertex, it is best practice to place the DML-sub `DELETE` statement in the POST-ACCUM clause rather than in the ACCUM clause.
 ====
+
+[discrete]
+=== Syntax
 
 .EBNF
 [source,ebnf]
@@ -184,12 +206,12 @@ The ACCUM clause iterates over an edge set, which can encounter the same vertex 
 dmlSubDeleteStmt := DELETE "(" alias ")"
 ----
 
+[discrete]
+=== Examples
 
+The following example uses and modifies the graph data for `socialNet`.
 
-The following example uses and modifies the graph data for socialNet.
-
-.DELETE within ACCUM vs. POST-ACCUM
-
+.`DELETE` within `ACCUM` vs. `POST-ACCUM`
 [source,gsql]
 ----
 # Remove any post vertices posted by the given user
@@ -199,12 +221,12 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 	# Best practice is to delete a vertex in a POST-ACCUM, which only
 	# occurs once for each vertex v, guaranteeing that a vertex is not
 	# deleted more than once
-	postAccumDeletedPosts = SELECT v FROM start -(posted:e)-> post:v
+	postAccumDeletedPosts = SELECT v FROM start -(posted:e)- post:v
 	       	 POST-ACCUM DELETE (v);
 	
 	# Possible, but not recommended as the DML-sub DELETE statement occurs
 	# once for each edge of the vertex v
-	accumDeletedPosts = SELECT v FROM start -(posted:e)-> post:v
+	accumDeletedPosts = SELECT v FROM start -(posted:e)- post:v
 	       	 ACCUM DELETE (v);
 }
 
@@ -212,17 +234,16 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 CREATE QUERY selectUserPosts(vertex<person> seed) FOR GRAPH socialNet {
     start = {seed};
 
-    userPosts = SELECT v FROM start -(posted:e)-> post:v;
+    userPosts = SELECT v FROM start -(posted:e)- post:v;
     PRINT userPosts;
 }
 ----
 
 
 
-For example, the following sequence of selectUserPosts and deletePosts queries
+For example, the following sequence of `selectUserPosts` and `deletePosts` queries
 
 .deletePosts.run
-
 [source,gsql]
 ----
 RUN QUERY selectUserPosts("person3")
@@ -284,7 +305,9 @@ will produce the following result:
 
 == `INSERT INTO` Statement
 
-The `INSERT INTO` statement adds edges or vertices to the graph. When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, then the new values will overwrite the old values. To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query. The `INSERT INTO` statement can be used as a query-body-level statement or a DML-sub statement.
+The `INSERT INTO` statement adds edges or vertices to the graph.
+When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, then the new values will overwrite the old values. To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query.
+The `INSERT INTO` statement can be used as a query-body-level statement or a DML-sub statement.
 
 Like any other data modification in a query, the insertion does not take effect until the entire query is completed.
 
@@ -519,25 +542,31 @@ RUN QUERY listCompanyNames("jp")
 
 
 
-== UPDATE Statement
+== `UPDATE` Statement
 
 The `UPDATE` statement updates the attributes of vertices or edges.
 
-.EBNF
+[discrete]
+=== Syntax
 
+.EBNF
 [source,ebnf]
 ----
 updateStmt := UPDATE alias FROM pattern SET dmlSubStmtList [whereClause]
 pattern := (vertexPattern | edgePattern)
 ----
 
+The set of vertices or edges to update is described in the `FROM` clause, following the same rules as the xref:select-statement/index.adoc[`FROM` clause in a `SELECT` statement].
+In the `SET` clause, the `dmlSubStmtList` contains assignment statements to update the attributes of a vertex or edge.
+Both simple base type attributes and collection type attributes can be updated.
+These assignment statements use the vertex or edge aliases declared in the `FROM` clause.
+The optional `WHERE` clause supports boolean conditions to filter the items in the vertex set or edge set.
 
+[discrete]
+=== Examples
 
-The set of vertices or edges to update is described in the `FROM` clause, following the same rules as the `FROM` clause in a `SELECT` statement. In the `SET` clause, the `dmlSubStmtList` contains assignment statements to update the attributes of a vertex or edge. Both simple base type attributes and collection type attributes can be updated. These assignment statements use the vertex or edge aliases declared in the `FROM` clause. The optional `WHERE` clause supports boolean conditions to filter the items in the vertex set or edge set.
-
-.UPDATE statement example
-
-[source,gsql]
+.`UPDATE` statement example
+[source.wrap,gsql]
 ----
 # Change all "person" vertices with location equal to "us" to "USA"
 CREATE QUERY updateEx() FOR GRAPH workNet  {
@@ -554,18 +583,20 @@ CREATE QUERY updateEx() FOR GRAPH workNet  {
 ----
 
 
-
-The `UPDATE` statement can only be used as a query-body-level statement. However, DML-sub level updates are still possible by using other statement types. A vertex attribute's value can be updated within the `POST-ACCUM` clause of a `SELECT` block by using the assignment operator (`=`); An edge attribute's value can be updated within the `ACCUM` clause of a `SELECT` block by using the assignment operator. In fact, the `UPDATE` statement is equivalent to a `SELECT` statement with `ACCUM` and/or `POST-ACCUM` to update the vertex or edge attribute values.
+The `UPDATE` statement can only be used as a query-body-level statement. However, DML-sub level updates are still possible by using other statement types.
+A vertex attribute's value can be updated within the `POST-ACCUM` clause of a `SELECT` block by using the assignment operator (`=`);
+An edge attribute's value can be updated within the `ACCUM` clause of a `SELECT` block by using the assignment operator.
+In fact, the `UPDATE` statement is equivalent to a `SELECT` statement with `ACCUM` and/or `POST-ACCUM` to update the vertex or edge attribute values.
 
 [WARNING]
 ====
-Updating a vertex's attribute value in an `ACCUM` clause is not allowed, because the update can occur multiple times in parallel, and possibly result in a non-deterministic value. If the vertex attribute value update depends on an edge attribute value, use the vertex-attached accumulators to save the value and update the vertex attribute's value in the `POST-ACCUM` clause.
+Updating a vertex's attribute value in an `ACCUM` clause is not allowed, because the update can occur multiple times in parallel, and possibly result in a non-deterministic value.
+If the vertex attribute value update depends on an edge attribute value, use the vertex-attached accumulators to save the value and update the vertex attribute's value in the `POST-ACCUM` clause.
 ====
 
 The query below uses a `SELECT` statement instead of an `UPDATE` statement and performs the same update as the query above. Query `updateEx2` reverses the `locationId` change made by `updateEx` .
 
 .UPDATE statement example 2
-
 [source,gsql]
 ----
 # The second example is equivalent to the above updateEx
@@ -585,15 +616,14 @@ CREATE QUERY updateEx2() FOR GRAPH workNet  {
 
 Below is an example of an edge update with two attribute changes, including an incremental change:
 
-.UPDATE statement example 3
-
+.`UPDATE` statement example 3
 [source,gsql]
 ----
 CREATE QUERY updateEx3() FOR GRAPH workNet{
   S = {person.*};
 
   # update edge and target vertices' attribute
-  UPDATE e FROM S:s - (worksFor:e) -> :t
+  UPDATE e FROM S:s - (worksFor:e) - :t
   SET e.startYear = e.startYear + 1, // Incremental change
       e.fullTime = false
   WHERE s.locationId == "us";
@@ -608,8 +638,7 @@ CREATE QUERY updateEx3() FOR GRAPH workNet{
 
 In addition to `UPDATE` statements and `SELECT` statements, a simple assignment statement at the query-body level can be used to update the attribute value of a single vertex or edge, if the vertex or edge has been assigned to a variable or parameter.
 
-.update by assignment
-
+.Update by assignment
 [source,gsql]
 ----
 # change the given person's new location

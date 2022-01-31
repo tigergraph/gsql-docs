@@ -214,27 +214,33 @@ SET session_parameter = value
 [width="100%",cols="23%,77%",options="header",]
 |===
 |Session Parameter |Meaning and Usage
-|sys.data_root |The value should be a string, representing the absolute
+|`sys.data_root` |The value should be a string, representing the absolute
 or relative path to the folder where data files are stored. After the
 parameter has been set, a loading statement can reference this parameter
 with $sys.data_root.
 
-|gsql_src_dir |The value should be a string, representing the absolute
-or relative path to the root folder for the gsql system installation.
+|`gsql_src_dir` |The value should be a string, representing the absolute
+or relative path to the root folder for the GSQL system installation.
 After the parameter has been set, a loading statement can reference this
-parameter with $gsql_src_dir.
+parameter with `$gsql_src_dir`.
 
-|exit_on_error |When this parameter is true (default), if a semantic
-error occurs while running a GSQL command file, the GSQL shell will
-terminate. Accepted parameter values: true, false (case insensitive). If
+|`exit_on_error` |When this parameter is true (default), if a semantic error occurs while running a GSQL command file, the GSQL shell will terminate.
+
+Accepted parameter values: true, false (case-insensitive). If
 the parameter is set to false, then a command file which is
-syntactically correct will continue running, even if certain runtime
-errors in individual commands occur. Specifically, this affects these
-commands:CREATEINSTALL QUERYRUN JOBSemantic errors include a reference
-to a nonexistent entity or an improper reuse of an entity.This session
-parameter does not affect GSQL interactive mode; GSQL interactive mode
-does not exit on any error.This session parameter does not affect
-syntactic errors: GSQL will always exit on a syntactic error.
+syntactically correct will continue running, even if certain runtime errors in individual commands occur.
+
+Specifically, this affects these
+commands: `CREATE QUERY`, `INSTALL QUERY`, `RUN JOB`
+Semantic errors include a reference to a nonexistent entity or an improper reuse of an entity.
+
+This session parameter does not affect GSQL interactive mode; GSQL interactive mode does not exit on any error.
+This session parameter does not affect syntactic errors: GSQL will always exit on a syntactic error.
+
+| `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
+
+| `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
+| `legacy_install` | A boolean option to install queries in legacy mode, which may improve performance under certain circumstances. Default value is `false`.
 |===
 
 .Example of exit_on_error = FALSE

@@ -1262,7 +1262,7 @@ Like all updates, the change in value does not take place until the query comple
 
 === Iteration model
 
-The `ACCUM` clause is executed once (in parallel) for each set of vertices and edges in the graph which match the pattern and constraints given in the `FROM` and `WHERE` clauses.
+The `ACCUM` clause is executed once for each set of vertices and edges in the graph which match the pattern and constraints given in the `FROM` and `WHERE` clauses.
 You can think of `FROM-WHERE` as producing a virtual table.
 The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
 
@@ -1619,7 +1619,8 @@ The optional `POST-ACCUM` clause enables aggregation and other computations acro
 `POST-ACCUM` can be used without `ACCUM`.
 If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
 
-Each `POST-ACCUM` clause may reference one vertex alias only.
+Each `POST-ACCUM` clause may reference one vertex alias only and must reference one vertex alias.
+We say that
 However, a `SELECT` statement can have multiple `POST-ACCUM` clauses.
 The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
 

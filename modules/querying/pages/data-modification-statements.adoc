@@ -418,7 +418,7 @@ CREATE QUERY whoWorksForCompany(STRING comp) FOR GRAPH workNet {
 
   Pers = {person.*};
   S = SELECT s
-    FROM Pers:s -(worksFor:e)-> :t
+    FROM Pers:s -(worksFor:e)- :t
     WHERE t.id == comp
     ACCUM @@setEdge += e;
   PRINT @@setEdge;

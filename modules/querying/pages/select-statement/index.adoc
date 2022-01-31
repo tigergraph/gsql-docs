@@ -1859,7 +1859,7 @@ CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
   friends = SELECT v FROM start:v
     WHERE v.type == "person"
     POST-ACCUM (v) CASE
-        WHEN (start.gender == gender) THEN
+        WHEN (v.gender == gender) THEN
             @@genderCount += 1
     END;
 

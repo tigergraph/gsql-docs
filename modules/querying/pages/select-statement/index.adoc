@@ -1627,9 +1627,9 @@ The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter i
 === Syntax
 
 .EBNF for `POST-ACCUM` clause
-[.wrap,gsql]
+[.wrap,ebnf]
 ----
-postAccumClause := POST-ACCUM dmlSubStmtList
+postAccumClause := POST-ACCUM ["(" vertexAlias ")"] dmlSubStmtList
 dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
 dmlSubStmt := assignStmt           // Assignment
             | funcCallStmt         // Function Call

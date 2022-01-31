@@ -1619,10 +1619,13 @@ The optional `POST-ACCUM` clause enables aggregation and other computations acro
 `POST-ACCUM` can be used without `ACCUM`.
 If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
 
-Each `POST-ACCUM` clause may reference one vertex alias only and must reference one vertex alias.
-We say that
-However, a `SELECT` statement can have multiple `POST-ACCUM` clauses.
-The multiple `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
+When you reference a vertex alias in a DML-sub statement in a `POST-ACCUM` statement, you bind that vertex alias to the `POST-ACCUM` clause implicitly.
+You can also explicitly bind a vertex alias with a `POST-ACCUM` clause by putting the vertex alias in parentheses immediately after the keyword `POST-ACCUM`.
+Each `POST-ACCUM` clause must be bound with one and only one vertex alias.
+
+A `SELECT` statement can have multiple `POST-ACCUM` clauses.
+If you need to run aggregation and other computations by referencing more than one vertex alias, you can use more than one `POST-ACCUM` clause.
+Each `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
 
 [discrete]
 === Syntax
@@ -1662,10 +1665,8 @@ A `POST-ACCUM` clause acts like a `FOREACH` loop on the one of the columns of ve
 
 If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
 
+For example, below we have three `POST-ACCUM` clauses.
 
-For example, below we have two `POST-ACCUM` clauses.
-The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
-The second `POST-ACCUM` iterations through `t`.
 
 [source,gsql]
 ----
@@ -1679,12 +1680,18 @@ INTERPRET QUERY () {
     WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
       AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
     ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
-    POST-ACCUM s.@cnt2 += s.@cnt1 //execute once per s.
-    POST-ACCUM t.@cnt2 +=1;//execute once per t
+    POST-ACCUM s.@cnt2 += s.@cnt1 <1>
+    POST-ACCUM t.@cnt2 +=1; <2>
+    POST-ACCUM (t) @@globalTCount += 1; <3>
 
   PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
 }
 ----
+<1> The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
+<2> The second `POST-ACCUM` iterates through `t`.
+<3> The third `POST-ACCUM` also iterates through `t`, but its DML-sub statements do not reference `t`.
+Rather, the `POST-ACCUM` is bound to `t` explicitly.
+
 
 However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
 
@@ -1730,20 +1737,20 @@ CREATE QUERY residentEmployees() FOR GRAPH workNet {
 
   start = {person.*};
 
-
   employees = SELECT s FROM start:s -(worksFor)- :c
-              #If a person works for a company in the same country where they live
-              # add the company to the list
-              ACCUM CASE WHEN (s.locationId == c.country) THEN
-                           s.@company += c.id
-                         END
+    // If a person works for a company in the same country where they live, add the company to the list
+    ACCUM CASE
+        WHEN (s.locationId == c.country) THEN
+            s.@company += c.id
+        END
 
-              #Check each vertex and see if a person works where they live
-              POST-ACCUM CASE WHEN (s.@company.size() > 0) THEN
-                           s.@worksAndLives += True
-                         ELSE
-                           s.@worksAndLives += False
-                         END;
+    #Check each vertex and see if a person works where they live
+    POST-ACCUM CASE
+        WHEN (s.@company.size() > 0) THEN
+            s.@worksAndLives += True
+        ELSE
+            s.@worksAndLives += False
+    END;
 
   PRINT employees WHERE (employees.@worksAndLives == True);
 }
@@ -1850,11 +1857,11 @@ CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
 
   # Select all person vertices and check the gender attribute
   friends = SELECT v FROM start:v
-            WHERE v.type == "person"
-
-            POST-ACCUM CASE WHEN (start.gender == gender) THEN
-                         @@genderCount += 1
-                       END;
+    WHERE v.type == "person"
+    POST-ACCUM (v) CASE
+        WHEN (start.gender == gender) THEN
+            @@genderCount += 1
+    END;
 
   PRINT @@genderCount;
 }

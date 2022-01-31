@@ -599,6 +599,7 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 ----
 
 
+[#_install_query]
 == `INSTALL QUERY`
 
 [source,ebnf]
@@ -606,9 +607,9 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
 ----
 
-`INSTALL QUERY` installs a query or multiple queries on a graph. Installing a query compiles the procedures described by the query as well as generates a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
-Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command. The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
+Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
 
 If a query calls a xref:querying:operators-and-expressions.adoc#_subqueries[subquery], the query can only be installed after one of the following conditions is met:
 

@@ -1,8 +1,9 @@
 = Interpreted GSQL Limitations
+:description: This page lists the features available for installed queries that are not available for interpreted queries.
 
-Currently, a query defined with``CREATE DISTRIBUTED QUERY``cannot be run in Interpreted Mode. However, interpreted queries can still run on a distributed graph with a regular, non-distributed execution model.
+This page lists the limitations of GSQL's xref:querying:query-operations.adoc#interpret-a-created-query[Interpreted mode].
 
-The list below includes additional limitations. These limitations are expected to be temporary. We are continuing to expand the capabilities of Interpreted Mode.
+To use the features on this page, xref:querying:query-operations.adoc#_install_query[install the query] and then run it instead.
 
 == Unsupported Features in Interpreted Mode
 

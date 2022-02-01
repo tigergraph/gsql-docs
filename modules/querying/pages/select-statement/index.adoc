@@ -1,0 +1,2884 @@
+= SELECT Statement
+:description: Reference documentation for GSQL's SELECT statement.
+:page-aliases: querying:select-statement/readme.adoc, querying:select-statement/README.adoc
+
+NOTE: This page discusses the `SELECT` statement in GSQL Syntax V2, which is the default syntax for TigerGraph version 3.5 and above.
+To learn about the `SELECT` statement in the legacy V1 syntax, see xref:querying:select-statement/select-statement-v1.adoc[]
+
+== Overview
+The `SELECT` statement is an assignment statement with a `SELECT` block on the right-hand side.
+
+The `SELECT` block uses a _path pattern_ to select some of the graph's vertices and edges.
+There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set.
+The final output of a query is either a vertex set known as the _result set_ or a table.
+
+
+There is a maximum size limit of 2 GB for the result set of a `SELECT` block.
+If the result of the `SELECT` block is larger than 2 GB, the system will return no data.
+No error message is produced.
+
+
+.EBNF for GSQL Select Statement
+[source,ebnf]
+----
+gsqlSelectBlock := gsqlSelectClause
+               fromClause
+               [sampleClause]
+               [whereClause]
+               [accumClause]
+               [postAccumClause]*
+               [havingClause]
+               [orderClause]
+               [limitClause]
+
+gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
+----
+
+
+
+The initial clause is the `SELECT` clause: `SELECT vertexAlias`.
+Its purpose is to specify which set of vertices from the `FROM` clause is to become the output.
+
+The `SELECT` clause may contain only one item: a vertex alias defined in the `FROM` clause.
+The vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint.
+
+The <<_from_clause,`FROM` clause>> defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertex alias.
+Thus, the `SELECT` clause picks the set of vertices at one of these points in the pattern -- the source vertices, the target vertices, or those from an interior point in a multi-hop path -- to be the output vertices.
+
+The `SELECT` block has many optional clauses, which fit together in a logical flow.
+Overall, the `SELECT` block starts from a source set of vertices and returns a result set that is either a subset of the source vertices or a subset of their neighboring vertices.
+Along the way, computations can be performed on the selected vertices and edges.
+
+
+[#_from_clause]
+== `FROM` clause
+
+The `FROM` clause describes either a single _hop_ or a multi-hop _path pattern_.
+Path patterns also have many other options for finer control and greater flexibility.
+
+.`FROM` clause
+[source,ebnf]
+----
+fromClause := FROM ( pathPattern ["," pathPattern]*)
+----
+
+A _hop_ or _step_ consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
+
+
+=== Path pattern
+A path pattern specifies sets of vertex types and how they are connected by edge types.
+
+A path pattern starts with a source vertex set, traverses through specified path edge patterns to another step vertex set.
+This is called a _hop_.
+From the other step vertex set, it can perform multiple hops and traverse to other step vertex sets.
+
+Notice that a path pattern can be just a single source vertex set; the subsequent path edge pattern and step vertex sets are optional.
+
+.EBNF for path pattern
+[source,ebnf]
+----
+pathPattern :=  sourceVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
+----
+
+[#_source_vertex_set]
+==== Source vertex set
+The source vertex set is the vertex set from which a path pattern starts.
+A source vertex set can be denoted by one of the following:
+
+* `_` or `ANY`, or omitted.
+If the source vertex type is omitted, you must give the source vertex set an <<_vertex_and_edge_aliases,alias>>.
+* Vertex type
+* A vertex set variable
+
+Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
+Although declaring an alias is optional, it is strongly recommended that you declare them.
+In the later clauses of the `SELECT` block , you can only refer to vertex sets in the `FROM` clause by their aliases.
+
+.EBNF for source vertex set
+[,ebnf]
+----
+sourceVertexSet := [sourceVertexTypes] [":" vertexAlias]
+sourceVertexTypes := "_" | ANY | "(" sourceVertexSetType ["|" sourceVertexSetType]* ")"
+sourceVertexSetType := vertexType | vertexSetVariableName
+----
+
+Belows are a few examples of valid source vertex sets in `SELECT` statements:
+
+[tabs]
+====
+Vertex type::
++
+--
+[.wrap,gsql]
+----
+Result = SELECT src
+    FROM Person:src -(<LIKES_REVERSE)- (Comment|Post):tgt <1>
+    WHERE src.firstName == "Viktor" AND src.lastName == "Akhiezer"
+    ACCUM CASE WHEN tgt.type == "Comment" THEN
+        src.@commentCnt += 1
+        WHEN tgt.type == "Post" THEN
+            src.@postCnt += 1
+        END;
+----
+<1> `Person` is a vertex type.
+`(Comment | POST)` combines two vertex types.
+--
+Any type::
++
+--
+You can use `_` or `ANY` to represent any vertex types.
+You can also choose to omit the step vertex type altogether to represent any vertex type.
+If you choose to omit the type, you must give the step vertex set an alias.
+
+[.wrap,gsql]
+----
+Result = SELECT tgt
+    FROM :s -(<LIKES)- Person:tgt
+    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+----
+--
+Vertex set::
++
+--
+A source vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    seedSet = { seed };
+    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends;
+}
+----
+--
+====
+
+==== Step vertex set
+A vertex set that represents a step in a path pattern.
+Compared with <<_source_vertex_set,source vertex set>>, step vertex sets have more flexibility in how they are denoted.
+A step vertex set can be denoted by one of the following:
+
+* `_` or `ANY`, or omitted.
+If the step vertex type is omitted, you must give the step vertex set an alias.
+* Vertex type
+* A vertex set variable
+* A global accumulator
+
+Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
+Although declaring an alias is optional, TigerGraph strongly suggests that you declare them.
+In the later clauses of the `SELECT` block , you can only refer to vertex sets in the `FROM` clause by their aliases.
+
+
+.EBNF for step vertex set
+[.wrap,ebnf]
+----
+stepVertexSet := [stepVertexTypes] [":" vertexAlias]
+stepVertexTypes := atomicVertexType | "(" vertexSetType ["|" vertexSetType]* ")"
+atomicVertexType := "_" | ANY | vertexSetType
+vertexSetType := vertexType | vertexSetVariableName | globalAccumName
+----
+
+Belows are a few examples of valid step vertex sets in `SELECT` statements:
+
+[tabs]
+====
+Vertex type::
++
+--
+[.wrap,gsql]
+----
+Result = SELECT tgt
+    FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src <1>
+    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+    ACCUM CASE WHEN src.type == "Comment" THEN
+        tgt.@commentCnt += 1
+        WHEN src.type == "Post" THEN
+            tgt.@postCnt += 1
+        END;
+----
+<1> `Person` is a vertex type.
+`(Comment | POST)` combines two vertex types.
+--
+Any type::
++
+--
+You can use `_` or `ANY` to represent any vertex types.
+You can also choose to omit the step vertex type altogether to represent any vertex type.
+If you choose to omit the type, you must give the step vertex set an alias.
+
+[.wrap,gsql]
+----
+Result = SELECT s
+    FROM Person:s -(LIKES>)- :tgt
+    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+----
+--
+Vertex set::
++
+--
+A step vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    seedSet = { seed };
+    friends = SELECT v FROM :s -((friend | coworker):e)- seedSet:v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends;
+}
+----
+--
+Global accumulator::
++
+--
+A step vertex set can be represented by a global accumulator.
+It can be an accumulator of strings (the strings are vertex types) or vertices, but the accumulator itself must be a `SetAccum`, `BagAccum` or `ListAccum`.
+
+[.wrap,gsql]
+----
+CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+{
+    SumAccum<INT> @@numFriends = 0;
+    SetAccum<VERTEX> @@seedBag;
+    @@seedBag += seed;
+    friends = SELECT s FROM :s -((friend | coworker):e)- @@seedBag:v
+      ACCUM @@numFriends +=1;
+    PRINT @@numFriends, includeCoworkers;
+}
+----
+--
+====
+
+==== Path edge pattern
+The path edge pattern represents the relationship between a source vertex set to a step vertex set or from a step vertex set to the next step vertex set.
+
+.EBNF for path edge pattern
+----
+pathEdgePattern := atomicEdgePattern
+                 | "(" pathEdgePattern ")"
+                 | pathEdgePattern "." pathEdgePattern
+                 | disjPattern
+                 | starPattern
+
+atomicEdgePattern  := atomicEdgeType
+        	        | atomicEdgeType ">"
+        	        | "<" atomicEdgeType
+
+atomicEdgeType := "_" | ANY | edgeSetType
+
+disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
+
+starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
+
+starBounds := CONST_INT ".." CONST_INT
+            | CONST_INT ".."
+            | ".." CONST_INT
+            | CONST_INT
+----
+
+A path edge pattern can represent one hop or repeated hops.
+A path edge pattern is denoted by `-()-`, where the relationship between vertex sets is specified between the parentheses.
+
+[discrete]
+==== Atomic edge pattern
+
+The most basic form for a path edge pattern is an atomic edge pattern.
+An atomic edge pattern can be one of the following:
+
+* `_` or `ANY`
+* An edge type, a string parameter, or a global `SetAccum` accumulator.
+
+Moreover, an atomic edge pattern can have either a left pointer `<` on the left or a right pointer `>` on the right.
+These indicate edge direction, of course.
+If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
+
+* `A>` is a rightward facing A edge
+* `<B` is a leftward facing B edge
+* C is an undirected C edge.
+If C is actually a directed edge type, then there is no match.
+
+[discrete]
+==== Disjunction pattern
+Pattern disjunction allows a path edge pattern to indicate an `OR` relationship between two or more atomic patterns.
+If an edge matches any of the atomic patterns, the edge matches the path edge pattern.
+
+.EBNF for disjunction pattern
+[,ebnf]
+----
+disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
+----
+
+
+[discrete]
+==== Pattern repetition
+Star pattern is used to how the Kleene star``*`` and `min..max` range specifiers can be used to say "repeat this edge pattern from min to max times."
+See xref:tutorials:pattern-matching/repeating-a-pattern.adoc[] for a tutorial on how to use pattern repetition in a path edge pattern.
+
+.EBNF for star pattern
+[,ebnf]
+----
+starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
+
+starBounds := CONST_INT ".." CONST_INT
+            | CONST_INT ".."
+            | ".." CONST_INT
+            | CONST_INT
+----
+
+[discrete]
+==== Pattern concatenation
+The dot operator``.`` means concatenate the two edge patterns into one.
+The vertex joining the two edges is omitted from the syntax.
+The dot operator is a shorthand, when you don’t care about the type of that intermediate vertex.
+`(A>.<B.C)` means a series of 3 edges, having the specified types and directions.
+
+For example, the following `FROM` clauses produce the same source and target vertex sets.
+While the second `FROM` clause is more concise, it does not give you access to the intermediate vertex and edge sets.
+
+[.wrap,gsql]
+----
+SELECT x
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u; <1>
+
+
+SELECT u
+FROM X:x -(E2>.<E3.E4)- U:u; <2>
+----
+<1> This `FROM` clauses uses a longer pattern, but gives you access to `y`, `e2`, `z` and `e4`.
+<2> This `FROM` clauses is more concise than the first `FROM` clause, but does not give you access to the intermediate vertex and edge sets.
+
+[discrete]
+==== Conjunctive Pattern Matching
+
+The optional repeating phrase `["," pathPattern]*` allows you to have multiple path patterns.
+They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
+See xref:tutorials:pattern-matching/adv/conjunctive-pattern-matching.adoc[] for more details.
+
+[source,ebnf]
+----
+fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
+----
+
+Each step pattern or path pattern forms a match table, one row per matching path in the graph.
+Each vertex alias or edge alias is one column in the table.
+When we have a conjunctive path, each path must share at least one vertex alias with another path.
+This enables the two path sets (and match tables) to be joined.
+Formally, we make the natural join of the two tables.
+
+
+[#_vertex_and_edge_aliases]
+=== Vertex and Edge Aliases
+
+Vertex and edge _aliases_ are declared within the `FROM` clause of a `SELECT` block, by using the colon `:`, followed by the alias name.
+Aliases can be accessed anywhere within the same `SELECT` block.
+They are used to reference a single selected vertex or edge of a set.
+It is through the vertex or edge aliases that the attributes of these vertices or edges can be accessed.
+
+For example, the following code snippets show two different `SELECT` statements.
+The first `SELECT` statement starts from a vertex set called `allVertices`, and the vertex alias name `v` can access each individual vertex from `allVertices`.
+The second `SELECT` statement selects a set of edges.It can use the vertex alias `s` to reference the source vertices, or the alias `t` to reference the target vertices.
+
+.Vertex variables
+[source,gsql]
+----
+results = SELECT v FROM allVertices:v;
+results = SELECT t FROM allVertices:s -()- :t;
+----
+
+The following example shows an edge-based `SELECT` statement, declaring aliases for all three parts of the edge.
+In the `ACCUM` clause, the `e` and `t` aliases are assigned to local vertex and edge variables.
+
+.Edge variables
+[source,gsql]
+----
+results = SELECT v
+    FROM allVertices:s -(:e)- :t
+    ACCUM VERTEX v = t, EDGE eg = e;
+----
+
+
+[WARNING]
+====
+We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features only available to vertex and edge aliases.
+====
+
+
+== `SAMPLE` Clause
+
+The `SAMPLE` clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the `FROM` argument.
+
+[NOTE]
+====
+If you want to sample from a set of vertices directly, not from edges or from neighboring (target) vertices, then the following technique is simpler and faster:
+
+.Select k random vertices from a vertex set S
+
+[source,gsql]
+----
+random = SELECT s
+         FROM S:s
+         LIMIT k;
+----
+====
+
+
+The `SAMPLE` clause draws from the edge population consisting of those edges which satisfy all three parts -- source set, edge type, and target type -- of the `FROM` clause.
+The `SAMPLE` clause is intended to provide a representative sample of the distribution of edges (or vertices) connected to _hub_ vertices, instead of dealing with all edges. A _hub_ vertex is a vertex with a relatively high link:https://en.wikipedia.org/wiki/Degree_(graph_theory)[degree].
+
+.EBNF for Sample Clause
+[source,ebnf]
+----
+sampleClause := SAMPLE ( expr | expr "%" ) EDGE WHEN condition <1>
+              | SAMPLE expr TARGET WHEN condition              <2>
+              | SAMPLE expr "%" TARGET PINNED WHEN condition   <3>
+----
+<1> Sample an absolute number (or a percentage) of edges for each source vertex.
+<2> Sample an absolute number of edges incident to each target vertex.
+<3> Sample a percentage of edges incident to each target vertex.
+
+The expression following `SAMPLE` specifies the sample size, either an absolute number or a percentage of the population.
+The expression in a `SAMPLE` clause must evaluate to a positive integer.
+There are two sampling methods:
+
+* Sampling based on edge ID
+* Sampling based on target vertex ID: if a target vertex ID is sampled, all edges from this source vertex to the sampled target vertex are sampled.
+
+[WARNING]
+====
+Currently, the `WHEN` condition that can be used with a `SAMPLE` clause is limited strictly to checking if the result of a function call on a vertex is greater than or greater than/equal to some number.
+====
+
+Given that the sampling is random, some details of each of the example queries may change each time they are run.
+
+The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the computerNet graph (see Appendix D).
+In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.
+For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.
+For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
+
+[tabs]
+====
+Query::
++
+--
+.sampleEx3: SAMPLE based on edges per source vertex
+[source,gsql]
+----
+CREATE QUERY sampleEx3() FOR GRAPH computerNet
+{
+    MapAccum<STRING,ListAccum<STRING>> @@absEdges; // record each selected edge as (src->tgt)
+    SumAccum<INT> @@totalAbs;
+    MapAccum<STRING,ListAccum<STRING>> @@pctEdges; // record each selected edge as (src->tgt)
+    SumAccum<INT> @@totalPct;
+
+    start = {computer.*};
+
+    # Sample one outgoing edge per source vertex = Random Walk
+    absSample = SELECT v FROM start:s -(:e)- :v
+             SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
+             ACCUM @@absEdges += (s.id -> v.id),
+                   @@totalAbs += 1;
+    PRINT @@totalAbs, @@absEdges;
+
+    pctSample = SELECT v FROM start:s -(:e)- :v
+             SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
+             ACCUM @@pctEdges += (s.id -> v.id),
+                   @@totalPct += 1;
+    PRINT @@totalPct, @@pctEdges;
+}
+----
+--
+
+Results::
++
+--
+.sampleEx3.json
+[source,gsql]
+----
+GSQL > RUN QUERY sampleEx3()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "@@totalAbs": 7,
+      "@@absEdges": {
+        "c4": ["c23"],
+        "c11": ["c12"],
+        "c10": ["c11"],
+        "c12": ["c14"],
+        "c23": ["c26"],
+        "c14": ["c24"],
+        "c1": ["c10"]
+      }
+    },
+    {
+      "@@totalPct": 13,
+      "@@pctEdges": {
+        "c4": ["c23"],
+        "c11": ["c12"],
+        "c10": ["c11"],
+        "c12": [
+          "c14",
+          "c15",
+          "c19"
+        ],
+        "c23": [
+          "c29",
+          "c25"
+        ],
+        "c14": [
+          "c24",
+          "c23"
+        ],
+        "c1": [
+          "c3",
+          "c8",
+          "c2"
+        ]
+      }
+    }
+  ]
+}
+----
+--
+====
+
+
+Below is an example of using `SELECT` to only traverse one edge for each source vertex.
+The vertex-attached accumulators `@timesTraversedNoSample` and `@timesTraversedWithSample` are used to keep track of the number of times an edge is traversed to reach the target vertex.
+Without using sampling, this occurs once for each edge; thus `@timesTraversedNoSample` has the same number as the in-degree of the vertex.
+With sampling edges, the number of edges is restricted.
+This is reflected in the `@timesTraversedWithSample` accumulator.
+Notice the difference in the result set.
+Because only one edge per source vertex is traversed when the `SAMPLE` clause is used, not all target vertices are reached.
+The vertex `company3` has 3 incident edges, but in one instance of the query execution, it is never reached.
+Additionally, `company2` has 6 incident edges, but only 4 source vertices sampled an edge incident to `company2`.
+
+[tabs]
+====
+Query::
++
+--
+.Example of `SAMPLE` using an absolute number of edges
+[source,gsql]
+----
+CREATE QUERY sampleEx1() FOR GRAPH workNet
+{
+	SumAccum<INT> @timesTraversedNoSample;
+	SumAccum<INT> @timesTraversedWithSample;
+	workers = {person.*};
+
+	# the 'beforeSample' result set encapsulates the normal functionality of
+	# a SELECT statement, where 'timesTraversedNoSample' vertex accumulator is increased for
+	# each edge incident to the vertex.
+	beforeSample = SELECT v FROM workers:t -(:e)- :v
+		       ACCUM v.@timesTraversedNoSample += 1;
+
+	# The 'afterSample' result set is formed by those vertices which can be
+	# reached when for each source vertex, only one edge is used for traversal.
+	# This is demonstrated by the values of 'timesTraversedWithSample' vertex accumulator, which
+	# is increased for each edge incident to the vertex which is used in the
+	# sample.
+	afterSample = SELECT v FROM workers:t -(:e)- :v
+		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		# only use 1 edge from the source vertex
+		      ACCUM v.@timesTraversedWithSample += 1;
+
+	PRINT beforeSample;
+	PRINT afterSample;
+}
+----
+--
+
+Results::
++
+--
+.sampleEx1.json
+[source,gsql]
+----
+GSQL > RUN QUERY sampleEx1()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"beforeSample": [
+      {
+        "v_id": "company4",
+        "attributes": {
+          "country": "us",
+          "@timesTraversedNoSample": 1,
+          "@timesTraversedWithSample": 1,
+          "id": "company4"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {
+          "country": "can",
+          "@timesTraversedNoSample": 1,
+          "@timesTraversedWithSample": 1,
+          "id": "company5"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company3",
+        "attributes": {
+          "country": "jp",
+          "@timesTraversedNoSample": 3,
+          "@timesTraversedWithSample": 3,
+          "id": "company3"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company2",
+        "attributes": {
+          "country": "chn",
+          "@timesTraversedNoSample": 6,
+          "@timesTraversedWithSample": 4,
+          "id": "company2"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company1",
+        "attributes": {
+          "country": "us",
+          "@timesTraversedNoSample": 6,
+          "@timesTraversedWithSample": 3,
+          "id": "company1"
+        },
+        "v_type": "company"
+      }
+    ]},
+    {"afterSample": [
+      {
+        "v_id": "company4",
+        "attributes": {
+          "country": "us",
+          "@timesTraversedNoSample": 1,
+          "@timesTraversedWithSample": 1,
+          "id": "company4"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {
+          "country": "can",
+          "@timesTraversedNoSample": 1,
+          "@timesTraversedWithSample": 1,
+          "id": "company5"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company3",
+        "attributes": {
+          "country": "jp",
+          "@timesTraversedNoSample": 3,
+          "@timesTraversedWithSample": 3,
+          "id": "company3"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company2",
+        "attributes": {
+          "country": "chn",
+          "@timesTraversedNoSample": 6,
+          "@timesTraversedWithSample": 4,
+          "id": "company2"
+        },
+        "v_type": "company"
+      },
+      {
+        "v_id": "company1",
+        "attributes": {
+          "country": "us",
+          "@timesTraversedNoSample": 6,
+          "@timesTraversedWithSample": 3,
+          "id": "company1"
+        },
+        "v_type": "company"
+      }
+    ]}
+  ]
+}
+----
+--
+====
+
+
+[WARNING]
+====
+Since the `PRINT` statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators `@timesTraversedNoSample` and `@timesTraversedWithSample`.
+There is one difference: `company3` is not included in afterSample because none of the sample-selected edges reached company3.
+====
+
+== `WHERE` Clause
+
+The `WHERE` clause is an optional clause that constrains edges and vertices specified in the `FROM` and `SAMPLE` clauses.
+
+.EBNF for `WHERE` Clause
+[source,ebnf]
+----
+whereClause := WHERE condition
+----
+
+The `WHERE` clause uses a boolean condition to test each vertex or edge in the `FROM` set (or the sampled vertex and edge sets, if the `SAMPLE` clause was used).
+If the expression evaluates to false for vertex/edge X, then X is excluded from further consideration in the result set.
+
+The expression may use constants or any variables or parameters within the scope of the `SELECT` block.
+The expression may use arithmetic operators, comparison operators, boolean operators, set operators and parentheses to enforce precedence.
+
+The `WHERE` conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the `FROM` clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.)
+For a more formal explanation of condition, see the EBNF definitions of `condition` and `expr`.
+
+Using built-in vertex and edge attributes and functions, such as `.type` and `.neighbors()`, the `WHERE` clause can be used to implement sophisticated selection rules for the edge traversal.
+In the following example, the selection conditions are completely specified in the `WHERE` clause, with no edge types or vertex types mentioned in the `FROM` clause.
+
+.`WHERE` used as a filter
+[source,gsql]
+----
+resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
+resultSet2 = SELECT v FROM S:v-(:e)-:t
+    WHERE t.type IN ("V1", "V2") AND t IN v.neighbors("E1|E2|E3")
+----
+
+
+
+The following examples demonstrate using the `WHERE` clause to limit the resulting vertex set based on a vertex attribute.
+
+[tabs]
+====
+Query::
++
+--
+.Basic `SELECT WHERE`
+[source,gsql]
+----
+CREATE QUERY printCatPosts() FOR GRAPH socialNet {
+	catPosts = SELECT v FROM post:v		# select only those post vertices
+        WHERE v.subject == "cats";  # which have a subset of 'cats'
+	PRINT catPosts;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query printCatPosts
+[source,gsql]
+----
+GSQL > RUN QUERY printCatPosts()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"catPosts": [
+    {
+      "v_id": "10",
+      "attributes": {
+        "postTime": "2011-02-04 03:02:31",
+        "subject": "cats"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "9",
+      "attributes": {
+        "postTime": "2011-02-05 23:12:42",
+        "subject": "cats"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "3",
+      "attributes": {
+        "postTime": "2011-02-05 01:02:44",
+        "subject": "cats"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "11",
+      "attributes": {
+        "postTime": "2011-02-03 01:02:21",
+        "subject": "cats"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "8",
+      "attributes": {
+        "postTime": "2011-02-03 17:05:52",
+        "subject": "cats"
+      },
+      "v_type": "post"
+    }
+  ]}]
+}
+----
+--
+====
+
+[tabs]
+====
+Query::
++
+--
+.SELECT WHERE using IN operator
+[source,gsql]
+----
+CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
+{
+	results = SELECT v FROM post:v					# select only post vertices
+		WHERE v.subject IN ("Graph", "tigergraph");	# which have a subject of either 'Graph' or 'tigergraph'
+	PRINT results;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query findGraphFocusedPosts
+[source,gsql]
+----
+GSQL > RUN QUERY findGraphFocusedPosts()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"results": [
+    {
+      "v_id": "5",
+      "attributes": {
+        "postTime": "2011-02-06 01:02:02",
+        "subject": "tigergraph"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "1",
+      "attributes": {
+        "postTime": "2011-03-03 23:02:00",
+        "subject": "tigergraph"
+      },
+      "v_type": "post"
+    },
+    {
+      "v_id": "6",
+      "attributes": {
+        "postTime": "2011-02-05 02:02:05",
+        "subject": "tigergraph"
+      },
+      "v_type": "post"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+[WARNING]
+====
+`WHERE NOT` limitations
+
+The `NOT` operator may not be used in combination with the `.type` attribute selector.
+To check if an edge or vertex type is not equal to a given type, use the != operator.
+See the example below.
+====
+
+The following example shows the equivalence of using `WHERE` as a type filter as well as its limitations.
+
+[tabs]
+====
+Query::
++
+--
+.SELECT WHERE using AND/OR
+[source,gsql]
+----
+# finds female person in the social network. all of the following statements
+# are equivalent (i.e., produce the same results)
+CREATE QUERY findFemaleMembers() FOR GRAPH socialNet
+{
+	allVertices = {ANY}; # includes all posts and person
+	females = SELECT v FROM allVertices:v
+		  WHERE v.type   == "person" AND
+		  	    v.gender != "Male";
+
+	females = SELECT v FROM allVertices:v
+		  WHERE v.type   == "person" AND
+		  	    v.gender == "Female";
+
+	females = SELECT v FROM allVertices:v
+		  WHERE v.type       == "person" AND
+		  	    NOT v.gender == "Male";
+
+	females = SELECT v FROM allVertices:v
+		  WHERE v.type       != "post" AND
+		  	    NOT v.gender == "Male";
+
+  	# does not compile. cannot use NOT operator in combination with type attribute
+	#females = SELECT v FROM allVertices:v
+	#	  WHERE NOT v.type   != "person" AND
+	#	  	    NOT v.gender == "Male";
+
+  	# does not compile. cannot use NOT operator in combination with type attribute
+	#females = SELECT v FROM allVertices:v
+	#	  WHERE NOT v.type   == "post" AND
+	#	  	    NOT v.gender == "Male";
+
+	personVertices = {person.*};
+	females = SELECT v FROM personVertices:v
+		   WHERE NOT v.gender == "Male";
+
+	females = SELECT v FROM personVertices:v
+		   WHERE v.gender != "Male";
+
+	females = SELECT v FROM personVertices:v
+		   WHERE v.gender != "Male" AND true;
+
+	females = SELECT v FROM personVertices:v
+		   WHERE v.gender != "Male" OR false;
+
+	PRINT females;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query findFemaleMembers
+[source,gsql]
+----
+GSQL > RUN QUERY findFemaleMembers()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"females": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "gender": "Female",
+        "id": "person5"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "gender": "Female",
+        "id": "person2"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+The following example uses edge attributes to determine which workers are registered as full time for any company.
+
+[tabs]
+====
+Query::
++
+--
+.`WHERE` using edge attributes
+[source.wrap,gsql]
+----
+# find all workers who are full time at some company
+CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
+{
+	start = {person.*};
+	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)- company:t
+			WHERE e.fullTime;	# fullTime is a boolean attribute on the edge
+
+	PRINT fullTimeWorkers;
+}
+----
+--
+
+Results::
++
+--
+.`fullTimeWorkers` Results
+[source.wrap,gsql]
+----
+GSQL > RUN QUERY fullTimeWorkers()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"fullTimeWorkers": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "interestList": ["football"],
+        "skillSet": [ 10, 1, 4 ],
+        "skillList": [ 4, 1, 10 ],
+        "locationId": "us",
+        "interestSet": ["football"],
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person11",
+      "attributes": {
+        "interestList": [ "sport", "football" ],
+        "skillSet": [10],
+        "skillList": [10],
+        "locationId": "can",
+        "interestSet": [ "football", "sport" ],
+        "id": "person11"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "interestList": [ "football", "sport" ],
+        "skillSet": [3],
+        "skillList": [3],
+        "locationId": "us",
+        "interestSet": [ "sport", "football" ],
+        "id": "person10"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "interestList": [ "management", "financial" ],
+        "skillSet": [ 3, 2, 1 ],
+        "skillList": [ 1, 2, 3 ],
+        "locationId": "us",
+        "interestSet": [ "financial", "management" ],
+        "id": "person1"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "interestList": [ "music", "art" ],
+        "skillSet": [ 10, 7 ],
+        "skillList": [ 7, 10 ],
+        "locationId": "jp",
+        "interestSet": [ "art", "music" ],
+        "id": "person6"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "interestList": ["engineering"],
+        "skillSet": [ 6, 5, 3, 2 ],
+        "skillList": [ 2, 3, 5, 6 ],
+        "locationId": "chn",
+        "interestSet": ["engineering"],
+        "id": "person2"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {
+        "interestList": ["management"],
+        "skillSet": [ 2, 5, 1 ],
+        "skillList": [ 1, 5, 2 ],
+        "locationId": "chn",
+        "interestSet": ["management"],
+        "id": "person8"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person12",
+      "attributes": {
+        "interestList": [
+          "music",
+          "engineering",
+          "teaching",
+          "teaching",
+          "teaching"
+        ],
+        "skillSet": [ 2, 5, 1 ],
+        "skillList": [ 1, 5, 2, 2, 2 ],
+        "locationId": "jp",
+        "interestSet": [ "teaching", "engineering", "music" ],
+        "id": "person12"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "interestList": ["teaching"],
+        "skillSet": [ 6, 1, 4 ],
+        "skillList": [ 4, 1, 6 ],
+        "locationId": "jp",
+        "interestSet": ["teaching"],
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person9",
+      "attributes": {
+        "interestList": [ "financial", "teaching" ],
+        "skillSet": [ 2, 7, 4 ],
+        "skillList": [ 4, 7, 2 ],
+        "locationId": "us",
+        "interestSet": [ "teaching", "financial" ],
+        "id": "person9"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+[WARNING]
+====
+If multiple edge types are specified in edge-induced selection, the `WHERE` clause should use `OR` to separate each edge type or each target vertex type. For example,
+
+.Multiple Edge Type `WHERE` clause
+[source.wrap,gsql]
+----
+CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
+  allUser = {m1};
+  FilteredUser = SELECT s
+      FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
+      # WHERE e.actionTime > epoch_to_datetime(1) AND t.gender == "Male";
+      WHERE ( e.type == "liked" AND e.actionTime > epoch_to_datetime(1) ) OR
+            ( e.type == "friend" AND t.gender == "Male" )
+            ;
+  PRINT FilteredUser;
+}
+----
+
+The above query is compilable. However, if we use line 5 as the `WHERE` clause instead, the query is not compilable.
+The edge-type conflict checking detects an error, because it uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
+====
+
+
+== `ACCUM` clause
+
+The `ACCUM` clause enables sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding `FROM`, `SAMPLE`, and `WHERE` clauses.
+
+[discrete]
+=== Syntax
+The primary purpose of the `ACCUM` clause is to collect information about the graph by updating xref:accumulators.adoc[accumulators] (via `+=` or `=`).
+However, other kinds of statements (e.g., branching, iteration, local assignments) are permitted to support more complex computations or to log activity.
+
+The EBNF syntax below defines the allowable kinds of statements that can occur within an `ACCUM` clause.
+
+
+.EBNF for `ACCUM` clause
+[.wrap,ebnf]
+----
+accumClause := [perClauseV2] ACCUM dmlSubStmtList <1>
+dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
+dmlSubStmt := assignStmt           // Assignment  <2> <3>
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | dmlSubCaseStmt       // Control Flow
+            | dmlSubIfStmt         // Control Flow
+            | dmlSubWhileStmt      // Control Flow
+            | dmlSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | dmlSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
+<1> DML-sub-statements do not include global accumulator assignment statement (gAccumAssignStmt) but global accumulator accumulation statement (gAccumAccumStmt).
+Global accumulators may perform accumulation `+=` but not assignment `=` within an `ACCUM` clause.
+<2> Global variable assignment is permitted in an `ACCUM` clause, but the change in value will not take place until the query completes.
+Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
+<3> Vertex attribute assignment `=` is not permitted in an `ACCUM` clause. However, edge attribute assignment is permitted.
+This is because the `ACCUM` clause iterates over an edge set.
+Vertex attribute assignment is permitted in the `POST-ACCUM` clause.
+Like all updates, the change in value does not take place until the query completes.
+
+=== Iteration model
+
+The `ACCUM` clause is executed once for each set of vertices and edges in the graph which match the pattern and constraints given in the `FROM` and `WHERE` clauses.
+You can think of `FROM-WHERE` as producing a virtual table.
+The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
+
+For a simple 1-hop pattern below:
+
+[source,gsql]
+----
+FROM Person:A -(IS_LOCATED_IN:B)- City:C
+----
+
+The above `FROM` clause produces a match table with 3 columns: A, B, and C.
+Each row is a tuple (A,B,C) where there is a `has_lived_in` edge B from a `Person` vertex A to a `City` vertex C.
+We say that the match table provides a _binding_ between the pattern aliases and graph's vertices and edges.
+A multi-hop pattern simply has more columns than a 1-hop pattern.
+
+Since the `ACCUM` clause iterates over edges, and often two edges will connect to the same source vertex or to the same target vertex, the `ACCUM` clause can be repeated multiple times for one vertex.
+Operations that are to be performed exactly once per vertex should be performed in the <<_post_accum_clause, `POST-ACCUM` clause>>.
+
+==== Parallelism in `ACCUM` clause
+TigerGraph uses parallelism to improve performance.
+The statements within the `ACCUM` clause are executed sequentially for a given vertex or edge.
+However, there is no fixed order in which a vertex set or edge set is processed.
+
+Within an `ACCUM` clause, each edge is handled by a separate process.
+As such, there is no fixed order in which the edges are processed within the `ACCUM` clause and the edges should not be treated as executing sequentially.
+The accumulators are mutex variables shared among each of these processes.
+The results of any accumulation within the `ACCUM` clause is not complete until all edges are traversed.
+Any inspection of an intermediate result within the `ACCUM` clause is incomplete and may not be that meaningful.
+
+[NOTE]
+====
+The `ACCUM` clause iterates through *all* matches.
+If you do not have an alias on every vertex in the pattern, then the number of *distinct* matches may be less than the number of matches.
+
+For example, consider the following clauses:
+
+[source,gsql]
+----
+FROM Person:A -(KNOWS.KNOWS)- Person:C
+WHERE C.email = "Andy@www.com"
+ACCUM C.@patternCount += 1
+----
+
+This finds the friends of the friends of `Andy@www.com`.
+Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.
+The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.
+This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.
+There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+====
+
+=== Edge/Vertex Type Inference and Conflict
+
+If multiple edge types are specified in an `ACCUM` clause, each `ACCUM` statement in the `ACCUM` clause checks whether edge types are conflicted.
+If only a subset of edge types are effective in an `ACCUM` statement, this statement is not executed on other edge types.
+For example:
+
+.Multiple Edge Type `ACCUM` statement check
+[source,gsql]
+----
+CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
+  ListAccum<STRING> @@testList1, @@testList2, @@testList3;
+  allUser = {m1};
+  allUser = SELECT s
+    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
+    ACCUM @@testList1 += to_string(datetime_to_epoch(e.actionTime)),
+      @@testList2 += t.gender,
+      @@testList3 += to_string(datetime_to_epoch(e.actionTime)) + t.gender <1>
+               ;
+  PRINT @@testList1, @@testList2, @@testList3;
+}
+----
+<1> This statement causes a compilation error.
+
+In the above example, line 6 is only executed on `liked` edges, because `actionTime` is the attribute of `liked` edge only.
+Similarly, line 7 is only executed on `friend` edges, because `gender` is the attribute of `person` only, and only `friend` edge uses `person` as target vertex.
+However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., `liked` edges doesn't have `t.gender`, `friend` edges doesn't have `e.actionTime`.
+
+[WARNING]
+====
+We strongly suggest that if multiple edge types are specified in edge-induced selection, `ACCUM` clauses should use xref:control-flow-statements.adoc[`CASE` statement] to separate the operation on each edge type or each target vertex type (or combination of target vertex type and edge type).
+The edge-type conflict checking then checks the `ACCUM` statement inside each `THEN/ELSE` blocks based on the condition.
+For example,
+
+.Multiple Edge Type `ACCUM` statement check 2
+[source,gsql]
+----
+CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
+  ListAccum<STRING> @@testList1;
+  allUser = {m1};
+  allUser = SELECT s
+    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
+    ACCUM CASE
+        WHEN e.type == "liked" THEN    # for liked edges
+            @@testList1 += to_string(datetime_to_epoch(e.actionTime))
+        WHEN e.type == "friend" THEN   # for friend edges
+            @@testList1 += t.gender
+        ELSE      # For the remained edge type, which is posted edges
+            @@testList1 += to_string(datetime_to_epoch(t.postTime))
+                  END;
+  PRINT @@testList1;
+}
+----
+
+The above query is compilable.
+However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `liked` edges doesn't support `t.gender` and `friend` edges doesn't support e.actionTime.
+====
+
+[discrete]
+=== Examples
+
+This example uses `ACCUM` to find all the subjects a user posted about.
+
+[tabs]
+====
+Query::
++
+--
+.Vertex ACCUM Example
+[source,gsql]
+----
+# For each person, make a list of all their post subjects
+CREATE QUERY userPosts() FOR GRAPH socialNet {
+  ListAccum<STRING> @personPosts;
+  start = {person.*};
+
+  # Find all user post topics and append them to the vertex list accum
+  userPostings = SELECT s FROM start:s -(posted)- :g
+                 ACCUM s.@personPosts += g.subject;
+
+  PRINT userPostings;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query userPosts
+[source,gsql]
+----
+GSQL > RUN QUERY userPosts()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"userPostings": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@personPosts": ["cats"],
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["query languages"],
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": [ "cats", "tigergraph" ],
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["Graphs"],
+        "id": "person1"
+      },
+      "v_type": "person"
+    },
+/*** other vertices omitted ***/
+  ]}]
+}
+----
+--
+====
+
+This example shows each person's posted vertices and each person's like behaviors (liked edges).
+
+[tabs]
+====
+Query::
++
+--
+.`ACCUM<VERTEX>` and `ACCUM<EDGE>` Example
+[source,gsql]
+----
+# Show each user's post and liked post time
+CREATE QUERY userPosts2() FOR GRAPH socialNet {
+  ListAccum<VERTEX> @personPosts;
+  ListAccum<EDGE> @personLikedInfo;
+  start = {person.*};
+
+  # Find all user post topics and append them to the vertex list accum
+  userPostings = SELECT s FROM start:s -(posted)- :g
+                 ACCUM s.@personPosts += g;
+
+  userPostings = SELECT s from start:s -(liked:e)- :g
+                 ACCUM s.@personLikedInfo += e;
+
+  PRINT start;
+}
+----
+--
+
+Results::
++
+--
+.Results from Query userPosts2
+[source,gsql]
+----
+GSQL > RUN QUERY userPosts2()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"start": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@personPosts": ["3"],
+        "id": "person4",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person4",
+          "to_id": "4",
+          "attributes": {"actionTime": "2010-01-13 03:16:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": [ "9", "6" ],
+        "id": "person7",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person7",
+          "to_id": "10",
+          "attributes": {"actionTime": "2010-01-12 11:22:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@personPosts": ["0"],
+        "id": "person1",
+        "@personLikedInfo": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person1",
+          "to_id": "0",
+          "attributes": {"actionTime": "2010-01-11 11:32:00"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "person"
+    },
+/*** other vertices omitted ***/
+  ]}]
+}
+----
+--
+====
+
+This example counts the total number of times each topic is used.
+
+[tabs]
+====
+Query::
++
+--
+.Global ACCUM Example
+[source,gsql]
+----
+# Show number of total posts by topic
+CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
+  MapAccum<STRING, INT> @@postTopicCounts;
+  start = {person.*};
+
+  # Append subject and update the appearance count in the global map accum
+  posts = SELECT g FROM start -(posted)- :g
+		  ACCUM @@postTopicCounts += (g.subject -> 1);
+
+  PRINT @@postTopicCounts;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query userPostsByTopic
+[source,gsql]
+----
+GSQL > RUN QUERY userPostsByTopic()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"@@postTopicCounts": {
+    "cats": 5,
+    "coffee": 1,
+    "query languages": 1,
+    "Graphs": 2,
+    "tigergraph": 3
+  }}]
+}
+----
+--
+====
+
+
+[#_post_accum_clause]
+== `POST-ACCUM` clause
+The optional `POST-ACCUM` clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses.
+`POST-ACCUM` can be used without `ACCUM`.
+If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
+
+When you reference a vertex alias in a DML-sub statement in a `POST-ACCUM` statement, you bind that vertex alias to the `POST-ACCUM` clause implicitly.
+You can also explicitly bind a vertex alias with a `POST-ACCUM` clause by putting the vertex alias in parentheses immediately after the keyword `POST-ACCUM`.
+Each `POST-ACCUM` clause must be bound with one and only one vertex alias.
+
+A `SELECT` statement can have multiple `POST-ACCUM` clauses.
+If you need to run aggregation and other computations by referencing more than one vertex alias, you can use more than one `POST-ACCUM` clause.
+Each `POST-ACCUM` clauses are processed in parallel; it doesn't matter in what order you write them.
+
+[discrete]
+=== Syntax
+
+.EBNF for `POST-ACCUM` clause
+[.wrap,ebnf]
+----
+postAccumClause := POST-ACCUM ["(" vertexAlias ")"] dmlSubStmtList
+dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
+dmlSubStmt := assignStmt           // Assignment
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | dmlSubCaseStmt       // Control Flow
+            | dmlSubIfStmt         // Control Flow
+            | dmlSubWhileStmt      // Control Flow
+            | dmlSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | dmlSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
+
+=== Iteration model
+
+The `ACCUM` clause executes *for each full path* that matches the pattern in the `FROM` clause.
+In contrast, the  `POST-ACCUM` clause executes *for each vertex* in one vertex set; its statements can access the aggregated accumulator result computed in the `ACCUM` clause.
+
+You can think of the matching result of the `FROM` clause and the `WHERE` clause as a virtual table.
+The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
+A `POST-ACCUM` clause acts like a `FOREACH` loop on the one of the columns of vertex result set specified in the `SELECT` clause and only occurs once for each vertex.
+
+If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
+
+For example, below we have three `POST-ACCUM` clauses.
+
+
+[source,gsql]
+----
+INTERPRET QUERY () {
+
+  SumAccum<int> @cnt1;
+  SumAccum<int> @cnt2;
+
+  R   =  SELECT s
+    FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
+    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+      AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
+    ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
+    POST-ACCUM s.@cnt2 += s.@cnt1 <1>
+    POST-ACCUM t.@cnt2 +=1; <2>
+    POST-ACCUM (t) @@globalTCount += 1; <3>
+
+  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
+}
+----
+<1> The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
+<2> The second `POST-ACCUM` iterates through `t`.
+<3> The third `POST-ACCUM` also iterates through `t`, but its DML-sub statements do not reference `t`.
+Rather, the `POST-ACCUM` is bound to `t` explicitly.
+
+
+However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
+
+[source,gsql]
+----
+ POST-ACCUM t.@cnt1 += 1,
+            s.@cnt1 += 1
+----
+
+Also, you may not use more than one alias in a single assignment. The following is not allowed:
+
+[source,gsql]
+----
+ POST-ACCUM t.@cnt1 += s.@cnt + 1
+----
+
+
+=== Multiple `POST-ACCUM` clauses
+
+A `SELECT` statement can have multiple `POST-ACCUM` clauses. Each `POST-ACCUM` may refer to only one vertex alias.
+See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[`POST-ACCUM` section in the Pattern Matching] tutorial for more details.
+
+[discrete]
+=== Examples
+
+This is an example of using `ACCUM` and `POST-ACCUM` in conjunction.
+The `ACCUM` traverses the graph and finds all people who live and work in the same country.
+After this is determined, `POST-ACCUM` examines each vertex (person) to see if they work where they live.
+
+[tabs]
+====
+Query::
++
+--
+.Vertex `POST-ACCUM` Example
+[source,gsql]
+----
+#Show all person who both work and live in the same country
+CREATE QUERY residentEmployees() FOR GRAPH workNet {
+
+  ListAccum<STRING> @company;
+  OrAccum @worksAndLives;
+
+  start = {person.*};
+
+  employees = SELECT s FROM start:s -(worksFor)- :c
+    // If a person works for a company in the same country where they live, add the company to the list
+    ACCUM CASE
+        WHEN (s.locationId == c.country) THEN
+            s.@company += c.id
+        END
+
+    #Check each vertex and see if a person works where they live
+    POST-ACCUM CASE
+        WHEN (s.@company.size() > 0) THEN
+            s.@worksAndLives += True
+        ELSE
+            s.@worksAndLives += False
+    END;
+
+  PRINT employees WHERE (employees.@worksAndLives == True);
+}
+----
+--
+
+Results::
++
+--
+.residentEmployees Result
+[source,gsql]
+----
+GSQL > RUN QUERY residentEmployees()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"employees": [
+    {
+      "v_id": "person11",
+      "attributes": {
+        "interestList": [
+          "sport",
+          "football"
+        ],
+        "skillSet": [10],
+        "skillList": [10],
+        "@worksAndLives": true,
+        "locationId": "can",
+        "interestSet": [ "football", "sport" ],
+        "id": "person11",
+        "@company": ["company5"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "interestList": [ "football", "sport" ],
+        "skillSet": [3],
+        "skillList": [3],
+        "@worksAndLives": true,
+        "locationId": "us",
+        "interestSet": [ "sport", "football" ],
+        "id": "person10",
+        "@company": ["company1"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "interestList": [ "management", "financial" ],
+        "skillSet": [ 3, 2, 1 ],
+        "skillList": [ 1, 2, 3 ],
+        "@worksAndLives": true,
+        "locationId": "us",
+        "interestSet": [ "financial", "management" ],
+        "id": "person1",
+        "@company": ["company1"]
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "interestList": ["engineering"],
+        "skillSet": [ 6, 5, 3, 2 ],
+        "skillList": [ 2, 3, 5, 6 ],
+        "@worksAndLives": true,
+        "locationId": "chn",
+        "interestSet": ["engineering"],
+        "id": "person2",
+        "@company": ["company2"]
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+This is an example of a `POST-ACCUM` only that counts the number of people with a particular gender.
+
+[tabs]
+====
+Query::
++
+--
+.Global POST-ACCUM Example
+[source,gsql]
+----
+#Count the number of person of	a given	gender
+CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
+
+  SumAccum<INT> @@genderCount;
+
+  start = {ANY};
+
+  # Select all person vertices and check the gender attribute
+  friends = SELECT v FROM start:v
+    WHERE v.type == "person"
+    POST-ACCUM (v) CASE
+        WHEN (v.gender == gender) THEN
+            @@genderCount += 1
+    END;
+
+  PRINT @@genderCount;
+}
+----
+--
+
+Results::
++
+--
+.Results for Query personGender
+[source,gsql]
+----
+GSQL > RUN QUERY personGender("Female")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"@@genderCount": 3}]
+}
+----
+--
+====
+
+
+== Updating vertex-attached accumulators
+
+Vertices _referenced via a vertex-attached accumulator of a selected vertex_ may have their vertex-attached accumulators updated in the `ACCUM` clause (but not in the `POST-ACCUM` clause).
+That is, a vertex referenced by a selected vertex can be updated, with some limitations explained below.
+Some examples will help to illustrate this more complex condition.
+
+* Suppose a query declares a vertex-attached _accumulator which holds vertex information_.
+We call this a *vertex-holding accumulator*.
+This could take several forms:
+ ** A scalar accumulator, e.g., `MaxAccum< VERTEX > @maxV`;
+ ** A collection accumulator: e.g., `ListAccum< VERTEX > @listV`;
+ ** An accumulator containing tuple(s), where the tuple type contains a `VERTEX` field.
+* If a vertex `V` is selected, then not only can `V`'s accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the ACCUM clause.
+* Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
+ ** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
+
+[source,gsql]
+----
+ACCUM
+  VERTEX<person> mx = tgt.@maxV,   # assign to local variable
+  mx.@curId += src.id      # access via local variable
+----
+
+* A FOREACH loop can iterate on a vertex-holding collection accumulator. The vertices can now be updated through the loop variable.
+
+[source,gsql]
+----
+ACCUM
+  FOREACH vtx IN src.@setIds DO   # iterate on collection accumulator
+      vtx.@curId += tgt.id        # access via loop variable
+  END
+----
+
+[WARNING]
+====
+The following uses are NOT supported:
+
+* Indirectly activated vertices may not be updated in the `POST-ACCUM` clause or outside a `SELECT` statement.
+* Passing a vertex into the query as an input parameter is not a route to activation.
+* Using a global vertex-holding accumulator is not a route to activation.
+* If a vertex is being indirectly activated by assigning it to a local variable (e.g., a variable declaring in ACCUM or POST-ACCUM), note the following rule, which always applies to all local variables:
+ ** A local variable can be declared and initialized in an ACCUM block once.
+It cannot be declared again or reassigned later in the ACCUM block.
+====
+
+The following query demonstrates updates to indirectly activated vertices.
+
+[tabs]
+====
+Query::
++
+--
+.Updating an Indirectly-Referenced Vertex
+[source,gsql]
+----
+CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
+
+  SetAccum<VERTEX<person>> @posters;
+  SetAccum<VERTEX<person>> @fellows;
+
+   Persons = {person.*};
+   # To each post, attach a list of persons who liked the post
+   likedPosts = SELECT p
+       FROM Persons:src -(liked:e)- post:p
+       ACCUM
+       	p.@posters += src;
+
+    # To each person who liked a post, attach a list of everyone
+    # who also liked one of this person's liked posts.
+	likedPosts = SELECT src
+		FROM likedPosts:src
+		ACCUM
+		  FOREACH v IN src.@posters DO
+		    v.@fellows += src.@posters
+		  END
+        ORDER BY src.subject;
+		
+	PRINT Persons[Persons.@fellows];
+}
+----
+--
+
+Results::
++
+--
+.Results from Query vUpdateIndirectAccums
+[source,gsql]
+----
+GSQL > RUN QUERY vUpdateIndirectAccess()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"Persons": [
+    {
+      "v_id": "person4",
+      "attributes": {"Persons.@fellows": [
+        "person8",
+        "person4"
+      ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {"Persons.@fellows": ["person7"]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {"Persons.@fellows": ["person5"]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {"Persons.@fellows": ["person6"]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {"Persons.@fellows": [ "person8", "person4" ]},
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+== `PER` clause
+
+The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
+
+The `FROM` clause of a `SELECT` statement produces a match table.
+The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row per alias.
+For more information see the xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
+
+== `HAVING` Clause
+
+The optional `HAVING` clause provides constraints on the result set of the `SELECT` statement.
+The constraints are applied *after* `ACCUM` and `POST-ACCUM` actions.
+This differs from the `WHERE` clause, which is applied *before* the `ACCUM` and `POST-ACCUM` actions.
+
+.EBNF for `HAVING` Clause
+[source,ebnf]
+----
+havingClause := HAVING condition
+----
+
+The condition in a `HAVING` clause is applied to each vertex in the `SELECT` set (either source or target vertices) which also fulfilled the `FROM` and `WHERE` conditions.
+The `HAVING` clause is intended to test one or more of the accumulator variables that were updated in the `ACCUM` or `POST-ACCUM` clause, though the condition may be anything that equates to a boolean value.
+If the condition is false for a particular vertex, then that vertex is excluded from the result set.
+
+The following example demonstrates using the `HAVING` clause to constrain a result set based on the vertex accumulator variable which was updated during the `ACCUM` clause.
+
+[tabs]
+====
+Query::
++
+--
+The following query finds all persons meeting a given activity threshold, based on how many posts or likes a person has made.
+
+[source,gsql]
+----
+CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+{
+        SumAccum<int> @activityAmount;
+        start = {person.*};
+        result = SELECT v FROM start:v -(:e)- post:tgt
+                          ACCUM v.@activityAmount +=1
+	                      HAVING v.@activityAmount >= activityThreshold;
+        PRINT result;
+}
+----
+--
+
+Results::
++
+--
+If the activityThreshold parameter is set to 3, the query returns 5 vertices:
+
+.Example 1 Results
+[source,gsql]
+----
+GSQL > RUN QUERY activeMembers(3)
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result": [
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 3,
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "gender": "Female",
+        "@activityAmount": 3,
+        "id": "person5"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 3,
+        "id": "person6"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "gender": "Female",
+        "@activityAmount": 3,
+        "id": "person2"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 3,
+        "id": "person8"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+If the `activityThreshold` parameter is set to 2, the query would return 8 vertices. With `activityThreshold = 4`, the query would return no vertices.
+
+The following example demonstrates the equivalence of a `SELECT` statement in which the condition for the `HAVING` clause is always true.
+
+[tabs]
+====
+Query::
++
+--
+The following query finds all person meeting a given activity threshold, based on how many posts or likes a person has made
+
+.Example 2. HAVING with literal condition
+[source,gsql]
+----
+
+CREATE QUERY printMemberActivity() FOR GRAPH socialNet
+{
+        SumAccum<int> @activityAmount;
+        start = {person.*};
+
+		### --- equivalent statements -----
+        result = SELECT v FROM start:v -(:e)- post:tgt
+					      ACCUM v.@activityAmount +=1
+					      HAVING true;
+
+		result = SELECT v FROM start:v -(:e)- post:tgt
+					      ACCUM v.@activityAmount +=1;
+		### -----
+
+        PRINT result;
+}
+----
+--
+
+Results::
++
+--
+.Results from Query printMemberActivity
+[source,gsql]
+----
+GSQL > RUN QUERY printMemberActivity()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@activityAmount": 4,
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 4,
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 6,
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 4,
+        "id": "person1"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "gender": "Female",
+        "@activityAmount": 6,
+        "id": "person5"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 6,
+        "id": "person6"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "gender": "Female",
+        "@activityAmount": 6,
+        "id": "person2"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {
+        "gender": "Male",
+        "@activityAmount": 6,
+        "id": "person8"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+The following shows an example of equivalent result sets from using `WHERE` vs. `HAVING`.
+Recall that the `WHERE` clause is evaluated before the `ACCUM` and that the `HAVING` clause is evaluated after the `ACCUM`.
+Both constrain the result set based on a condition that vertices must meet.
+
+[tabs]
+====
+Query::
++
+--
+.Example 3. HAVING vs. WHERE
+[source,gsql]
+----
+# Compute the total post activity for each male person.
+# Because the gender of the vertex does not change, evaluating whether the person vertex
+# is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not
+# change the result. However, if the condition in the HAVING clause could change within
+# the ACCUM clause, these statements would produce different results.
+
+CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+{
+    SumAccum<INT> @activityAmount;
+    start = {person.*};
+
+    ### --- statements produce equivalent results
+    result1 = SELECT v FROM start:v -(:e)- post:tgt
+                      WHERE v.gender == "Male"
+                      ACCUM v.@activityAmount +=1;
+
+    result2 = SELECT v FROM start:v -(:e)- post:tgt
+                      ACCUM v.@activityAmount +=1
+                      HAVING v.gender == "Male";
+
+    PRINT result2[result2.@activityAmount];
+    PRINT result2[result2.@activityAmount];
+}
+----
+--
+
+Results::
++
+--
+.Results from Query ActiveMaleMembers
+[source,gsql]
+----
+GSQL > RUN QUERY activeMaleMembers()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"result2": [
+      {
+        "v_id": "person3",
+        "attributes": {"result2.@activityAmount": 4},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person7",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person1",
+        "attributes": {"result2.@activityAmount": 4},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person6",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person8",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      }
+    ]},
+    {"result2": [
+      {
+        "v_id": "person3",
+        "attributes": {"result2.@activityAmount": 4},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person7",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person1",
+        "attributes": {"result2.@activityAmount": 4},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person6",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      },
+      {
+        "v_id": "person8",
+        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      }
+    ]}
+  ]
+}
+----
+--
+====
+
+
+The following example has a compilation error because the result set is taken from the source vertices, but the `HAVING` condition is checking the target vertices.
+
+[tabs]
+====
+Query::
++
+--
+.Example 4. HAVING the wrong vertex set
+[source,gsql]
+----
+# find all person having a post subject about cats
+# This query is illegal because the having condition is testing the wrong vertex set
+CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet
+{
+        start = {person.*};
+
+        result = SELECT v FROM start:v -(:e)- post:tgt
+                          HAVING tgt.subject == "cats";
+        PRINT result;
+}
+----
+--
+
+Results::
++
+--
+.Compilation Error for printMemberAboutCats
+[source,console]
+----
+$ gsql printMemberAboutCats.gsql
+Semantic Check Error in query printMemberAboutCats (SEM-50): line 8, col 33
+The SELECT block selects src, but the HAVING clause uses tgt
+----
+--
+====
+
+
+== `ORDER BY` Clause
+
+The optional `ORDER BY` clause sorts the result set.
+
+.EBNF for ORDER BY Clause
+[source,ebnf]
+----
+orderClause := ORDER BY expr [ASC | DESC] ["," expr [ASC | DESC]]*
+----
+
+`ASC` specifies ascending order, and `DESC` specifies descending order.
+If neither is specified, then ascending order is used.
+
+Each expression must refer to the attributes or accumulators of a member of the result set, and the expression must evaluate to a sortable value (e.g., a number or a string).
+
+`ORDER BY` offers hierarchical sorting by allowing a comma-separated list of expressions, sorting first by the leftmost expr.
+It uses the next expression only to sort items where the current sort expr results in identical values.
+Any items in the result set which cannot be sorted (because the sort expressions do not pertain to them) will appear at the end of the set, after the sorted items.
+
+
+The following example demonstrates the use of `ORDER BY` with multiple expressions.
+The returned vertex set is first ordered by the number of friends of the vertex, and then ordered by the number of coworkers of that vertex.
+
+[tabs]
+====
+Query::
++
+--
+.topPopular.gsql: ORDER BY Descending
+[source,gsql]
+----
+# find the most popular people, sorting first based on the number as friends
+# and then in case of a tie by the number of coworkers
+CREATE QUERY topPopular() FOR GRAPH friendNet
+{
+	SumAccum<INT> @numFriends;
+	SumAccum<INT> @numCoworkers;
+	start = {person.*};
+
+	result = SELECT v FROM start -((friend|coworker):e)- person:v
+	       	 ACCUM CASE WHEN e.type == "friend" THEN v.@numFriends += 1
+		       	    WHEN e.type == "coworker" THEN v.@numCoworkers += 1
+		       END
+		 ORDER BY v.@numFriends DESC, v.@numCoworkers DESC;
+
+	PRINT result;
+}
+----
+--
+
+Results::
++
+--
+.topPopular.json
+[source,gsql]
+----
+GSQL > RUN QUERY topPopular()
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result": [
+    {
+      "v_id": "person9",
+      "attributes": {
+        "@numCoworkers": 3,
+        "@numFriends": 5,
+        "id": "person9"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {
+        "@numCoworkers": 1,
+        "@numFriends": 4,
+        "id": "person8"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person12",
+      "attributes": {
+        "@numCoworkers": 1,
+        "@numFriends": 4,
+        "id": "person12"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "@numCoworkers": 4,
+        "@numFriends": 3,
+        "id": "person6"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "@numCoworkers": 3,
+        "@numFriends": 3,
+        "id": "person1"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person4",
+      "attributes": {
+        "@numCoworkers": 5,
+        "@numFriends": 2,
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "@numCoworkers": 3,
+        "@numFriends": 2,
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "@numCoworkers": 3,
+        "@numFriends": 2,
+        "id": "person2"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "@numCoworkers": 1,
+        "@numFriends": 2,
+        "id": "person10"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "@numCoworkers": 6,
+        "@numFriends": 1,
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "@numCoworkers": 5,
+        "@numFriends": 1,
+        "id": "person5"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person11",
+      "attributes": {
+        "@numCoworkers": 1,
+        "@numFriends": 1,
+        "id": "person11"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+== `LIMIT` Clause
+
+The optional `LIMIT` clause sets constraints on the number and ranking of items included in the final result set.
+
+.EBNF for `LIMIT` Clause
+[source,ebnf]
+----
+limitClause := LIMIT ( expr | expr "," expr | expr OFFSET expr )
+----
+
+Each of the expression must evaluate to a non-negative integer.
+To understand `LIMIT`, note that the tentative result set is held in the computer as a list of vertices.
+If the query has an `ORDER BY` clause, the order is specified; otherwise the list order is unknown.
+Assume we number the vertices as `v_1` , `v_2` , ..., `v_n`.
+The `LIMIT` clause specifies a range of vertices, starting from a lower position in the list to an upper position.
+
+There are three forms:
+
+.`LIMIT` scenarios
+[source.wrap,gsql]
+----
+result = SELECT v FROM S -(:e)- :v LIMIT k; <1>
+result = SELECT v FROM S -(:e)- :v LIMIT j, k; <2>
+result = SELECT v FROM S -(:e)- :v LIMIT k OFFSET j; <3>
+----
+<1> Case 1: k = Count
+<2> Case 2: j = Offset from the start of the list, k = Count
+<3> Case 3: k = Count, j = Offset from the start of the list
+
+Case 1: `LIMIT k`
+
+* When a single expr is provided, `LIMIT` returns the first k elements from the tentative result set.
+If there are fewer than *k* elements available, then all elements will be returned in the result set.
+If k=5 and the tentative result set has at least 5 items, then the final result list will be [ v_1 , v_2 , v_3 , v_4 , v_5 ].
+
+Case 2: `LIMIT j, k`
+
+* When a comma separates two expressions, `LIMIT` treats the first expression *j* as an offset.
+That is, it skips the first *j* items in the list.
+The second expr *k* tells the maximum number of items to include. If the list has at least 7 items, then `LIMIT 2, 5` would return `[ v_3 , v_4 , v_5, v_6  _,_ v_7 ]`.
+
+Case 3: `LIMIT k OFFSET j`
+
+* The behavior of Case 3 is the same as that of Case 2, except that the syntax is different.
+The keyword `OFFSET` separates the two expressions, and the count comes before the offset, rather than vice versa.
+If the list has at least 7 items, then `LIMIT 5 OFFSET 2` would return `[ v_3 , v_4 , v_5, v_6 , v_7 ]`.
+
+If any of the expressions evaluate to a negative integer, the results are undefined.
+
+[NOTE]
+====
+`OFFSET` is intended for result sets which are in a known order.
+It is a compile-time error to use OFFSET without the ORDER BY clause.
+====
+
+The following examples demonstrate the various forms of the LIMIT clause.
+
+The first example shows the `LIMIT` clause when used as an upper limit. It returns a result set with a maximum size of 4 elements in the set.
+
+[tabs]
+====
+Query::
++
+--
+.limitEx1.gsql: LIMIT by some number
+[source,gsql]
+----
+CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
+{
+        start = {person.*};
+
+        result1 = SELECT v FROM start:v
+                ORDER BY v.id
+                LIMIT k;
+
+		PRINT result1[result1.id]; // api v2
+}
+----
+--
+
+Results::
++
+--
+.limit1Ex.json Results
+
+[source,gsql]
+----
+GSQL > RUN QUERY limitEx1(4)
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result1": [
+    {
+      "v_id": "person1",
+      "attributes": {"result1.id": "person1"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {"result1.id": "person10"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person11",
+      "attributes": {"result1.id": "person11"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person12",
+      "attributes": {"result1.id": "person12"},
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+The following example shows how to use the `LIMIT` clause with an offset.
+
+[tabs]
+====
+Query::
++
+--
+.limit2Ex.gsql: `LIMIT` with lower-bound and size
+[source,gsql]
+----
+CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
+{
+        start = {person.*};
+        result2 = SELECT v FROM start:v
+                ORDER BY v.id
+                LIMIT j, k;
+
+        PRINT result2[result2.id]; // api v2
+}
+----
+--
+
+Results::
++
+--
+.limit2Ex.json Results
+[source,gsql]
+----
+GSQL > RUN QUERY limitEx2(2,3)
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result2": [
+    {
+      "v_id": "person11",
+      "attributes": {"result2.id": "person11"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person12",
+      "attributes": {"result2.id": "person12"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {"result2.id": "person2"},
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====
+
+
+The following example shows the alternative syntax for a result size limit with an offset.
+This time we try larger values for offset and size.
+In a large data set, `limitTest(5,20)` might return 20 vertices, but since we don't have 25 vertices in the original data, the output is fewer than 20 vertices.
+
+[tabs]
+====
+Query::
++
+--
+.limit3Ex.gsql: `LIMIT` with `OFFSET`
+[source,gsql]
+----
+CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
+{
+        start = {person.*};
+
+        result3 = SELECT v FROM start:v
+                ORDER BY v.id
+                LIMIT k OFFSET j;
+
+        PRINT result3[result3.id]; // api v2
+}
+----
+--
+
+Results::
++
+--
+.limit3Ex.json Results
+[source,gsql]
+----
+GSQL > RUN QUERY limitEx3(5,20)
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"result3": [
+    {
+      "v_id": "person3",
+      "attributes": {"result3.id": "person3"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person4",
+      "attributes": {"result3.id": "person4"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {"result3.id": "person5"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {"result3.id": "person6"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {"result3.id": "person7"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {"result3.id": "person8"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person9",
+      "attributes": {"result3.id": "person9"},
+      "v_type": "person"
+    }
+  ]}]
+}
+----
+--
+====

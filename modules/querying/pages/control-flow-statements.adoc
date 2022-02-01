@@ -74,10 +74,10 @@ CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRA
        start = {seed};
 
        IF includeCoworkers THEN
-          friends = SELECT v FROM start -((friend | coworker):e)-> :v
+          friends = SELECT v FROM start -((friend | coworker):e)- :v
                 ACCUM @@numFriends +=1;
        ELSE
-          friends = SELECT v FROM start -(friend:e)-> :v
+          friends = SELECT v FROM start -(friend:e)- :v
                 ACCUM @@numFriends +=1;
        END;
        PRINT @@numFriends, includeCoworkers;
@@ -135,7 +135,7 @@ CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
 {
     SumAccum<INT> @@numberPosts = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted:e)-> :postVertex
+    result = SELECT postVertex FROM start -(posted:e)- :postVertex
            ACCUM @@numberPosts += 1;
 
     IF  @@numberPosts < 2 THEN
@@ -197,9 +197,9 @@ CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
     SumAccum<INT> @@numberPosts = 0;
     SumAccum<INT> @@numberLikes = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted:e)-> :postVertex
+    result = SELECT postVertex FROM start -(posted:e)- :postVertex
            ACCUM @@numberPosts += 1;
-    result = SELECT likedPost FROM start -(liked:e)-> :likedPost
+    result = SELECT likedPost FROM start -(liked:e)- :likedPost
            ACCUM @@numberLikes += 1;
 
     IF @@numberPosts < 2 THEN
@@ -256,7 +256,7 @@ CREATE QUERY ratePosts2() FOR GRAPH socialNet {
     SumAccum<INT> @rating = 0;
     allPeople = {person.*};
 
-    results = SELECT v FROM allPeople -(:e)-> post:v
+    results = SELECT v FROM allPeople -(:e)- post:v
         ACCUM IF e.type == "posted" THEN
                 IF v.subject == "cats" THEN
                   v.@rating += -1     # -1 if post is about cats
@@ -414,7 +414,7 @@ CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR 
 
     WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
         visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-            FROM visitedVertices-(:e)->:s
+            FROM visitedVertices-(:e)-:s
             WHERE s.@visited == false
             ACCUM s.@visited = true,
                 CASE
@@ -462,7 +462,7 @@ CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
        SumAccum<INT> @@unknown = 0;
        startingVertex = {seed};
 
-       people = SELECT v FROM startingVertex -(friend:e)->:v
+       people = SELECT v FROM startingVertex -(friend:e)-:v
        	        ACCUM CASE v.gender
 	      	      WHEN "Male" THEN @@males += 1
 		   		  WHEN "Female" THEN @@females +=1
@@ -597,7 +597,7 @@ CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
   SumAccum<INT> @rating = 0;
   allPeople = {person.*};
 
-  results = SELECT v FROM allPeople -(:e)-> post:v
+  results = SELECT v FROM allPeople -(:e)- post:v
     ACCUM CASE e.type
       WHEN "posted" THEN
         CASE
@@ -765,7 +765,7 @@ CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
 
     WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
         visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)->:s
+                FROM visitedVertices-(:e)-:s
                 WHERE s.@visited == false
                 POST-ACCUM s.@visited = true;
         reachableVertices = reachableVertices UNION visitedVertices;
@@ -971,7 +971,7 @@ CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
 
     WHILE visitedVertices.size() !=0 LIMIT 2 DO # loop terminates when all neighbors within 2-hops of the seed vertex are visited
         visitedVertices = SELECT s               # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)->:s
+                FROM visitedVertices-(:e)-:s
                 WHERE s.@visited == false
                 POST-ACCUM s.@visited = true;
         reachableVertices = reachableVertices UNION visitedVertices;
@@ -1409,7 +1409,7 @@ CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
   # Use the vertex IDs as Seeds for vertex sets
   FOREACH item IN @@companyList DO
     companyItem = {item};
-    employees = SELECT t FROM companyItem -(worksFor)-> :t
+    employees = SELECT t FROM companyItem -(worksFor)- :t
                 WHERE (t.locationId == country);
     PRINT employees;
   END;
@@ -1712,7 +1712,7 @@ CREATE QUERY friendGender() FOR GRAPH socialNet {
   start = {person.*};
 
   # Record a list showing each friend's gender
-  socialMembers = SELECT s from start:s -(friend)-> :g
+  socialMembers = SELECT s from start:s -(friend)- :g
               ACCUM s.@friendGender += (g.gender)
 
               # Loop over each list of genders and total them
@@ -1809,14 +1809,14 @@ CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
 
     friends (ANY) = {seed};
     WHILE @@foundCatPost != true AND friends.size() > 0 DO
-          posts = SELECT v FROM friends-(posted:e)->:v
+          posts = SELECT v FROM friends-(posted:e)-:v
                   ACCUM CASE WHEN v.subject == "cats" THEN @@foundCatPost += true END;
 
           IF @@foundCatPost THEN
             BREAK;
           END;
 
-          friends = SELECT v FROM friends-(friend:e)->:v
+          friends = SELECT v FROM friends-(friend:e)-:v
                   WHERE v.@visited == false
                   ACCUM v.@visited = true;
           @@degree += 1;
@@ -1877,7 +1877,7 @@ CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
         @@distance += 1;
         # traverse from visitedVertices to its friends
         friends = SELECT v
-            FROM visitedVertices -(friend:e)-> :v
+            FROM visitedVertices -(friend:e)- :v
             WHERE v.@visited == false
             POST-ACCUM v.@visited = true;
         PRINT @@distance, friends;
@@ -1889,7 +1889,7 @@ CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
         END;
         # if fewer than 4 friends, add in coworkers
         coworkers = SELECT v
-            FROM visitedVertices -(coworker:e)-> :v
+            FROM visitedVertices -(coworker:e)- :v
             WHERE v.@visited == false
             POST-ACCUM v.@visited = true;
         visitedVertices = friends UNION coworkers;
@@ -2045,7 +2045,7 @@ CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
     visitedVertices (ANY) = {seed};
     WHILE true DO
         visitedVertices = SELECT v                  # traverse from x to its unvisited neighbors
-                FROM visitedVertices -(:e)-> :v
+                FROM visitedVertices -(:e)- :v
                 WHERE v.@visited == false
                 ACCUM CASE
                     WHEN (v.type == "company") THEN # count the number of company vertices encountered

@@ -1,5 +1,5 @@
 .Querying
-* xref:introduction-query.adoc[]
+* xref:index.adoc[]
 * xref:query-operations.adoc[]
 * xref:distributed-query-mode.adoc[]
 * xref:data-types.adoc[]
@@ -18,7 +18,8 @@
 ** xref:func/type-conversion-functions.adoc[]
 ** xref:func/vertex-methods.adoc[]
 * xref:declaration-and-assignment-statements.adoc[]
-* xref:select-statement/README.adoc[]
+* xref:select-statement/index.adoc[]
+** xref:select-statement/select-statement-v1.adoc[]
 ** xref:select-statement/sql-like-select-statement.adoc[]
 * xref:control-flow-statements.adoc[]
 * xref:data-modification-statements.adoc[]

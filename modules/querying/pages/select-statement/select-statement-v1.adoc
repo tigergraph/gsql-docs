@@ -1,152 +1,11 @@
-= SELECT Statement
+= SELECT Statement (Syntax V1)
+:description: Reference documentation for the legacy V1 syntax of the GSQL SELECT statement.
 
-== GSQL Syntax Versions
+This page describes the GSQL `SELECT` statement in GSQL Syntax V1.
+The default syntax is syntax v2.
+To use syntax v1, you need to declare the syntax at the query level or in a xref:tigergraph-server:gsql-shell:gsql-sessions.adoc#_session_parameters[session parameter].
 
-[CAUTION]
-====
-Starting with TigerGraph 2.6, there are now two versions of the GSQL Query Language. Both are available in the product. The original version is called GSQL Syntax V1. GSQL Syntax V2 was introduced to provide more flexible and powerful xref:tutorials:pattern-matching/README.adoc[Pattern matching]. A query indicates which grammar to use in the SYNTAX clause of the CREATE QUERY header. V1 is the default.
-
-As new features are being added to GSQL, some are available only in V2. In the future, we plan to transition so that Syntax V2 will be the default.
-
-The key differences between the two grammars:
-
-. SQL-like Tabular SELECT is only in Syntax V2 (since TigerGraph 3.1)
-. Multi-hop Pattern Matching is only in Syntax V2 (since TigerGraph 2.6)
- ** In V2, each SELECT statement can traverse a multi-hop path.
-  *** The traversal direction is under the control of the query writer, with arrowheads on each edge set to show the direction.
-  *** There is no arrowhead outside the parentheses:
-+
-`Start:s -( (ForwardEdge> | <BackwardEdge):e )- Target:t`
-
-  *** Users can write paths that explicitly show multiple hops, and they can use a Kleene star (*) to indicate repetition. `Start:s -(Edge1>:e1)- Middle:m -(<Edge2:e2)- Target:t` or `Start:s -(Edge*1..3)- Target:t`
- ** In V1 (default), each SELECT statement can traverse one hop (from a set of vertices to their adjacent vertices).
-  *** To write a multi-hop query, you write a sequence of SELECT statements.
-  *** The traversal action is from left to right, and the notation uses "ASCII art" to depict a connection, either with a rightward facing arrowhead or no arrowhead: `+Start:s -( Edges:e )-> Target:t+` or  `Start:s -( Edges:e )- Target:t`
-====
-
-This section discusses the SELECT statement in-depth and covers the following EBNF syntax. Note that there are now two forms for a SELECT statement, the classic GSQL form `gsqlSelectBlock`, and the new SQL-like form `sqlSelectBlock`. Since GSQL has always been similar to SQL in many ways, there are only a few differences to know about.
-
-.EBNF for Select Statement
-[source,ebnf]
-----
-selectStmt  := gsqlSelectBlock
-             | sqlSelectBlock
-
-gsqlSelectBlock := gsqlSelectClause
-               fromClause
-               [sampleClause]
-               [whereClause]
-               [accumClause]
-               [postAccumClause]*
-               [havingClause]
-               [orderClause]
-               [limitClause]
-
-sqlSelectBlock := sqlSelectClause
-               fromClause
-               [whereClause]
-               [groupByClause]
-               [havingClause]
-               [orderClause]
-               [limitClause]
-
-gsqlSelectClause := ertexSetName "=" SELECT vertexAlias
-sqlSelectClause := SELECT [DISTINCT] columnExpr ("," columnExpr)*
-                   INTO tableName
-columnExpr := expr [AS columnName]
-            | aggregator "("[DISTINCT] expr ")" [AS columnName]
-columnName := name
-tableName := name
-
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
-
-step   :=  stepSourceSet ["-" "(" stepEdgeSet ")" ("-"|"->") stepVertexSet]
-stepV2 :=  stepVertexSet ["-" "(" stepEdgeSet ")" "-" stepVertexSet]
-
-stepSourceSet := vertexSetName [":" vertexAlias]
-stepEdgeSet := [stepEdgeTypes] [":" edgeAlias]
-stepVertexSet := [stepVertexTypes] [":" vertexAlias]
-alias := (vertexAlias | edgeAlias)
-vertexAlias := name
-edgeAlias := name
-
-stepEdgeTypes := atomicEdgeType | "(" edgeSetType ["|" edgeSetType]* ")"
-atomicEdgeType := "_" | ANY | edgeSetType
-edgeSetType := edgeType | paramName | globalAccumName
-
-stepVertexTypes := atomicVertexType | "(" vertexSetType ["|" vertexSetType]* ")"
-atomicVertexType := "_" | ANY | vertexSetType
-vertexSetType := vertexType | paramName | globalAccumName
-
-#----------# Pattern Matching #----------#
-pathPattern := stepVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
-
-pathEdgePattern := atomicEdgePattern
-                 | "(" pathEdgePattern ")"
-                 | pathEdgePattern "." pathEdgePattern
-                 | disjPattern
-                 | starPattern
-
-atomicEdgePattern  := atomicEdgeType		
-        	        | atomicEdgeType ">"	
-        	        | "<" atomicEdgeType	
-
-disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
-
-starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
-
-starBounds := CONST_INT ".." CONST_INT
-            | CONST_INT ".."
-            | ".." CONST_INT
-            | CONST_INT
-#----------------------------------------#
-sampleClause := SAMPLE ( expr | expr "%" ) EDGE WHEN condition
-              | SAMPLE expr TARGET WHEN condition
-              | SAMPLE expr "%" TARGET PINNED WHEN condition
-
-whereClause := WHERE condition
-
-accumClause := [perClauseV2] ACCUM dmlSubStmtList
-
-perClauseV2 := PER "(" alias ["," alias] ")"
-
-postAccumClause := "POST-ACCUM" dmlSubStmtList
-
-dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
-
-dmlSubStmt := assignStmt           // Assignment
-            | funcCallStmt         // Function Call
-            | gAccumAccumStmt      // Assignment
-            | lAccumAccumStmt      // Assignment
-            | attrAccumStmt        // Assignment
-            | vAccumFuncCall       // Function Call
-            | localVarDeclStmt     // Declaration
-            | dmlSubCaseStmt       // Control Flow
-            | dmlSubIfStmt         // Control Flow
-            | dmlSubWhileStmt      // Control Flow
-            | dmlSubForEachStmt    // Control Flow
-            | BREAK                // Control Flow
-            | CONTINUE             // Control Flow
-            | insertStmt           // Data Modification
-            | dmlSubDeleteStmt     // Data Modification
-            | printlnStmt          // Output
-            | logStmt              // Output
-
-vAccumFuncCall := vertexAlias "." localAccumName ("." funcName "(" [argList] ")")+
-
-groupByClause := GROUP BY groupExpr ("," groupExpr)*
-groupExpr := expr
-
-havingClause := HAVING condition
-
-orderClause := ORDER BY expr [ASC | DESC] ["," expr [ASC | DESC]]*
-
-limitClause := LIMIT ( expr | expr "," expr | expr OFFSET expr )
-----
-
-
-
-The SELECT block uses a _step_ _pattern_ or _path_ _pattern_ to select some of the graph's vertices and edges. There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set. The final output of a query is either a vertex set known as the _result set_ or a table.
+The `SELECT` block uses a _step_ _pattern_ to select some of the graph's vertices and edges. There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set. The final output of a query is either a vertex set known as the _result set_ or a table.
 
 [WARNING]
 ====
@@ -155,7 +14,6 @@ Size limitation
 There is a maximum size limit of 2 GB for the result set of a SELECT block . If the result of the SELECT block is larger than 2 GB, the system will return no data. NO error message is produced.
 ====
 
-== GSQL SELECT Statement
 
 .EBNF for GSQL Select Statement
 [source,ebnf]
@@ -175,7 +33,7 @@ gsqlSelectClause := vertexSetName "=" SELECT vertexAlias
 
 
 
-In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports xref:querying:select-statement/sql-like-select-statement.adoc[SQL-like SELECT statements] with tabular output.
+In classic GSQL, the SELECT statement is an assignment statement with a SELECT block on the right-hand side. The initial clause is the SELECT clause: `SELECT vertexAlias`. Its purpose is to specify which set of vertices from the FROM clause is to become the output. The classic SELECT clause may contain only one item: a vertex alias defined in the FROM clause. As of v3.1, the vertex alias may be from anywhere in a multi-hop pattern, not only an endpoint. GSQL now also supports xref:querying:select-statement/sql-like-select-statement.adoc[SQL-like SELECT statements] with tabular output.
 
 The <<_from_clause>> defines a path pattern to traverse in the graph, and each vertex in the path pattern can be given a vertexAlias name. Thus, the SELECT clause picks the set of vertices at one of these points in the pattern -- the source vertices, the target vertices, or those from an interior point in a multi-hop path -- to be the output vertices.
 
@@ -185,7 +43,7 @@ image::select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop G
 
 == FROM Clause
 
-In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. In xref:tutorials:pattern-matching/README.adoc[Pattern Matching] (Syntax v2), the pattern can be multiple hops long. Path patterns also have many other options for finer control and greater flexibility.
+In classic (Syntax v1) GSQL, the FROM clause describes one step or hop pattern.
 
 .FROM clause
 [source,ebnf]
@@ -193,7 +51,8 @@ In classic (Syntax v1) GSQL, the FROM clause described one step or hop pattern. 
 fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
 ----
 
-A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices. We typically use the names Source and Target for the starting and ending vertex sets: `+Source -(Edges)-> Target+`
+A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
+We typically use the names Source and Target for the starting and ending vertex sets: `+Source -(Edges)-> Target+`
 
 The step pattern defines constraints for the Source set, the Edge set, and the Target set. The result of the FROM clause can be interpreted as a 3-column virtual table called the match table. Each row is a 3-element tuple: (source vertex, connected edge, target vertex).
 
@@ -242,7 +101,7 @@ Query::
 [source,gsql]
 ----
 # displays all 'post'-type vertices
-CREATE QUERY printAllPosts() FOR GRAPH socialNet
+CREATE QUERY printAllPosts() FOR GRAPH socialNet SYNTAX V1
 {
   start =   {post.*};			   # initialized with all vertices of type 'post'
   results = SELECT s FROM start:s; # select these vertices
@@ -398,8 +257,10 @@ The Source set is all Persons, but the pattern will not include all Persons. It 
 
 [CAUTION]
 ====
-The GSQL grammar allows the righthand enclosure to be either `)-` or +
-`+)->+`. Previously, we recommended the arrowhead `+)->+` . However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-` Syntax v2 has a specific semantic meaning for the arrowheads.
+The GSQL grammar allows the right-hand enclosure to be either `)-` or +
+`+)->+`. Previously, we recommended the arrowhead `+)->+` .
+However, for better compatibility with the new V2 pattern matching syntax, we now recommend the headless version: `)-`.
+Syntax v2 has a specific semantic meaning for the arrowheads.
 ====
 
 === Edge Set and Target Vertex Set Options
@@ -410,12 +271,12 @@ The GSQL grammar allows the righthand enclosure to be either `)-` or +
 
 . The edge set (*`stepEdgeSet`*) and target vertex set (*`stepVertexSet`*) obey very similar rules. Each may be a set specifier (*`stepEdgeTypes`* or *`stepVertexTypes`*) followed optionally by an alias.
 . The set specifier can be any of the following:
- ** *`"_"`* or *`"ANY"`* or <blank>, which means any edge/vertex.
- ** a named type (*`edgeType`* or *`vertexType`*)
- ** a global SetAcum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
- ** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:query-operations.adoc[*Dynamic Querying*].
- ** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
- ** The list of types must contain the same type of specifiers.
+** *`"_"`* or *`"ANY"`* or <blank>, which means any edge/vertex.
+** a named type (*`edgeType`* or *`vertexType`*)
+** a global SetAccum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
+** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:query-operations.adoc[*Dynamic Querying*].
+** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
+** The list of types must contain the same type of specifiers.
 +
 [source,ebnf]
 ----
@@ -466,13 +327,15 @@ vertexSetType := vertexType | paramName | globalAccumName
 [NOTE]
 ====
 Parentheses are always needed around the edge type in a FROM clause: +
-FROM Source:s -(eType:e)- Target:t
+`FROM Source:s -(eType:e)- Target:t`
 
 Parentheses are also needed if a vertexEdgeType is the union of more than one or more individual edge types or vertex types: +
-FROM Source:s -((eType1 | eType2):e) - Target:t
+`FROM Source:s -((eType1 | eType2):e) - Target:t`
 
-Note the double set of parentheses for the edge specifier. If these is an edge alias, these parentheses are needed. If however there is no edge alias, it is legal to have just a single set of parentheses: +
-FROM Source:s -(eType1 | eType2) - Target:t
+Note the double set of parentheses for the edge specifier.
+If there is an edge alias, these parentheses are needed.
+If however there is no edge alias, it is legal to have just a single set of parentheses: +
+`FROM Source:s -(eType1 | eType2) - Target:t`
 ====
 
 Either the source vertex set ( s ) or target vertex set ( t ) can be used as the SELECT argument, which determines the result of the SELECT statement. Note the small difference in the two SELECT statements below.
@@ -502,10 +365,10 @@ Target vertex type inference::
 --
 [source,gsql]
 ----
-resultSet3 = SELECT v FROM Source:v-(eType:e)->(V1|V2):t;
-resultSet4 = SELECT v FROM Source:v-(eType:e)->:t;
-resultSet5 = SELECT v FROM Source:v-(eType:e)->ANY:t;
-resultSet6 = SELECT v FROM Source:v-(eType:e)->_:t;
+resultSet3 = SELECT v FROM Source:v-(eType:e)-(V1|V2):t;
+resultSet4 = SELECT v FROM Source:v-(eType:e)-:t;
+resultSet5 = SELECT v FROM Source:v-(eType:e)-ANY:t;
+resultSet6 = SELECT v FROM Source:v-(eType:e)-_:t;
 ----
 --
 
@@ -514,10 +377,10 @@ Edge type inference::
 --
 [source,gsql]
 ----
-resultSet7 = SELECT v FROM Source:v-((E1|E2|E3):e)->tType:t;
-resultSet8 = SELECT v FROM Source:v-(:e)->tType:t;
-resultSet9 = SELECT v FROM Source:v-(_:e)->tType:t;
-resultSet10 = SELECT v FROM Source:v-(ANY:e)->tType:t;
+resultSet7 = SELECT v FROM Source:v-((E1|E2|E3):e)-tType:t;
+resultSet8 = SELECT v FROM Source:v-(:e)-tType:t;
+resultSet9 = SELECT v FROM Source:v-(_:e)-tType:t;
+resultSet10 = SELECT v FROM Source:v-(ANY:e)-tType:t;
 ----
 --
 ====
@@ -536,7 +399,7 @@ Query::
 # uses various SELECT statements (some of which are equivalent) to print out
 # either the posts made by the given user, the posts liked by the given
 # user, or the posts made or liked by the given user.
-CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
+CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet  SYNTAX V1
 {
 	start = {seed}; # initialize starting set of vertices
 
@@ -544,11 +407,11 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
 	# --- statements produce equivalent results
 	# select all 'post' vertices which can be reached from 'start' in one hop
 	# 	using an edge of type 'liked'
-	allPostsLiked = SELECT targetVertex FROM start -(liked:e)-> post:targetVertex;
+	allPostsLiked = SELECT targetVertex FROM start -(liked:e)- post:targetVertex;
 
 	# select all vertices of any type which can be reached from 'start' in one hop
 	# 	using an edge of type 'liked'
-	allPostsLiked = SELECT targetVertex FROM start -(liked:e)-> :targetVertex;
+	allPostsLiked = SELECT targetVertex FROM start -(liked:e)- :targetVertex;
 	# ----
 
 
@@ -556,12 +419,12 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
 	# start with the vertex set from above, and traverse all edges of type "posted"
   	# 	(locally those edges are just given a name 'e' in case they need accessed)
   	# 	and return all vertices of type 'post' which can be reached within one-hop of 'start' vertices
-	allPostsMade = SELECT targetVertex FROM start -(posted:e)-> post:targetVertex;
+	allPostsMade = SELECT targetVertex FROM start -(posted:e)- post:targetVertex;
 
 	# start with the vertex set from above, and traverse all edges of type "posted"
   	# 	(locally those edges are just given a name 'e' in case they need accessed)
   	# 	and return all vertices of any type which can be reached within one-hop of 'start' vertices
-	allPostsMade = SELECT targetVertex FROM start -(posted:e)-> :targetVertex;
+	allPostsMade = SELECT targetVertex FROM start -(posted:e)- :targetVertex;
 	# ----
 
 
@@ -570,20 +433,20 @@ CREATE QUERY printAllPosts2(vertex<person> seed) FOR GRAPH socialNet
 	# 	using an edge of any type
 	# not equivalent to any statement. because it doesn't restrict the edge type,
 	# 	this will include any vertex connected by 'liked' or 'posted' edge types
-	allPostsLikedOrMade = SELECT t FROM start -(:e)-> t;
+	allPostsLikedOrMade = SELECT t FROM start -(:e)- t;
 
 	# select all vertices of type 'post' which can be reached from 'start' in one hop
 	#	using an edge of type either 'posted' or 'liked'
-	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)-> post:t;
+	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)- post:t;
 
 	# select all vertices of any type which can be reached from 'start' in one hop
 	#	using an edge of type either 'posted' or 'liked/
-	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)-> :t;
-	
+	allPostsLikedOrMade = SELECT t FROM start -((posted|liked):e)- :t;
+
 	#option for simplified parentheses in edge pattern:
-	allPostsLikedOrMade = SELECT t FROM start - (posted|liked)-> :t
+	allPostsLikedOrMade = SELECT t FROM start - (posted|liked)- :t
 	# ----
-	
+
 	PRINT allPostsLiked;
     PRINT allPostsMade;
     PRINT allPostsLikedOrMade;
@@ -743,21 +606,21 @@ Query::
 # uses a SELECT statement to print out everything related to a given user
 # 	this includes posts that the user liked, posts that the user made, and friends
 # 	of the user
-CREATE QUERY printAllRelatedItems(vertex<person> seed) FOR GRAPH socialNet
+CREATE QUERY printAllRelatedItems(vertex<person> seed) FOR GRAPH socialNet  SYNTAX V1
 {
 	sourceVertex = {seed};
-	
+
 	# -- statements produce equivalent output
 	# returns all vertices of type either 'person' or 'post' that can be reached
 	# 	from the sourceVertex set using one edge of any type
-	everythingRelated = SELECT v FROM sourceVertex -(:e)-> (person|post):v;
+	everythingRelated = SELECT v FROM sourceVertex -(:e)- (person|post):v;
 
 	# returns all vertices of any type that can be reached from the sourceVertex
 	# 	using one edge of any type
 	# this statement is equivalent to the above one because the graph schema only
 	#	has vertex types of either 'person' or 'post'. if there were more vertex
 	#	types present, these would not be equivalent.
-	everythingRelated = SELECT v FROM sourceVertex -(:e)-> :v;
+	everythingRelated = SELECT v FROM sourceVertex -(:e)- :v;
 	# --
 
 	PRINT everythingRelated;
@@ -882,7 +745,8 @@ GSQL > RUN QUERY printAllRelatedItems("person6")
 
 === Vertex and Edge Aliases
 
-Vertex and edge _aliases_ are declared within the FROM clause of a SELECT block, by using the character ":", followed by the alias name. Aliases can be accessed anywhere within the same SELECT block. They are used to reference a single selected vertex or edge of a set. It is through the vertex or edge aliases that attributes of these vertices or edges can be accessed.
+Vertex and edge _aliases_ are declared within the FROM clause of a SELECT block, by using the character ":", followed by the alias name. Aliases can be accessed anywhere within the same SELECT block. They are used to reference a single selected vertex or edge of a set.
+It is through the vertex or edge aliases that the attributes of these vertices or edges can be accessed.
 
 For example, the following code snippets show two different SELECT statements. The first SELECT statement starts from a vertex set called allVertices, and the vertex alias name *v* can access each individual vertex from allVertices. The second SELECT statement selects a set of edges. It can use the vertex alias *s* to reference the source vertices, or the alias *t* to reference the target vertices.
 
@@ -901,7 +765,7 @@ The following example shows an edge-based SELECT statement, declaring aliases fo
 [source,gsql]
 ----
 results = SELECT v
-          FROM allVertices:s -(:e)-> :t
+          FROM allVertices:s -(:e)- :t
           ACCUM VERTEX v = t, EDGE eg = e;
 ----
 
@@ -912,103 +776,7 @@ results = SELECT v
 We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features only available to vertex and edge aliases.
 ====
 
-=== Pattern Matching (SYNTAX v2)
 
-We give a brief overview of Pattern Matching syntax and semantics in the FROM clause, from the perspective of the formal notation and how the rules can be inferred from that. For a more practical explanation of Pattern Matching, we recommend the xref:tutorials:pattern-matching/README.adoc[].
-
-There are three options for the syntax of the pattern in a FROM clause:
-
-[source,ebnf]
-----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
-----
-
-. `step` pattern, SYNTAX v1. This is the default syntax from classic GSQL.
-. `stepV2` pattern, SYNTAX v2. The query or the GSQL session must xref:tutorials:pattern-matching/README.adoc[specify that SYNTAX v2 is to be used]. This is still a 1-Hop query, but there are two differences:
- ** The source vertex set now has the same flexibility as the target vertex. It is not necessary to create a seedSet. Instead, the source can be one or more vertex types, given either statically or dynamically as string parameters, or the special symbol `ANY` or `_`.
- ** The arrowhead `+-( )->+` should not be used between the edge set and the target set. Simple use a dash `-( )-`.
-. One or more `pathPattern` s.
-
-A pathPattern begins with a `stepVertexSet` and then has one or more hops across and edge set to a target set: `-(pathEdgePattern)-setVertexSet.`
-
-[source,ebnf]
-----
-pathPattern := stepVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
-----
-
-We have already studied stepVertexSet. Now we will look at the options for `pathEdgePattern` and their meanings.
-
-[source,ebnf]
-----
-pathEdgePattern := atomicEdgePattern
-                 | "(" pathEdgePattern ")"
-                 | pathEdgePattern "." pathEdgePattern
-                 | disjPattern
-                 | starPattern
-
-atomicEdgePattern  := atomicEdgeType		
-        	        | atomicEdgeType ">"	
-        	        | "<" atomicEdgeType	
-
-atomicEdgeType := "_" | ANY | edgeSetType
-edgeSetType := edgeType | paramName | globalAccumName
-----
-
-The most basic form for a `pathEdgePattern` is an `atomicEdgePattern`. This in turn can be, similar to `stepVertexSet`, one of the following:
-
-* "_" or "ANY"
-* an edgeType, a string parameter, or a global SetAccum accumulator.
-
-==== Edge Direction
-
-Moreover, an `atomicEdgePattern` can have either a left pointer "<" on the left or a right pointer ">" on the right. These indicate edge direction, of course. If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
-
-* A> is a rightward facing A edge
-* <B is a leftward facing B edge
-* C is an undirected C edge. If C is actually a directed edge type, then there is no match.
-
-==== Disjunction, Repeats, and Dot Concatenation
-
-Looking at the remaining options for pathEdgePattern, we see that we can have parentheses around it, we can use a dot "." between two pathEdgePatterns, or we can have a disjPattern or starPattern.
-
-*disjPattern* is how we write "either this edge pattern or that edge pattern""
-
-[source,ebnf]
-----
-disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
-----
-
-For example, we can combine the three direction-specfic examples from above: `(A> | <B | C)`
-
-**starPatter**n explains how the Kleene star and min..max range specifiers can be used to say "repeat this edge pattern from min to max times."
-
-[source,ebnf]
-----
-starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
-
-starBounds := CONST_INT ".." CONST_INT
-            | CONST_INT ".."
-            | ".." CONST_INT
-            | CONST_INT
-----
-
-For example,`(A> | <B | C)*2..4` means "a series of 2 to 4 adjacent edges, where each edge has type A>, <B, or C. Note that we do not have to use the same edge type for all the repeats. Either iteration can select an option from `disjPattern`.
-
-*The dot operator* means concatenate the two edge patterns into one. Naturally, there must be a vertex joining the two edges, but it is omitted from the syntax. The dot operator is a shorthand, when you don't care about the type of that intermediate vertex. +
-`(A>.<B.C)` means a series of 3 edges, having the specifying types and directions.
-
-=== Conjunctive Pattern Matching
-
-The optional repeating phrase `["," pathPattern]*` allows you to have multiple pathPatterns. They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
-
-[source,ebnf]
-----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
-----
-
-Recall that each step pattern or path pattern forms a match table, one row per matching path in the graph. Each vertex alias or edge alias is one column in the table.  When we have a conjunctive path, each path must share at least one vertex alias with another path. This enables the two path sets (and match tables) to be joined. Formally, we make the natural join of the two tables.
-
-This explains all of the syntax for the FROM clause with SYNTAX v2 (Pattern Matching). The other significant area to consider for SYNTAX v2 is the ACCUM and POST-ACCUM clauses.
 
 == SAMPLE Clause
 
@@ -1049,9 +817,10 @@ The expression following SAMPLE specifies the sample size, either an absolute nu
 Note: Currently, the WHEN condition that can be used with a SAMPLE clause is limited strictly to checking if the result of a function call on a vertex is greater than or greater than/equal to some number.
 ====
 
-Given that the sampling is random, some of the details of each of the example queries may change each time they are run.
+Given that the sampling is random, some details of each of the example queries may change each time they are run.
 
-The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges fro a source vertex. We use the computerNet graph (see Appendix D).  In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.  For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.  For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
+The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the computerNet graph (see Appendix D).
+In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.  For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.  For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
 
 [tabs]
 ====
@@ -1061,7 +830,7 @@ Query::
 .sampleEx3: SAMPLE based on edges per source vertex
 [source,gsql]
 ----
-CREATE QUERY sampleEx3() FOR GRAPH computerNet
+CREATE QUERY sampleEx3() FOR GRAPH computerNet SYNTAX V1
 {
     MapAccum<STRING,ListAccum<STRING>> @@absEdges; // record each selected edge as (src->tgt)
     SumAccum<INT> @@totalAbs;
@@ -1071,13 +840,13 @@ CREATE QUERY sampleEx3() FOR GRAPH computerNet
     start = {computer.*};
 
     # Sample one outgoing edge per source vertex = Random Walk
-    absSample = SELECT v FROM start:s -(:e)-> :v
+    absSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
              ACCUM @@absEdges += (s.id -> v.id),
                    @@totalAbs += 1;
     PRINT @@totalAbs, @@absEdges;
 
-    pctSample = SELECT v FROM start:s -(:e)-> :v
+    pctSample = SELECT v FROM start:s -(:e)- :v
              SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
              ACCUM @@pctEdges += (s.id -> v.id),
                    @@totalPct += 1;
@@ -1157,7 +926,7 @@ Query::
 .example of SAMPLE using an absolute number of edges
 [source,gsql]
 ----
-CREATE QUERY sampleEx1() FOR GRAPH workNet
+CREATE QUERY sampleEx1() FOR GRAPH workNet SYNTAX V1
 {
 	SumAccum<INT> @timesTraversedNoSample;
 	SumAccum<INT> @timesTraversedWithSample;
@@ -1166,7 +935,7 @@ CREATE QUERY sampleEx1() FOR GRAPH workNet
 	# the 'beforeSample' result set encapsulates the normal functionality of
 	# a SELECT statement, where 'timesTraversedNoSample' vertex accumulator is increased for
 	# each edge incident to the vertex.
-	beforeSample = SELECT v FROM workers:t -(:e)-> :v
+	beforeSample = SELECT v FROM workers:t -(:e)- :v
 		       ACCUM v.@timesTraversedNoSample += 1;
 
 	# The 'afterSample' result set is formed by those vertices which can be
@@ -1174,7 +943,7 @@ CREATE QUERY sampleEx1() FOR GRAPH workNet
 	# This is demonstrated by the values of 'timesTraversedWithSample' vertex accumulator, which
 	# is increased for each edge incident to the vertex which is used in the
 	# sample.
-	afterSample = SELECT v FROM workers:t -(:e)-> :v
+	afterSample = SELECT v FROM workers:t -(:e)- :v
 		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		# only use 1 edge from the source vertex
 		      ACCUM v.@timesTraversedWithSample += 1;
 
@@ -1330,7 +1099,7 @@ whereClause := WHERE condition
 
 The WHERE clause uses a boolean condition to test each vertex or edge in the FROM set (or the sampled vertex and edge sets, if the SAMPLE clause was used).
 
-If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set. The expression may use constants or any variables or parameters within the scope of the SELECT, arithmetic operators (+, -, *, /,%), comparison operators (==, !=, <, <=, >,>=), boolean operators (AND, OR, NOT), set operators (IN, NOT IN) and parentheses to enforce precedence. The WHERE conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the FROM clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.) For a more formal explanation of condition, see the EBNF definitions of *condition* and *expr.*
+If the expression evaluates to false for vertex/edge X, then X excluded from further consideration in the result set. The expression may use constants or any variables or parameters within the scope of the SELECT, arithmetic operators (+, -, \*, /,%), comparison operators (==, !=, <, \<=, >,>=), boolean operators (AND, OR, NOT), set operators (IN, NOT IN) and parentheses to enforce precedence. The WHERE conditional expression may use any of the variables within its scope (global accumulators, vertex set variables, query input parameters, the FROM clause's vertex and edge sets (or their vertex and edge aliases), or any of the attributes or accumulators of the vertex/edge sets.) For a more formal explanation of condition, see the EBNF definitions of *condition* and *expr.*
 
 Using built-in vertex and edge attributes and functions, such as .type and .neighbors(), the WHERE clause can be used to implement sophisticated selection rules for the edge traversal.  In the following example, the selection conditions are completely specified in the WHERE clause, with no edge types or vertex types mentioned in the FROM clause.
 
@@ -1338,8 +1107,8 @@ Using built-in vertex and edge attributes and functions, such as .type and .neig
 
 [source,gsql]
 ----
-resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)->(V1|V2):t;
-resultSet2 = SELECT v FROM S:v-(:e)->:t
+resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
+resultSet2 = SELECT v FROM S:v-(:e)-:t
 					 WHERE t.type IN ("V1", "V2") AND
 						   t IN v.neighbors("E1|E2|E3")
 ----
@@ -1357,7 +1126,7 @@ Query::
 
 [source,gsql]
 ----
-CREATE QUERY printCatPosts() FOR GRAPH socialNet {
+CREATE QUERY printCatPosts() FOR GRAPH socialNet SYNTAX V1 {
 	posts = {post.*};
 	catPosts = SELECT v FROM posts:v		# select only those post vertices
                 WHERE v.subject == "cats";  # which have a subset of 'cats'
@@ -1436,7 +1205,7 @@ Query::
 .SELECT WHERE using IN operator
 [source,gsql]
 ----
-CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
+CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet SYNTAX V1
 {
 	posts = {post.*};
 	results = SELECT v FROM posts:v					# select only post vertices
@@ -1500,7 +1269,7 @@ WHERE NOT limitations
 The NOT operator may not be used in combination with the .type attribute selector. To check if an edge or vertex type is not equal to a given type, use the != operator. See the example below.
 ====
 
-The following example shows the equivalence of using WHERE as a type filter as well as its limitations.
+The following example shows the equivalence of using `WHERE` as a type filter as well as its limitations.
 
 [tabs]
 ====
@@ -1512,7 +1281,7 @@ Query::
 ----
 # finds female person in the social network. all of the following statements
 # are equivalent (i.e., produce the same results)
-CREATE QUERY findFemaleMembers() FOR GRAPH socialNet
+CREATE QUERY findFemaleMembers() FOR GRAPH socialNet SYNTAX V1
 {
 	allVertices = {ANY}; # includes all posts and person
 	females = SELECT v FROM allVertices:v
@@ -1617,10 +1386,10 @@ Query::
 [source,gsql]
 ----
 # find all workers who are full time at some company
-CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
+CREATE QUERY fullTimeWorkers() FOR GRAPH workNet SYNTAX V1
 {
 	start = {person.*};
-	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)-> company:t
+	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)- company:t
 			WHERE e.fullTime;	# fullTime is a boolean attribute on the edge
 
 	PRINT fullTimeWorkers;
@@ -1785,10 +1554,10 @@ If multiple edge types are specified in edge-induced selection, the WHERE clause
 
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
+CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet SYNTAX V1 {
   allUser = {m1};
   FilteredUser = SELECT s
-      FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+      FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
       # WHERE e.actionTime > epoch_to_datetime(1) AND t.gender == "Male";
       WHERE ( e.type == "liked" AND e.actionTime > epoch_to_datetime(1) ) OR
             ( e.type == "friend" AND t.gender == "Male" )
@@ -1872,7 +1641,7 @@ Note that dml-sub-statements do not include global accumulator assignment statem
 There are additional restrictions on dml-sub level statements:
 
 * Global variable assignment is permitted in ACCUM or POST-ACCUM clauses, but the change in value will not take place until the query completes. Therefore, if there are multiple assignment statements for the same variable, only the final one will take effect.
-* Vertex attribute assignment "=" is not permitted in an ACCUM clause. However, edge attribute assignment is permitted. This is because the ACCUM clause iterates over an edge set. Vertex attribute attribute assignment is permitted in the POST-ACCUM clause. Like all updates, the change in value does not take place until the query completes.
+* Vertex attribute assignment "=" is not permitted in an ACCUM clause. However, edge attribute assignment is permitted. This is because the ACCUM clause iterates over an edge set. Vertex attribute assignment is permitted in the POST-ACCUM clause. Like all updates, the change in value does not take place until the query completes.
 ====
 
 === Aliases and ACCUM/POST-ACCUM Iteration Model
@@ -1883,7 +1652,7 @@ To reference each element of the selected set, use the aliases defined in the FR
 
 [source,gsql]
 ----
-FROM source:s -(edgeTypes:e)-> targetTypes:t # edge-induced selection
+FROM source:s -(edgeTypes:e)- targetTypes:t # edge-induced selection
 FROM source:v                                # vertex-induced selection
 ----
 
@@ -1919,13 +1688,6 @@ Note that any reference to the source alias s or target alias t is for the endpo
 
 Similarly, the POST-ACCUM clause acts like a FOREACH loop on the vertex result set specified in the SELECT clause (e.g., either S or T).
 
-=== Pattern Matching ACCUM and POST-ACCUM
-
-In Pattern Matching (SYNTAX v2), we may have a multi-step pattern, with several vertex and edge aliases. Each statement (dml-sub-statement) can refer to one or more aliases. There are no restrictions, though complex expressions and accessing multiple aliases may degrade performance.
-
-*The PER clause* is available only in SYNTAX v2. It is an optional prefix to the ACCUM clause, affecting only that clause. The PER clause allows the user to specify that they wish to aggregate the match table, so that there is one row PER <alias>. For more information see xref:tutorials:pattern-matching/adv/per-clause.adoc[PER Clause section in the Pattern Matching tutorial].
-
-*Multiple POST-ACCUM clauses* are supported in TG 3.0+. In SYNTAX v2, Each POST-ACCUM may refer to only one vertex alias. See the xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc#_post_accum_clause[POST-ACCUM section in the Pattern Matching] tutorial.
 
 === Edge/Vertex Type Inference and Conflict
 
@@ -1935,11 +1697,11 @@ If multiple edge types are specified in edge-induced selection, each ACCUM state
 
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
+CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet SYNTAX V1 {
   ListAccum<STRING> @@testList1, @@testList2, @@testList3;
   allUser = {m1};
   allUser = SELECT s
-         FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+         FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
          ACCUM @@testList1 += to_string(datetime_to_epoch(e.actionTime))
               ,@@testList2 += t.gender
              #,@@testList3 += to_string(datetime_to_epoch(e.actionTime)) + t.gender # illegal
@@ -1960,11 +1722,11 @@ We strongly suggest that if multiple edge types are specified in edge-induced se
 
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
+CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet SYNTAX V1 {
   ListAccum<STRING> @@testList1;
   allUser = {m1};
   allUser = SELECT s
-            FROM allUser:s - ((posted|liked|friend):e) -> (post|person):t
+            FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
             ACCUM CASE
                     WHEN e.type == "liked" THEN    # for liked edges
                       @@testList1 += to_string(datetime_to_epoch(e.actionTime))
@@ -1997,12 +1759,13 @@ Prior to v1.0, a vertex-attached accumulator could only be updated in an ACCUM o
 Beginning in v1.0, there are additional circumstances where a vertex-attached accumulator may be updated. Vertices which are _referenced via a vertex-attached accumulator of a selected vertex_ may have their vertex-attached accumulators updated in the ACCUM clause (but not in the POST-ACCUM clause).  That is, a vertex referenced by an selected vertex can be updated, with some limitations explained below. Some examples will help to illustrate this more complex condition.
 
 * Suppose a query declares a vertex-attached _accumulator which holds vertex information_ . We call this a *vertex-holding accumulator* . This could take several forms:
- ** A scalar accumulator, e.g., MaxAccum< *VERTEX* > @maxV;
- ** A collection accumulator: e.g., ListAccum< *VERTEX* > @listV;
- ** An accumulator containing tuple(s), where the tuple type contains a *VERTEX* field.
+** A scalar accumulator, e.g., MaxAccum< *VERTEX* > @maxV;
+** A collection accumulator: e.g., ListAccum< *VERTEX* > @listV;
+** An accumulator containing tuple(s), where the tuple type contains a *VERTEX* field.
 * If a vertex V is selected, then not only can V's accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the ACCUM clause.
 * Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
- ** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
+** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.
+The vertex can then be updated through the local vertex variable.
 
 [source,gsql]
 ----
@@ -2025,11 +1788,11 @@ ACCUM
 ====
 The following uses are NOT supported by the new rules:
 
-* Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside of a SELECT statement.
+* Indirectly activated vertices may not be updated in the POST-ACCUM clause or outside a SELECT statement.
 * Passing a vertex into the query as an input parameter is not a route to activation.
 * Using a global vertex-holding accumulator is not a route to activation.
 * If a vertex is being indirectly activated by assigning it to a local variable (e.g., a variable declaring in ACCUM or POST-ACCUM), note the following rule, which always applies to all local variables:
- ** A local variable can be declared and initialized in an ACCUM block once.  It cannot be redeclared or reassigned later in the ACCUM block.
+** A local variable can be declared and initialized in an ACCUM block once.  It cannot be redeclared or reassigned later in the ACCUM block.
 ====
 
 The following query demonstrates updates to indirectly activated vertices.
@@ -2042,7 +1805,7 @@ Query::
 .Updating an Indirectly-Referenced Vertex
 [source,gsql]
 ----
-CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
+CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet SYNTAX V1 {
 
   SetAccum<VERTEX<person>> @posters;
   SetAccum<VERTEX<person>> @fellows;
@@ -2050,7 +1813,7 @@ CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
    Persons = {person.*};
    # To each post, attach a list of persons who liked the post
    likedPosts = SELECT p
-       FROM Persons:src -(liked:e)-> post:p
+       FROM Persons:src -(liked:e)- post:p
        ACCUM
        	p.@posters += src;
 
@@ -2063,7 +1826,7 @@ CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
 		    v.@fellows += src.@posters
 		  END
         ORDER BY src.subject;
-		
+
 	PRINT Persons[Persons.@fellows];
 }
 ----
@@ -2148,7 +1911,7 @@ Query::
 [source,gsql]
 ----
 #Show Accum PostAccum Behavior
-CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
+CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet SYNTAX V1 {
 
   SumAccum<INT> @@vertexOnlyAccum;
   SumAccum<INT> @@vertexOnlyPostAccum;
@@ -2178,12 +1941,12 @@ CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
 						#Happens once for each vertex discovered that also
 						# meets the constraint condition
 						ACCUM @@vertexOnlyWhereAccum += 1
-			
+
 						#Happens once for each vertex in the result set "v"
 						POST-ACCUM @@vertexOnlyWherePostAccum += 1;
 
   #Select all source "s" vertices in set start and explore all "worksFor" edge paths
-  selectSourceWithEdge = SELECT s from start:s -(worksFor)-> :t
+  selectSourceWithEdge = SELECT s from start:s -(worksFor)- :t
 		  		       	 #Happens once for each "worksFor" edge discovered
 						 ACCUM @@sourceWithEdgeAccum += 1
 
@@ -2191,8 +1954,8 @@ CREATE QUERY accumPostAccumSemantics() FOR GRAPH workNet {
 						POST-ACCUM @@sourceWithEdgePostAccum += 1;
 
   #Select all target "t" vertices found from exploring all "worksFor" edge paths from set start
-  selectTargetWithEdge = SELECT t from start:s -(worksFor)-> :t
-						 #Happens once for each "worksFor" edge discovered	
+  selectTargetWithEdge = SELECT t from start:s -(worksFor)- :t
+						 #Happens once for each "worksFor" edge discovered
 						 ACCUM @@targetWithEdgeAccum += 1
 
 						 #Happens once for each vertex in result set "t" (target)
@@ -2255,12 +2018,12 @@ Query::
 [source,gsql]
 ----
 # For each person, make a list of all their post subjects
-CREATE QUERY userPosts() FOR GRAPH socialNet {
+CREATE QUERY userPosts() FOR GRAPH socialNet SYNTAX V1 {
   ListAccum<STRING> @personPosts;
   start = {person.*};
 
   # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)-> :g
+  userPostings = SELECT s FROM start:s -(posted)- :g
                  ACCUM s.@personPosts += g.subject;
 
   PRINT userPostings;
@@ -2339,16 +2102,16 @@ Query::
 [source,gsql]
 ----
 # Show each user's post and liked post time
-CREATE QUERY userPosts2() FOR GRAPH socialNet {
+CREATE QUERY userPosts2() FOR GRAPH socialNet SYNTAX V1 {
   ListAccum<VERTEX> @personPosts;
   ListAccum<EDGE> @personLikedInfo;
   start = {person.*};
 
   # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)-> :g
+  userPostings = SELECT s FROM start:s -(posted)- :g
                  ACCUM s.@personPosts += g;
 
-  userPostings = SELECT s from start:s -(liked:e)-> :g
+  userPostings = SELECT s from start:s -(liked:e)- :g
                  ACCUM s.@personLikedInfo += e;
 
   PRINT start;
@@ -2445,12 +2208,12 @@ Query::
 [source,gsql]
 ----
 # Show number of total posts by topic
-CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
+CREATE QUERY userPostsByTopic() FOR GRAPH socialNet SYNTAX V1 {
   MapAccum<STRING, INT> @@postTopicCounts;
   start = {person.*};
 
   # Append subject and update the appearance count in the global map accum
-  posts = SELECT g FROM start -(posted)-> :g
+  posts = SELECT g FROM start -(posted)- :g
 		  ACCUM @@postTopicCounts += (g.subject -> 1);
 
   PRINT @@postTopicCounts;
@@ -2497,7 +2260,7 @@ Query::
 [source,gsql]
 ----
 #Show all person who both work and live in the same country
-CREATE QUERY residentEmployees() FOR GRAPH workNet {
+CREATE QUERY residentEmployees() FOR GRAPH workNet SYNTAX V1 {
 
   ListAccum<STRING> @company;
   OrAccum @worksAndLives;
@@ -2505,7 +2268,7 @@ CREATE QUERY residentEmployees() FOR GRAPH workNet {
   start = {person.*};
 
 
-  employees = SELECT s FROM start:s -(worksFor)-> :c
+  employees = SELECT s FROM start:s -(worksFor)- :c
               #If a person works for a company in the same country where they live
               # add the company to the list
               ACCUM CASE WHEN (s.locationId == c.country) THEN
@@ -2617,7 +2380,7 @@ Query::
 [source,gsql]
 ----
 #Count the number of person of	a given	gender
-CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
+CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet SYNTAX V1 {
 
   SumAccum<INT> @@genderCount;
 
@@ -2685,11 +2448,11 @@ Query::
 [source,gsql]
 ----
 # find all persons meeting a given activityThreshold, based on how many posts or likes a person has made
-CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet SYNTAX V1
 {
         SumAccum<int> @activityAmount;
         start = {person.*};
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
                           ACCUM v.@activityAmount +=1
 	                      HAVING v.@activityAmount >= activityThreshold;
         PRINT result;
@@ -2781,17 +2544,17 @@ Query::
 [source,gsql]
 ----
 # find all person meeting a given activityThreshold, based on how many posts or likes a person has made
-CREATE QUERY printMemberActivity() FOR GRAPH socialNet
+CREATE QUERY printMemberActivity() FOR GRAPH socialNet SYNTAX V1
 {
         SumAccum<int> @activityAmount;
         start = {person.*};
 
 		### --- equivalent statements -----
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
 					      ACCUM v.@activityAmount +=1
 					      HAVING true;
 
-		result = SELECT v FROM start:v -(:e)-> post:tgt
+		result = SELECT v FROM start:v -(:e)- post:tgt
 					      ACCUM v.@activityAmount +=1;
 		### -----
 
@@ -2911,17 +2674,17 @@ Query::
 # change the result. However, if the condition in the HAVING clause could change within
 # the ACCUM clause, these statements would produce different results.
 
-CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+CREATE QUERY activeMaleMembers() FOR GRAPH socialNet SYNTAX V1
 {
     SumAccum<INT> @activityAmount;
     start = {person.*};
 
     ### --- statements produce equivalent results
-    result1 = SELECT v FROM start:v -(:e)-> post:tgt
+    result1 = SELECT v FROM start:v -(:e)- post:tgt
                       WHERE v.gender == "Male"
                       ACCUM v.@activityAmount +=1;
 
-    result2 = SELECT v FROM start:v -(:e)-> post:tgt
+    result2 = SELECT v FROM start:v -(:e)- post:tgt
                       ACCUM v.@activityAmount +=1
                       HAVING v.gender == "Male";
 
@@ -3020,11 +2783,11 @@ Query::
 ----
 # find all person having a post subject about cats
 # This query is illegal because the having condition is testing the wrong vertex set
-CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet
+CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet SYNTAX V1
 {
         start = {person.*};
 
-        result = SELECT v FROM start:v -(:e)-> post:tgt
+        result = SELECT v FROM start:v -(:e)- post:tgt
                           HAVING tgt.subject == "cats";
         PRINT result;
 }
@@ -3076,13 +2839,13 @@ Query::
 ----
 # find the most popular people, sorting first based on the number as friends
 # and then in case of a tie by the number of coworkers
-CREATE QUERY topPopular() FOR GRAPH friendNet
+CREATE QUERY topPopular() FOR GRAPH friendNet SYNTAX V1
 {
 	SumAccum<INT> @numFriends;
 	SumAccum<INT> @numCoworkers;
 	start = {person.*};
 
-	result = SELECT v FROM start -((friend|coworker):e)-> person:v
+	result = SELECT v FROM start -((friend|coworker):e)- person:v
 	       	 ACCUM CASE WHEN e.type == "friend" THEN v.@numFriends += 1
 		       	    WHEN e.type == "coworker" THEN v.@numCoworkers += 1
 		       END
@@ -3245,9 +3008,9 @@ There are three forms:
 
 [source,gsql]
 ----
-result = SELECT v FROM S -(:e)-> :v LIMIT k;		  # case 1: k = Count
-result = SELECT v FROM S -(:e)-> :v LIMIT j, k; 	  # case 2: j = Offset from the start of the list, k = Count
-result = SELECT v FROM S -(:e)-> :v LIMIT k OFFSET j; # case 3: k = Count, j = Offset from the start of the list
+result = SELECT v FROM S -(:e)- :v LIMIT k;		  # case 1: k = Count
+result = SELECT v FROM S -(:e)- :v LIMIT j, k; 	  # case 2: j = Offset from the start of the list, k = Count
+result = SELECT v FROM S -(:e)- :v LIMIT k OFFSET j; # case 3: k = Count, j = Offset from the start of the list
 ----
 
 
@@ -3283,7 +3046,7 @@ Query::
 .limitEx1.gsql: LIMIT by some number
 [source,gsql]
 ----
-CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
+CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet SYNTAX V1
 {
         start = {person.*};
 
@@ -3350,7 +3113,7 @@ Query::
 .limit2Ex.gsql: LIMIT with lower-bound and size
 [source,gsql]
 ----
-CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
+CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet SYNTAX V1
 {
         start = {person.*};
         result2 = SELECT v FROM start:v
@@ -3411,7 +3174,7 @@ Query::
 .limit3Ex.gsql: LIMIT with OFFSET
 [source,gsql]
 ----
-CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
+CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet SYNTAX V1
 {
         start = {person.*};
 

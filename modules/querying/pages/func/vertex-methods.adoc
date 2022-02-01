@@ -873,6 +873,7 @@ Result::
 [discrete]
 ==== 
 
+[#_selectvertex]
 === `selectVertex()`
 
 [discrete]
@@ -883,7 +884,7 @@ Result::
 [discrete]
 ====  Description
 
-Reads a data file that lists particular vertices of the graph and returns the corresponding vertex set. This function can only be used in a vertex set variable declaration statement as a seed set and the vertices in the data file *must already be in the graph*. The data file must be organized as a table with one or more columns. One column must be for vertex ID. Optionally, another column is for vertex type.
+Reads a data file that lists particular vertices of the graph and returns the corresponding vertex set.This function can only be used in a vertex set variable declaration statement as a seed set and the vertices in the data file *must already be in the graph*.The data file must be organized as a table with one or more columns.One column must be for vertex ID.Optionally, another column is for vertex type.
 
 [discrete]
 ====  Return type

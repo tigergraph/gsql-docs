@@ -56,13 +56,14 @@ Modification of accumulators is coordinated at run-time so the accumulation oper
 This is particularly relevant in the ACCUM clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
 These threads have shared mutually exclusive access to the accumulators.
 
+[#_declaration_of_accumulators]
 == Declaration of Accumulators
 
 Global accumulators can be declared anywhere in the query.
 Vertex-attached accumulators can be declared anywhere in the query except for in a `FOREACH` loop or `WHILE` loop.
 Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
 
-The name of a vertex-attached accumulator begins with a single `@`. The name of a global accumulator begins with `@@`.
+The name of a vertex-attached accumulator begins with a single `@`.The name of a global accumulator begins with `@@`.
 
 .EBNF for Accumulator Declaration
 [source.wrap,ebnf]

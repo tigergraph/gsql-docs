@@ -73,27 +73,29 @@ Different types of variable declarations use different scoping rules. There are 
 * xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[Block scoping]
 * xref:querying:declaration-and-assignment-statements.adoc#_global_scoping[Global scoping]
 
+[#_block_scoping]
 === Block scoping
 
-In GSQL, curly brackets, as well as `IF .. THEN`, `ELSE`, `+WHILE ... DO+`, `+FOREACH ... DO+` statements create a block. A `SELECT` statement also creates a block. A block-scoped variable declared inside a block scope is only accessible inside that scope.
+In GSQL, curly brackets, as well as `IF .. THEN`, `ELSE`, `+WHILE ... DO+`, `+FOREACH ... DO+` statements create a block.A `SELECT` statement also creates a block.A block-scoped variable declared inside a block scope is only accessible inside that scope.
 
-Additionally, variables declared in a lower scope can use the same name as a variable already declared in a higher scope. The lower-scope declaration will take precedence over the higher-scope declaration until the end of the lower scope.
+Additionally, variables declared in a lower scope can use the same name as a variable already declared in a higher scope.The lower-scope declaration will take precedence over the higher-scope declaration until the end of the lower scope.
 
 The following types of variables use block scoping:
 
 * xref:querying:accumulators.adoc[Accumulators]
 * xref:querying:declaration-and-assignment-statements.adoc#_base_type_variables[Base type variables]
 * xref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[Local base type variables]
-* xref:querying:declaration-and-assignment-statements.adoc#_file_object_declaration[File objects]
+* xref:querying:declaration-and-assignment-statements.adoc#_file_objects[File objects]
 * xref:querying:select-statement/README.adoc#_vertex_and_edge_aliases[Vertex or edge aliases]
 
+[#_global_scoping]
 === Global scoping
 
-A global-scoped variable is always accessible anywhere in the query once it has been declared regardless of where it is declared. One also cannot declare another variable with the same name as a  global-scoped variable that has already been declared.
+A global-scoped variable is always accessible anywhere in the query once it has been declared regardless of where it is declared.One also cannot declare another variable with the same name as a global-scoped variable that has already been declared.
 
 The following types of variables use global scoping:
 
-* xref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variable_declaration_and_assignment[Vertex set variables]
+* xref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variables[Vertex set variables]
 
 == Declaration Statements
 
@@ -112,9 +114,10 @@ The first five types each have their own declaration statement syntax and are co
 
 Accumulator declaration is discussed in xref:querying:accumulators.adoc#_declaration_of_accumulators[Accumulators].
 
+[#_base_type_variables]
 === Base type variables
 
-In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables. The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
+In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables.The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
 
 .EBNF for base type variable declaration
 [source,ebnf]
@@ -123,7 +126,7 @@ baseVarDeclStmt    := baseType name ["=" expr]["," name ["=" expr]]*
 ----
 
 A base type variable can be declared and accessed anywhere in the query.
-To declare a base type variable, specify the data type and the variable name. Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side.
+To declare a base type variable, specify the data type and the variable name.Optionally, you can initialize the variable by assigning it a value with the assignment operator (`=`) and the desired value on the right side.
 You can declare multiple variables of the same type in a single declaration statement.
 
 [source,gsql]
@@ -137,7 +140,7 @@ CREATE QUERY baseTypeVariable() {
 }
 ----
 
-When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exitng the clause.
+When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exiting the clause.
 Therefore, if there are multiple assignment statements for the same base type variable in an `ACCUM` or `POST-ACCUM` clause, only the last one will take effect.
 
 For example, in the following query, a base type variable is assigned a new value in the `ACCUM` clause, but the change will not take place until the clause ends.
@@ -151,7 +154,7 @@ CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
 
   allUser = {person.*};
   allUser = SELECT src
-            FROM allUser:src - (liked:e) -> post
+            FROM allUser:src - (liked:e) - post
             ACCUM
             dt = e.actionTime,           # dt isn't updated yet
             @@maxDateGlob += datetime_to_epoch(dt);
@@ -196,7 +199,7 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
 
   allUser = {person.*};
   allUser = SELECT src
-            FROM allUser:src - (liked:e) -> post
+            FROM allUser:src - (liked:e) - post
             ACCUM
             DATETIME dt = e.actionTime,      # Declare and assign local dt
             dtGlob = e.actionTime,           # dtGlob isn't updated yet
@@ -408,14 +411,22 @@ CREATE QUERY testUDF() FOR GRAPH poc_graph {
 <2> This statement defines a local tuple variable `b` with an anonymous tuple type.
 Beside using another tuple type, you can also return an anonymous tuple from a xref:operators-and-expressions.adoc#_subqueries[subquery] to assign value to the local tuple variable.
 
-=== Vertex Set Variable Declaration and Assignment
+[#_vertex_set_variables]
+=== Vertex set variables
 
-Variables that contain a set of one or more vertices are called vertex set variables. Vertex set variables play a special role within GSQL queries. They are used for both the input and output of `SELECT` statements. Therefore, before the first `SELECT` statement in a query, a vertex set variable must be declared and initialized. This initial vertex set is called the _seed set_.
+Variables that contain a set of one or more vertices are called vertex set variables.
+Vertex set variables play a special role within GSQL queries.
+They are used for both the input and output of `SELECT` statements.
 
-Vertex set variables are global-scoped. They are also the only type of variable that isn't explicitly typed during declaration. To declare a vertex set variable, assign an initial set of vertices to the variable name.
+NOTE: In Syntax V1, before the first `SELECT` statement in a query, a vertex set variable must be declared and initialized.This initial vertex set is called the _seed set_.
+The current default syntax - Syntax V2 - no longer has this requirement.
+
+Vertex set variables are global-scoped.
+They are also the only type of variable that isn't explicitly typed during declaration.
+To declare a vertex set variable, assign an initial set of vertices to the variable name.
 
 .EBNF for Vertex Set Variable Declaration
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
 
@@ -443,14 +454,15 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * A vertex parameter, untyped or typed, enclosed in curly brackets
 * A vertex set parameter, untyped or typed
 * A global `SetAccum<VERTEX>` accumulator, untyped or typed
-* All vertices of any type or of one type
+* A vertex type followed by `.*` to indicate all vertices of that type, optionally enclosed in curly brackets.
+* `_` or `ANY` to indicate all vertices, optionally enclosed in curly brackets.
 * A list of vertex IDs in an external file
 * Copy of another vertex set
 * A combination of individual vertices, vertex set parameters, or base type variables, enclosed in curly brackets
 * Union of vertex set variables
 
 .Seed Set Example
-[source,gsql]
+[source.wrap,gsql]
 ----
 CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VERTEX<person>> v4) FOR GRAPH socialNet {
   SetAccum<VERTEX> @@testSet;
@@ -463,8 +475,8 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
   S6 = @@testSet2;               # typed global set accumulator
   S7 = ANY;                      # All vertices
   S8 = person.*;                 # All person vertices
-  S9 = _;                        # Equivalent to ANY
-  S10 = SelectVertex("absolute_path_to_input_file", $0, post, ",", false);   # See Section "SelectVertex()" function
+  S9 = {_};                      # Equivalent to ANY, braces are optional
+  S10 = SelectVertex("absolute_path_to_input_file", $0, post, ",", false); <1>
   S11 = S1;                      # copy of another vertex set
   S12 = {@@testSet, v2, v3};     # Individual vertex: v2
                                  # Vertex set parameter: v3
@@ -474,21 +486,19 @@ CREATE QUERY seedSetExample(VERTEX v1, VERTEX<person> v2, SET<VERTEX> v3, SET<VE
   S13 = S11 UNION S12;           # but we can use UNION to combine S1
 }
 ----
+<1> See xref:func/vertex-methods.adoc#_selectvertex[SelectVertex()].
 
 
+When declaring a vertex set variable, you may opt to specify the vertex set type for the vertex set variable by .
+If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value.
+The type can be `ANY`, `_` (equivalent to `ANY`), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
 
-When declaring a vertex set variable, a set of vertex types can be optionally specified to the vertex set variable. If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value. The type can be `ANY`, `_` (equivalent to ANY), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
-
-.Declaration syntax difference: vertex set variable vs. base type variable
-[WARNING]
-====
-In a vertex set variable declaration, the optional type specifier follows the variable name and should be surrounded by parentheses: *`vSetName(type)`* +
-This is different from a base type variable declaration, where the type specifier is required and comes before the base variable name: *`type varName`*
-====
 
 ==== Assignment
 
-After a vertex set variable is declared, the vertex type of the vertex set variable is immutable. Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type. The following is an example in which we must declare the vertex set variable type.
+After a vertex set variable is declared, the vertex type of the vertex set variable is immutable.
+Every assignment (e.g. `SELECT` statement) to this vertex set variable must match the type.
+The following is an example in which we must declare the vertex set variable type.
 
 .Vertex set variable type
 [source,gsql]
@@ -498,7 +508,7 @@ CREATE QUERY vertexSetVariableTypeExample(vertex<person> m1) FOR GRAPH socialNet
   S (ANY) = {m1};   # ANY is necessary
   WHILE  ite < 5 DO
     S = SELECT t
-        FROM S:s - (ANY:e) -> ANY:t;
+        FROM S:s - (ANY:e) - ANY:t;
 
     ite = ite + 1;
   END;
@@ -511,7 +521,8 @@ If we declare the vertex set variable `S` without explicitly giving a type, beca
 However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices.
 Therefore, `S` must be declared as an ANY-type vertex set variable.
 
-=== `FILE` Object Declaration
+[#_file_objects]
+=== `FILE` objects
 
 A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
 
@@ -525,7 +536,7 @@ fileVar := name
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased. During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.  When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
 
-==== Example:
+==== Example
 
 .File object query example
 [source,gsql]
@@ -585,7 +596,7 @@ attrAccumStmt := name "."attrName "+=" expr
 
 ====
 
-=== *Restrictions on Assignment Statements*
+=== Restrictions on Assignment Statements
 
 In general, assignment statements can take place anywhere after the variable has been declared.  However, there are some restrictions. These restrictions apply to "inner level" statements which are within the body of a higher-level statement:
 
@@ -620,7 +631,7 @@ columnId := "$"(integer | stringLiteral)
 Any accumulator using generic `VERTEX` as an element type cannot be initialized by `LOADACCUM()`.
 ====
 
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Type | Description

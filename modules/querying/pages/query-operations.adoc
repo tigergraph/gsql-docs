@@ -656,14 +656,11 @@ shell will refuse to re-install a query that is already installed.
 installing the query in Distributed Query Mode can increase performance
 for single queries - using a single worker from each available machine
 to yield results. Certain cases may benefit more from this option than
-others – more detailed information is available on the next page:
-https://docs.tigergraph.com/dev/gsql-ref/querying/distributed-query-mode[Distributed
-Query Mode].
-| `-legacy`
-a| Install the query in legacy mode.
-The query will compile using the legacy compilation mode.
+others – more detailed information is available on the next page xref:distributed-query-mode.adoc[]
+a|`-SINGLE`
+|Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters page.]
 
-The only user-facing different between the current compilation mode and the legacy mode is that the loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] is treated as a copy in the current compilation mode, while in legacy mode, changes to the loop variable will change the value in the set or bag expression. 
+The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 |===
 
 === Optimize installed queries

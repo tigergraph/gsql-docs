@@ -240,7 +240,9 @@ This session parameter does not affect syntactic errors: GSQL will always exit o
 | `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
 
 | `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
-| `legacy_install` | A boolean option to install queries in legacy mode, which may improve performance under certain circumstances. Default value is `false`.
+a| `single_gpr` | Changes the internal engine framework for single queries to the engine framework currently used for distributed queries, also known as GPR. Enabling this mode may increase performance in certain cases. Default value is `false`.
+
+The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 |===
 
 .Example of exit_on_error = FALSE

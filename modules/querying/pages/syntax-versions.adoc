@@ -43,7 +43,7 @@ For example:
 
 |Source vertex set
 |The source vertex set in a step in the `FROM` clause must be xref:declaration-and-assignment-statements.adoc#_vertex_set_variables[a vertex set (seed set)] declared earlier in the query.
-|The xref:select-statement/index.adoc#_source_vertex_set[source vertex set path pattern] in `FROM` clause can be a vertex set, a vertex type, or an accumulator.
+|The xref:select-statement/index.adoc#_source_vertex_set[source vertex set path pattern] in `FROM` clause can be a vertex set, a vertex type, or use `_` or `ANY` to indicate any vertex.
 
 |===
 
@@ -70,11 +70,20 @@ This can be done explicitly or implicitly.
 |===
 
 == Changing a query from V1 to V2
-GSQL can detect the syntax version of the query automatically, so there is no need to modify your queries from V1 to V2.
-However,
+This section provides you with instructions to convert a V1 query into a V2 query.
 
-. Delete arrowheads outside parentheses in the `FROM` clause.
-* This is the most common incompatibility issue between a query written in V1 and V2.
+GSQL can detect the syntax version of the query automatically, so there is no need to modify your queries from V1 to V2.
+
+. Delete or arrowheads outside parentheses in the `FROM` clause.
++
+--
+* If the edge is undirected, delete the arrowhead outside parentheses in the `FROM` clause.
+** For example `Source:s -(Friend:e)-> :t` becomes `Source:s -(Friend:e)- :t`
+* If the edge is directed, move the arrowheads into the parentheses after the edge type.
+If there is no arrowhead, you must add one after the edge type.
+** For example, `Source:s -(Is_Located_In:e)-> :t` becomes `Source:s -(Is_Located_In>:e)- :t`
+--
+This is the most common incompatibility issue between a query written in V1 and V2.
 Most V1 queries can run smoothly in V2 after the arrowheads are deleted.
 . Check for `POST-ACCUM` clauses that aren't bound to one vertex alias or are bound to more than one vertex alias.
 * In V2, every `POST-ACCUM` clause must reference one vertex alias.

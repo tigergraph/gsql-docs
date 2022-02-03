@@ -54,7 +54,7 @@ A query can be run in one of three ways:
 +
 Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
 `POST /gsqlserver/interpreted_query` +
-See the xref:tigergraph-server:API:intro.adoc[RESTPP API User Guide] for details.
+See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details.
 . Define a named query and then run it.
  .. `CREATE QUERY`: define the functionality of the query
  .. `INTERPRET QUERY`: execute the query with input values
@@ -861,7 +861,7 @@ curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL
 
 Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries. Starting with TigerGraph 3.1, you can run queries in Detached Mode to enable background execution of long-running queries.
 
-Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:tigergraph-server:API:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:tigergraph-server:API:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
 

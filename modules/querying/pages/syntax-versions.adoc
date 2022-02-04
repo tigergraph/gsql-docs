@@ -74,7 +74,7 @@ This section provides you with instructions to convert a V1 query into a V2 quer
 
 GSQL can detect the syntax version of the query automatically, so there is no need to modify your queries from V1 to V2.
 
-. Delete or arrowheads outside parentheses in the `FROM` clause.
+. Delete, move, or add arrowheads in the `FROM` clause.
 +
 --
 * If the edge is undirected, delete the arrowhead outside parentheses in the `FROM` clause.

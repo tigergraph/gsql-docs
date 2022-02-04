@@ -291,9 +291,9 @@ An atomic edge pattern can be one of the following:
 * `_` or `ANY`
 * An edge type, a string parameter, or a global `SetAccum` accumulator.
 
-Moreover, an atomic edge pattern can have either a left pointer `<` on the left or a right pointer `>` on the right.
-These indicate edge direction, of course.
-If no pointer is used, then the edge is undirected. Suppose we have 3 edge types or parameters called A, B, C.
+If the edge is directed, an atomic edge pattern has either a left pointer `<` on the left or a right pointer `>` on the right to indicate edge direction.
+If the edge is undirected, the atomic edge pattern does not have a pointer.
+Suppose we have 3 edge types or parameters called A, B, C.
 
 * `A>` is a rightward facing A edge
 * `<B` is a leftward facing B edge
@@ -310,6 +310,11 @@ If an edge matches any of the atomic patterns, the edge matches the path edge pa
 ----
 disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
 ----
+
+For example:
+
+* `-(KNOWS|STUDY_AT>)-` refers to traversing an undirected `KNOWS` edge or a directed `STUDY_AT` edge.
+* `-(KNOWS|_>)-` refers to traversing an undirected `KNOWS` edge or any directed edge from left to right.
 
 
 [discrete]

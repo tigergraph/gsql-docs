@@ -54,24 +54,21 @@ GSQL version: 3.0
 
 The following general use commands were introduced in xref:tutorials:gsql-101/index.adoc[GSQL 101].
 
-* The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privileges to run most gadmin commands.
+* The *`$`* prefix indicates Linux shell commands. You need TigerGraph admin privileges to run most gadmin commands.
 * The *`GSQL>`* prefix indicates GSQL shell commands.
 
 [width="100%",cols="<50%,<50%",options="header",]
 |===
 |Command |Description
-|% gsql |Enter the GSQL shell in interactive mode
-|% gsql '<GSQL command string>' |Run one GSQL command
-|% gadmin status |Check the status of TigerGraph services +
-+
-(If your graph store is empty, it is normal for +
-+
-some statuses to be flagged in red.)
-|% gadmin restart |Restart TigerGraph services
-|GSQL> ls |List the graph schema, loading jobs, and queries
-|GSQL> show user |Show your username and roles
-|GSQL> drop all a|
+|`$ gsql` |Enter the GSQL shell in interactive mode
+|`$ gsql <GSQL command string>` |Run one GSQL command
+|`$ gadmin status` |Check the status of TigerGraph services.
+If your graph store is empty, it is normal for some statuses to be flagged in red.
+|`$ gadmin restart` |Restart TigerGraph services
+|`GSQL> ls` |List the graph schema, loading jobs, and queries
+|`GSQL> SHOW USER` |Show your username and roles
+|`GSQL> DROP ALL` a|
 Delete the entire schema, all data, all jobs, and all queries
 
-|GSQL> exit |Exit GSQL interactive shell
+|`GSQL> EXIT` |Exit GSQL interactive shell
 |===

@@ -2,21 +2,19 @@
 
 == Introduction
 
-Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.‌
+Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.
 
-A pattern usually appears in the FROM clause, the most fundamental part of the query structure. The pattern specifies sets of vertex types and how they are connected by edge types. A pattern can be refined further with conditions in the WHERE clause. In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
-
-[NOTE]
-====
-Currently, pattern matching may only be used in read-only queries. DML support will be added in the near future release.
-====
+A pattern usually appears in the `FROM` clause, the most fundamental part of the query structure.
+The pattern specifies sets of vertex types and how they are connected by edge types.
+A pattern can be refined further with conditions in the `WHERE` clause.
+In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
 
 [NOTE]
 ====
 Pattern matching queries support nested queries.
 ====
 
-== 1-Hop Pattern
+== 1-Hop pattern
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
@@ -38,7 +36,7 @@ Here the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` sy
 * For a directed edge E from left to right, use a suffix:  `E>`
 * For a directed edge E from right to left, use a prefix:  `<E`
 
-‌For example, in the LDBC SNB schema, there are two directed relationships between Person and Message: person _LIKES_ message, and message _HAS_CREATOR_ person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
+For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: person `LIKES` message, and message `HAS_CREATOR` person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
 
 .Pattern Example
 [source,gsql]
@@ -47,15 +45,16 @@ Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
 ----
 
 [discrete]
-==== Edge Type Wildcards
+==== Edge type wildcards
 
 The underscore `+_+` is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `_>` or `<_` or `_`.
 The empty parentheses `()` means any edge, directed or undirected.
 
 [discrete]
-==== Vertex Type Wildcards and Path Symmetry
+==== Vertex type wildcards and path symmetry
 
-Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined as an explicit set, prior to the SELECT statement.  A typical approach is shown here.
+Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined as an explicit set, prior to the `SELECT` statement.
+A typical approach is shown here.
 
 .Seed set definition required in classic GSQL
 
@@ -70,7 +69,8 @@ CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
 
 
 
-Beginning in TigerGraph 3.0, SYNTAX V2 treats the source vertex set the same as the target vertex set.  That is, the source or the target vertex set may be:
+Beginning in TigerGraph 3.0, `SYNTAX V2` treats the source vertex set the same as the target vertex set.
+That is, the source or the target vertex set may be:
 
 * a vertex type `SELECT t FROM Person:s -(IS_LOCATED_IN>:e) - City:t`
 * an alternation of vertex types `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e) - Country:t`
@@ -83,7 +83,7 @@ Performance may be better when types are explicitly provided.
 ====
 
 [discrete]
-==== *Examples of 1-Hop Patterns*
+==== Examples of 1-Hop patterns
 
 . `FROM X:x - (E1:e1) - Y:y`
  ** E1 is an undirected edge, x and y bind to the end points of E1, and e1 is the alias of E1.
@@ -105,14 +105,14 @@ Performance may be better when types are explicitly provided.
  ** any edge (directed or undirected)
  ** Same as `+(<_|_>|_)+`
 
-== Entering Pattern Match Syntax Mode
+== Specifying syntax version
 
 To use pattern matching, you need to either set a session parameter or specify it in the query. There are currently two syntax versions for queries:
 
 * "v1" is the classic syntax, traversing one hop per SELECT statement. This is the default mode.
 * "v2" enhances the v1 syntax with pattern matching.
 
-=== syntax_version Session Parameter
+=== `syntax_version` session parameter
 
 You can use the SET command to assign a value to the _syntax_version_ session parameter: v1 for classic syntax; v2 for pattern matching. If the parameter is never set, the classic v1 syntax is enabled. Once set, the selection remains valid for the duration of the GSQL client session, or until it is changed with another SET command.
 
@@ -125,12 +125,12 @@ SET syntax_version="v2"
 
 
 
-=== Query-Level SYNTAX option
+=== Query-Level `SYNTAX` option
 
-You can also select the syntax by using the SYNTAX clause in the CREATE QUERY statement: v1 for classic syntax (default); v2 for pattern matching. The query-level SYNTAX option overrides the syntax_version session parameter.
+You can also select the syntax by using the `SYNTAX` clause in the `CREATE QUERY` statement: v1 for classic syntax (default); v2 for pattern matching.
+The query-level `SYNTAX` option overrides the `syntax_version` session parameter.
 
-.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query 
-
+.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query
 [source,gsql]
 ----
 CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
@@ -147,7 +147,7 @@ In this tutorial, we will use Interpreted Mode for GSQL. Interpreted mode lets u
 
 To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
 
-[source,coffeescript]
+[source,gsql]
 ----
 INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
 ----
@@ -180,7 +180,7 @@ USE GRAPH ldbc_snb
 INTERPRET QUERY () SYNTAX v2 {
    #1-hop pattern.
    friends = SELECT p
-             FROM Person:s -(KNOWS:e)- Person:p
+             FROM Person:s -(KNOWS:e)- Person:p <1>
              WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
              ORDER BY p.birthday ASC
              LIMIT 3;
@@ -188,21 +188,13 @@ INTERPRET QUERY () SYNTAX v2 {
     PRINT  friends[friends.firstName, friends.lastName, friends.birthday];
 }
 ----
+<1> In the `FROM` clause, we directly use vertex type Person as the starting vertex set.
+This syntax enhancement is available in syntax V2 only.
 
-
-
-[NOTE]
-====
-Syntax Enhancement in TigerGraph 3.0+
-
-* In Example 1, "FOR GRAPH ldbc_snb" is not used after () in the query signature. It's an optional component in 3.0+ when "USE GRAPH graphName" is used; Or from the command line, "gsql -g graphName " precedes any query invocation.
-* In the FROM clause, we directly use vertex type Person as the starting vertex set. This syntax enhancement is available in syntax V2 only.
-====
 
 You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
 
 .Linux Bash
-
 [source,bash]
 ----
 gsql example1.gsql
@@ -210,8 +202,7 @@ gsql example1.gsql
 
 
 
-. Output of Example 1
-
+.Output of Example 1
 [source,coffeescript]
 ----
 {
@@ -259,7 +250,6 @@ gsql example1.gsql
 *Example 2*. Find the total number of comments and total number of posts liked by Viktor. A Person can reach Comments or Posts via a directed edge LIKES.
 
 .Example 2. Right-directed Edge Pattern
-
 [source,gsql]
 ----
 USE GRAPH ldbc_snb

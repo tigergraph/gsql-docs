@@ -1,0 +1,93 @@
+= Query Language Syntax Versions
+:description: Summary of the differences between GSQL syntax V1 and V2.
+
+GSQL has two syntax versions: V2 and V1 (legacy version).
+In TigerGraph 3.5, the default syntax version was changed to V2.
+This page provides a summary of the differences between V1 and V2, as well as guidance on how to change your V1 query into a V2 query.
+
+== Differences between V1 and V2
+
+The two tables below summarize the differences between V1 and V2.
+
+Most of the syntactical differences between V1 and V2 lie in the `FROM` clause of the `SELECT` statement.
+Therefore, Table 1 specifically lays out the differences in the `FROM` clause.
+Other differences are summarized in Table 2.
+
+.Differences in the `FROM` clause
+|===
+|Feature|V1 |V2
+
+|Step vs path pattern
+a|
+The keyword `FROM` is followed by a 1-hop step.
+Supports 1-hop only.
+
+For more information, see xref:select-statement/select-statement-v1.adoc#_from_clause[`FROM` clause (V1)].
+a|
+The keyword `FROM` is followed by a xref:select-statement/index.adoc#_path_pattern[path pattern].
+The path pattern may consist of multiple hops and allows for powerful xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc[pattern matching].
+
+|Edge notation
+|Edges in a step can optionally have a right arrowhead outside the parentheses.
+For example:
+`Start:s -( Edges:e )-> Target:t` or `Start:s -( Edges:e )- Target:t`
+|No arrowheads are allowed outside the parentheses.
+If an edge type is directed, the edge notation must have arrowheads inside the parentheses to indicate direction.
+For example:
+`Person:s-(STUDY_AT>:e)-University:t`
+
+
+|Traversal direction
+|The traversal action is from left to right, and the notation uses either a rightward facing arrowhead or no arrowhead to depict a connection.
+|The traversal direction is under the control of the query writer, with arrowheads on each edge set to show the direction.
+
+|Source vertex set
+|The source vertex set in a step in the `FROM` clause must be xref:declaration-and-assignment-statements.adoc#_vertex_set_variables[a vertex set (seed set)] declared earlier in the query.
+|The xref:select-statement/index.adoc#_source_vertex_set[source vertex set path pattern] in `FROM` clause can be a vertex set, a vertex type, or use `_` or `ANY` to indicate any vertex.
+
+|===
+
+.Other differences
+|===
+|Feature |V1 |V2
+
+|xref:select-statement/index.adoc#_post_accum_clause[`POST-ACCUM` clause]
+a|* Each `SELECT` statement can only have 1 `POST-ACCUM` clause.
+* A `POST-ACCUM` clause may have statements that reference both source and target vertex aliases.
+a|
+* Each `SELECT` statement can have multiple `POST-ACCUM` clauses.
+* Each `POST-ACCUM` clause must bind itself with one vertex alias.
+This can be done explicitly or implicitly.
+
+|xref:select-statement/sql-like-select-statement.adoc[SQL-like `SELECT` statement]
+|Not supported.
+|Supported.
+
+|Data modification statements
+|`FROM` clause can only perform one hop, which is the same as in the `SELECT` statement in V1.
+|`FROM` clause can only perform one hop, even though it may perform multiple hops in the `SELECT` statement.
+
+|===
+
+== Changing a query from V1 to V2
+This section provides you with instructions to convert a V1 query into a V2 query.
+
+GSQL can detect the syntax version of the query automatically, so there is no need to modify your queries from V1 to V2.
+
+. Delete, move, or add arrowheads in the `FROM` clause.
++
+--
+* If the edge is undirected, delete the arrowhead outside parentheses in the `FROM` clause.
+** For example `Source:s -(Friend:e)-> :t` becomes `Source:s -(Friend:e)- :t`
+* If the edge is directed, move the arrowheads into the parentheses after the edge type.
+If there is no arrowhead, you must add one after the edge type.
+** For example, `Source:s -(Is_Located_In:e)-> :t` becomes `Source:s -(Is_Located_In>:e)- :t`
+--
+This is the most common incompatibility issue between a query written in V1 and V2.
+Most V1 queries can run smoothly in V2 after the arrowheads are deleted.
+. Check for `POST-ACCUM` clauses that aren't bound to one vertex alias or are bound to more than one vertex alias.
+* In V2, every `POST-ACCUM` clause must reference one vertex alias.
+If your V1 query has a `POST-ACCUM` clause that reference multiple vertex aliases, you need to break the `POST-ACCUM` clause into multiple `POST-ACCUM` clauses, with each clause referencing one vertex alias only.
+
+Since a `SELECT` statement can only perform one hop in V1, you may have had to write multiple `SELECT` statements in order to write a multi-hop query.
+With pattern matching in V2, you may choose to rewrite the query to use a single `SELECT` statement to perform multiple hops.

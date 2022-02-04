@@ -65,6 +65,7 @@ fromClause := FROM ( pathPattern ["," pathPattern]*)
 A _hop_ or _step_ consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
 
 
+[#_path_pattern]
 === Path pattern
 A path pattern specifies sets of vertex types and how they are connected by edge types.
 

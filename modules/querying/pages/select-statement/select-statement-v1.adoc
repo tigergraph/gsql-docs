@@ -41,6 +41,7 @@ The SELECT block has many optional clauses, which fit together in a logical flow
 
 image::select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop GSQL SELECT statement]
 
+[#_from_clause]
 == FROM Clause
 
 In classic (Syntax v1) GSQL, the FROM clause describes one step or hop pattern.

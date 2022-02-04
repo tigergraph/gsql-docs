@@ -288,8 +288,13 @@ A path edge pattern is denoted by `-()-`, where the relationship between vertex 
 The most basic form for a path edge pattern is an atomic edge pattern.
 An atomic edge pattern can be one of the following:
 
-* `_` or `ANY`
-* An edge type, a string parameter, or a global `SetAccum` accumulator.
+* `_` or `ANY`.
+* An edge type.
+* A string parameter.
+The value of the parameter must be an edge type and can be provided at runtime.
+You do not need to specify a direction when using a string parameter to specify the edge type.
+* A global `SetAccum` accumulator of strings.
+Each string is the name of an edge type.
 
 If the edge is directed, an atomic edge pattern has either a left pointer `<` on the left or a right pointer `>` on the right to indicate edge direction.
 If the edge is undirected, the atomic edge pattern does not have a pointer.
@@ -299,6 +304,16 @@ Suppose we have 3 edge types or parameters called A, B, C.
 * `<B` is a leftward facing B edge
 * C is an undirected C edge.
 If C is actually a directed edge type, then there is no match.
+
+For example:
+
+* `-(STUDY_AT>)-` refers to forward traversal of the directed edge type `STUDY_AT`.
+* `-(<STUDY_AT)-` refers to backward traversal of the directed edge type `STUDY_AT`.
+** This means that the right side of `-(<STUDY_AT)-` is expected to have the same type as the left side of `-(STUDY_AT>)-`.
+* `-(KNOWS)-` refers to forward traversal of the undirected `KNOWS`.
+* `-(_>)-` refers to forward traversal of any directed edge types.
+* `-(_)-` refers to forward traversal of any undirected edge types.
+* `-(<_)-` refers to backward traversal of any directed edge types.
 
 [discrete]
 ==== Disjunction pattern

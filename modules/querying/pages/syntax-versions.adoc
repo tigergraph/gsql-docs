@@ -30,11 +30,11 @@ The path pattern may consist of multiple hops and allows for powerful xref:tutor
 |Edge notation
 |Edges in a step can optionally have a right arrowhead outside the parentheses.
 For example:
-`Start:s -( Edges:e )-> Target:t`
+`Start:s -( Edges:e )-> Target:t` or `Start:s -( Edges:e )- Target:t`
 |No arrowheads are allowed outside the parentheses.
-Each edge may have arrowheads inside the parentheses to show the direction.
+If an edge type is directed, the edge notation must have arrowheads inside the parentheses to indicate direction.
 For example:
-`Start:s -(Edge1>:e1)- Middle:m -(<Edge2:e2)- Target:t`
+`Person:s-(STUDY_AT>:e)-University:t`
 
 
 |Traversal direction

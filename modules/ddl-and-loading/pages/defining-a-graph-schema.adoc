@@ -332,7 +332,7 @@ Every time the GSQL loader creates a *`sequel_of`* edge, it will also automatica
 
 == `TYPEDEF`
 
-User-defined tuple types defined in a query cannot be used outside of its query or across queries.
+User-defined tuple types defined in a query cannot be used outside their queries or across queries.
 To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema.
 User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
 
@@ -369,11 +369,11 @@ CREATE QUERY query1() FOR GRAPH socialNet {
 
 === *Sharing a Compression Dictionary*
 
-The STRING COMPRESS  data type achieves compression by mapping each unique attribute value to a small integer. The mapping table ("this string" = "this integer") is called the dictionary. If two such attributes have the same or similar sets of possible values, then it is desirable to have them share one dictionary because it uses less storage space.
+The `STRING COMPRESS` data type achieves compression by mapping each unique attribute value to a small integer. The mapping table ("this string" = "this integer") is called the dictionary. If two such attributes have the same or similar sets of possible values, then it is desirable to have them share one dictionary because it uses less storage space.
 
-When a STRING COMPRESS attribute is declared in a vertex or edge, the user can optionally provide a name for the dictionary. Any attributes which share the same dictionary name will share the same dictionary. For example, v1.attr1, v1.attr2, and e.attr1 below share the same dictionary named "e1".
+When a `STRING COMPRESS` attribute is declared in a vertex or edge, the user can optionally provide a name for the dictionary. Any attributes which share the same dictionary name will share the same dictionary. For example, v1.attr1, v1.attr2, and e.attr1 below share the same dictionary named "e1".
 
-.Shared STRING COMPRESS dictionaries
+.Shared `STRING COMPRESS` dictionaries
 
 [source,gsql]
 ----
@@ -385,18 +385,20 @@ CREATE UNDIRECTED EDGE e (FROM v1, TO v2, att1 STRING COMPRESS e1)
 
 == `ALTER INDEX`
 
-User-defined indexes (or secondary indexes. as they are called commonly called in the database industry) are a valuable feature that enhances the performance of a database system. Indexes allow users to perform fast lookups on non-key columns or attributes without a full-fledged scan.
+User-defined indexes (or secondary indexes, as they are called commonly called in the database industry) are a valuable feature that enhances the performance of a database system. Indexes allow users to perform fast lookups on non-key columns or attributes without a full-fledged scan.
 
-The TigerGraph database allows users to define on vertex attributes. __**__User has the flexibility to create indexes in an empty graph initially or to add indexes later when the database is running. If the index is added on an existing vertex, index data is built in the background.
+The TigerGraph database allows users to define on vertex attributes.
+The user has the flexibility to create indexes in an empty graph initially or to add indexes later when the database is running.
+If the index is added on an existing vertex, index data is built in the background.
 
-Indexes can be created on vertices on a single attribute of the following data types only:  STRING, UINT, INT, DATETIME, and STRING COMPRESS. Indexes will be used to optimize queries with all predicate types. However, if a predicate uses an in-built function, then index will not be used to optimize the query. Also, built-in queries are not optimized using indexes.
+Indexes can be created on vertices on a single attribute of the following data types only:  `STRING`, `UINT`, `INT`, `DATETIME`, and `STRING COMPRESS`. Indexes will be used to optimize queries with all predicate types. However, if a predicate uses an in-built function, then index will not be used to optimize the query. Also, built-in queries are not optimized using indexes.
 
 [WARNING]
 ====
-Indexes are very important for data retrieval performance. However, adding indexes will affect write performance. For this reason, users should be judicious about adding indexes. Users should review the querying patterns to decide where Indexes can help.
+Indexes are very important for data retrieval performance. However, adding indexes will affect write performance. For this reason, users should use caution when adding indexes. Users should review the querying patterns to decide where indexes can help.
 ====
 
-Users can create and drop indexes using ALTER VERTEX command as shown below.
+Users can create and drop indexes using `ALTER VERTEX` command as shown below.
 
 [source,text]
 ----
@@ -523,7 +525,7 @@ CREATE GRAPH publicNet2 AS socialNet:public
 New requirement for MultiGraph support. Applies even if only one graph exists.
 ====
 
-Before a user can make use of a graph, first the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The USE GRAPH command sets or changes the user's working graph, for the current session.
+Before a user can use a graph, the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The `USE GRAPH` command sets or changes the user's working graph, for the current session.
 
 For more about roles and privileges, see the document xref:3.2@tigergraph-server:user-access:README.adoc[Managing User Privileges and Authentication].
 
@@ -533,9 +535,7 @@ For more about roles and privileges, see the document xref:3.2@tigergraph-server
 USE GRAPH gname
 ----
 
-
-
-Instead of the USE GRAPH command, gsql can be invoked with the -g <graph_name> option.
+Instead of the `USE GRAPH` command, gsql can be invoked with the `-g <graph_name>` option.
 
 == `DROP GRAPH`
 
@@ -549,14 +549,14 @@ DROP GRAPH gname
 `WRITE_SCHEMA`
 
 
-The DROP GRAPH deletes the logical definition of the named graph. Furthermore, it will also delete all local vertex or edge types. Local vertex and edge types are created by an xref:modifying-a-graph-schema.adoc#_add_vertex_edge_local[ADD VERTEX/EDGE] statement within a xref:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB] and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see DROP VERTEX | EDGE in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
+The `DROP GRAPH` command deletes the logical definition of the named graph. It will also delete all local vertex or edge types. Local vertex and edge types are created by an `xref:modifying-a-graph-schema.adoc#_add_vertex_edge_local[ADD VERTEX/EDGE]` statement within a `xref:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB]` and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see `DROP VERTEX | EDGE` in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
 == `DROP ALL`
 
 === Required privilege
 `Drop_ALL`
 
-The `DROP ALL` statement clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
+The `DROP ALL` command clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
 Unlike xref:3.2@tigergraph-server:data-definition:README.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
 
@@ -567,12 +567,14 @@ Unlike xref:3.2@tigergraph-server:data-definition:README.adoc#_reset_all[the `gs
 
 == `SHOW` - View Parts of the Catalog
 
-The SHOW command can be used to show certain aspects of the graph, instead of manually filtering through the entire graph schema when using the ls command. You can either type the exact identifier or use regular expression / Linux globbing to search.
+The `SHOW` command can be used to show certain aspects of the graph, instead of manually filtering through the entire graph schema when using the `ls` command. You can either type the exact identifier or use regular expressions / Linux globbing to search.
 
 [source,text]
 ----
 SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> [ <name> | <glob> | -r <regex> ]
 ----
+
+`SHOW GRAPH` lists vertices and edges without giving their properties, and is also a way to check the JSON API and syntax versions of the graph, as well as any loading jobs. `SHOW VERTEX` and `SHOW EDGE` list the properties of the desired vertex or edge respectively.
 
 This feature supports the `?` and `*` from linux globbing operations, and also regular expression matching.
 Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.
@@ -582,13 +584,13 @@ Usage of the feature is limited to the scope of the graph the user is currently 
 Regular expression searching will not work with escaping characters.
 ====
 
-To use regular expressions, you will need to use the *-r* flag after the part of the schema you wish to show. If you wish to dive deeper into regular expressions, visit https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html["Java Patterns"]. The following are a few examples of what is supported by the SHOW command.
+To use regular expressions, you will need to use the *-r* flag after the part of the schema you wish to show. If you wish to dive deeper into regular expressions, visit https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html["Java Patterns"]. The following are a few examples of what is supported by the `SHOW` command.
 
 [source,text]
 ----
 Linux Globbing examples
 SHOW VERTEX us*            //shows all vertices that start with the letters "Us"
-SHOW VERTEX co?*y          //shows the vertex that starts with co and ends with y
+SHOW VERTEX co?*y          //shows the vertices that starts with co and ends with y
 SHOW VERTEX ?????          //shows all vertices that are 5 letters long
 
 Regular Expression Examples

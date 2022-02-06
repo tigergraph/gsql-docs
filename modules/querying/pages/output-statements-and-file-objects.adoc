@@ -3,15 +3,18 @@
 [#_print_statement_api_v2]
 == `PRINT` Statement (API v2)
 
-The PRINT statement specifies output data.Each execution of a PRINT statement adds a JSON object to the results array which will be part of the query output.A PRINT statement can appear anywhere that query-body statements are permitted.
+The `PRINT` statement specifies output data.
+Each execution of a `PRINT` statement adds a JSON object to the results array which will be part of the query output.
+A `PRINT` statement can appear anywhere that query-body statements are permitted.
 
 [CAUTION]
 ====
-A PRINT statement does not trigger immediate output.The full set of data from all PRINT statements is delivered at one time, when the query concludes.
+A `PRINT` statement does not trigger immediate output.
+The full set of data from all PRINT statements is delivered at one time, when the query concludes.
 
 A query can print a maximum of 2GB of data.
 
-If the output is to a FILE object, then the size limit does not apply.
+If the output is to a `FILE` object, then the size limit does not apply.
 ====
 
 .EBNF
@@ -28,13 +31,13 @@ jsonKey := name
 
 
 
-Each PRINT statement contains a list of expressions for output data. The optional WHERE clause filters the output. If the _condition_ is false for any items, then those items are excluded from the output.
+Each `PRINT` statement contains a list of expressions for output data. The optional `WHERE` clause filters the output to exclude any items for which the condition is false.
 
-Each `printExpr` __contributes one key-value pair to the PRINT statement's JSON object result.  The optional AS clause sets the JSON key for the expression, overriding the default key (explained below).
+Each `printExpr` contributes one key-value pair to the `PRINT` statement's JSON object result.  The optional `AS` clause sets the JSON key for the expression, overriding the default key (explained below).
 
 [NOTE]
 ====
-If the query includes one more tabular SELECT statements, the PRINT statement can include table names. Both tabular and non-tabular `printExpr` expressions can be including in one PRINT statement.
+If the query includes one more tabular `SELECT` statements, the `PRINT` statement can include table names. Both tabular and non-tabular `printExpr` expressions can be included in one `PRINT` statement.
 ====
 
 .Simple Example Showing JSON Output Format
@@ -71,13 +74,13 @@ PRINT str, number;
 
 === `PRINT` Expressions
 
-Each _`printExpr`_ may be one of the following:
+Each `printExpr` may be one of the following:
 
 * A literal value
 * A global or local variable (including `VERTEX` and `EDGE` variables)
-* An attribute of a vertex variable, e.g., Person.name
+* An attribute of a vertex variable, e.g., `Person.name`
 * A global accumulator
-* An expression whose terms are among the types above.  The following operators may be used:
+* An expression whose terms are among the types above. The following operators may be used:
 
 |===
 | Data type | Operators
@@ -95,11 +98,17 @@ Each _`printExpr`_ may be one of the following:
 Parentheses can be used for controlling order of precedence.
 
 . A vertex set variable
-. A vertex expression set `vExprSet` (only available if the output API is set to `"v2"`. Vertex expression sets are explained in <<_vertex_expression_set>>.
+. A vertex expression set `vExprSet` (only available if the output API is set to `"v2"`. Vertex expression sets are explained below in the <<_vertex_expression_set>> section.
 
 === JSON Format: Keys
 
-If a _`printExpr`_ includes the optional *AS* _*name*_ clause, then the _name_ sets the key for that expression in the JSON output. Otherwise, the following rules determine the key: If the expression is simply a single variable (local variable, global variable, global accumulator, or vertex set variable), then the key is the variable name.  Also, for a vertex expression set, the key is the vertex set variable name. Otherwise, the key is the entire expression, represented as a string.
+If a `printExpr` includes the optional `AS``` _*name*_`` clause, then the _name_ sets the key for that expression in the JSON output. Otherwise, the following rules determine the key:
+
+* If the expression is simply a single variable (local variable, global variable, global accumulator, or vertex set variable), then the key is the variable name.
+
+* The key for a vertex expression set is the vertex set variable name.
+
+* Otherwise, the key is the entire expression, represented as a string.
 
 === *JSON Format: Values*
 
@@ -117,7 +126,7 @@ Each data type has a distinct output format.
 
 [WARNING]
 ====
-Full details of vertices are printed only when part of a vertex set variable or vertex expression set. When a single vertex is printed (from a variable or accumulator whose data type happens to be VERTEX), only the vertex id is printed.
+Full details of vertices are printed only when part of a vertex set variable or vertex expression set. When a single vertex is printed (from a variable or accumulator whose data type happens to be `VERTEX`), only the vertex id is printed.
 
 .Cases where only the vertex id will be printed
 
@@ -128,27 +137,19 @@ VERTEX v;                   // not a vertex set variable
 ...
 PRINT @@vList, v;           // output will contain only vertex ids
 ----
-
-
 ====
 
-*Vertex (when not part of a vertex set variable)*
+==== Examples of printing various data types
+===== Vertex (when not part of a vertex set variable)
 
 The output is just the vertex id as a string:
-
-.Output Format for a Value which is a Vertex, not part of a Vertex Set Variable
 
 [source,gsql]
 ----
 "<vertex_id>"
 ----
 
-
-
-*Vertex (as part of a vertex set variable)*
-
-.Output Format for a Vertex as part of a Vertex Set Variable
-
+===== Vertex (as part of a vertex set variable)
 [source,yaml]
 ----
 {
@@ -164,9 +165,7 @@ The output is just the vertex id as a string:
 
 
 
-*Edge*
-
-.Output Format for a Value which is an Edge
+===== Edge
 
 [source,yaml]
 ----
@@ -186,9 +185,7 @@ The output is just the vertex id as a string:
 
 
 
-*List, Set or Bag*
-
-.Output format for a Value which is a List, Set, or Bag
+===== List, Set or Bag
 
 [source,gsql]
 ----
@@ -202,9 +199,7 @@ The output is just the vertex id as a string:
 
 
 
-*Map*
-
-.Output Format for a Value which is a Map
+===== Map
 
 [source,gsql]
 ----
@@ -218,9 +213,7 @@ The output is just the vertex id as a string:
 
 
 
-*Tuple*
-
-.Output Format for a Value which is a Tuple
+===== Tuple
 
 [source,gsql]
 ----
@@ -234,9 +227,7 @@ The output is just the vertex id as a string:
 
 
 
-*Vertex Set Variable*
-
-.Output Format for a Value which is a Vertex Set Variable
+===== Vertex Set Variable
 
 [source,gsql]
 ----
@@ -248,15 +239,14 @@ The output is just the vertex id as a string:
 ]
 ----
 
-
-
 === Vertex Expression Set
 
-A vertex expression set is a list of expressions which is applied to each vertex in a vertex set variable. The expression list is used to compute an alternative set of values to display in the "attributes" field of each vertex.
+A vertex expression set is a list of expressions applied to each vertex in a vertex set variable. The expression list is used to compute an alternative set of values to display in the "attributes" field of each vertex.
 
-The easiest way to understand this is to consider examples containing only one term and then consider combinations. Consider the following example query. C is a vertex set variable containing the set of all company vertices. Furthermore, each vertex has a vertex-attached accumulator @count.
+The easiest way to understand this is to consider examples containing only one term and then consider combinations.
 
 .Example Query for Vertex Expression Set
+In this example, C is a vertex set variable containing the set of all company vertices. Furthermore, each vertex has a vertex-attached accumulator @count.
 
 [source,gsql]
 ----
@@ -276,7 +266,7 @@ If we print the full vertex set, the "attributes" field of each vertex will cont
 
 * `PRINT C[C.country]` prints the vertex set variable C, except that the "attributes" field will contain only "country", instead of 3 fields.
 * `PRINT C[C.@count]` prints the vertex set variable C, except that the "attributes" field will contain only "@count", instead of 3 fields.
-* `PRINT C[C.@count AS company_count]` prints the same as above, except that the "@count" accumulator is is aliased as "company_count".
+* `PRINT C[C.@count AS company_count]` prints the same as above, except that the "@count" accumulator is aliased as "company_count".
 * `PRINT C[C.id, C.@count]` prints the vertex set variable C, except that the "attributes" field will contain only "id" and "@count".
 * `PRINT C[C.id+"_ex", C.@count+1]` prints the vertex set variable C, except that the "attributes" field contains the following:
  ** One field consists of each vertex's id value, with the string "_ex" appended to it.
@@ -294,13 +284,15 @@ vSetProj  := expr [ AS name]
 
 
 
-The vertex expression set begins with the name of a vertex set variable.  It is followed by a list of attribute expressions, enclosed in square brackets. Each attribute expression follows the same rules described earlier in the Print Expressions section.  That is, each attribute expression may refer to one or more attributes or vertex-attached accumulators of the current vertices, as well as literals, local or global variables, and global accumulators. The allowed operators (for numeric, string, or set operations) are the same ones mentioned above.
+The vertex expression set begins with the name of a vertex set variable, followed by a list of attribute expressions enclosed in square brackets. Each attribute expression follows the same rules described earlier in the <<_print_expressions>> section.
+
+That is, each attribute expression may refer to one or more attributes or vertex-attached accumulators of the current vertices, as well as literals, local or global variables, and global accumulators. The allowed operators (for numeric, string, or set operations) are the same ones mentioned above.
 
 The _key_ for the vertex expression set is the vertex set variable name.
 
 The _value_ for the vertex expression set is a modified vertex set variable, where the regular "attributes" value for each vertex is replaced with a set of key:value pairs corresponding to the set of attribute expressions given in the print expression.
 
-An example which shows all of the cases described above, in combination, is shown below.
+An example which shows all of the cases described above in combination is shown below.
 
 .Print Basic Example
 
@@ -352,14 +344,14 @@ CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
 
 [NOTE]
 ====
-Note how the results of the six PRINT statements are grouped in the JSON "results" field below:
+Note how the results of the six `PRINT` statements are grouped in the JSON `results` field below:
 
-. Each of the six PRINT statements is represented as one JSON object with the "results" array.
-. When a PRINT statement has more than one expression (like the first one), the expressions may appear in the output in a different order than on the PRINT statement.
-. The 2nd PRINT statement shows a key that is generated from the expression itself.
-. The 3rd and 4th PRINT statements show a set of vertices (different than a vertex set variable) and a map, respectively.
-. The 5th PRINT statement shows the vertex set variable A, including its vertex-attached accumulators (PRINT A).
-. The 6th PRINT statement shows a vertex set expression for A, customized to include only one static attribute plus a newly computed attribute.
+. Each of the six `PRINT` statements is represented as one JSON object with the `results` array.
+. When a `PRINT` statement has more than one expression (like the first one), the expressions may appear in the output in a different order than on the `PRINT` statement.
+. The 2nd `PRINT` statement shows a key that is generated from the expression itself.
+. The 3rd and 4th `PRINT` statements show a set of vertices (different from a vertex set variable) and a map, respectively.
+. The 5th `PRINT` statement shows the vertex set variable A, including its vertex-attached accumulators (PRINT A).
+. The 6th `PRINT` statement shows a vertex set expression for A, customized to include only one static attribute plus a newly computed attribute.
 ====
 
 .Results from Query printExampleV2 (WITH COMMENTS ADDED)
@@ -494,9 +486,7 @@ GSQL > RUN QUERY printExampleV2("person1")
 
 === Printing CSV to a FILE Object
 
-Instead of printing output in JSON format, output can be written to a FILE object in comma-separated values (CSV) format. To select this option, at the end of the PRINT statement, include the keyword `TO_CSV` followed by the `FILE` object name:
-
-.PRINT to CSV FILE syntax example
+Instead of printing output in JSON format, output can be written to a `FILE` object in comma-separated values (CSV) format by appending the keyword `TO_CSV` followed by the `FILE` object name to the `PRINT` statement:
 
 [source,gsql]
 ----
@@ -508,19 +498,19 @@ Each execution of the `PRINT` statement appends one line to the `FILE`. If the `
 
 [WARNING]
 ====
-Limitations of PRINT > File
+Limitations of `PRINT` > File
 
 * Printing a full Vertex set variable is not supported.
 * If a vertex is printed, only its ID value is printed.
 * If printing a vertex set's vertex-attached accumulator or a vertex set's variable, the result is a list of values, one for each vertex, separated by newlines.
-* The syntax for printing a vertex set expression is currently different when printing to a file than when printing to standard output. Compare:
- ** PRINT A[A.gender]; # with brackets
- ** PRINT A.gender TO_CSV file1; # without brackets
+* The syntax for printing a vertex set expression is different when printing to a file than when printing to standard output. Compare:
+ ** `PRINT A[A.gender];` # with brackets
+ ** `PRINT A.gender TO_CSV file1;` # without brackets
 ====
 
 [CAUTION]
 ====
-Writing to FILE objects is optimized for parallel processing. Consequently, the order in which data is written to the FILE is not guaranteed.  Therefore, it is strongly recommended that the user design their queries such that one of these conditions is satisfied:
+Writing to `FILE` objects is optimized for parallel processing. Consequently, the order in which data is written to the `FILE` is not guaranteed. Therefore, it is strongly recommended that the user design their queries such that one of these conditions is satisfied:
 
 . The query prints only one set of data, and the order of the set is not important.
 . Each line of data to print to a file includes a label which can be used to identify the data.
@@ -558,9 +548,7 @@ CREATE QUERY printExampleFile() FOR GRAPH socialNet {
 
 == `FILE println` statement
 
-The `FILE println` statement writes data to a `FILE` object. Unlike the `PRINT` statement, which is a query-body level statement, the `FILE println` statement can be either a query-body level statement or a DML-sub-statement.
-
-.EBNF for FILE println statement
+The `FILE println` statement writes data to a `FILE` object. Unlike the `PRINT` statement, which is a query-body level statement, the `FILE println` statement can be either a query-body level statement or a DML-sub-statement:
 
 [source,gsql]
 ----
@@ -569,7 +557,7 @@ printlnStmt := fileVar".println" "(" expr ("," expr)* ")"
 
 
 
-`println` is a method of a FILE object variable. The `println` statement can be used either at the query-body level or a DML-sub-statement, e.g., within the ACCUM clause of a SELECT block. Each time `println` is called, it adds one new line of values to the `FILE` object, and then to the corresponding file.
+`println` is a method of a FILE object variable. The `println` statement can be used either at the query-body or DML-sub-statement level, e.g., within the `ACCUM` clause of a `SELECT` block. Each time `println` is called, it adds one new line of values to the `FILE` object, and then to the corresponding file.
 
 The `println` function can print any expression that can be printed by a `PRINT` statement with the exception of vertex set variables. Vertex expression sets are also not applicable to the `println` function.
 
@@ -577,7 +565,7 @@ If the `println` statement has a list of expressions to print, it will produce a
 
 [WARNING]
 ====
-The data from query-body level `FILE` print statements (either `TO_CSV` or `println`) will appear in their original order. However, due to the parallel processing of statements in an ACCUM block, the order in which `println` statements at the DML-sub-statement level are processed cannot be guaranteed.
+The data from query-body level `FILE` print statements (either `TO_CSV` or `println`) will appear in their original order. However, due to the parallel processing of statements in an `ACCUM` block, the order in which `println` statements at the DML-sub-statement level are processed cannot be guaranteed.
 ====
 
 [discrete]
@@ -645,11 +633,11 @@ footer
 
 
 
-However, within the `ACCUM` clause itself, the order of the `println` statements is not guranteed.
+However, within the `ACCUM` clause itself, the order of the `println` statements is not guaranteed.
 
 == Passing a FILE Object as a Parameter
 
-A FILE Object can be passed from one query to a subquery.  The subquery can then also write to the FILE object.
+A `FILE` Object can be passed from one query to a subquery.  The subquery can then also write to the `FILE` object.
 
 .Example: query passing a FILE object to another query
 
@@ -698,9 +686,7 @@ main,footer
 
 == `LOG` Statement
 
-The LOG statement is another means to output data.  It works as a function that outputs information to a log file.
-
-.EBNF for LOG statement
+The `LOG` statement is another means to output data.  It works as a function that outputs information to a log file:
 
 [source,gsql]
 ----
@@ -709,11 +695,11 @@ logStmt := LOG "(" condition "," argList ")"
 
 
 
-The first argument of the LOG statement is a boolean condition that enables or disables logging.  This allows logging to be easily turned on/off, for uses such as debugging.  After the condition, LOG takes one or more expressions (separated by commas).  These expressions are evaluated and output to the log file.
+The first argument of the LOG statement is a boolean condition that enables or disables logging.  This allows logging to be easily turned on/off for debugging.  After the condition, `LOG` takes one or more expressions (separated by commas).  These expressions are evaluated and output to the log file.
 
-Unlike the PRINT statement, which can only be used as a query-body statement, the LOG statement can be used as both a query-body statement and a DML-sub-statement.
+Unlike the `PRINT` statement, which can only be used as a query-body statement, the `LOG` statement can be used as both a query-body statement and a DML-sub-statement.
 
-The values will be recorded in the GPE log. To find the log file after the query has completed, open a Linux shell and use the command  "gadmin log gpe".  It may show you more than one log file name; use the one ending in "INFO".  Search this file for "UDF_".
+The values will be recorded in the GPE log. To find the log file after the query has completed, open a Linux shell and use the command  `gadmin log gpe`.  It may return more than one log file name; use the one ending in `"INFO"`.  Search this file for `"UDF_"`.
 
 .Examples
 
@@ -737,7 +723,7 @@ LOG(debug, 10, x);
 returnStmt := RETURN expr
 ----
 
-The RETURN statement specifies data that a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
+The `RETURN` statement specifies data that a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
 
 For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] or xref:querying:accumulators.adoc#_groupbyaccum[`GroupByAccum`], the accumulators must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level]. See the example below:
 

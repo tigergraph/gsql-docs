@@ -688,6 +688,7 @@ GSQL > RUN QUERY andOrAccumEx()
 ====
 
 
+[#_bitwiseandaccum_bitwiseoraccum]
 === BitwiseAndAccum / BitwiseOrAccum
 
 The BitwiseAndAccum and BitwiseOrAccum types calculate and store the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.

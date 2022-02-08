@@ -704,11 +704,11 @@ Computing the Bitwise `AND` of two numbers A and B means to compute the bit sequ
 
 A bitwise accumulator has different declaration syntax depending on its length:
 
-* When a bitwise accumulator length less than 64 bit, it's assigned using one integer.
-Each integer is a 64-bit sequence of 1s and 0s.
+* When a bitwise accumulator length less than or equal to 64 bit, it's assigned using one integer.
+The integer is converted to a 64-bit sequence of 1s and 0s.
 Overflow on the left is ignored.
-* When a bitwise accumulator length is not 64 bit, it's assigned using an array of two integers.
-Each integer is a 64-bit sequence of 1s and 0s.
+* When a bitwise accumulator length is longer than 64 bit, it's assigned using an array of two integers.
+Each integer is converted to a 64-bit sequence of 1s and 0s.
 The integer in the second position will take up the first 64 bits from the right of the sequence, and the integer on the left will take up the remaining bits.
 Any overflowing bits will be ignored.
 

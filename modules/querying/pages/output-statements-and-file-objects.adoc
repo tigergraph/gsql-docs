@@ -5,7 +5,7 @@
 
 The `PRINT` statement specifies output data.
 Each execution of a `PRINT` statement adds a JSON object to the results array which will be part of the query output.
-A `PRINT` statement can appear anywhere that query-body statements are permitted.
+A `PRINT` statement can appear wherever query-body statements are permitted.
 
 [CAUTION]
 ====

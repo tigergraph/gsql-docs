@@ -691,16 +691,46 @@ GSQL > RUN QUERY andOrAccumEx()
 === BitwiseAndAccum / BitwiseOrAccum
 
 The BitwiseAndAccum and BitwiseOrAccum types calculate and store the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.
-BitwiseAndAccum and BitwiseOrAccum operate on `INT` only.
-The data type does not need to be declared.
+The default length for both BitwiseAndAccum and BitwiseOrAccum is 64 bit.
+You can specify the length of both types by appending the desired length in angle brackets``<>``.
+
 
 Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
 "Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.
 Hence, an integer is equivalent to a sequence of boolean values.
 Computing the Bitwise `AND` of two numbers A and B means to compute the bit sequence C where the stem:[j_{th}] bit of C, denoted stem:[C_j], is equal to stem:[A_j] `AND` stem:[B_j].
 
-For BitwiseAndAccum, `+= arg` updates the accumulator's state to be the Bitwise AND of the current state and `arg`.
-BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise OR.
+==== Declaration
+
+A bitwise accumulator has different declaration syntax depending on its length:
+
+* When a bitwise accumulator length less than 64 bit, it's assigned using one integer.
+Each integer is a 64-bit sequence of 1s and 0s.
+Overflow on the left is ignored.
+* When a bitwise accumulator length is not 64 bit, it's assigned using an array of two integers.
+Each integer is a 64-bit sequence of 1s and 0s.
+The integer in the second position will take up the first 64 bits from the right of the sequence, and the integer on the left will take up the remaining bits.
+Any overflowing bits will be ignored.
+
+For example, if you are declaring an 80-bit BitwiseAndAccum:
+
+    @@bit80<80> = [123, 456]
+
+456 represents the 64-bit sequence `0000….000111001000` (zeros omitted), and 123 represents the 64-bit sequence `0000000000…00001111011` (zeros omitted).
+
+When the two integers are joined together, the 64-bit sequence on the right (456) takes up the 64 bits from the right.
+The 64-bit sequence on the left (123) takes up the remaining 16 bits and the overflow on the left is ignored.
+
+The resulting BitwiseAndAccum prints as below:
+
+    0000000001111011 (16bits in total) 0000000...000111001000 (64bits in total)
+
+
+
+==== Accumulation behavior
+
+For BitwiseAndAccum, `+= arg` updates the accumulator's state to be the Bitwise `AND` of the current state and `arg`.
+BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise `OR`.
 
 [CAUTION]
 ====
@@ -709,7 +739,83 @@ Bitwise Operations and Negative Integers
 Most computer systems represent negative integers using "2's complement" format, where the uppermost bit has special significance. Operations that affect the uppermost bit are crossing the boundary between positive and negative numbers, and vice versa.
 ====
 
+==== Functions
+Below is a list of methods of BitwiseAndAccum and BitwiseOrAccum.
+If a method returns an `BitwiseAndAccum` or `BitwiseOrAccum`, it returns the same type as the instance that calls the method.
+
+.Bitwise accumulator functions
+|===
+|Function |Return type |Accessor/Mutator |Description
+
+|`.reset()`
+|None.
+|Mutator
+|Sets all bits to 0.
+
+|`.cardinality()`
+|`INT`
+|Accessor
+|Returns the number of 1s.
+
+|`.get( index )`
+|`INT`
+|Accessor
+a|Returns the 1 or 0 at the provided index.
+
+* `index`: `INT`.
+The position of the bit value to return.
+
+|`.set( )`
+|None.
+|Mutator
+|Sets all bits to 1.
+
+|`.set( index, value )`
+|None.
+|Mutator
+a|Sets the bit at the provided index to the desire value.
+
+* `index`:
+`INT`. The position of the bit
+* `value`:
+`BOOL`.
+The value of the bit.
+
+|`.flip( index )`
+|None.
+|Mutator
+|Flips the bit at the specified index.
+If the bit is 0, change it to 1 and vice versa.
+
+
+|`.flip( fromIndex [, toIndex ] )`
+|None.
+|Mutator
+|Flips the bits in the specified range.
+
+|`.xor ( accum )`
+|None.
+|Mutator
+|Compares two bitwise accumulators of the same length.
+Returns a Bitwise accumulator whose every bit is the exclusive `OR` result between the two bitwise accumulators.
+
+|`.and ( accum )`
+|None.
+|Mutator
+|Compares two bitwise accumulators of the same length.
+Returns a bitwise accumulator whose every bit is the `AND` result between the two bitwise accumulators.
+
+|`.or ( accum )`
+|None.
+|Mutator
+|Compares two bitwise accumulators of the same length.
+Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
+|===
+
+
+
 ==== Example
+
 [tabs]
 ====
 Query::
@@ -718,7 +824,6 @@ Query::
 .BitwiseAndAccum and BitwiseOrAccum Example
 [source,gsql]
 ----
-# BitwiseAndAccum and BitwiseOrAccum Example
 CREATE QUERY bitwiseAccumEx() FOR GRAPH minimalNet {
 
   BitwiseAndAccum @@bwAndAccumVar; # default value = 64-bits of 1 = -1 (INT)
@@ -814,7 +919,7 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 | Accessor
 | Returns the number of elements in the list.
 
-| `.contains(* T _val_ *)`
+| `.contains( T _val_ )`
 | `BOOL`
 | Accessor
 | Returns true if the list does contain `value`, and false if it doesn't.

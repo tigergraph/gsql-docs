@@ -221,12 +221,12 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 	# Best practice is to delete a vertex in a POST-ACCUM, which only
 	# occurs once for each vertex v, guaranteeing that a vertex is not
 	# deleted more than once
-	postAccumDeletedPosts = SELECT v FROM start -(posted:e)- post:v
+	postAccumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
 	       	 POST-ACCUM DELETE (v);
 	
 	# Possible, but not recommended as the DML-sub DELETE statement occurs
 	# once for each edge of the vertex v
-	accumDeletedPosts = SELECT v FROM start -(posted:e)- post:v
+	accumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
 	       	 ACCUM DELETE (v);
 }
 
@@ -234,7 +234,7 @@ CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
 CREATE QUERY selectUserPosts(vertex<person> seed) FOR GRAPH socialNet {
     start = {seed};
 
-    userPosts = SELECT v FROM start -(posted:e)- post:v;
+    userPosts = SELECT v FROM start -(posted>:e)- post:v;
     PRINT userPosts;
 }
 ----

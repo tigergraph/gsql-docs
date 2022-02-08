@@ -135,7 +135,7 @@ CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
 {
     SumAccum<INT> @@numberPosts = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted:e)- :postVertex
+    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
            ACCUM @@numberPosts += 1;
 
     IF  @@numberPosts < 2 THEN
@@ -197,9 +197,9 @@ CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
     SumAccum<INT> @@numberPosts = 0;
     SumAccum<INT> @@numberLikes = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted:e)- :postVertex
+    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
            ACCUM @@numberPosts += 1;
-    result = SELECT likedPost FROM start -(liked:e)- :likedPost
+    result = SELECT likedPost FROM start -(liked>:e)- :likedPost
            ACCUM @@numberLikes += 1;
 
     IF @@numberPosts < 2 THEN
@@ -1648,12 +1648,12 @@ CREATE QUERY topicLikes() FOR GRAPH socialNet {
 
   # Find all user posts and generate a set of post topics
   # (set has no duplicates)
-  posts = SELECT g FROM start - (posted) -> :g
+  posts = SELECT g FROM start - (posted>) - :g
           ACCUM @@personPosts += g.subject;
 
   # Use set of topics to increment how many times a specfic
   #  post is liked by other users
-  likedPosts = SELECT f FROM start - (liked) -> :f
+  likedPosts = SELECT f FROM start - (liked>) - :f
                ACCUM FOREACH x in @@personPosts DO
                          CASE WHEN (f.subject == x) THEN
                            f.@postLikes += 1
@@ -1809,7 +1809,7 @@ CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
 
     friends (ANY) = {seed};
     WHILE @@foundCatPost != true AND friends.size() > 0 DO
-          posts = SELECT v FROM friends-(posted:e)-:v
+          posts = SELECT v FROM friends-(posted>:e)-:v
                   ACCUM CASE WHEN v.subject == "cats" THEN @@foundCatPost += true END;
 
           IF @@foundCatPost THEN

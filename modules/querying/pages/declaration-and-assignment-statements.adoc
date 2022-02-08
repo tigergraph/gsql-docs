@@ -154,7 +154,7 @@ CREATE QUERY baseTypeVariable() FOR GRAPH socialNet {
 
   allUser = {person.*};
   allUser = SELECT src
-            FROM allUser:src - (liked:e) - post
+            FROM allUser:src - (liked>:e) - post
             ACCUM
             dt = e.actionTime,           # dt isn't updated yet
             @@maxDateGlob += datetime_to_epoch(dt);
@@ -199,7 +199,7 @@ CREATE QUERY localVariable(vertex<person> m1) FOR GRAPH socialNet {
 
   allUser = {person.*};
   allUser = SELECT src
-            FROM allUser:src - (liked:e) - post
+            FROM allUser:src - (liked>:e) - post
             ACCUM
             DATETIME dt = e.actionTime,      # Declare and assign local dt
             dtGlob = e.actionTime,           # dtGlob isn't updated yet

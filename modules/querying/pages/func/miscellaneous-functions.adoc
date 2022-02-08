@@ -143,7 +143,7 @@ CREATE QUERY evaluateEx (STRING whereCond = "TRUE", STRING postAccumIntExpr = "1
 
   S = {person.*};
   S2 = SELECT s
-       FROM S:s - (liked:e) -> post:t
+       FROM S:s - (liked>:e) - post:t
        WHERE evaluate(whereCond)
        ACCUM s.@latestLikeTime += datetime_to_epoch( e.actionTime ),
              s.@latestLikePostTime += datetime_to_epoch( t.postTime )

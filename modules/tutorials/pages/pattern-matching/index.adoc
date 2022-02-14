@@ -1,0 +1,111 @@
+= Pattern Matching Tutorial
+:experimental:
+:description: Tutorial for pattern matching in GSQL.
+
+In this tutorial, we will show you how to write and run Pattern Matching queries.
+
+We assume you have finished xref:tutorials:gsql-101/index.adoc[GSQL 101].
+If not, please complete GSQL 101 first.
+
+== What is a Graph Pattern?
+
+A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps.
+A pattern can be a linear trace, or a non-linear trace (tree, circle etc.).
+
+For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type.
+A pattern could be a trace on this simple schema:
+
+[source,text]
+----
+Person - (Friendship) - Person - (Friendship) - Person
+----
+
+== What is Pattern Matching?
+
+Pattern matching is the process of finding subgraphs in a data graph that conform to a given query pattern.
+
+== Prepare Your TigerGraph Environment
+
+We assume you are running your own TigerGraph instance as the sole user with full privileges.
+If you are on a multiuser Enterprise Edition, consult with your DB administrator. You need to have Designer or Admin privileges on an empty graph.
+
+At various points in this tutorial, there are links to download files.
+Most are small, but note that the graph data file is 1GB when uncompressed.
+
+First, let's check that you can access GSQL, and that your version is 3.0 or higher:
+
+. Open a Linux shell.
+. Type `gsql` as below.
+A GSQL shell prompt should appear as below.
+. Type `version` in GSQL shell. It should show 3.0 or higher.
+If not, please download and install the latest version from https://www.tigergraph.com/download/
++
+.Linux Shell
+[source,console]
+----
+$ gsql
+GSQL > version
+GSQL version: 3.0
+----
++
+. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the documentation on xref:tigergraph-server:system-management:management-with-gadmin.adoc[managing TigerGraph with gadmin].
+
+=== Cheatsheet
+
+The following general use commands were introduced in xref:tutorials:gsql-101/index.adoc[GSQL 101].
+
+* The *`$`* prefix indicates Linux shell commands. You need TigerGraph admin privileges to run most gadmin commands.
+* The *`GSQL>`* prefix indicates GSQL shell commands.
+
+[width="100%",cols="<50%,<50%",options="header",]
+|===
+|Command |Description
+|`$ gsql` |Enter the GSQL shell in interactive mode
+|`$ gsql <GSQL command string>` |Run one GSQL command
+|`$ gadmin status` |Check the status of TigerGraph services.
+If your graph store is empty, it is normal for some statuses to be flagged in red.
+|`$ gadmin restart` |Restart TigerGraph services
+|`GSQL> ls` |List the graph schema, loading jobs, and queries
+|`GSQL> SHOW USER` |Show your username and roles
+|`GSQL> DROP ALL` a|
+Delete the entire schema, all data, all jobs, and all queries
+
+|`GSQL> EXIT` |Exit GSQL interactive shell
+|===
+
+== Data set
+
+We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmark] (LDBC SNB) data set.
+This data set models a typical online forum where users post messages and discuss topics.
+It comes with a data generator, which allows you to generate data at different scale factors.
+Scale factor 1 generates roughly 1GB of raw data, scale factor 10 generates roughly 10GB of raw data, and so on.
+
+.LDBC Schema
+image::screen-shot-2019-05-15-at-5.05.00-pm.png[Figure 1. LDBC SNB Schema]
+
+Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]).
+It models the activities and relationships of social forum participants.
+For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment.
+
+A Person's home location is a hierarchy (`Continent`>`Country`>`City`), and a person can be affiliated with a `University` or a `Company`.
+A `Tag` can be used to classify a `Forum`, a `Message`, or a `Person`'s interests.
+Tags can further be classified by `TagClass`.
+
+The relationships between entities are modeled as directed edges, except Person `KNOWS` Person is modeled as an undirected edge.
+For example, Person connects to `Tag` by the `hasInterest` edge.
+`Forum` connects to `Person` by two different edges, `hasMember` and `hasModerator`.
+
+
+The LDBC SNB schema uses *inheritance* to model certain relationships.
+For example, `Message` is the superclass of `Post` and `Comment`.
+
+We do not use the superclasses in our graph model.
+When there is an edge type connecting an entity to a superclass, we instead create an edge type from the entity to each of the subclasses of the superclass.
+
+For example, Message has an `isLocatedIn` relationship to Country.
+Since `Message` has two subclasses, `Post` and `Comment`, both connected with Country by the _isLocatedIn_ relationship, we create an edge type `IS_LOCATED_IN`, connecting both vertex type pairs.
+
+
+== Next step
+
+* xref:pattern-matching/load-data.adoc[]

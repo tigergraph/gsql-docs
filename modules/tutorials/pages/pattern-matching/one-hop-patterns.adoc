@@ -18,25 +18,18 @@ Pattern matching queries support nested queries.
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-In classic GSQL queries, described in xref:tutorials:gsql-101/index.adoc[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query.
 
-There the arrow `+->+` specifies the vertex flow from left to right and the parentheses `( )` enclose the edge types.
+In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern.
 
-.Classic GSQL Example
-[source,gsql]
-----
-Person:p -(LIKES:e)-> Message:m
-----
-
-In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern.
-
-Here the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
+The edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection.
+The directionality of the connection is explicitly stated for _each_ edge type.
 
 * For an undirected edge E, no added decoration:    `E`
 * For a directed edge E from left to right, use a suffix:  `E>`
 * For a directed edge E from right to left, use a prefix:  `<E`
 
-For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: person `LIKES` message, and message `HAS_CREATOR` person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
+For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: person `LIKES` message, and message `HAS_CREATOR` person.
+Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
 
 .Pattern Example
 [source,gsql]
@@ -82,7 +75,7 @@ That is, the source or the target vertex set may be:
 Performance may be better when types are explicitly provided.
 ====
 
-[discrete]
+
 ==== Examples of 1-Hop patterns
 
 . `FROM X:x - (E1:e1) - Y:y`
@@ -105,47 +98,15 @@ Performance may be better when types are explicitly provided.
  ** any edge (directed or undirected)
  ** Same as `+(<_|_>|_)+`
 
-== Specifying syntax version
 
-To use pattern matching, you need to either set a session parameter or specify it in the query. There are currently two syntax versions for queries:
+== Running anonymous queries without installing
 
-* "v1" is the classic syntax, traversing one hop per SELECT statement. This is the default mode.
-* "v2" enhances the v1 syntax with pattern matching.
+In this tutorial, we will use Interpreted Mode for GSQL.
+Interpreted mode lets us skip the `INSTALL` step, and even run a query as soon as we create it, to offer a more interactive experience.
+These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
 
-=== `syntax_version` session parameter
+To run an anonymous query, replace the keyword `CREATE` with `INTERPRET`.
 
-You can use the SET command to assign a value to the _syntax_version_ session parameter: v1 for classic syntax; v2 for pattern matching. If the parameter is never set, the classic v1 syntax is enabled. Once set, the selection remains valid for the duration of the GSQL client session, or until it is changed with another SET command.
-
-.GSQL: Set Syntax Version By A Session Parameter
-
-[source,gsql]
-----
-SET syntax_version="v2"
-----
-
-
-
-=== Query-Level `SYNTAX` option
-
-You can also select the syntax by using the `SYNTAX` clause in the `CREATE QUERY` statement: v1 for classic syntax (default); v2 for pattern matching.
-The query-level `SYNTAX` option overrides the `syntax_version` session parameter.
-
-.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query
-[source,gsql]
-----
-CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
-{
-  ...
-}
-----
-
-
-
-== Running Anonymous Queries Without Installing
-
-In this tutorial, we will use Interpreted Mode for GSQL. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
-
-To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
 
 [source,gsql]
 ----
@@ -342,10 +303,11 @@ INTERPRET QUERY () SYNTAX v2{
 
 You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in linux command line. The output should be the same as in Example 2.
 
-*Example 4*. Find Viktor Akhiezer's total number of related comments and total number of related posts. That is, a comment or post is either created by Viktor or is liked by Viktor. Note that the HAS_CREATOR edge type starts from Comment|Post, and the LIKES edge type starts from Person.
+*Example 4*. Find Viktor Akhiezer's total number of related comments and total number of related posts.
+That is, a comment or post is either created by Viktor or is liked by Viktor.
+Note that the `HAS_CREATOR` edge type starts from `Comment|Post`, and the `LIKES` edge type starts from Person.
 
 .Example 4. Disjunctive 1-hop edge pattern.
-
 [source,gsql]
 ----
 USE GRAPH ldbc_snb
@@ -407,7 +369,9 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use the wildcard `+_+` to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
+*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer".
+This time, we count them together and, we use the wildcard `+_+` to represent the two types of edges: HAS_CREATOR and `LIKES_REVERSE`.
+Both are following the same direction.
 
 .Example 5. Disjunctive 1-hop edge pattern.
 
@@ -441,7 +405,6 @@ gsql example5.gsql
 
 
 .Output of Example 5.
-
 [source,coffeescript]
 ----
 Using graph 'ldbc_snb'

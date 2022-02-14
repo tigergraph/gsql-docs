@@ -1330,19 +1330,20 @@ The example generates the temporary table shown below:
 ====
 flatten_json_array in csv
 
-flatten_json_array() does not work if the separator appears also within the json array column. For example, if the separator is comma, the csv loader will erroneously divide the json array into multiple columns. Therefore, it is recommended that the csv file use a special column separator, such as "|" in the above example .
+flatten_json_array() does not work if the separator appears also within the json array column.For example, if the separator is comma, the csv loader will erroneously divide the json array into multiple columns.Therefore, it is recommended that the csv file use a special column separator, such as "|" in the above example .
 ====
 
+[#_delete_statement]
 == *DELETE statement*
 
-In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement. DELETE cannot be used in offline loading. Just as a LOAD statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a DELETE statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
+In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement.DELETE cannot be used in offline loading.Just as a LOAD statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a DELETE statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
 
 [WARNING]
 ====
 In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
 ====
 
-There are four variations of the DELETE statement. The syntax of the four cases is shown below.
+There are four variations of the DELETE statement.The syntax of the four cases is shown below.
 
 .DELETE VERTEX | EDGE Syntax
 

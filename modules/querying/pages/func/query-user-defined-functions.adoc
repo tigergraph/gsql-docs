@@ -176,3 +176,37 @@ GSQL > RUN QUERY rngExample()
   "results": [{"rng()": 0.51352}]
 }
 ----
+=== Using GitHub to Store UDFs
+
+An alternative method is to connect GSQL with a GitHub repository for access to ExprFunctions and ExprUtil. This enables a simpler editing workflow rather than repeatedly using `PUT` to upload the file for every change.
+
+In fact, GSQL will retrieve user source code files from GitHub before files uploaded via `PUT`, so long as the files exist.
+
+The gadmin configuration parameters are as follows:
+
+[source]
+----
+GSQL.GithubUserAcessToken # the credential, or "anonymous", empty means not using github
+GSQL.GithubRepository     # e.g. tigergraph/ecosys
+GSQL.GithubBranch         # optional, o/w use "master" branch, e.g. demo_github
+GSQL.GithubPath           # path to the directory in the github that has TokenBank.cpp, ExprFunctions.hpp, ExprUtil.hpp, e.g. sample_code/src
+GSQL.GithubUrl            # optional, used for github enterprise, e.g. https://api.github.com
+----
+
+Run the following `gadmin config set` commands to give GSQL access to GitHub.
+
+[source]
+----
+gadmin config set GSQL.GithubUserAcessToken anonymous
+gadmin config set GSQL.GithubRepository tigergraph/ecosys
+gadmin config set GSQL.GithubBranch demo_github
+gadmin config set GSQL.GithubPath sample_code/src
+gadmin config apply
+----
+
+The file names must be `ExprFunctions.hpp` and `ExprUtil.hpp`. This is in contrast to the `PUT` method, where the files could have any file name.
+
+[NOTE]
+When the files are hosted on GitHub, the `typedef` statements and `include` directives must be part of the `.hpp` files. These statements are found at `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`.
+
+For more information about the possibilities that GitHub file hosting brings, such as High Availability (HA), please see the corresponding xref:tigergraph-server:ha:ha-for-gsql-server.adoc[High Availability documentation.]

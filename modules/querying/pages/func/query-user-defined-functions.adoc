@@ -5,15 +5,121 @@ In GSQL, users can supplement the language by defining their own query user-defi
 
 This page introduces the process to define a query UDF. Once defined, the new functions are added into GSQL automatically the next time GSQL is executed.
 
-Creating, editing, or removing Query UDFs is done by downloading an `.hpp` file from the server, editing the file, and re-uploading via a GSQL command.
+UDFs are written using C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`. ExprFunctions is used for functions that will be used directly in GSQL queries, while ExprUtil contains structs or helper functions that will be called by the functions in ExprFunctions.
 
-== Define a query UDF
+These files are stored in `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` in a TigerGraph Server installation.
 
-Below are the steps to add a Query UDF to GSQL:
+There are two ways to modify these files to add user-defined functions to GSQL:
 
-=== Step 1: Download current query UDF file
+* Store the files in a GitHub repository linked to GSQL
+* Use `GET` and `PUT` commands to store and modify the files locally.
 
-Use the `GET ExprFunctions` command in GSQL to download the current set of functions into a local file. The path can be absolute or relative to your current directory, but the file extension must be `.hpp`:
+This section will first explain how to define a query UDF, then how to integrate query UDFs into GSQL.
+
+== Define a query UDF using C{pp}
+
+User-defined functions are C{pp} functions with a certain set of allowed data types. The function definition should include the keyword `inline`.
+
+You can write your functions in the `ExprFunctions` and `ExprUtil` files provided as a sample in TigerGraph Server installations,
+
+====
+.Sample user-defined function
+This is a sample function that returns `true` if the value passed to the function is greater than 3.
+[source,c++]
+----
+inline bool greater_than_three (double x) {
+  return x > 3;
+}
+----
+====
+
+[header=true]
+.Allowed Data Types in User-Defined Functions
+|===
+|Data Type | Argument | Return | Function Body
+
+| `bool` | Yes | Yes | Yes
+| `int` | Yes | Yes | Yes
+| `float` | Yes | Yes | Yes
+| `double` | Yes | Yes | Yes
+| `string` | Yes | Yes | Yes
+| `std::string` | *No* | *No* | Yes
+| xref:accumulators.adoc[Accumulators] | Yes | Yes | Yes
+
+| All other C{pp} data types | *No* | *No* | Yes
+|===
+
+Remember that if your function requires a user-defined struct or helper function, that struct or helper function must be defined in a separate `ExprUtil` file.
+
+Below is an example of an `ExprFunctions` file that contains a different UDF that reverses a string passed to it.
+
+.New code in ExprFunctions.hpp
+
+[source,c++]
+----
+#include <algorithm>  // for std::reverse
+inline string reverse(string str){
+  std::reverse(str.begin(), str.end());
+  return str;
+}
+----
+
+Note the include statement on the first line. You can write this code from scratch to an empty file and store it in TigerGraph, or you can use a pre-made template.
+
+
+[CAUTION]
+====
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
+====
+
+== Use GitHub to store UDFs
+
+You can connect GSQL with a GitHub repository for access to ExprFunctions and ExprUtil.
+
+In fact, GSQL will retrieve user source code files from GitHub before files uploaded via `PUT`, so long as the files exist. New additions to the files in the GitHub repository will be instantly available in GSQL.
+
+You can retrieve ExprFunctions.hpp and ExprUtil.hpp from `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` and copy them to a Git repository of your choice.
+
+[NOTE]
+When the files are hosted on GitHub, the `typedef` statements and `include` directives must be part of the `.hpp` files. These are included by default in the files located in the `/QueryUDF/` folder.
+
+The file names must be `ExprFunctions.hpp` and `ExprUtil.hpp`. This is in contrast to the `PUT` method, where the files could have any file name.
+
+The gadmin configuration parameters for setting up the connection to GitHub are as follows:
+
+[header=true]
+.Parameters for GitHub
+|===
+|Parameter | Description | Example
+
+| `GSQL.GithubUserAcessToken` | The credential used to access the repository | `anonymous`
+| `GSQL.GithubRepository` | The user and repository where the files are held | `sample_user/repository`
+| `GSQL.GithubBranch`  | The branch to access | `main`
+| `GSQL.GithubPath` | Path to the directory in the repository that has ExprFunctions.hpp and ExprUtil.hpp | `src/`
+| `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
+|===
+
+Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
+
+Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters. If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the UDFs become available.
+
+[source]
+----
+gadmin config set GSQL.GithubUserAcessToken anonymous
+gadmin config set GSQL.GithubRepository tigergraph/ecosys
+gadmin config set GSQL.GithubBranch demo_github
+gadmin config set GSQL.GithubPath sample_code/src
+gadmin config apply
+----
+
+After the parameters are successfully configured, you can access your UDFs in new queries right away.
+
+
+== Store a UDF file locally
+
+=== Step 1: Modify current query UDF file
+
+Use the `GET ExprFunctions` command in GSQL to copy the current set of functions into a local file. The path can be absolute or relative to your current directory, but the file extension must be `.hpp`:
 
 [source,gsql]
 ----
@@ -29,58 +135,9 @@ If your query UDF requires a user-defined struct or helper function, also use th
 GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 ----
 
-=== Step 2: Define C{pp} function
+=== Step 2: Store the updated query UDF file
 
-Define the C{pp} function inside the UDF file you just downloaded in Step 1. The definition of the function should include the keyword `inline`.
-
-Below is a list of data types and where each is allowed in a function.
-
-[header=true]
-.Allowed Data Types
-|===
-|Data Type | Argument | Return | Function Body
-
-| `bool` | Yes | Yes | Yes
-| `int` | Yes | Yes | Yes
-| `float` | Yes | Yes | Yes
-| `double` | Yes | Yes | Yes
-| `string` | Yes | Yes | Yes
-| `std::string` | *No* | *No* | Yes
-| xref:accumulators.adoc[Accumulators] | Yes | Yes | Yes
-
-| All other C{pp} data types | *No* | *No* | Yes
-|===
-
-If the function requires a user-defined struct or helper function, define it in the `ExprUtil` file you downloaded in Step 1.
-
-Below is an example of an `.hpp` file that contains two separate Query UDFs. The first function returns `true` if the passed value is greater than 3, and the second reverses a string.
-
-.New code in ExprFunctions.hpp
-
-[source,c++]
-----
-#include <algorithm>  // for std::reverse
-inline bool greater_than_three (double x) {
-  return x > 3;
-}
-
-inline string reverse(string str){
-  std::reverse(str.begin(), str.end());
-  return str;
-}
-----
-
-
-
-[CAUTION]
-====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
-====
-
-
-=== Step 3: Upload files
-
-After you have defined the function, use the `PUT` command to upload the files you modified.
+After you have defined the function, use the `PUT` command to store the files you modified.
 
 [source,gsql]
 ----
@@ -110,8 +167,6 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
   PRINT reverse("abc");
 }
 ----
-
-
 
 == Example
 
@@ -176,45 +231,10 @@ GSQL > RUN QUERY rngExample()
   "results": [{"rng()": 0.51352}]
 }
 ----
-== Use GitHub to store UDFs
 
-An alternative method is to connect GSQL with a GitHub repository for access to ExprFunctions and ExprUtil. This enables a simpler editing workflow rather than repeatedly using `PUT` to upload the file for every change.
 
-In fact, GSQL will retrieve user source code files from GitHub before files uploaded via `PUT`, so long as the files exist. New additions to the files in the GitHub repository will be instantly available in GSQL.
 
-You can retrieve ExprFunctions.hpp and ExprUtil.hpp from `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` and copy them to a Git repository of your choice.
 
-[NOTE]
-When the files are hosted on GitHub, the `typedef` statements and `include` directives must be part of the `.hpp` files. These are included by default in the files located in the `/QueryUDF/` folder.
 
-The file names must be `ExprFunctions.hpp` and `ExprUtil.hpp`. This is in contrast to the `PUT` method, where the files could have any file name.
 
-The gadmin configuration parameters for setting up the connection to GitHub are as follows:
-
-[header=true]
-.Parameters for GitHub
-|===
-|Parameter | Description | Example
-
-| `GSQL.GithubUserAcessToken` | The credential used to access the repository | `anonymous`
-| `GSQL.GithubRepository` | The user and repository where the files are held | `sample_user/repository`
-| `GSQL.GithubBranch`  | The branch to access | `main`
-| `GSQL.GithubPath` | Path to the directory in the repository that has ExprFunctions.hpp and ExprUtil.hpp | `src/`
-| `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
-|===
-
-Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
-
-Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters. If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the UDFs become available.
-
-[source]
-----
-gadmin config set GSQL.GithubUserAcessToken anonymous
-gadmin config set GSQL.GithubRepository tigergraph/ecosys
-gadmin config set GSQL.GithubBranch demo_github
-gadmin config set GSQL.GithubPath sample_code/src
-gadmin config apply
-----
-
-After the parameters are successfully configured, you can access your UDFs in new queries right away.
 

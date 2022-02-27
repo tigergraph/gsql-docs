@@ -7,20 +7,18 @@ This page introduces the process to define a query UDF. Once defined, the new fu
 
 UDFs are written using C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`. ExprFunctions is used for functions that will be used directly in GSQL queries, while ExprUtil contains structs or helper functions that will be called by the functions in ExprFunctions.
 
-These files are stored in `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` in a TigerGraph Server installation.
+These files are stored as `.hpp` files in `AppRoot/dev/gdk/gsql/src/QueryUdf/` in a TigerGraph Server installation.
 
 There are two ways to modify these files to add user-defined functions to GSQL:
 
-* Store the files in a GitHub repository linked to GSQL
-* Use `GET` and `PUT` commands to store and modify the files locally.
+* Store the files in a GitHub repository, then link the repository to GSQL
+* Use `GET` and `PUT` commands to store and modify the files locally
 
 This section will first explain how to define a query UDF, then how to integrate query UDFs into GSQL.
 
 == Define a query UDF using C{pp}
 
 User-defined functions are C{pp} functions with a certain set of allowed data types. The function definition should include the keyword `inline`.
-
-You can write your functions in the `ExprFunctions` and `ExprUtil` files provided as a sample in TigerGraph Server installations,
 
 ====
 .Sample user-defined function
@@ -49,9 +47,11 @@ inline bool greater_than_three (double x) {
 | All other C{pp} data types | *No* | *No* | Yes
 |===
 
+You can write your functions in the `ExprFunctions` file provided as a sample in TigerGraph Server installations, or create your own `.hpp` files from scratch.
+
 Remember that if your function requires a user-defined struct or helper function, that struct or helper function must be defined in a separate `ExprUtil` file.
 
-Below is an example of an `ExprFunctions` file that contains a different UDF that reverses a string passed to it.
+Below is an example of a short `ExprFunctions` file containing a single UDF that reverses a string. Note the `include` statement on the first line.
 
 .New code in ExprFunctions.hpp
 
@@ -63,14 +63,6 @@ inline string reverse(string str){
   return str;
 }
 ----
-
-Note the include statement on the first line. You can write this code from scratch to an empty file and store it in TigerGraph, or you can use a pre-made template.
-
-
-[CAUTION]
-====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
-====
 
 == Use GitHub to store UDFs
 
@@ -135,7 +127,16 @@ If your query UDF requires a user-defined struct or helper function, also use th
 GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 ----
 
-=== Step 2: Store the updated query UDF file
+=== Step 2: Define your function
+
+Write your function in ExprFunctions and any helper functions in ExprUtil.
+
+[CAUTION]
+====
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
+====
+
+=== Step 3: Store the updated query UDF file
 
 After you have defined the function, use the `PUT` command to store the files you modified.
 
@@ -147,9 +148,9 @@ GSQL > PUT ExprUtil FROM "/path/to/utils_file.hpp"
 PUT ExprUtil successfully.
 ----
 
-The `PUT` command will automatically upload the files to all nodes in a cluster, overwriting any existing files that contain UDFs.
+The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain UDFs.
 
-Once the files are uploaded, you will be able to call the Query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell. If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
+Once the files are stored, you will be able to call the Query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell. If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
 
 .Example of a GSQL query that uses the UDF
 
@@ -164,15 +165,14 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
   y = greater_than_three(2.5);
   PRINT y;
 
-  PRINT reverse("abc");
 }
 ----
 
 == Example
 
-Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1.
+Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1. In this example, suppose you want to modify the ExprFunctions file locally rather than using GitHub.
 
-Start by downloading the current UDF file with the `GET` command. In this example, we will place our download in the working directory and use the name `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`.
+Start by downloading the current UDF file with the `GET` command. In this example, we will place our download in the working directory and use the name `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`, to illustrate the flexibility of the naming scheme.
 
 [source,gsql]
 ----
@@ -195,7 +195,7 @@ inline double rng() {
 
 ----
 
-After adding your query, use the `PUT` command to upload the file. This will upload the file to all nodes in a cluster:
+After adding your query, use the `PUT` command to store the file in all nodes in a cluster:
 
 [source,gsql]
 ----
@@ -203,7 +203,9 @@ GSQL > PUT ExprFunctions FROM "./udf.hpp"
 PUT ExprFunctions successfully.
 ----
 
-The file has been uploaded and the UDF has now been added to GSQL. You can add it to a query, then run the commands `INSTALL QUERY` and `RUN QUERY` to test the `rng()` function. The following commands demonstrate the process with a one-line query called `rngExample` that simply prints the output of the new function `rng()`.
+The file has been stored and the UDF has now been added to GSQL. You can add it to a query, then run the commands `INSTALL QUERY` and `RUN QUERY` to test the `rng()` function.
+
+The following commands demonstrate the process with a one-line query called `rngExample` that simply prints the output of the new function `rng()`.
 
 [source,gsql]
 ----

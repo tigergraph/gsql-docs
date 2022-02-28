@@ -2689,8 +2689,8 @@ CREATE QUERY activeMaleMembers() FOR GRAPH socialNet SYNTAX V1
                       ACCUM v.@activityAmount +=1
                       HAVING v.gender == "Male";
 
-    PRINT result2[result2.@activityAmount];
-    PRINT result2[result2.@activityAmount];
+    PRINT result1;
+    PRINT result2;
 }
 ----
 --
@@ -2701,72 +2701,106 @@ Results::
 .Results from Query ActiveMaleMembers
 [source,gsql]
 ----
-GSQL > RUN QUERY activeMaleMembers()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
+[
+  {
+    "result1": [
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
+        "v_id": "person7",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
+        "v_id": "person8",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
+        "v_id": "person6",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
+        "v_id": "person1",
+        "v_type": "person"
+      }
+    ]
   },
-  "results": [
-    {"result2": [
+  {
+    "result2": [
       {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
         "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
         "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
+        "v_id": "person7",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
         "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       }
-    ]},
-    {"result2": [
-      {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      }
-    ]}
-  ]
-}
+    ]
+  }
+]
 ----
 --
 ====

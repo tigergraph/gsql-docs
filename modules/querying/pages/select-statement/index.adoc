@@ -2193,19 +2193,18 @@ The following query finds all person meeting a given activity threshold, based o
 
 CREATE QUERY printMemberActivity() FOR GRAPH socialNet
 {
-        SumAccum<int> @activityAmount;
-        start = {person.*};
+    SumAccum<int> @activityAmount;
+    start = {person.*};
 
-		### --- equivalent statements -----
-        result = SELECT v FROM start:v -(:e)- post:tgt
-					      ACCUM v.@activityAmount +=1
-					      HAVING true;
+    // --- equivalent statements -----
+    result = SELECT v FROM start:v -(posted>:e)- post:tgt
+      ACCUM v.@activityAmount +=1
+      HAVING true;
 
-		result = SELECT v FROM start:v -(:e)- post:tgt
-					      ACCUM v.@activityAmount +=1;
-		### -----
+    result = SELECT v FROM start:v -(posted>:e)- post:tgt
+      ACCUM v.@activityAmount +=1;
 
-        PRINT result;
+    PRINT result;
 }
 ----
 --
@@ -2315,30 +2314,27 @@ Query::
 +
 --
 .Example 3. HAVING vs. WHERE
-[source,gsql]
+[source.wrap,gsql]
 ----
-# Compute the total post activity for each male person.
-# Because the gender of the vertex does not change, evaluating whether the person vertex
-# is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not
-# change the result. However, if the condition in the HAVING clause could change within
-# the ACCUM clause, these statements would produce different results.
+/* Compute the total post activity for each male person.
+    Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result. However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */
 
 CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
 {
     SumAccum<INT> @activityAmount;
     start = {person.*};
 
-    ### --- statements produce equivalent results
-    result1 = SELECT v FROM start:v -(:e)- post:tgt
-                      WHERE v.gender == "Male"
-                      ACCUM v.@activityAmount +=1;
+    // The following statements produce equivalent results
+    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
+      WHERE v.gender == "Male"
+      ACCUM v.@activityAmount +=1;
 
-    result2 = SELECT v FROM start:v -(:e)- post:tgt
-                      ACCUM v.@activityAmount +=1
-                      HAVING v.gender == "Male";
+    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
+      ACCUM v.@activityAmount +=1
+      HAVING v.gender == "Male";
 
-    PRINT result2[result2.@activityAmount];
-    PRINT result2[result2.@activityAmount];
+    PRINT result1;
+    PRINT result2;
 }
 ----
 --
@@ -2349,72 +2345,106 @@ Results::
 .Results from Query ActiveMaleMembers
 [source,gsql]
 ----
-GSQL > RUN QUERY activeMaleMembers()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
+[
+  {
+    "result1": [
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
+        "v_id": "person7",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
+        "v_id": "person8",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
+        "v_id": "person6",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
+        "v_id": "person1",
+        "v_type": "person"
+      }
+    ]
   },
-  "results": [
-    {"result2": [
+  {
+    "result2": [
       {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
         "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
         "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
+        "v_id": "person7",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
         "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       }
-    ]},
-    {"result2": [
-      {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      }
-    ]}
-  ]
-}
+    ]
+  }
+]}
 ----
 --
 ====

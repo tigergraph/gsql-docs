@@ -605,9 +605,9 @@ CREATE QUERY updateEx2() FOR GRAPH workNet  {
 
   X = SELECT s
       FROM S:s
-      WHERE S.locationId == "USA"
-      POST-ACCUM S.locationId = "us",
-                 S.skillList = [3,2,1];
+      WHERE s.locationId == "USA"
+      POST-ACCUM s.locationId = "us",
+                 s.skillList = [3,2,1];
   PRINT S;
 }
 ----

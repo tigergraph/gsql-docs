@@ -1,0 +1,241 @@
+= GSQL Style Guide
+:description:
+:num_rule: footnote:[If you want to use `num` to refer to a quantity, always put it at the beginning]
+
+
+This page details TigerGraph’s style guide for writing GSQL. The purpose of the styleguide is to make code easy to read and achieve lower cost of maintenance.
+
+== General
+* Always write keywords and reserved words in all caps. You can find a list of keywords and reserved words in Query Language Reserved Words and DDL Keywords & Reserved Words.
+* If you are storing GSQL statements in a separate file, use the file extension `.gsql`.
+
+== Naming
+We separate identifiers into two broad classes: schema object _types_ (graph, vertex, edge, and tuple type) and instances.
+Schema types are analogous to classes in an object-oriented language.  Schema object types follow one naming convention, and instances follow another convention, with additional specifications for accumulators.
+
+Identifier naming follows the conventions below:
+
+[cols=",a,a"]
+|===
+|Identifier type |Style |Example
+
+|Instances
+|Use snake case: lowercase, letters connected by underscore
+a|* `batch_number`
+* `v_type`
+
+
+|Non-collection accumulators (`SumAccum`, `MinAccum`, `MaxAccum` etc.)
+|* Use snake case
+* Start with the aggregation type such as sum unless there is an excellent semantic alternative
+a|
+ * ``@num_fraudsters``{num_rule}
+
+|Collection accumulator
+|* Use snake case
+* End with container type
+
+|* `@top_result_list`
+* `@@property_map`
+* `@neighbor_set`
+
+
+|Vertex type name
+|Capitalize initial letters and connect words with underscores.
+|* `Person`
+* `Medical_Condition`
+
+
+|Edge type name
+|Capitalize initial letters and connect words with underscores.
+|* `Diagnosed_By`
+
+|Vertex and edge attribute name
+|Use snake case.
+|`CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)`
+
+|Graph name
+|Capitalize initial letters and connect words with underscores.
+|* `Social_Net`
+
+|Tuple type name
+|Capitalize initial letters and connect words with underscores.
+|* `Vertex_Score`
+* `Key_Pair`
+
+
+|Query and loading job name
+|Use snake case.
+|* `match_users`
+* `suggest_products`
+* `tg_degree_cent`
+|===
+
+== Spacing
+
+=== Block indentation
+Indent the body of a block by 4 spaces.
+A block is a syntactic structure which may contain multiple statements.
+This includes queries, `SELECT`, `IF/ELSE`, `CASE WHEN/THEN`, `FOREACH`, and `WHILE`.
+If the body of `ACCUM` or `POST-ACCUM` contains multiple clauses, then use indentation also.
+Use spaces instead of tabs, because tab size can vary.
+
+[cols="1h,5a"]
+|===
+|Recommended |
+[.wrap,gsql]
+----
+CREATE QUERY hello(VERTEX<person> p) {
+    Start = {p};
+    Result = SELECT tgt
+        FROM Start:s -(friendship:e)- person:tgt;
+        PRINT Result;
+}
+----
+
+|Not recommended
+
+|
+[.wrap,gsql]
+----
+CREATE QUERY hello(VERTEX<person> p) {
+Start = {p};
+Result = SELECT tgt
+         FROM Start:s -(friendship:e)- person:tgt;
+PRINT Result;
+}
+----
+|===
+
+
+=== Line length
+Lines should be short enough so that they display without scrolling and can be printed without anything being cut off.
+If a line is more than 80 characters, it should be split into multiple lines. The additional lines should be indented, but by 2 spaces only, to show that they are a continuation of the previous line.
+
+[cols="1h,5a"]
+|===
+|Recommended |
+----
+CREATE QUERY hello(VERTEX<person> p) {
+    Start = {p};
+    Result = SELECT tgt
+        FROM Start:s -(friendship:e)- person:tgt; //This is a long comment
+        PRINT Result; // And it is split into multiple lines.
+}
+----
+
+|Not recommended
+
+|
+----
+CREATE QUERY hello(VERTEX<person> p) {
+    Start = {p};
+    Result = SELECT tgt
+        FROM Start:s -(friendship:e)- person:tgt; // This is a really long comment that spans over over a hundred characters. It really should be split into multiple lines instead of crowing one line
+    PRINT Result;
+}
+----
+|===
+
+=== Keyword justification
+In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `POST-ACCUM`, `HAVING`, `GROUP BY`, `ORDER BY`, and `LIMIT`.
+
+[cols="1h,5a"]
+|===
+|Recommended |
+----
+CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+{
+    SumAccum<int> @activityAmount;
+    start = {person.*};
+    result = SELECT v FROM start:v -(_>:e)- post:tgt
+      ACCUM v.@activityAmount +=1
+        HAVING v.@activityAmount >= activityThreshold;
+    PRINT result;
+}
+----
+
+|Not recommended
+
+|
+----
+CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+{
+    SumAccum<int> @activityAmount;
+    start = {person.*};
+    result = SELECT v FROM start:v -(_>:e)- post:tgt
+      ACCUM v.@activityAmount +=1
+        HAVING v.@activityAmount >= activityThreshold;
+    PRINT result;
+}
+----
+|===
+
+
+== Comments
+
+* Use `//` for single line and inline comments.
+* Use `/\*` at the start and `*/` at the end of multiline comments, with the interior comment lines indented.
+* Do not use `#`.
+
+[cols="1h,5a"]
+|===
+|Recommended |
+[.wrap,gsql]
+----
+/* Compute the total post activity for each male person.
+    Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
+However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */
+
+CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+{
+    SumAccum<INT> @activityAmount;
+    start = {person.*};
+
+    // The following statements produce equivalent results
+    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
+        WHERE v.gender == "Male"
+        ACCUM v.@activityAmount +=1;
+
+    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
+        ACCUM v.@activityAmount +=1
+        HAVING v.gender == "Male";
+
+    PRINT result1;
+    PRINT result2;
+}
+----
+
+|Not recommended
+
+|
+[.wrap,gsql]
+----
+
+
+CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+{
+
+    // Compute the total post activity for each male person.
+    // Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
+    // However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results.
+
+    SumAccum<INT> @activityAmount;
+    start = {person.*};
+
+    # The following statements produce equivalent results
+    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
+        WHERE v.gender == "Male"
+        ACCUM v.@activityAmount +=1;
+
+    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
+        ACCUM v.@activityAmount +=1
+        HAVING v.gender == "Male";
+
+    PRINT result1;
+    PRINT result2;
+}
+----
+|===
+
+

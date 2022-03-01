@@ -113,12 +113,13 @@ Vertex type::
 [.wrap,gsql]
 ----
 Result = SELECT src
-    FROM Person:src -(<LIKES_REVERSE)- (Comment|Post):tgt <1>
-    WHERE src.firstName == "Viktor" AND src.lastName == "Akhiezer"
-    ACCUM CASE WHEN tgt.type == "Comment" THEN
-        src.@commentCnt += 1
+    FROM Person:src -(<Likes_REVERSE)- (Comment|Post):tgt <1>
+    WHERE src.first_name == "Viktor" AND src.last_name == "Akhiezer"
+    ACCUM CASE
+        WHEN tgt.type == "Comment" THEN
+            src.@comment_cnt += 1
         WHEN tgt.type == "Post" THEN
-            src.@postCnt += 1
+            src.@post_cnt += 1
         END;
 ----
 <1> `Person` is a vertex type.
@@ -134,8 +135,8 @@ If you choose to omit the type, you must give the step vertex set an alias.
 [.wrap,gsql]
 ----
 Result = SELECT tgt
-    FROM :s -(<LIKES)- Person:tgt
-    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+    FROM :s -(<Likes)- Person:tgt
+    WHERE tgt.first_name == "Viktor" AND tgt.last_name == "Akhiezer"
 ----
 --
 Vertex set::
@@ -144,13 +145,13 @@ Vertex set::
 A source vertex set can also be represented by a vertex set variable.
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH Friend_Net
 {
-    SumAccum<INT> @@numFriends = 0;
-    seedSet = { seed };
-    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends;
+    SumAccum<INT> @@num_friends = 0;
+    seed_set = { seed };
+    friends = SELECT v FROM seed_set:s -((Friend | Coworker):e)- :v
+        ACCUM @@num_friends +=1;
+    PRINT @@num_friends;
 }
 ----
 --
@@ -191,10 +192,11 @@ Vertex type::
 [.wrap,gsql]
 ----
 Result = SELECT tgt
-    FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src <1>
+    FROM Person:tgt -(<Likes_REVERSE)- (Comment|Post):src <1>
     WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
-    ACCUM CASE WHEN src.type == "Comment" THEN
-        tgt.@commentCnt += 1
+    ACCUM CASE
+        WHEN src.type == "Comment" THEN
+            tgt.@commentCnt += 1
         WHEN src.type == "Post" THEN
             tgt.@postCnt += 1
         END;
@@ -212,8 +214,8 @@ If you choose to omit the type, you must give the step vertex set an alias.
 [.wrap,gsql]
 ----
 Result = SELECT s
-    FROM Person:s -(LIKES>)- :tgt
-    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+    FROM Person:s -(Likes>)- :tgt
+    WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
 ----
 --
 Vertex set::
@@ -222,13 +224,13 @@ Vertex set::
 A step vertex set can also be represented by a vertex set variable.
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH friendNet
 {
-    SumAccum<INT> @@numFriends = 0;
-    seedSet = { seed };
-    friends = SELECT v FROM :s -((friend | coworker):e)- seedSet:v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends;
+    SumAccum<INT> @@num_friends = 0;
+    seed_set = { seed };
+    friends = SELECT v FROM :s -((Friend | Coworker):e)- seed_set:v
+      ACCUM @@num_friends +=1;
+    PRINT @@num_friends;
 }
 ----
 --
@@ -240,14 +242,14 @@ It can be an accumulator of strings (the strings are vertex types) or vertices, 
 
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH Friend_Net
 {
-    SumAccum<INT> @@numFriends = 0;
-    SetAccum<VERTEX> @@seedBag;
-    @@seedBag += seed;
-    friends = SELECT s FROM :s -((friend | coworker):e)- @@seedBag:v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends, includeCoworkers;
+    SumAccum<INT> @@num_friends = 0;
+    SetAccum<VERTEX> @@seed_bag;
+    @@seed_bag += seed;
+    friends = SELECT s FROM :s -((Friend | Coworker):e)- @@seed_bag:v
+      ACCUM @@num_friends +=1;
+    PRINT @@num_friends;
 }
 ----
 --
@@ -405,8 +407,8 @@ The second `SELECT` statement selects a set of edges.It can use the vertex alias
 .Vertex variables
 [source,gsql]
 ----
-results = SELECT v FROM allVertices:v;
-results = SELECT t FROM allVertices:s -()- :t;
+results = SELECT v FROM all_vertices:v;
+results = SELECT t FROM all_vertices:s -()- :t;
 ----
 
 The following example shows an edge-based `SELECT` statement, declaring aliases for all three parts of the edge.
@@ -416,7 +418,7 @@ In the `ACCUM` clause, the `e` and `t` aliases are assigned to local vertex and 
 [source,gsql]
 ----
 results = SELECT v
-    FROM allVertices:s -(:e)- :t
+    FROM all_vertices:s -(:e)- :t
     ACCUM VERTEX v = t, EDGE eg = e;
 ----
 
@@ -436,7 +438,6 @@ The `SAMPLE` clause is an optional clause that selects a uniform random sample f
 If you want to sample from a set of vertices directly, not from edges or from neighboring (target) vertices, then the following technique is simpler and faster:
 
 .Select k random vertices from a vertex set S
-
 [source,gsql]
 ----
 random = SELECT s
@@ -484,30 +485,34 @@ For the percentage sampling case, we sample 33% of the edges for vertices which 
 Query::
 +
 --
-.sampleEx3: SAMPLE based on edges per source vertex
+.SAMPLE based on edges per source vertex
 [source,gsql]
 ----
-CREATE QUERY sampleEx3() FOR GRAPH computerNet
+CREATE QUERY sample_ex_3() FOR GRAPH Computer_Net
 {
-    MapAccum<STRING,ListAccum<STRING>> @@absEdges; // record each selected edge as (src->tgt)
-    SumAccum<INT> @@totalAbs;
-    MapAccum<STRING,ListAccum<STRING>> @@pctEdges; // record each selected edge as (src->tgt)
-    SumAccum<INT> @@totalPct;
+    // record each selected edge as (src->tgt)
+    MapAccum<STRING,ListAccum<STRING>> @@abs_edges;
+    SumAccum<INT> @@total_abs;
+    // record each selected edge as (src->tgt)
+    MapAccum<STRING,ListAccum<STRING>> @@pct_edges;
+    SumAccum<INT> @@total_pct;
 
-    start = {computer.*};
+    start = {Computer.*};
 
-    # Sample one outgoing edge per source vertex = Random Walk
-    absSample = SELECT v FROM start:s -(:e)- :v
-             SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
-             ACCUM @@absEdges += (s.id -> v.id),
-                   @@totalAbs += 1;
-    PRINT @@totalAbs, @@absEdges;
+    // Sample one outgoing edge per source vertex = Random Walk
+    abs_sample = SELECT v FROM start:s -(:e)- :v
+        SAMPLE 1 EDGE WHEN s.outdegree() >= 1    // sample 1 target vertex from each source vertex
+        ACCUM
+            @@abs_edges += (s.id -> v.id),
+            @@total_abs += 1;
+    PRINT @@total_abs, @@abs_edges;
 
-    pctSample = SELECT v FROM start:s -(:e)- :v
-             SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
-             ACCUM @@pctEdges += (s.id -> v.id),
-                   @@totalPct += 1;
-    PRINT @@totalPct, @@pctEdges;
+    pct_sample = SELECT v FROM start:s -(:e)- :v
+        SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
+        ACCUM
+            @@pct_edges += (s.id -> v.id),
+            @@total_pct += 1;
+    PRINT @@total_pct, @@pct_edges;
 }
 ----
 --
@@ -518,7 +523,7 @@ Results::
 .sampleEx3.json
 [source,gsql]
 ----
-GSQL > RUN QUERY sampleEx3()
+GSQL > RUN QUERY sample_ex_3()
 {
   "error": false,
   "message": "",
@@ -574,10 +579,10 @@ GSQL > RUN QUERY sampleEx3()
 
 
 Below is an example of using `SELECT` to only traverse one edge for each source vertex.
-The vertex-attached accumulators `@timesTraversedNoSample` and `@timesTraversedWithSample` are used to keep track of the number of times an edge is traversed to reach the target vertex.
-Without using sampling, this occurs once for each edge; thus `@timesTraversedNoSample` has the same number as the in-degree of the vertex.
+The vertex-attached accumulators `@times_traversed_no_Sample` and `@times_traversed_with_sample` are used to keep track of the number of times an edge is traversed to reach the target vertex.
+Without using sampling, this occurs once for each edge; thus `@times_traversed_no_sample` has the same number as the in-degree of the vertex.
 With sampling edges, the number of edges is restricted.
-This is reflected in the `@timesTraversedWithSample` accumulator.
+This is reflected in the `@times_traversed_with_sample` accumulator.
 Notice the difference in the result set.
 Because only one edge per source vertex is traversed when the `SAMPLE` clause is used, not all target vertices are reached.
 The vertex `company3` has 3 incident edges, but in one instance of the query execution, it is never reached.
@@ -591,29 +596,29 @@ Query::
 .Example of `SAMPLE` using an absolute number of edges
 [source,gsql]
 ----
-CREATE QUERY sampleEx1() FOR GRAPH workNet
+CREATE QUERY sample_ex_1() FOR GRAPH Work_Net
 {
-	SumAccum<INT> @timesTraversedNoSample;
-	SumAccum<INT> @timesTraversedWithSample;
-	workers = {person.*};
+	SumAccum<INT> @times_traversed_no_sample;
+	SumAccum<INT> @@times_traversed_with_sample;
+	workers = {Person.*};
 
-	# the 'beforeSample' result set encapsulates the normal functionality of
-	# a SELECT statement, where 'timesTraversedNoSample' vertex accumulator is increased for
-	# each edge incident to the vertex.
-	beforeSample = SELECT v FROM workers:t -(:e)- :v
-		       ACCUM v.@timesTraversedNoSample += 1;
+	// the 'before_sample' result set encapsulates the normal functionality of
+	// a SELECT statement, where 'times_traversed_no_sample' vertex accumulator is increased for
+	// each edge incident to the vertex.
+	before_sample = SELECT v FROM workers:t -(:e)- :v
+        ACCUM v.@timesTraversedNoSample += 1;
 
-	# The 'afterSample' result set is formed by those vertices which can be
-	# reached when for each source vertex, only one edge is used for traversal.
-	# This is demonstrated by the values of 'timesTraversedWithSample' vertex accumulator, which
-	# is increased for each edge incident to the vertex which is used in the
-	# sample.
-	afterSample = SELECT v FROM workers:t -(:e)- :v
-		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		# only use 1 edge from the source vertex
-		      ACCUM v.@timesTraversedWithSample += 1;
+	// The 'after_sample' result set is formed by those vertices which can be
+	// reached when for each source vertex, only one edge is used for traversal.
+	// This is demonstrated by the values of 'times_traversed_with_sample' vertex accumulator, which
+	// is increased for each edge incident to the vertex which is used in the
+	// sample.
+	after_sample = SELECT v FROM workers:t -(:e)- :v
+		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		// only use 1 edge from the source vertex
+		      ACCUM v.@times_traversed_with_sample += 1;
 
-	PRINT beforeSample;
-	PRINT afterSample;
+	PRINT before_sample;
+	PRINT after_sample;
 }
 ----
 --
@@ -624,7 +629,7 @@ Results::
 .sampleEx1.json
 [source,gsql]
 ----
-GSQL > RUN QUERY sampleEx1()
+GSQL > RUN QUERY sample_ex_1()
 {
   "error": false,
   "message": "",

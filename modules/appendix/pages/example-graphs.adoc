@@ -8,13 +8,12 @@ link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Example Graph files]
 
 == *workNet*
 
-.graph_create.gsql for workNet
+.graph_create.gsql for Work_Net
 
 [source,gsql]
 ----
-# Updated 5/1/18 for v2.0
 DROP ALL
-CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING COMPRESS>, interestList LIST<STRING COMPRESS>)
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, id STRING, location_id STRING, skillSet SET<INT>, skill_list LIST<INT>, interest_set SET<STRING>, interestList LIST<STRING>)
 CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
 CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
 CREATE GRAPH workNet(*)
@@ -351,30 +350,28 @@ person12,person7
 
 
 
-== *computerNet*
+== Computer_Net
 
-.graph_create.gsql for computerNet
-
+.DDL commands for Computer_Net
 [source,gsql]
 ----
-# Updated 5/1/18 for v2.0
 DROP ALL
-CREATE VERTEX computer(PRIMARY_ID compID UINT, id STRING)
-CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed DOUBLE, securityLevel INT)
-CREATE GRAPH computerNet(*)
+CREATE VERTEX Computer(PRIMARY_ID comp_id UINT, id STRING)
+CREATE DIRECTED EDGE Connected(FROM Computer, TO Computer, connection_speed DOUBLE, security_level INT)
+CREATE GRAPH Computer_Net(*)
 
-USE GRAPH computerNet // v1.2
-CREATE LOADING JOB loadComputer FOR GRAPH computerNet {
+USE GRAPH Computer_Net
+CREATE LOADING JOB load_computer FOR GRAPH Computer_Net {
   DEFINE FILENAME f;
-  LOAD f TO VERTEX computer VALUES($0, $0);
+  LOAD f TO VERTEX Computer VALUES($0, $0);
 }
-CREATE LOADING JOB loadConnection FOR GRAPH computerNet {
+CREATE LOADING JOB load_connection FOR GRAPH Computer_Net {
   DEFINE FILENAME f;
-  LOAD f TO EDGE connected VALUES($0, $1, $2, $3);
+  LOAD f TO EDGE Connected VALUES($0, $1, $2, $3);
 }
 
-RUN LOADING JOB loadComputer USING f="./computers"
-RUN LOADING JOB loadConnection USING f="./connections"
+RUN LOADING JOB load_computer USING f="./computers"
+RUN LOADING JOB load_connection USING f="./connections"
 ----
 
 
@@ -469,58 +466,53 @@ c4,c23,3,2
 
 
 
-== *minimalNet*
+== Minimal_Net
 
 .graph_create.gsql for minimalNet
 
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX testV(PRIMARY_ID id STRING)
-CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
-CREATE GRAPH minimalNet(*)
+CREATE VERTEX Test_V(PRIMARY_ID id STRING)
+CREATE UNDIRECTED EDGE Test_E(FROM testV, TO testV)
+CREATE GRAPH Minimal_Net(*)
 ----
-
-
 
 There is no loading job or data for minimalNet (hence, "minimal.")
 
-== *investmentNet*
+== Investment_Net
 
-.graph_create.gsql for investmentNet
-
+.graph_create.gsql for Investment_Net
 [source,gsql]
 ----
-# Updated 5/1/18 for v2.0
 DROP ALL
-TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
-CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
-CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
-CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
-CREATE GRAPH investmentNet (*)
+TYPEDEF TUPLE <age UINT (4), mothers_name STRING(20) > Secret_Info
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, portfolio MAP<STRING, DOUBLE>, secret_info Secret_Info)
+CREATE VERTEX Stock_Order(PRIMARY_ID order_id STRING, ticker STRING, order_size UINT, price FLOAT)
+CREATE UNDIRECTED EDGE Make_Order(FROM Person, TO Stock_Order, order_time DATETIME)
+CREATE GRAPH Investment_Net (*)
 
-USE GRAPH investmentNet // v1.2
-CREATE LOADING JOB loadPerson FOR GRAPH investmentNet {
+USE GRAPH Investment_Net
+CREATE LOADING JOB load_person FOR GRAPH Investment_Net {
   DEFINE FILENAME f;
     LOAD f
-    TO VERTEX person VALUES($0, SPLIT($1, ":", ";"), SECRET_INFO( $2, $3 ) );
+    TO VERTEX Person VALUES($0, SPLIT($1, ":", ";"), Secret_Info( $2, $3 ) );
 }
 
-CREATE LOADING JOB loadOrder FOR GRAPH investmentNet {
+CREATE LOADING JOB load_order FOR GRAPH Investment_Net {
   DEFINE FILENAME f;
     LOAD f
-    TO VERTEX stockOrder VALUES($1, $3, $4, $5),
-    TO EDGE makeOrder VALUES($0, $1, $2);
+    TO VERTEX Stock_Order VALUES($1, $3, $4, $5),
+    TO EDGE Make_Order VALUES($0, $1, $2);
 }
 
-RUN LOADING JOB loadPerson USING f="./persons"
-RUN LOADING JOB loadOrder USING f="./orders"
+RUN LOADING JOB load_person USING f="./persons"
+RUN LOADING JOB load_order USING f="./orders"
 ----
 
 
 
 .file: persons (vertices)
-
 [source,gsql]
 ----
 person1,AAPL:3142.24;G:6112.23;MS:5000.00,25,JAMES

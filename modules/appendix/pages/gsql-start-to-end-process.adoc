@@ -1,0 +1,7 @@
+= GSQL Start-to-End Process and Data Flow
+:page-aliases: ddl-and-loading:appendix/gsql-start-to-end-process.adoc
+
+The figures below illustrates the sequence of steps and the dependencies to progress from no graph to a loaded graph and a query result.
+Note that online and offline follow the same flow.
+
+image::image (9).png[Figure B1: Complete GSQL Workflow]

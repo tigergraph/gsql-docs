@@ -1,6 +1,7 @@
 = GSQL Style Guide
 :description:
-:num_rule: footnote:[If you want to use `num` to refer to a quantity, always put it at the beginning]
+:num_rule: footnote:[If you want to use `num` to refer to a quantity, always put it at the beginning. For example, use `num_students` to refer to the number of students instead of `students_num`].
+:
 
 
 This page details TigerGraph’s style guide for writing GSQL. The purpose of the styleguide is to make code easy to read and achieve lower cost of maintenance.
@@ -10,12 +11,17 @@ This page details TigerGraph’s style guide for writing GSQL. The purpose of th
 * If you are storing GSQL statements in a separate file, use the file extension `.gsql`.
 
 == Naming
-We separate identifiers into two broad classes: schema object _types_ (graph, vertex, edge, and tuple type) and instances.
-Schema types are analogous to classes in an object-oriented language.  Schema object types follow one naming convention, and instances follow another convention, with additional specifications for accumulators.
+Identifiers are categorized into two broad classes:
 
-Identifier naming follows the conventions below:
+* Schema object _types_ (graph, vertex, edge, and tuple type).
+* Instances.
 
-[cols=",a,a"]
+Schema types are analogous to classes in an object-oriented language.
+Schema object types names have their initial letter capitalized, connected by underscore; instances use snake case, with additional specifications for accumulators.
+
+Detailed identifier naming conventions are described in the following table:
+
+[cols=",a,"]
 |===
 |Identifier type |Style |Example
 
@@ -28,27 +34,27 @@ a|* `batch_number`
 |Non-collection accumulators (`SumAccum`, `MinAccum`, `MaxAccum` etc.)
 |* Use snake case
 * Start with the aggregation type such as sum unless there is an excellent semantic alternative
-a|
- * ``@num_fraudsters``{num_rule}
+|
+``@num_fraudsters``{num_rule}
 
 |Collection accumulator
 |* Use snake case
 * End with container type
 
-|* `@top_result_list`
+a|* `@top_result_list`
 * `@@property_map`
 * `@neighbor_set`
 
 
 |Vertex type name
 |Capitalize initial letters and connect words with underscores.
-|* `Person`
+a|* `Person`
 * `Medical_Condition`
 
 
 |Edge type name
 |Capitalize initial letters and connect words with underscores.
-|* `Diagnosed_By`
+a|* `Diagnosed_By`
 
 |Vertex and edge attribute name
 |Use snake case.
@@ -56,17 +62,17 @@ a|
 
 |Graph name
 |Capitalize initial letters and connect words with underscores.
-|* `Social_Net`
+a|* `Social_Net`
 
 |Tuple type name
 |Capitalize initial letters and connect words with underscores.
-|* `Vertex_Score`
+a|* `Vertex_Score`
 * `Key_Pair`
 
 
 |Query and loading job name
 |Use snake case.
-|* `match_users`
+a|* `match_users`
 * `suggest_products`
 * `tg_degree_cent`
 |===

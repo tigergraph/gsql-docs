@@ -1,4 +1,5 @@
 = Example Graphs
+:page-aliases: querying:appendix-query/example-graphs
 
 Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: *workNet* , *socialNet* , *friendNet* , *computerNet* , *minimalNet* , and**investmentNet** .  The tar-gzip file *gsql_ref_examples_2.0.gz* contains all of these files. Each graph has its own folder. To create a particular graph, go in its folder and run the following command: +
 gsql graph_create.gsql

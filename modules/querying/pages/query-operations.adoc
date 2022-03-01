@@ -63,7 +63,7 @@ See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details
  .. `INSTALL QUERY`: compile the query
  .. `RUN QUERY`: execute the query with input values
 
-There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
+There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
 == `CREATE QUERY`
 
@@ -536,7 +536,7 @@ Here is a descriptive list of DML-sub-statements:
 This is in contrast to the 2-step flow to <<_install_query,install a query>> first and then <<_run_query,run the query>>.
 
 `INTERPRET QUERY` runs a query immediately but may take longer to finish than running an installed query.
-`INTERPRET QUERY` also has xref:appendix-query/interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
+`INTERPRET QUERY` also has xref:appendix:interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
 
 There are two GSQL syntax options for Interpreted GSQL:
 

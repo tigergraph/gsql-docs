@@ -1,4 +1,5 @@
 = Query Language Reserved Words
+:page-aliases: querying:appendix-query/query-language-reserved-words.adoc
 
 The following words are reserved for use by the GSQL query language.
 That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local `TUPLE` type.
@@ -10,7 +11,7 @@ While GSQL will not raise an error when you define the types, you will not be ab
 
 * v3.1: Added `TAGS`, `RESET_COLLECTION_ACCUM`, `WITH`
 
-There is a separate list for xref:ddl-and-loading:appendix/keywords-and-reserved-words.adoc[Reserved Words for the *GSQL DDL Language*]. +
+There is a separate list for xref:appendix:keywords-and-reserved-words.adoc[Reserved Words for the *GSQL DDL Language*]. +
 The compiler will reject the use of a Reserved Word as a user-defined identifier.
 
 .Query Language Reserved Words

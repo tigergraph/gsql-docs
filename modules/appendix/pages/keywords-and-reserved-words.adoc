@@ -1,10 +1,11 @@
 = DDL Keywords & Reserved Words
+:page-aliases: ddl-and-loading:appendix/keywords-and-reserved-words.adoc
 
 == GSQL Reserved Words
 
 The following words are reserved for use by the Data Definition Language. That is, a graph schema or loading job may not use any of these words for the *name of a vertex type, edge type, graph name, tag, or attribute*. +
 
-There is a separate list for xref:querying:appendix-query/query-language-reserved-words.adoc[Reserved Words in the *Query Language*].
+There is a separate list for xref:query-language-reserved-words.adoc[Reserved Words in the *Query Language*].
 The compiler will reject the use of a reserved word as well as any word beginning with a reserved prefix as a user-defined identifier.
 
 === History

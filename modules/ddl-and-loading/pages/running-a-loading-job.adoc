@@ -42,16 +42,17 @@ Running a loading job executes a previously installed loading job.  The job read
 
 [source,gsql]
 ----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname [
-    USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
+RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] job_name [
+    USING file_var [="file_path_string"][, file_var [="file_path_string"]]*
     [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]
 ]
 ----
 
 
-Note that the keyword LOADING is included. This makes it more clear to users and to GSQL that the job is a loading job and not some other type of job ( such as a SCHEMA_CHANGE JOB).
+Note that the keyword LOADING is included. This makes it more clear to users and to GSQL that the job is a loading job and not some other type of job (such as a SCHEMA_CHANGE JOB).
 
-When a concurrent loading job is submitted, it is assigned a job ID number, which is displayed on the GSQL console.  The user can use this job ID to refer to the job, for a status update, to abort the job, or to re-start the job.  These operations are described later in this section.
+When a concurrent loading job is submitted, it is assigned a job ID number, which is displayed on the GSQL console.
+The user can use this job ID to refer to the job, for a status update, to abort the job, or to restart the job.  These operations are described later in this section.
 
 === *Options*
 
@@ -101,7 +102,7 @@ The `BATCH_SIZE` parameter sets the number of data lines included in each concur
 
 === Running Loading Jobs as REST Requests
 
-Another way to run a loading job is through the `+POST /ddl/{graph_name}+` __**__endpoint of the REST{pp} server. Since the REST{pp} server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL. For details on how to use the endpoint, please see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[Run a loading job].
+Another way to run a loading job is through the `+POST /ddl/{graph_name}+` endpoint of the REST{pp} server. Since the REST{pp} server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL. For details on how to use the endpoint, please see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[Run a loading job].
 
 == Inspecting and Managing Loading Jobs
 
@@ -243,7 +244,14 @@ This file contains the following information which most users will find useful:
 * A copy of the status information that is printed
 * Statistics report on the number of lines successfully read and parsed
 
-The statistics report include how many objects of each type is created, and how many lines are invalid due to different reasons. This report also shows which lines cause the errors. Here is the list of statistics shown in the report. There are two types of statistics. One is file level (the number of lines), and the other is data object level (the number of objects). If an file level error occurs, e.g., a line does not have enough columns, this line of data is skipped for all LOAD statements in this loading job. If an object level error or failed condition occurs, only the corresponding object is not created, i.e., all other objects in the same loading job are still created if no object level error or failed condition for each corresponding object.
+The statistics report include how many objects of each type is created, and how many lines are invalid due to different reasons. This report also shows which lines cause the errors.
+
+There are two types of statistics shown in the report:
+
+* File-level: The number of lines
+* Data-object-level: The number of objects
+
+If a file level error occurs, e.g., a line does not have enough columns, this line of data is skipped for all LOAD statements in this loading job. If an object level error or failed condition occurs, only the corresponding object is not created, i.e., all other objects in the same loading job are still created if no object level error or failed condition for each corresponding object.
 
 |===
 | File level statistics | Explanation
@@ -289,12 +297,12 @@ Below is an example.
 
 [source,gsql]
 ----
-CREATE VERTEX movie (PRIMARY_ID id UINT, title STRING, country STRING COMPRESS, year UINT)
-CREATE DIRECTED EDGE sequel_of (FROM movie, TO movie)
-CREATE GRAPH movie_graph(*)
-CREATE LOADING JOB load_movie FOR GRAPH movie_graph{
+CREATE VERTEX Movie (PRIMARY_ID id UINT, title STRING, country STRING COMPRESS, year UINT)
+CREATE DIRECTED EDGE Sequel_Of (FROM Movie, TO Movie)
+CREATE GRAPH Movie_Graph(*)
+CREATE LOADING JOB load_movie FOR GRAPH Movie_Graph{
   DEFINE FILENAME f
-  LOAD f TO VERTEX movie VALUES ($0, $1, $2, $3) WHERE to_int($3) < 2000;
+  LOAD f TO VERTEX Movie VALUES ($0, $1, $2, $3) WHERE to_int($3) < 2000;
 }
 RUN LOADING JOB load_movie USING f="movie.dat"
 ----
@@ -327,7 +335,7 @@ Invalid Json format:     0
 Not enough token:        1 [ERROR] (e.g. 7)
 Oversize token:          0
 
-Vertex:                  movie
+Vertex:                  Movie
 Valid Object:            3
 No ID found:             0
 Invalid Attributes:      1 [ERROR] (e.g. 1:year)

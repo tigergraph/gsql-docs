@@ -137,7 +137,7 @@ CREATE QUERY hello(VERTEX<person> p) {
 CREATE QUERY hello(VERTEX<person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(friendship:e)- person:tgt; // This is a really long comment that spans over over a hundred characters. It really should be split into multiple lines instead of crowing one line
+        FROM Start:s -(friendship:e)- person:tgt; // This is a really long comment that spans over a hundred characters. It really should be split into multiple lines instead of crowing one line
     PRINT Result;
 }
 ----

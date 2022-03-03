@@ -44,7 +44,7 @@ Last, we print out the Result vertex set, in JSON format.
 
 == Create A Query
 
-Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the @filename syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using @hello.qsql ( Note that if you are not in the /home/tigergraph folder when you start gsql, then you can use the absolute path to invoke a gsql file. e.g., `@/home/tigergraph/hello.gsql` *``*) Then run the "ls" command to see that the query is now in the catalog.
+Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the @filename syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using `@hello.qsql`. (Note that if you are not in the `/home/tigergraph` folder when you start gsql, then you can use the absolute path to invoke a gsql file. e.g., `@/home/tigergraph/hello.gsql`). Then run the `ls` command to see that the query is now in the catalog.
 
 .GSQL shell
 
@@ -95,7 +95,7 @@ INSTALL QUERY hello
 
 .GSQL shell
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
@@ -116,7 +116,7 @@ To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of 
 
 .GSQL command - run query examples
 
-[source,coffeescript]
+[source,gsql]
 ----
 RUN QUERY hello("Tom")
 ----
@@ -127,7 +127,7 @@ The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan
 
 .GSQL shell
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > RUN QUERY hello("Tom")
 {

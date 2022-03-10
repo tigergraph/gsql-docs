@@ -15,11 +15,7 @@ There are two ways to modify these files to add user-defined functions to GSQL:
 * Store the files in a GitHub repository, and configure GSQL to read from the repository.
 * Use `GET` and `PUT` commands to download, modify, and store the files locally.
 
-<<<<<<< HEAD
-This section explains first how to define a query UDF, then how to a query UDF into GSQL.
-=======
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
->>>>>>> 2a5b7ba7e03150937620bfae8fb5e1ec1c10f660
 
 == Define a query UDF in C{pp}
 
@@ -74,12 +70,12 @@ inline string reverse(string str){
 
 You can configure GSQL to read from a GitHub repository for ExprFunctions and ExprUtil.
 
-<<<<<<< HEAD
-In fact, if a repository is connected correctly, GSQL will use files hosted on GitHub rather than files stored via `PUT`. New additions to the files in the GitHub repository will be instantly available in GSQL.
-=======
-If GitHub access is configured, GSQL will retrieve user source code files from GitHub before files uploaded via `PUT`, so long as the files exist. 
+If GitHub access is configured, GSQL will retrieve user source code files from GitHub before files added via `PUT`, so long as the files exist.
+
+[NOTE]
+TigerGraph only allows one UDF file at a time. Files on GitHub take priority. If GitHub is connected but files are missing, TigerGraph will look for an UDF file added via `PUT`.
+
 New additions to the files in the GitHub repository are instantly available in GSQL.
->>>>>>> 2a5b7ba7e03150937620bfae8fb5e1ec1c10f660
 
 You can retrieve ExprFunctions.hpp and ExprUtil.hpp from `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` and copy them to a Git repository of your choice.
 

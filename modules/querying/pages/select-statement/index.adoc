@@ -235,19 +235,19 @@ CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
 Global accumulator::
 +
 --
-A step vertex set can be represented by a global accumulator.
-It can be an accumulator of strings (the strings are vertex types) or vertices, but the accumulator itself must be a `SetAccum`, `BagAccum` or `ListAccum`.
+A step vertex set can be represented by a global accumulator of strings (the strings are vertex types).
+The accumulator must be of type `SetAccum`, `BagAccum` or `ListAccum`.
 
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY count_friends_of_2(STRING target_type) FOR GRAPH Friend_Net
 {
-    SumAccum<INT> @@numFriends = 0;
-    SetAccum<VERTEX> @@seedBag;
-    @@seedBag += seed;
-    friends = SELECT s FROM :s -((friend | coworker):e)- @@seedBag:v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends, includeCoworkers;
+    SumAccum<INT> @@num_friends = 0;
+    SetAccum<STRING> @@target_set;
+    @@target_set += target_type;
+    friends = SELECT s FROM :s -((friend | coworker):e)- @@target_set:v
+      ACCUM @@num_friends +=1;
+    PRINT @@num_friends;
 }
 ----
 --

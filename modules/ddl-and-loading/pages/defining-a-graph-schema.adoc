@@ -352,7 +352,7 @@ TYPEDEF HeapAccum<myTuple>(3, friends DESC) My_Heap
 CREATE QUERY subquery1() FOR GRAPH Social_Net RETURNS (My_Heap){
 	My_Heap @@heap;
 	SumAccum<int> @friends;
-	Start = {person.*};
+	Start = {Person.*};
 	Start = select s from Start:s-(friend:e)-:t
 	        accum s.@friends += 1
 	        post-accum @@heap += My_Tuple(s.id,s.@friends);

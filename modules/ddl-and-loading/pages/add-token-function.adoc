@@ -42,29 +42,29 @@ below depending on the attribute type.
 [cols=",,",options="header",]
 |===
 |Attribute type |Function signature |Function return type
-|`+STRING+` or `+STRING COMPRESS+`
-|`+extern "C" void funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum,  char* const oToken, uint32_t& oTokenLen)+`
-|`+void+`. The value of `+oToken+` will be returned in GSQL
+|`STRING` or `STRING COMPRESS`
+|`extern "C" void funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum,  char* const oToken, uint32_t& oTokenLen)`
+|`void`. The value of `oToken` will be returned in GSQL
 
-|`+BOOL+`
-|`+extern "C" bool funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) +`
-|`+bool+`
+|`BOOL`
+|`extern "C" bool funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) `
+|`bool`
 
-|`+UINT+`
-|`+extern "C" uint64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) +`
-|`+uint64_t+`
+|`UINT`
+|`extern "C" uint64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) `
+|`uint64_t`
 
-|`+INT+`
-|`+extern "C" int64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) +`
-|`+int64_t+`
+|`INT`
+|`extern "C" int64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) `
+|`int64_t`
 
-|`+FLOAT+`
-|`+extern "C" float funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) +`
-|`+float+`
+|`FLOAT`
+|`extern "C" float funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) `
+|`float`
 
-|`+DOUBLE+`
-|`+extern "C" double funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) +`
-|`+double+`
+|`DOUBLE`
+|`extern "C" double funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) `
+|`double`
 |===
 
 The parameters `+iToken+`, `+iTokenLen+`, and `+iTokenNum+` must be

@@ -53,7 +53,7 @@ More technically, accumulators are mutable mutex variables shared among all the 
 To improve performance, the graph processing engine employs multithreaded processing.
 Modification of accumulators is coordinated at run-time so the accumulation operator works correctly (i.e., mutually exclusively) across all threads.
 
-This is particularly relevant in the ACCUM clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
+This is particularly relevant in the `ACCUM` clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
 These threads have shared mutually exclusive access to the accumulators.
 
 [#_declaration_of_accumulators]
@@ -115,19 +115,19 @@ MaxAccum<float> @@entropy = 1.0;
 
 
 Global accumulators can only be assigned (using the `=` operator) outside a `SELECT` block (i.e., not within an `ACCUM` or `POST-ACCUM` clause).
-Global accumulators can be accessed or updated via the accumulate operator `+=` anywhere within a query, including inside a SELECT block.
+Global accumulators can be accessed or updated via the accumulate operator `+=` anywhere within a query, including inside a `SELECT` block.
 
-The accumulation operation for global accumulators in an ACCUM clause executes once for each process. That is:
+The accumulation operation for global accumulators in an `ACCUM` clause executes once for each process. That is:
 
-* if the FROM clause uses an edge-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each edge in the selected edge set.
-* If the FROM clause uses a vertex-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each vertex in the selected vertex set.
+* if the `FROM` clause uses an edge-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each edge in the selected edge set.
+* If the `FROM` clause uses a vertex-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each vertex in the selected vertex set.
 
-Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an ACCUM clause.
+Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an `ACCUM` clause.
 
-Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `worksFor` edge traversed since it is shared among processes. Conversely, `relationshipCount` appears to have only been incremented once.
+Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `Works_For` edge traversed since it is shared among processes. Conversely, `Relationship_Count` appears to have only been incremented once.
 
 This is because a non-accumulator variable is not shared among processes.
-Each process has its own separate unshared copy of `relationshipCount` and increments the original value by one. (E.g., each process increments *relationshipCount* from 0 to 1.) There is no accumulation and the final value is one.
+Each process has its own separate unshared copy of `Relationship_Count` and increments the original value by one. (E.g., each process increments *Relationship_Count* from 0 to 1.) There is no accumulation and the final value is one.
 
 === Example
 [tabs]
@@ -139,19 +139,19 @@ Query::
 [source,gsql]
 ----
 #Count the total number of employment relationships for all companies
-CREATE QUERY countEmploymentRelationships() FOR GRAPH workNet {
+CREATE QUERY count_employment_relationships() FOR GRAPH Work_Net {
 
-  INT localRelationshipCount;
-  SumAccum<INT> @@globalRelationshipCount;
+    INT local_relationship_count;
+    SumAccum<INT> @@global_relationship_count;
 
-  start = {company.*};
+    start = {Company.*};
 
-  companies = SELECT s FROM start:s -(worksFor>)- :t
-    ACCUM @@globalRelationshipCount += 1,
-    localRelationshipCount = localRelationshipCount + 1;
+    companies = SELECT s FROM start:s -(Works_For>)- :t
+        ACCUM @@global_relationship_count += 1,
+        local_relationship_count = local_relationship_count + 1;
 
-  PRINT localRelationshipCount;
-  PRINT @@globalRelationshipCount;
+    PRINT local_relationship_count;
+    PRINT @@global_relationship_count;
 }
 ----
 --
@@ -162,7 +162,7 @@ Results::
 .countEmploymentRelationship.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY countEmploymentRelationships()
+GSQL > RUN QUERY count_employment_relationships()
 {
   "error": false,
   "message": "",
@@ -172,8 +172,8 @@ GSQL > RUN QUERY countEmploymentRelationships()
     "api": "v2"
   },
   "results": [
-    {"localRelationshipCount": 1},
-    {"@@globalRelationshipCount": 17}
+    {"local_relationship_count": 1},
+    {"@@global_relationship_count": 17}
   ]
 }
 ----
@@ -318,10 +318,10 @@ See Section
 
 === SumAccum
 
-The SumAccum type computes and stores the cumulative sum of numeric values or the cumulative concatenation of text values. The output of a SumAccum is a single numeric or string value. SumAccum variables operate on values of type INT, UINT, FLOAT, DOUBLE, or STRING only.
+The `SumAccum` type computes and stores the cumulative sum of numeric values or the cumulative concatenation of text values. The output of a `SumAccum` is a single numeric or string value. `SumAccum` variables operate on values of type `INT`, `UINT`, `FLOAT`, `DOUBLE`, or `STRING` only.
 
 The `+=` operator updates the accumulator's state.
-For `INT`, `FLOAT`, and `DOUBLE` types, `+= arg` performs a numeric addition, while for the `STRING` value type `+= arg` concatenates `arg` to the current value of the SumAccum.
+For `INT`, `FLOAT`, and `DOUBLE` types, `+= arg` performs a numeric addition, while for the `STRING` value type `+= arg` concatenates `arg` to the current value of the `SumAccum`.
 
 ==== Example
 
@@ -334,7 +334,7 @@ Query::
 [source,gsql]
 ----
 # SumAccum Example
-CREATE QUERY sumAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY Sum_Accum_Ex() FOR GRAPH Minimal_Net {
 
   SumAccum<INT>    @@intAccum;
   SumAccum<FLOAT>  @@floatAccum;
@@ -367,7 +367,7 @@ Results::
 .sumAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY sumAccumEx()
+GSQL > RUN QUERY Sum_Accum_Ex()
 {
   "error": false,
   "message": "",
@@ -377,10 +377,10 @@ GSQL > RUN QUERY sumAccumEx()
     "api": "v2"
   },
   "results": [
-    {"@@intAccum": 2},
-    {"@@floatAccum": 0.66667},
-    {"@@doubleAccum": 4.33333},
-    {"@@stringAccum": "Hello World"}
+    {"@@int_accum": 2},
+    {"@@float_accum": 0.66667},
+    {"@@double_accum": 4.33333},
+    {"@@string_accum": "Hello World"}
   ]
 }
 ----
@@ -404,21 +404,21 @@ Query::
 [source,gsql]
 ----
 # MinAccum and MaxAccum Example
-CREATE QUERY minMaxAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY Min_Max_Accum_Ex() FOR GRAPH Minimal_Net {
 
-  MinAccum<INT> @@minAccum;
-  MaxAccum<FLOAT> @@maxAccum;
+  MinAccum<INT> @@min_accum;
+  MaxAccum<FLOAT> @@max_accum;
 
-  @@minAccum += 40;
-  @@minAccum += 20;
-  @@minAccum += -10;
+  @@min_accum += 40;
+  @@min_accum += 20;
+  @@min_accum += -10;
 
-  @@maxAccum += -1.1;
-  @@maxAccum += 2.5;
-  @@maxAccum += 2.8;
+  @@max_accum += -1.1;
+  @@max_accum += 2.5;
+  @@max_accum += 2.8;
 
-  PRINT @@minAccum;
-  PRINT @@maxAccum;
+  PRINT @@min_accum;
+  PRINT @@max_accum;
 }
 ----
 --
@@ -426,10 +426,10 @@ CREATE QUERY minMaxAccumEx() FOR GRAPH minimalNet {
 Results::
 +
 --
-.minMaxAccumEx.json Result
+.Min_Max_Accum_Ex.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY minMaxAccumEx()
+GSQL > RUN QUERY Min_Max_Accum_Ex()
 {
   "error": false,
   "message": "",
@@ -439,8 +439,8 @@ GSQL > RUN QUERY minMaxAccumEx()
     "api": "v2"
   },
   "results": [
-    {"@@minAccum": -10},
-    {"@@maxAccum": 2.8}
+    {"@@min_accum": -10},
+    {"@@max_accum": 2.8}
   ]
 }
 ----
@@ -466,10 +466,10 @@ Query::
 [source,gsql]
 ----
 # Output one random post vertex from each person
-CREATE QUERY minMaxAccumVertex() FOR GRAPH socialNet api("v2") {
+CREATE QUERY Min_Max_Accum_Vertex() FOR GRAPH Social_Net api("v2") {
 
   MaxAccum<VERTEX> @maxVertex;
-  allUser = {person.*};
+  allUser = {Person.*};
   allUser = SELECT src
             FROM allUser:src -(posted>)- post:tgt
             ACCUM src.@maxVertex += tgt
@@ -485,7 +485,7 @@ Results::
 .minMaxAccuxVertex.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY minMaxAccumVertex()
+GSQL > RUN QUERY Min_Max_Accum_Vertex()
 {
   "error": false,
   "message": "",
@@ -581,7 +581,7 @@ Query::
 [source,gsql]
 ----
 # AvgAccum Example
-CREATE QUERY avgAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY avgAccumEx() FOR GRAPH Minimal_Net {
 
   AvgAccum @@averageAccum;
 
@@ -641,7 +641,7 @@ Query::
 [source,gsql]
 ----
 # AndAccum and OrAccum Example
-CREATE QUERY andOrAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY andOrAccumEx() FOR GRAPH Minimal_Net {
   # T = True
   # F = False
 
@@ -825,7 +825,7 @@ Query::
 .BitwiseAndAccum and BitwiseOrAccum Example
 [source,gsql]
 ----
-CREATE QUERY bitwiseAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY bitwiseAccumEx() FOR GRAPH Minimal_Net {
 
   BitwiseAndAccum @@bwAndAccumVar; # default value = 64-bits of 1 = -1 (INT)
   BitwiseOrAccum  @@bwOrAccumVar;  # default value = 64-bits of 0 = 0 (INT))
@@ -966,7 +966,7 @@ Query::
 [source,gsql]
 ----
 # ListAccum Example
-CREATE QUERY listAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY listAccumEx() FOR GRAPH Minimal_Net {
 
   ListAccum<INT> @@intListAccum;
   ListAccum<STRING> @@stringListAccum;
@@ -1254,7 +1254,7 @@ Query::
 [source,gsql]
 ----
 # SetAccum Example
-CREATE QUERY setAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY setAccumEx() FOR GRAPH Minimal_Net {
 
   SetAccum<INT> @@intSetAccum;
   SetAccum<STRING> @@stringSetAccum;
@@ -1373,7 +1373,7 @@ Query::
 [source,gsql]
 ----
 # BagAccum Example
-CREATE QUERY bagAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY bagAccumEx() FOR GRAPH Minimal_Net {
 
   #Unordered collection
   BagAccum<INT>    @@intBagAccum;
@@ -1498,7 +1498,7 @@ Query::
 [source,gsql]
 ----
 #MapAccum Example
-CREATE QUERY mapAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY mapAccumEx() FOR GRAPH Minimal_Net {
 
   #Map(Key, Value)
   # Keys can be INT or STRING only
@@ -1693,8 +1693,8 @@ Query::
 .Example of ArrayAccum Element-level Operations
 [source,gsql]
 ----
-CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
-  	
+CREATE QUERY ArrayAccumElem() FOR GRAPH Minimal_Net {
+
 	ArrayAccum<SumAccum<DOUBLE>> @@aaSumD[2][2];  # 2D Sum Double
 	ArrayAccum<SumAccum<STRING>> @@aaSumS[2][2];  # 2D Sum String
 	ArrayAccum<MaxAccum<INT>> @@aaMax[2];
@@ -1707,8 +1707,8 @@ CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
 	ArrayAccum<ListAccum<INT>> @@aaList[2][2];    # 2D List
 	ArrayAccum<SetAccum<FLOAT>> @@aaSetF[2];
 	ArrayAccum<BagAccum<DATETIME>> @@aaBagT[2];
-	
-	## for test data	
+
+	## for test data
 	ListAccum<STRING> @@words;
 	BOOL toggle = false;
 	@@words += "1st"; @@words += "2nd"; @@words += "3rd"; @@words += "4th";
@@ -1718,7 +1718,7 @@ CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
 	# Float: a[0] += 1.111, 2.222;  a[1] += 3.333, 4.444
 	# 2D Doub: a[0][0] += 1.111, 2.222;   a[0][1] += 5.555, 6.666;
 	#          a[1][0] += 3.333, 4.444;   a[0][1] += 7.777, 8.888;
-	
+
 	FOREACH i IN RANGE [0,1] DO
 		FOREACH n IN RANGE [1, 2] DO
 			toggle = NOT toggle;
@@ -1739,7 +1739,7 @@ CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
 			END;
 		END;
 	END;
-				
+
 	PRINT @@aaSumD;		PRINT @@aaSumS;
 	PRINT @@aaMax;		PRINT @@aaMin;		PRINT @@aaAvg;
 	PRINT @@aaAnd;		PRINT @@aaOr;
@@ -1812,7 +1812,7 @@ Query::
 .Example of Operations between Whole ArrayAccums
 [source,gsql]
 ----
-CREATE QUERY ArrayAccumOp3(INT lenA) FOR GRAPH minimalNet {
+CREATE QUERY ArrayAccumOp3(INT lenA) FOR GRAPH Minimal_Net {
 
 	ArrayAccum<SumAccum<INT>> @@arrayA[5]; // Original size
 	ArrayAccum<SumAccum<INT>> @@arrayB[2];
@@ -1909,21 +1909,21 @@ Query::
 .Example for Vertex-Attached ArrayAccum
 [source,gsql]
 ----
-CREATE QUERY arrayAccumLocal() FOR GRAPH socialNet api("v2") {
+CREATE QUERY Array_Accum_Local() FOR GRAPH Social_Net api("v2") {
 	# Count each person's edges by type
 	# friend/liked/posted edges are type 0/1/2, respectively
 	ArrayAccum<SumAccum<INT>> @edgesByType[3];
-	Persons = {person.*};
-	
+	Persons = {Person.*};
+
 	Persons = SELECT s
 		FROM Persons:s -(:e)- :t
 		ACCUM CASE e.type
-			WHEN "friend" THEN s.@edgesByType[0] += 1
-			WHEN "liked"  THEN s.@edgesByType[1] += 1
-			WHEN "posted" THEN s.@edgesByType[2] += 1
+			WHEN "Friend" THEN s.@edgesByType[0] += 1
+			WHEN "Liked"  THEN s.@edgesByType[1] += 1
+			WHEN "Posted" THEN s.@edgesByType[2] += 1
 			END
 		ORDER BY s.id;
-		
+
 	#PRINT Persons.@edgesByType; // api v1
     PRINT Persons[Persons.@edgesByType]; // api v2
 }
@@ -1936,7 +1936,7 @@ Results::
 .Results for Query ArrayAccumLocal
 [source,gsql]
 ----
-GSQL > RUN QUERY arrayAccumLocal()
+GSQL > RUN QUERY Array_Accum_Local()
 {
   "error": false,
   "message": "",
@@ -2071,8 +2071,8 @@ Query::
 [source,gsql]
 ----
 #HeapAccum Example
-CREATE QUERY heapAccumEx() FOR GRAPH minimalNet {
-  TYPEDEF tuple<STRING firstName, STRING lastName, INT score> testResults;
+CREATE QUERY Heap_Accum_Ex() FOR GRAPH Minimal_Net {
+  TYPEDEF tuple<STRING first_name, STRING last_name, INT score> test_results;
 
   #Heap with max size of 4 sorted decending by score then ascending last name
   HeapAccum<testResults>(4, score DESC, lastName ASC) @@topTestResults;
@@ -2124,7 +2124,7 @@ Results::
 .heapAccumEx.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY heapAccumEx()
+GSQL > RUN QUERY Heap_Accum_Ex()
 {
   "error": false,
   "message": "",
@@ -2319,7 +2319,7 @@ Query::
 [source,gsql]
 ----
 #GroupByAccum Example
-CREATE QUERY groupByAccumEx () FOR GRAPH socialNet {
+CREATE QUERY groupByAccumEx () FOR GRAPH Social_Net {
   ##declare HeapAccum type and tuple used in the HeapAccum
   Typedef tuple <id int, name string, age int> myTuple;
   Typedef HeapAccum <myTuple> (2, name desc, age desc, id asc) myHeap;
@@ -2367,10 +2367,10 @@ CREATE QUERY groupByAccumEx () FOR GRAPH socialNet {
 Results::
 +
 --
-.Result for Query groupByAccum
+.Result for Query Group_By_Accum
 [source,gsql]
 ----
-GSQL > RUN QUERY groupByAccumEx()
+GSQL > RUN QUERY Group_By_Accum_Ex()
 {
   "error": false,
   "message": "",
@@ -2546,7 +2546,7 @@ Query::
 --
 [source,text]
 ----
-CREATE QUERY nestedAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY nestedAccumEx() FOR GRAPH Minimal_Net {
   ListAccum<ListAccum<INT>> @@_2d_list;
   ListAccum<ListAccum<ListAccum<INT>>> @@_3d_list;
   ListAccum<INT> @@_1d_list;

@@ -224,7 +224,7 @@ Vertex set::
 A step vertex set can also be represented by a vertex set variable.
 [.wrap,gsql]
 ----
-CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH Friend_Net
 {
     SumAccum<INT> @@num_friends = 0;
     seed_set = { seed };
@@ -781,8 +781,8 @@ In the following example, the selection conditions are completely specified in t
 .`WHERE` used as a filter
 [source,gsql]
 ----
-resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
-resultSet2 = SELECT v FROM S:v-(:e)-:t
+result_set1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
+result_set2 = SELECT v FROM S:v-(:e)-:t
     WHERE t.type IN ("V1", "V2") AND t IN v.neighbors("E1|E2|E3")
 ----
 
@@ -798,10 +798,10 @@ Query::
 .Basic `SELECT WHERE`
 [source,gsql]
 ----
-CREATE QUERY printCatPosts() FOR GRAPH socialNet {
-	catPosts = SELECT v FROM post:v		# select only those post vertices
+CREATE QUERY print_cat_posts() FOR GRAPH Social_Net {
+	cat_posts = SELECT v FROM post:v		# select only those post vertices
         WHERE v.subject == "cats";  # which have a subset of 'cats'
-	PRINT catPosts;
+	PRINT cat_posts;
 }
 ----
 --
@@ -809,10 +809,10 @@ CREATE QUERY printCatPosts() FOR GRAPH socialNet {
 Results::
 +
 --
-.Results for Query printCatPosts
+.Results for Query print_cat_posts
 [source,gsql]
 ----
-GSQL > RUN QUERY printCatPosts()
+GSQL > RUN QUERY print_cat_posts()
 {
   "error": false,
   "message": "",
@@ -876,9 +876,9 @@ Query::
 .SELECT WHERE using IN operator
 [source,gsql]
 ----
-CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
+CREATE QUERY find_graph_focused_posts() FOR GRAPH Social_Net
 {
-	results = SELECT v FROM post:v					# select only post vertices
+	results = SELECT v FROM Post:v					# select only post vertices
 		WHERE v.subject IN ("Graph", "tigergraph");	# which have a subject of either 'Graph' or 'tigergraph'
 	PRINT results;
 }
@@ -891,7 +891,7 @@ Results::
 .Results for Query findGraphFocusedPosts
 [source,gsql]
 ----
-GSQL > RUN QUERY findGraphFocusedPosts()
+GSQL > RUN QUERY find_graph_focused_posts()
 {
   "error": false,
   "message": "",
@@ -948,55 +948,10 @@ The following example shows the equivalence of using `WHERE` as a type filter as
 Query::
 +
 --
-.SELECT WHERE using AND/OR
+.`SELECT` statement with  `WHERE` clause using `AND`/`OR`
 [source,gsql]
 ----
-# finds female person in the social network. all of the following statements
-# are equivalent (i.e., produce the same results)
-CREATE QUERY findFemaleMembers() FOR GRAPH socialNet
-{
-	allVertices = {ANY}; # includes all posts and person
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type   == "person" AND
-		  	    v.gender != "Male";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type   == "person" AND
-		  	    v.gender == "Female";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type       == "person" AND
-		  	    NOT v.gender == "Male";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type       != "post" AND
-		  	    NOT v.gender == "Male";
-
-  	# does not compile. cannot use NOT operator in combination with type attribute
-	#females = SELECT v FROM allVertices:v
-	#	  WHERE NOT v.type   != "person" AND
-	#	  	    NOT v.gender == "Male";
-
-  	# does not compile. cannot use NOT operator in combination with type attribute
-	#females = SELECT v FROM allVertices:v
-	#	  WHERE NOT v.type   == "post" AND
-	#	  	    NOT v.gender == "Male";
-
-	personVertices = {person.*};
-	females = SELECT v FROM personVertices:v
-		   WHERE NOT v.gender == "Male";
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male";
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male" AND true;
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male" OR false;
-
-	PRINT females;
-}
+include::appendix:example$social_net/select_index_where_and_or.gsql[]
 ----
 --
 
@@ -1006,7 +961,7 @@ Results::
 .Results for Query findFemaleMembers
 [source,gsql]
 ----
-GSQL > RUN QUERY findFemaleMembers()
+GSQL > RUN QUERY find_female_members()
 {
   "error": false,
   "message": "",
@@ -1058,13 +1013,13 @@ Query::
 [source.wrap,gsql]
 ----
 # find all workers who are full time at some company
-CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
+CREATE QUERY full_time_workers() FOR GRAPH Work_Net
 {
-	start = {person.*};
-	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)- company:t
-			WHERE e.fullTime;	# fullTime is a boolean attribute on the edge
+	start = {Person.*};
+	full_time_workers = SELECT v FROM start:v -(Works_For:e)- Company:t
+			WHERE e.full_time;	# fullTime is a boolean attribute on the edge
 
-	PRINT fullTimeWorkers;
+	PRINT full_time_workers;
 }
 ----
 --
@@ -1075,7 +1030,7 @@ Results::
 .`fullTimeWorkers` Results
 [source.wrap,gsql]
 ----
-GSQL > RUN QUERY fullTimeWorkers()
+GSQL > RUN QUERY full_time_workers()
 {
   "error": false,
   "message": "",
@@ -1225,20 +1180,20 @@ If multiple edge types are specified in edge-induced selection, the `WHERE` clau
 .Multiple Edge Type `WHERE` clause
 [source.wrap,gsql]
 ----
-CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
-  allUser = {m1};
-  FilteredUser = SELECT s
-      FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
-      # WHERE e.actionTime > epoch_to_datetime(1) AND t.gender == "Male";
-      WHERE ( e.type == "liked" AND e.actionTime > epoch_to_datetime(1) ) OR
-            ( e.type == "friend" AND t.gender == "Male" )
-            ;
-  PRINT FilteredUser;
+CREATE QUERY multiple_edge_type_where_ex(vertex<person> m1) FOR GRAPH Social_Net {
+    all_user = {m1};
+    filtered_user = SELECT s
+        FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
+        # WHERE e.action_time > epoch_to_datetime(1) AND t.gender == "Male";
+        WHERE ( e.type == "Liked" AND e.action_time > epoch_to_datetime(1) ) OR
+          ( e.type == "Friend" AND t.gender == "Male" );
+    PRINT filtered_user;
 }
 ----
 
-The above query is compilable. However, if we use line 5 as the `WHERE` clause instead, the query is not compilable.
-The edge-type conflict checking detects an error, because it uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
+The above query is compilable.
+However, if we use line 5 as the `WHERE` clause instead, the query is not compilable.
+The edge-type conflict checking detects an error, because it uses attributes from both `Liked` edges and `Friend` edges without separating them out by OR.
 ====
 
 
@@ -1327,16 +1282,16 @@ For example, consider the following clauses:
 
 [source,gsql]
 ----
-FROM Person:A -(KNOWS.KNOWS)- Person:C
+FROM Person:A -(Knows.Knows)- Person:C
 WHERE C.email = "Andy@www.com"
-ACCUM C.@patternCount += 1
+ACCUM C.@pattern_count += 1
 ----
 
 This finds the friends of the friends of `Andy@www.com`.
 Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.
-The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.
-This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.
-There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+The accumulator `C.@pattern_count` will be incremented 3 times for C = Wendy.
+This is similar to a SQL `SELECT C, COUNT(*) ... GROUP BY C` query.
+There is no alias for the vertex in the middle of `Knows.Knows` so the identities of Larry, Moe, and Curly cannot be reported.
 ====
 
 === Edge/Vertex Type Inference and Conflict
@@ -1348,23 +1303,23 @@ For example:
 .Multiple Edge Type `ACCUM` statement check
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
-  ListAccum<STRING> @@testList1, @@testList2, @@testList3;
-  allUser = {m1};
-  allUser = SELECT s
-    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
-    ACCUM @@testList1 += to_string(datetime_to_epoch(e.actionTime)),
-      @@testList2 += t.gender,
-      @@testList3 += to_string(datetime_to_epoch(e.actionTime)) + t.gender <1>
+CREATE QUERY multiple_edge_type_check_ex(vertex<person> m1) FOR GRAPH Social_Net {
+    ListAccum<STRING> @@test_list_1, @@test_list_2, @@test_list_3;
+    all_user = {m1};
+    all_user = SELECT s
+    FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
+    ACCUM @@test_list_1 += to_string(datetime_to_epoch(e.action_time)),
+      @@test_list_2 += t.gender,
+      @@test_list_3 += to_string(datetime_to_epoch(e.action_time)) + t.gender <1>
                ;
-  PRINT @@testList1, @@testList2, @@testList3;
+  PRINT @@test_list_1, @@test_list_2, @@test_list_3;
 }
 ----
 <1> This statement causes a compilation error.
 
-In the above example, line 6 is only executed on `liked` edges, because `actionTime` is the attribute of `liked` edge only.
-Similarly, line 7 is only executed on `friend` edges, because `gender` is the attribute of `person` only, and only `friend` edge uses `person` as target vertex.
-However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., `liked` edges doesn't have `t.gender`, `friend` edges doesn't have `e.actionTime`.
+In the above example, line 6 is only executed on `Liked` edges, because `action_time` is the attribute of `liked` edge only.
+Similarly, line 7 is only executed on `Friend` edges, because `gender` is the attribute of `person` only, and only `Friend` edge uses `person` as target vertex.
+However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., `liked` edges doesn't have `t.gender`, `Friend` edges doesn't have `e.action_time`.
 
 [WARNING]
 ====
@@ -1375,25 +1330,25 @@ For example,
 .Multiple Edge Type `ACCUM` statement check 2
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
-  ListAccum<STRING> @@testList1;
-  allUser = {m1};
-  allUser = SELECT s
-    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
+CREATE QUERY multiple_edge_type_check_ex_2(VERTEX<Person> m1) FOR GRAPH Social_Net {
+  ListAccum<STRING> @@test_list1;
+  all_user = {m1};
+  all_user = SELECT s
+    FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
     ACCUM CASE
-        WHEN e.type == "liked" THEN    # for liked edges
-            @@testList1 += to_string(datetime_to_epoch(e.actionTime))
-        WHEN e.type == "friend" THEN   # for friend edges
-            @@testList1 += t.gender
-        ELSE      # For the remained edge type, which is posted edges
-            @@testList1 += to_string(datetime_to_epoch(t.postTime))
-                  END;
-  PRINT @@testList1;
+        WHEN e.type == "Liked" THEN    # for Liked edges
+            @@test_list1 += to_string(datetime_to_epoch(e.action_time))
+        WHEN e.type == "Friend" THEN   # for Friend edges
+            @@test_list1 += t.gender
+        ELSE      // For the remained edge type, which is Posted edges
+            @@test_list1 += to_string(datetime_to_epoch(t.post_time))
+        END;
+  PRINT @@test_list1;
 }
 ----
 
 The above query is compilable.
-However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `liked` edges doesn't support `t.gender` and `friend` edges doesn't support e.actionTime.
+However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `Liked` edges doesn't support `t.gender` and `Friend` edges doesn't support e.action_time.
 ====
 
 [discrete]
@@ -1410,15 +1365,15 @@ Query::
 [source,gsql]
 ----
 # For each person, make a list of all their post subjects
-CREATE QUERY userPosts() FOR GRAPH socialNet {
-  ListAccum<STRING> @personPosts;
-  start = {person.*};
+CREATE QUERY user_posts() FOR GRAPH Social_Net {
+    ListAccum<STRING> @person_posts;
+    start = {Person.*};
 
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g.subject;
+    // Find all user post topics and append them to the vertex list accum
+    user_postings = SELECT s FROM start:s -(Posted)- :g
+        ACCUM s.@person_posts += g.subject;
 
-  PRINT userPostings;
+  PRINT user_postings;
 }
 ----
 --
@@ -1492,18 +1447,18 @@ Query::
 .`ACCUM<VERTEX>` and `ACCUM<EDGE>` Example
 [source,gsql]
 ----
-# Show each user's post and liked post time
-CREATE QUERY userPosts2() FOR GRAPH socialNet {
-  ListAccum<VERTEX> @personPosts;
-  ListAccum<EDGE> @personLikedInfo;
-  start = {person.*};
+// Show each user's post and liked post time
+CREATE QUERY user_posts_2() FOR GRAPH Social_Net {
+    ListAccum<VERTEX> @person_posts;
+    ListAccum<EDGE> @person_liked_info;
+    start = {Person.*};
 
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g;
+    // Find all user post topics and append them to the vertex list accum
+    user_postings = SELECT s FROM start:s -(Posted)- :g
+        ACCUM s.@person_posts += g;
 
-  userPostings = SELECT s from start:s -(liked:e)- :g
-                 ACCUM s.@personLikedInfo += e;
+    user_postings = SELECT s from start:s -(Liked:e)- :g
+        ACCUM s.@person_liked_info += e;
 
   PRINT start;
 }
@@ -1538,7 +1493,7 @@ GSQL > RUN QUERY userPosts2()
           "directed": true,
           "from_id": "person4",
           "to_id": "4",
-          "attributes": {"actionTime": "2010-01-13 03:16:05"},
+          "attributes": {"action_time": "2010-01-13 03:16:05"},
           "e_type": "liked"
         }]
       },
@@ -1598,15 +1553,15 @@ Query::
 [source,gsql]
 ----
 # Show number of total posts by topic
-CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
-  MapAccum<STRING, INT> @@postTopicCounts;
-  start = {person.*};
+CREATE QUERY user_posts_by_topic() FOR GRAPH Social_Net {
+  MapAccum<STRING, INT> @@post_topic_counts;
+  start = {Person.*};
 
-  # Append subject and update the appearance count in the global map accum
-  posts = SELECT g FROM start -(posted)- :g
-		  ACCUM @@postTopicCounts += (g.subject -> 1);
+  // Append subject and update the appearance count in the global map accum
+  posts = SELECT g FROM start -(Posted)- :g
+		  ACCUM @@post_topic_counts += (g.subject -> 1);
 
-  PRINT @@postTopicCounts;
+  PRINT @@post_topic_counts;
 }
 ----
 --
@@ -1698,19 +1653,20 @@ For example, below we have three `POST-ACCUM` clauses.
 ----
 INTERPRET QUERY () {
 
-  SumAccum<int> @cnt1;
-  SumAccum<int> @cnt2;
+  SumAccum<INT> @cnt1;
+  SumAccum<INT> @cnt2;
+  SumAccum<INT> @@global_t_count
 
   R   =  SELECT s
-    FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
-    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-      AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
+    FROM Person:s-(Likes>) -:msg - (Has_Creator>)-Person:t
+    WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+      AND t.last_name LIKE "S%" AND year(msg.creationDate) == 2012
     ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
     POST-ACCUM s.@cnt2 += s.@cnt1 <1>
     POST-ACCUM t.@cnt2 +=1; <2>
-    POST-ACCUM (t) @@globalTCount += 1; <3>
+    POST-ACCUM (t) @@global_t_count += 1; <3>
 
-  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
+  PRINT R [R.first_name, R.last_name, R.@cnt1, R.@cnt2];
 }
 ----
 <1> The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
@@ -1755,30 +1711,30 @@ Query::
 .Vertex `POST-ACCUM` Example
 [source,gsql]
 ----
-#Show all person who both work and live in the same country
-CREATE QUERY residentEmployees() FOR GRAPH workNet {
+// Show all person who both work and live in the same country
+CREATE QUERY resident_employees() FOR GRAPH Work_Net {
 
-  ListAccum<STRING> @company;
-  OrAccum @worksAndLives;
+    ListAccum<STRING> @company;
+    OrAccum @works_and_lives;
 
-  start = {person.*};
+    start = {Person.*};
 
-  employees = SELECT s FROM start:s -(worksFor)- :c
+    employees = SELECT s FROM start:s -(Works_For)- :c
     // If a person works for a company in the same country where they live, add the company to the list
-    ACCUM CASE
-        WHEN (s.locationId == c.country) THEN
-            s.@company += c.id
-        END
+        ACCUM CASE
+            WHEN (s.location_id == c.country) THEN
+                s.@company += c.id
+            END
 
-    #Check each vertex and see if a person works where they live
-    POST-ACCUM CASE
-        WHEN (s.@company.size() > 0) THEN
-            s.@worksAndLives += True
-        ELSE
-            s.@worksAndLives += False
-    END;
+    // Check each vertex and see if a person works where they live
+        POST-ACCUM CASE
+            WHEN (s.@company.size() > 0) THEN
+                s.@works_and_lives += TRUE
+            ELSE
+                s.@works_and_lives += FALSE
+            END;
 
-  PRINT employees WHERE (employees.@worksAndLives == True);
+    PRINT employees WHERE (employees.@works_and_lives == TRUE);
 }
 ----
 --
@@ -1789,7 +1745,7 @@ Results::
 .residentEmployees Result
 [source,gsql]
 ----
-GSQL > RUN QUERY residentEmployees()
+GSQL > RUN QUERY resident_employees()
 {
   "error": false,
   "message": "",
@@ -1809,7 +1765,7 @@ GSQL > RUN QUERY residentEmployees()
         "skillSet": [10],
         "skillList": [10],
         "@worksAndLives": true,
-        "locationId": "can",
+        "location_id": "can",
         "interestSet": [ "football", "sport" ],
         "id": "person11",
         "@company": ["company5"]
@@ -1874,22 +1830,22 @@ Query::
 .Global POST-ACCUM Example
 [source,gsql]
 ----
-#Count the number of person of	a given	gender
-CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
+// Count the number of person of a given gender
+CREATE QUERY person_gender(STRING gender) FOR GRAPH Social_Net {
 
-  SumAccum<INT> @@genderCount;
+  SumAccum<INT> @@gender_count;
 
   start = {ANY};
 
-  # Select all person vertices and check the gender attribute
+  // Select all person vertices and check the gender attribute
   friends = SELECT v FROM start:v
-    WHERE v.type == "person"
+    WHERE v.type == "Person"
     POST-ACCUM (v) CASE
         WHEN (v.gender == gender) THEN
-            @@genderCount += 1
+            @@gender_count += 1
     END;
 
-  PRINT @@genderCount;
+  PRINT @@gender_count;
 }
 ----
 --
@@ -1928,15 +1884,16 @@ This could take several forms:
  ** A scalar accumulator, e.g., `MaxAccum< VERTEX > @maxV`;
  ** A collection accumulator: e.g., `ListAccum< VERTEX > @listV`;
  ** An accumulator containing tuple(s), where the tuple type contains a `VERTEX` field.
-* If a vertex `V` is selected, then not only can `V`'s accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the ACCUM clause.
-* Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
+* If a vertex `V` is selected, then not only can `V`'s accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the `ACCUM` clause.
+* Before these indirectly referenced vertices can be used, they need to be *activated*.
+There are two ways to activate an indirect vertex:
  ** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
 
 [source,gsql]
 ----
 ACCUM
-  VERTEX<person> mx = tgt.@maxV,   # assign to local variable
-  mx.@curId += src.id      # access via local variable
+  VERTEX<person> mx = tgt.@max_v,   # assign to local variable
+  mx.@cur_id += src.id      # access via local variable
 ----
 
 * A FOREACH loop can iterate on a vertex-holding collection accumulator. The vertices can now be updated through the loop variable.
@@ -1944,8 +1901,8 @@ ACCUM
 [source,gsql]
 ----
 ACCUM
-  FOREACH vtx IN src.@setIds DO   # iterate on collection accumulator
-      vtx.@curId += tgt.id        # access via loop variable
+  FOREACH vtx IN src.@set_ids DO   # iterate on collection accumulator
+      vtx.@cur_id += tgt.id        # access via loop variable
   END
 ----
 
@@ -1971,29 +1928,29 @@ Query::
 .Updating an Indirectly-Referenced Vertex
 [source,gsql]
 ----
-CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
+CREATE QUERY v_update_indirect_accum() FOR GRAPH Social_Net {
 
   SetAccum<VERTEX<person>> @posters;
   SetAccum<VERTEX<person>> @fellows;
 
-   Persons = {person.*};
-   # To each post, attach a list of persons who liked the post
-   likedPosts = SELECT p
-       FROM Persons:src -(liked:e)- post:p
+   persons = {Person.*};
+   // To each post, attach a list of persons who liked the post
+   liked_posts = SELECT p
+       FROM persons:src -(Liked:e)- Post:p
        ACCUM
        	p.@posters += src;
 
-    # To each person who liked a post, attach a list of everyone
-    # who also liked one of this person's liked posts.
-	likedPosts = SELECT src
-		FROM likedPosts:src
+    // To each person who liked a post, attach a list of everyone
+    // who also liked one of this person's liked posts.
+	liked_posts = SELECT src
+		FROM liked_posts:src
 		ACCUM
 		  FOREACH v IN src.@posters DO
 		    v.@fellows += src.@posters
 		  END
         ORDER BY src.subject;
 		
-	PRINT Persons[Persons.@fellows];
+	PRINT persons[persons.@fellows];
 }
 ----
 --
@@ -2001,10 +1958,10 @@ CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
 Results::
 +
 --
-.Results from Query vUpdateIndirectAccums
+.Results from Query v_update_indirect_accums
 [source,gsql]
 ----
-GSQL > RUN QUERY vUpdateIndirectAccess()
+GSQL > RUN QUERY v_update_indirect_accums()
 {
   "error": false,
   "message": "",
@@ -2099,14 +2056,14 @@ The following query finds all persons meeting a given activity threshold, based 
 
 [source,gsql]
 ----
-CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
 {
-        SumAccum<int> @activityAmount;
-        start = {person.*};
-        result = SELECT v FROM start:v -(:e)- post:tgt
-                          ACCUM v.@activityAmount +=1
-	                      HAVING v.@activityAmount >= activityThreshold;
-        PRINT result;
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING v.@activity_amount >= activity_threshold;
+    PRINT result;
 }
 ----
 --
@@ -2114,12 +2071,12 @@ CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
 Results::
 +
 --
-If the activityThreshold parameter is set to 3, the query returns 5 vertices:
+If the `activity_threshold` parameter is set to 3, the query returns 5 vertices:
 
 .Example 1 Results
 [source,gsql]
 ----
-GSQL > RUN QUERY activeMembers(3)
+GSQL > RUN QUERY active_members(3)
 {
   "error": false,
   "message": "",
@@ -2133,7 +2090,7 @@ GSQL > RUN QUERY activeMembers(3)
       "v_id": "person7",
       "attributes": {
         "gender": "Male",
-        "@activityAmount": 3,
+        "@activity_amount": 3,
         "id": "person7"
       },
       "v_type": "person"
@@ -2181,7 +2138,8 @@ GSQL > RUN QUERY activeMembers(3)
 ====
 
 
-If the `activityThreshold` parameter is set to 2, the query would return 8 vertices. With `activityThreshold = 4`, the query would return no vertices.
+If the threshold is set to 2, the query would return 8 vertices.
+If the threshold is set to 4, the query would return no vertices.
 
 The following example demonstrates the equivalence of a `SELECT` statement in which the condition for the `HAVING` clause is always true.
 
@@ -2196,21 +2154,20 @@ The following query finds all person meeting a given activity threshold, based o
 [source,gsql]
 ----
 
-CREATE QUERY printMemberActivity() FOR GRAPH socialNet
+CREATE QUERY print_member_activity() FOR GRAPH Social_Net
 {
-        SumAccum<int> @activityAmount;
-        start = {person.*};
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
 
-		### --- equivalent statements -----
-        result = SELECT v FROM start:v -(:e)- post:tgt
-					      ACCUM v.@activityAmount +=1
-					      HAVING true;
+    /* --- equivalent statements -----
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING true; */
 
-		result = SELECT v FROM start:v -(:e)- post:tgt
-					      ACCUM v.@activityAmount +=1;
-		### -----
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1;
 
-        PRINT result;
+    PRINT result;
 }
 ----
 --
@@ -2218,7 +2175,7 @@ CREATE QUERY printMemberActivity() FOR GRAPH socialNet
 Results::
 +
 --
-.Results from Query printMemberActivity
+.Results from Query print_member_activity
 [source,gsql]
 ----
 GSQL > RUN QUERY printMemberActivity()
@@ -2319,31 +2276,29 @@ Both constrain the result set based on a condition that vertices must meet.
 Query::
 +
 --
-.Example 3. HAVING vs. WHERE
+The query below computes the total post activity for each male person.
+Because the gender of the vertex does not change, evaluating whether the person vertex is male before the `ACCUM` clause with `WHERE` or after the `ACCUM` clause with `HAVING` does not change the result.
+However, if the condition in the `HAVING` clause could change within the `ACCUM` clause, these statements would produce different results.
+
+.Example 3. `HAVING` vs. `WHERE`
 [source,gsql]
 ----
-# Compute the total post activity for each male person.
-# Because the gender of the vertex does not change, evaluating whether the person vertex
-# is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not
-# change the result. However, if the condition in the HAVING clause could change within
-# the ACCUM clause, these statements would produce different results.
-
-CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
-    SumAccum<INT> @activityAmount;
-    start = {person.*};
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
 
-    ### --- statements produce equivalent results
-    result1 = SELECT v FROM start:v -(:e)- post:tgt
-                      WHERE v.gender == "Male"
-                      ACCUM v.@activityAmount +=1;
+    // The two statements produce equivalent results
+    result1 = SELECT v FROM start:v -(:e)- Post:tgt
+        WHERE v.gender == "Male"
+        ACCUM v.@activity_amount +=1;
 
-    result2 = SELECT v FROM start:v -(:e)- post:tgt
-                      ACCUM v.@activityAmount +=1
-                      HAVING v.gender == "Male";
+    result2 = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING v.gender == "Male";
 
-    PRINT result2[result2.@activityAmount];
-    PRINT result2[result2.@activityAmount];
+    PRINT result1[result1.@activity_amount];
+    PRINT result2[result2.@activity_amount];
 }
 ----
 --
@@ -2354,7 +2309,7 @@ Results::
 .Results from Query ActiveMaleMembers
 [source,gsql]
 ----
-GSQL > RUN QUERY activeMaleMembers()
+GSQL > RUN QUERY active_male_members()
 {
   "error": false,
   "message": "",
@@ -2432,18 +2387,17 @@ The following example has a compilation error because the result set is taken fr
 Query::
 +
 --
-.Example 4. HAVING the wrong vertex set
+This query does not compile because the having condition is testing the wrong vertex set
+
+.Example 4. `HAVING` the wrong vertex set
 [source,gsql]
 ----
-# find all person having a post subject about cats
-# This query is illegal because the having condition is testing the wrong vertex set
-CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet
+CREATE QUERY print_member_about_cats() FOR GRAPH Social_Net
 {
-        start = {person.*};
-
-        result = SELECT v FROM start:v -(:e)- post:tgt
-                          HAVING tgt.subject == "cats";
-        PRINT result;
+    start = {Person.*};
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        HAVING tgt.subject == "cats";
+    PRINT result;
 }
 ----
 --
@@ -2490,22 +2444,23 @@ The returned vertex set is first ordered by the number of friends of the vertex,
 Query::
 +
 --
-.topPopular.gsql: ORDER BY Descending
+This query finds the most popular people, sorting first based on the number of friends and then in case of a tie by the number of coworkers
+
+.Sort results in descending order
 [source,gsql]
 ----
-# find the most popular people, sorting first based on the number as friends
-# and then in case of a tie by the number of coworkers
-CREATE QUERY topPopular() FOR GRAPH friendNet
+CREATE QUERY top_popular() FOR GRAPH Friend_Net
 {
-	SumAccum<INT> @numFriends;
-	SumAccum<INT> @numCoworkers;
-	start = {person.*};
+	SumAccum<INT> @num_friends;
+	SumAccum<INT> @num_coworkers;
+	start = {Person.*};
 
-	result = SELECT v FROM start -((friend|coworker):e)- person:v
-	       	 ACCUM CASE WHEN e.type == "friend" THEN v.@numFriends += 1
-		       	    WHEN e.type == "coworker" THEN v.@numCoworkers += 1
-		       END
-		 ORDER BY v.@numFriends DESC, v.@numCoworkers DESC;
+	result = SELECT v FROM start -((Friend|Coworker):e)- Person:v
+      ACCUM CASE
+          WHEN e.type == "friend" THEN v.@num_friends += 1
+          WHEN e.type == "coworker" THEN v.@num_coworkers += 1
+      END
+      ORDER BY v.@num_friends DESC, v.@num_coworkers DESC;
 
 	PRINT result;
 }
@@ -2710,15 +2665,15 @@ Query::
 .limitEx1.gsql: LIMIT by some number
 [source,gsql]
 ----
-CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
+CREATE QUERY limit_ex_1(INT k) FOR GRAPH Friend_Net
 {
-        start = {person.*};
+    start = {Person.*};
 
-        result1 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT k;
+    result1 = SELECT v FROM start:v
+      ORDER BY v.id
+      LIMIT k;
 
-		PRINT result1[result1.id]; // api v2
+    PRINT result1[result1.id]; // api v2
 }
 ----
 --
@@ -2774,17 +2729,17 @@ The following example shows how to use the `LIMIT` clause with an offset.
 Query::
 +
 --
-.limit2Ex.gsql: `LIMIT` with lower-bound and size
+.`LIMIT` with lower-bound and size
 [source,gsql]
 ----
-CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
+CREATE QUERY limit_ex2(INT j, INT k) FOR GRAPH Friend_Net
 {
-        start = {person.*};
-        result2 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT j, k;
+    start = {Person.*};
+    result2 = SELECT v FROM start:v
+      ORDER BY v.id
+      LIMIT j, k;
 
-        PRINT result2[result2.id]; // api v2
+    PRINT result2[result2.id]; // api v2
 }
 ----
 --
@@ -2839,15 +2794,15 @@ Query::
 .limit3Ex.gsql: `LIMIT` with `OFFSET`
 [source,gsql]
 ----
-CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
+CREATE QUERY limit_ex3(INT j, INT k) FOR GRAPH Friend_Net
 {
-        start = {person.*};
+    start = {Person.*};
 
-        result3 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT k OFFSET j;
+    result3 = SELECT v FROM start:v
+      ORDER BY v.id
+      LIMIT k OFFSET j;
 
-        PRINT result3[result3.id]; // api v2
+    PRINT result3[result3.id]; // api v2
 }
 ----
 --

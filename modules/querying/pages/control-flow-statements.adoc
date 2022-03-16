@@ -64,23 +64,24 @@ ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
 Query::
 +
 --
-.Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level
+This query counts the number of friends a person has, and optionally include coworkers in that count
+
+.Simple IF-ELSE at query-body level
 [source,gsql]
 ----
-# count the number of friends a person has, and optionally include coworkers in that count
-CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRAPH friendNet
+CREATE QUERY count_friends_of2(VERTEX<Person> seed, BOOL include_coworkers) FOR GRAPH Friend_Net
 {
-       SumAccum<INT> @@numFriends = 0;
-       start = {seed};
+    SumAccum<INT> @@num_friends = 0;
+    start = {seed};
 
-       IF includeCoworkers THEN
-          friends = SELECT v FROM start -((friend | coworker):e)- :v
-                ACCUM @@numFriends +=1;
-       ELSE
-          friends = SELECT v FROM start -(friend:e)- :v
-                ACCUM @@numFriends +=1;
-       END;
-       PRINT @@numFriends, includeCoworkers;
+    IF includeCoworkers THEN
+        friends = SELECT v FROM start -((Friend | Coworker):e)- :v
+          ACCUM @@num_friends +=1;
+    ELSE
+        friends = SELECT v FROM start -(Friend:e)- :v
+          ACCUM @@num_friends +=1;
+    END;
+    PRINT @@num_friends, include_coworkers;
 }
 ----
 --
@@ -127,20 +128,21 @@ GSQL > RUN QUERY countFriendsOf2("person2", false)
 Query::
 +
 --
+This query determines if a user is active in terms of social networking (i.e., posts frequently)
+
 .Example 2. `IF-ELSE` at query-body level
 [source,gsql]
 ----
-# determine if a user is active in terms of social networking (i.e., posts frequently)
-CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
+CREATE QUERY calculate_activity(VERTEX<Person> seed) FOR GRAPH Social_Net
 {
-    SumAccum<INT> @@numberPosts = 0;
+    SumAccum<INT> @@number_posts = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
-           ACCUM @@numberPosts += 1;
+    result = SELECT post_vertex FROM start -(Posted>:e)- :post_vertex
+      ACCUM @@number_posts += 1;
 
-    IF  @@numberPosts < 2 THEN
+    IF  @@number_posts < 2 THEN
        PRINT "Not very active";
-    ELSE IF @@numberPosts < 3 THEN
+    ELSE IF @@number_posts < 3 THEN
        PRINT "Semi-active";
     ELSE
        PRINT "Very active";
@@ -187,29 +189,29 @@ GSQL > RUN QUERY calculateActivity("person5")
 Query::
 +
 --
+This query uses a more advanced activity calculation, taking into account number of posts and number of likes that a user made.
+
 .Example 3. Nested IF at query-body level
 [source,gsql]
 ----
-# use a more advanced activity calculation, taking into account number of posts
-# and number of likes that a user made
-CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
+CREATE QUERY calculate_in_depth_activity(VERTEX<Person> seed) FOR GRAPH Social_Net
 {
-    SumAccum<INT> @@numberPosts = 0;
-    SumAccum<INT> @@numberLikes = 0;
+    SumAccum<INT> @@number_posts = 0;
+    SumAccum<INT> @@number_likes = 0;
     start = {seed};
-    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
-           ACCUM @@numberPosts += 1;
-    result = SELECT likedPost FROM start -(liked>:e)- :likedPost
-           ACCUM @@numberLikes += 1;
+    result = SELECT post_vertex FROM start -(Posted>:e)- :post_vertex
+        ACCUM @@number_posts += 1;
+    result = SELECT liked_post FROM start -(Liked>:e)- :liked_post
+        ACCUM @@number_likes += 1;
 
-    IF @@numberPosts < 2 THEN
-        IF @@numberLikes < 1 THEN
+    IF @@number_posts < 2 THEN
+        IF @@number_likes < 1 THEN
             PRINT "Not very active";
         ELSE
             PRINT "Semi-active";
         END;
-    ELSE IF @@numberPosts < 3 THEN
-        IF @@numberLikes < 2 THEN
+    ELSE IF @@number_posts < 3 THEN
+        IF @@number_likes < 2 THEN
             PRINT "Semi-active";
         ELSE
             PRINT "Active";
@@ -247,26 +249,26 @@ GSQL > RUN QUERY calculateInDepthActivity("person1")
 Query::
 +
 --
-.Example 4. Nested IF at DML-sub level
+This query is equivalent to the query ratePosts shown above
+
+.Nested IF at DML-sub level
 [source,gsql]
 ----
-# give each user post an accumulated rating based on the subject and how many likes it has
-# This query is equivalent to the query ratePosts shown above
-CREATE QUERY ratePosts2() FOR GRAPH socialNet {
+CREATE QUERY rate_posts2() FOR GRAPH Social_Net {
     SumAccum<INT> @rating = 0;
-    allPeople = {person.*};
+    all_people = {Person.*};
 
-    results = SELECT v FROM allPeople -(:e)- post:v
-        ACCUM IF e.type == "posted" THEN
-                IF v.subject == "cats" THEN
-                  v.@rating += -1     # -1 if post is about cats
-                ELSE IF v.subject == "Graphs" THEN
-                  v.@rating += 2      # +2 if post is about graphs
-                ELSE IF v.subject == "tigergraph" THEN
-                  v.@rating += 10     # +10 if post is about tigergraph
-                END
-              ELSE IF e.type == "liked" THEN
-                v.@rating += 3                            # +3 each time post was liked
+    results = SELECT v FROM all_people -(:e)- Post:v
+        ACCUM IF e.type == "Posted" THEN
+            IF v.subject == "cats" THEN
+                v.@rating += -1     // -1 if post is about cats
+            ELSE IF v.subject == "Graphs" THEN
+                v.@rating += 2      // +2 if post is about graphs
+            ELSE IF v.subject == "tigergraph" THEN
+                v.@rating += 10     // +10 if post is about tigergraph
+            END
+            ELSE IF e.type == "Liked" THEN
+                v.@rating += 3      // +3 each time post was liked
             END
         ORDER BY v.@rating DESC
         LIMIT 5;
@@ -375,23 +377,23 @@ The first `WHEN-THEN` clause to have an expression value equal to the `CASE` exp
 ----
 STRING drink = "Juice";
 
-# CASE statement: if-else version
+// CASE statement: if-else version
 CASE
   WHEN drink == "Juice" THEN @@calories += 50
   WHEN drink == "Soda"  THEN @@calories += 120
   ...
   ELSE @@calories = 0       # Optional else-clause
 END
-# Since drink = "Juice", 50 will be added to calories
+// Since drink = "Juice", 50 will be added to calories
 
-# CASE statement: switch version
+// CASE statement: switch version
 CASE drink
   WHEN "Juice" THEN @@calories += 50
   WHEN "Soda"  THEN @@calories += 120
   ...
   ELSE  @@calories = 0    # Optional else-clause
 END
-# Since drink = "Juice", 50 will be added to calories
+// Since drink = "Juice", 50 will be added to calories
 ----
 
 
@@ -402,26 +404,28 @@ END
 Query::
 +
 --
+This query isplays the total number of times connected users posted about a certain subject.
+
 .Example 1. CASE as IF-ELSE
 [source,gsql]
 ----
-# Display the total number of times connected users posted about a certain subject
-CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR GRAPH socialNet {
-    SumAccum<INT> @@topicSum = 0;
+CREATE QUERY user_network_posts (VERTEX<Person> seed_user, STRING subject_name) FOR GRAPH Social_Net {
+    SumAccum<INT> @@topic_sum = 0;
     OrAccum @visited;
-    reachableVertices = {};            # empty vertex set
-    visitedVertices (ANY) = {seedUser};  # set that can contain ANY type of vertex
-
-    WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
-        visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-            FROM visitedVertices-(:e)-:s
+    visited_vertices (ANY) = {seed_user};
+    // Loop terminates when all neighbors are visited
+    WHILE visited_vertices.size() !=0 DO
+         // s is all neighbors of visited_vertices which have not been visited
+        visited_vertices = SELECT s
+            FROM visited_vertices-(:e)-:s
             WHERE s.@visited == false
             ACCUM s.@visited = true,
                 CASE
-                    WHEN s.type == "post" and s.subject == subjectName THEN @@topicSum += 1
+                    WHEN s.type == "Post" and s.subject == subject_name THEN
+                        @@topic_sum += 1
                 END;
     END;
-    PRINT @@topicSum;
+    PRINT @@topic_sum;
 }
 ----
 --
@@ -452,22 +456,24 @@ GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
 Query::
 +
 --
+This query tallies male and female friends of the starting vertex.
+
 .Example 2. CASE as switch
 [source,gsql]
 ----
-# tally male and female friends of the starting vertex
-CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
-       SumAccum<INT> @@males = 0;
-       SumAccum<INT> @@females = 0;
-       SumAccum<INT> @@unknown = 0;
-       startingVertex = {seed};
+CREATE QUERY count_gender_of_friends(VERTEX<Person> seed) FOR GRAPH Social_Net{
+    SumAccum<INT> @@males = 0;
+    SumAccum<INT> @@females = 0;
+    SumAccum<INT> @@unknown = 0;
+    starting_vertex = {seed};
 
-       people = SELECT v FROM startingVertex -(friend:e)-:v
-       	        ACCUM CASE v.gender
-	      	      WHEN "Male" THEN @@males += 1
-		   		  WHEN "Female" THEN @@females +=1
-		    	  ELSE @@unknown += 1
-		   	    END;
+    people = SELECT v FROM starting_vertex -(Friend:e)-:v
+        ACCUM
+            CASE v.gender
+                WHEN "Male" THEN @@males += 1
+                WHEN "Female" THEN @@females +=1
+            ELSE @@unknown += 1
+        END;
 	PRINT @@males, @@females, @@unknown;
 }
 ----
@@ -503,21 +509,21 @@ GSQL > RUN QUERY countGenderOfFriends("person4")
 Query::
 +
 --
+
+
 .Example 3. Multiple CASE statements
 [source,gsql]
 ----
-# give each social network user a social impact score which accumulates
-# based on how many friends and posts they have
-CREATE QUERY scoreSocialImpact() FOR GRAPH socialNet api("v2") {
-       SumAccum<INT> @socialImpact = 0;
-       allPeople = {person.*};
-       people = SELECT v FROM allPeople:v
-              ACCUM CASE WHEN v.outdegree("friend") > 1 THEN v.@socialImpact +=1 END, # +1 point for having > 1 friend
-                    CASE WHEN v.outdegree("friend") > 2 THEN v.@socialImpact +=1 END, # +1 point for having > 2 friends
-                    CASE WHEN v.outdegree("posted") > 1 THEN v.@socialImpact +=1 END, # +1 point for having > 1 posts
-                    CASE WHEN v.outdegree("posted") > 3 THEN v.@socialImpact +=2 END; # +2 points for having > 2 posts
-       #PRINT people.@socialImpact;       // api v1
-       PRINT people[people.@socialImpact]; // api v2
+CREATE QUERY score_social_impact() FOR GRAPH Social_Net api("v2") {
+    SumAccum<INT> @social_impact = 0;
+    all_people = {Person.*};
+    people = SELECT v FROM all_people:v
+        ACCUM
+            CASE WHEN v.outdegree("friend") > 1 THEN v.@social_impact +=1 END,
+            CASE WHEN v.outdegree("friend") > 2 THEN v.@social_impact +=1 END,
+            CASE WHEN v.outdegree("posted") > 1 THEN v.@social_impact +=1 END,
+            CASE WHEN v.outdegree("posted") > 3 THEN v.@social_impact +=2 END;
+    PRINT people[people.@social_impact];
 }
 ----
 --
@@ -589,26 +595,25 @@ GSQL > RUN QUERY scoreSocialImpact()
 Query::
 +
 --
+This query gives each user post a rating based on the subject and how many likes it has.
+
 .Example 4. Nested CASE statements
 [source,gsql]
 ----
-# give each user post a rating based on the subject and how many likes it has
 CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
   SumAccum<INT> @rating = 0;
-  allPeople = {person.*};
+  all_people = {person.*};
 
   results = SELECT v FROM allPeople -(:e)- post:v
     ACCUM CASE e.type
       WHEN "posted" THEN
         CASE
-          WHEN v.subject == "cats" THEN v.@rating += -1    # -1 if post about cats
-          WHEN v.subject == "Graphs" THEN v.@rating += 2   # +2 if post about graphs
-          WHEN v.subject == "tigergraph" THEN v.@rating += 10 # +10 if post about tigergraph
-          END
-      WHEN "liked" THEN v.@rating += 3                 # +3 each time post was liked
-      END;
-  #PRINT results.@rating; // api v1
-  PRINT results[results.@rating]; // api v2
+          WHEN v.subject == "cats" THEN v.@rating += -1
+          WHEN v.subject == "Graphs" THEN v.@rating += 2
+          WHEN v.subject == "tigergraph" THEN v.@rating += 10
+        END
+      WHEN "liked" THEN v.@rating += 3
+  PRINT results[results.@rating];
 }
 ----
 --
@@ -721,25 +726,26 @@ The example below demonstrates how the `LIMIT` behaves.
 If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
 ====
 
+The following three `WHILE` statements behave the same.
+Each terminates when `v.size == 0` or after 5 iterations of the loop.
+
 .WHILE LIMIT semantics
 [source,gsql]
 ----
-# These three WHILE statements behave the same.  Each terminates when
-# (v.size == 0) or after 5 iterations of the loop.
 WHILE v.size() !=0 LIMIT 5 DO
-    # Some statements		
+    // Statements
 END;
 
 INT iter = 0;
 WHILE (v.size() !=0) AND (iter < 5) DO
-	# Some statements
+    // Statements
     iter = iter + 1;		
 END;
 
 INT iter = 0;
 WHILE v.size() !=0 DO
     IF iter == 5 THEN  BREAK;  END;
-    # Some statements	
+    // Statements
 	iter = iter + 1;	
 END;
 ----
@@ -753,24 +759,28 @@ Below are a number of examples that demonstrate the use of `WHILE` statements.
 Query::
 +
 --
+The following query finds all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
+
 .Example 1. Simple WHILE loop
 [source,gsql]
 ----
-# find all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
-CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
+CREATE QUERY reachable(VERTEX<Person> seed) FOR GRAPH Work_Net
 {
     OrAccum @visited;
-    reachableVertices = {};        # empty vertex set
-    visitedVertices (ANY) = {seed};  # set that can contain ANY type of vertex
+    reachable_vertices = {};
+    visited_vertices (ANY) = {seed};
 
-    WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
-        visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)-:s
-                WHERE s.@visited == false
-                POST-ACCUM s.@visited = true;
-        reachableVertices = reachableVertices UNION visitedVertices;
+    // Loop terminates when all neighbors are visited
+    WHILE visited_vertices.size() !=0 DO
+    // s is all neighbors of visited_vertices which have not been visited
+        visited_vertices = SELECT s
+            FROM visited_vertices-(:e)-:s
+            WHERE s.@visited == FALSE
+            POST-ACCUM
+                s.@visited = true;
+        reachable_vertices = reachable_vertices UNION visited_vertices;
     END;
-    PRINT reachableVertices;
+    PRINT reachable_vertices;
 }
 ----
 --
@@ -959,24 +969,27 @@ GSQL > RUN QUERY reachable("person1")
 Query::
 +
 --
+This query finds all vertices reachable within two hops from a starting seed vertex (i.e., breadth-first search)
 .Example 2. WHILE loop using a LIMIT
 [source,gsql]
 ----
-# find all vertices reachable within two hops from a starting seed vertex (i.e., breadth-first search)
-CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
+CREATE QUERY reachable_within_two(VERTEX<Person> seed) FOR GRAPH Work_Net
 {
     OrAccum @visited;
-    reachableVertices = {};        # empty vertex set
-    visitedVertices (ANY) = {seed};  # set that can contain ANY type of vertex
+    reachable_vertices = {};
+    visited_vertices (ANY) = {seed};
 
-    WHILE visitedVertices.size() !=0 LIMIT 2 DO # loop terminates when all neighbors within 2-hops of the seed vertex are visited
-        visitedVertices = SELECT s               # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)-:s
-                WHERE s.@visited == false
-                POST-ACCUM s.@visited = true;
-        reachableVertices = reachableVertices UNION visitedVertices;
+    // loop terminates when all neighbors within 2-hops of the seed vertex are visited
+    WHILE visited_vertices.size() !=0 LIMIT 2 DO
+        //  s is all neighbors of visited_vertices which have not been visited
+        visited_vertices = SELECT s
+            FROM visited_vertices-(:e)-:s
+            WHERE s.@visited == false
+            POST-ACCUM
+                s.@visited = true;
+        reachable_vertices = reachable_vertices UNION visited_vertices;
     END;
-    PRINT reachableVertices;
+    PRINT reachable_vertices;
 }
 ----
 --
@@ -1217,21 +1230,20 @@ Query::
 .Nested `FOREACH IN RANGE` with MapAccum
 [source,gsql]
 ----
-CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
-  ListAccum<INT> @@t;
-  Start = {person.*};
-  FOREACH i IN RANGE[0, 2] DO
-    @@t += i;
-    L = SELECT Start
-        FROM Start
-        WHERE Start.id == "person1"
-        ACCUM
-          FOREACH j IN RANGE[0, i] DO
-            @@t += j
-          END
-        ;
-  END;
-  PRINT @@t;
+CREATE QUERY foreach_range_ex() FOR GRAPH Social_Net {
+    ListAccum<INT> @@t;
+    Start = {Person.*};
+    FOREACH i IN RANGE[0, 2] DO
+        @@t += i;
+        L = SELECT Start
+            FROM Start
+            WHERE Start.id == "person1"
+            ACCUM
+                FOREACH j IN RANGE[0, i] DO
+                    @@t += j
+                END;
+    END;
+    PRINT @@t;
 }
 ----
 --
@@ -1265,12 +1277,12 @@ Query::
 .FOREACH IN RANGE with step
 [source,gsql]
 ----
-CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
-  ListAccum<INT> @@t;
-  FOREACH i IN RANGE[a,b].step(c) DO
-    @@t += i;
-  END;
-  PRINT @@t;
+CREATE QUERY foreach_range_step(INT a, INT b, INT c) FOR GRAPH Minimal_Net {
+    ListAccum<INT> @@t;
+    FOREACH i IN RANGE[a,b].step(c) DO
+        @@t += i;
+    END;
+    PRINT @@t;
 }
 ----
 The step value can be positive for an ascending range or negative for a descending range.
@@ -1281,7 +1293,6 @@ Results::
 +
 --
 .foreachRangeStep.json Results
-
 [source,gsql]
 ----
 GSQL > RUN QUERY foreachRangeStep(100,0,-9)
@@ -1331,26 +1342,28 @@ GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
 Query::
 +
 --
+This query counts the number of companies whose country matches the provided string.
+
 .Example 1 - FOREACH with ListAccum
 [source,gsql]
 ----
-# Count the number of companies whose country matches the provided string
-CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
-  ListAccum<STRING> @@companyList;
-  INT countryCount;
-  start = {ANY};                        # start will have a set of all vertex types
+CREATE QUERY company_count(STRING country_name) FOR GRAPH Work_Net {
+    ListAccum<STRING> @@company_list;
+    INT country_count;
+    start = {ANY};
 
-  s = SELECT v FROM start:v             # get all vertices
-      WHERE v.type == "company"         # that have a type of "company"
-      ACCUM @@companyList += v.country; # append the country attribute from all company vertices to the ListAccum
+    // Select all vertices with type "Company", and append country attribute from all company vertices to list accum
+    s = SELECT v FROM start:v
+        WHERE v.type == "Company"
+        ACCUM @@company_list += v.country;
 
-  # Iterate the ListAccum and compare each element to the countryName parameter
-  FOREACH item in @@companyList DO
-    IF item == countryName THEN
-       countryCount = countryCount + 1;
+    // Iterate the ListAccum and compare each element to the country_name parameter
+    FOREACH item in @@company_list DO
+        IF item == country_name THEN
+            country_count = country_count + 1;
+        END;
     END;
-  END;
-  PRINT countryCount;
+  PRINT country_count;
 }
 ----
 --
@@ -1392,25 +1405,25 @@ GSQL > RUN QUERY companyCount("can")
 Query::
 +
 --
+This query finds all company employees who live in a given country.
+
 .Example 2 - FOREACH with a seed set
 [source,gsql]
 ----
-#Find all company employees who live in a given country
-CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
-  ListAccum<VERTEX<company>> @@companyList;
-  start = {ANY};
+CREATE QUERY employees_by_company(STRING country) FOR GRAPH Work_Net {
+    ListAccum<VERTEX<Company>> @@company_list;
+    start = {ANY};
 
-  # Build a list of all company vertices
-  #  (these are vertex IDs only)
-  s = SELECT v FROM start:v
-      WHERE v.type == "company"
-      ACCUM @@companyList += v;
+    // Build a list of all company vertices
+    s = SELECT v FROM start:v
+        WHERE v.type == "Company"
+        ACCUM @@company_list += v;
 
-  # Use the vertex IDs as Seeds for vertex sets
-  FOREACH item IN @@companyList DO
-    companyItem = {item};
-    employees = SELECT t FROM companyItem -(worksFor)- :t
-                WHERE (t.locationId == country);
+    // Use the vertex IDs as Seeds for vertex sets
+    FOREACH item IN @@company_list DO
+        company_item = {item};
+        employees = SELECT t FROM company_item -(Works_For)- :t
+            WHERE (t.location_id == country);
     PRINT employees;
   END;
 }
@@ -1565,31 +1578,32 @@ GSQL > RUN QUERY employeesByCompany("us")
 Query::
 +
 --
+This query counts the number of employees from a given country and list their IDs.
+
 .Example 3 - Nested FOREACH with MapAccum
 [source,gsql]
 ----
-# Count the number of employees from a given country and list their ids
-CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
+CREATE QUERY employee_by_country(STRING country_name) FOR GRAPH Work_Net {
   MapAccum <STRING, ListAccum<STRING>> @@employees;
 
-  # start will have a set of all person type vertices
-  start = {person.*};
+  // Start will have a set of all person type vertices
+  start = {Person.*};
 
-  # Build a map using person locationId as a key and a list of strings to hold multiple person ids
+  // Build a map using person locationId as a key and a list of strings to hold multiple person ids
   s = SELECT v FROM start:v
       ACCUM @@employees += (v.locationId -> v.id);
 
-  # Iterate the map using (key,value) pairs
+  // Iterate the map using (key,value) pairs
   FOREACH (key,val) in @@employees DO
     IF key == countryName THEN
       PRINT val.size();
 
-      # Nested foreach to iterate over the list of person ids
+      // Nested foreach to iterate over the list of person ids
       FOREACH employee in val DO
         PRINT employee;
       END;
 
-      # MapAccum keys are unique so we can BREAK out of the loop
+      // MapAccum keys are unique so we can BREAK out of the loop
       BREAK;
     END;
   END;
@@ -1634,36 +1648,36 @@ GSQL > RUN QUERY employeeByCountry("us")
 Query::
 +
 --
+This query shows post topics liked by users and show total likes per topic
+
 .`ACCUM FOREACH`
 [source,gsql]
 ----
-# Show post topics liked by users and show total likes per topic
-CREATE QUERY topicLikes() FOR GRAPH socialNet {
- SetAccum<STRING> @@personPosts;
- SumAccum<INT> @postLikes;
- MapAccum<STRING,INT> @@likesByTopic;
+CREATE QUERY topic_likes() FOR GRAPH Social_Net {
+    SetAccum<STRING> @@person_osts;
+    SumAccum<INT> @post_likes;
+    MapAccum<STRING,INT> @@likes_by_topic;
 
+    start = {Person.*};
 
-  start = {person.*};
+    // Find all user posts and generate a set of post topics
+    // (set has no duplicates)
+    posts = SELECT g FROM start - (Posted>) - :g
+          ACCUM @@person_posts += g.subject;
 
-  # Find all user posts and generate a set of post topics
-  # (set has no duplicates)
-  posts = SELECT g FROM start - (posted>) - :g
-          ACCUM @@personPosts += g.subject;
+    // Use set of topics to increment how many times a specfic
+    // post is liked by other users
+    liked_posts = SELECT f FROM start - (Liked>) - :f
+        ACCUM FOREACH x in @@person_posts DO
+        CASE WHEN (f.subject == x) THEN
+            f.@post_likes += 1
+            END
+        END
+    // Aggregate all liked totals by topic
+    POST-ACCUM @@likes_by_topic += (f.subject -> f.@post_likes);
 
-  # Use set of topics to increment how many times a specfic
-  #  post is liked by other users
-  likedPosts = SELECT f FROM start - (liked>) - :f
-               ACCUM FOREACH x in @@personPosts DO
-                         CASE WHEN (f.subject == x) THEN
-                           f.@postLikes += 1
-                         END
-                     END
-               # Aggregate all liked totals by topic
-               POST-ACCUM @@likesByTopic += (f.subject -> f.@postLikes);
-
-  # Display the number of likes per topic
-  PRINT @@likesByTopic;
+    // Display the number of likes per topic
+    PRINT @@likes_by_topic;
 }
 ----
 --
@@ -1700,32 +1714,33 @@ GSQL > RUN QUERY topicLikes()
 Query::
 +
 --
+This query shows a summary of the number of friends all persons have by gender.
+
 .Example 1 - POST-ACCUM FOREACH
 [source,gsql]
 ----
-#Show a summary of the number of friends all persons have by gender
-CREATE QUERY friendGender() FOR GRAPH socialNet {
-  ListAccum<STRING> @friendGender;
-  SumAccum<INT> @@maleGenderCount;
-  SumAccum<INT> @@femaleGenderCount;
+CREATE QUERY friend_gender() FOR GRAPH Social_Net {
+    ListAccum<STRING> @friend_gender;
+    SumAccum<INT> @@male_gender_count;
+    SumAccum<INT> @@female_gender_count;
 
-  start = {person.*};
+    start = {person.*};
 
-  # Record a list showing each friend's gender
-  socialMembers = SELECT s from start:s -(friend)- :g
-              ACCUM s.@friendGender += (g.gender)
+    // Record a list showing each friend's gender
+    socialMembers = SELECT s from start:s -(friend)- :g
+        ACCUM s.@friend_gender += (g.gender)
+    // Loop over each list of genders and total them
+        POST-ACCUM
+            FOREACH x in s.@friend_gender DO
+                CASE WHEN (x == "Male") THEN
+                    @@male_gender_count += 1
+                ELSE
+                    @@female_gender_count += 1
+                END
+            END;
 
-              # Loop over each list of genders and total them
-              POST-ACCUM FOREACH x in s.@friendGender DO
-	                       CASE WHEN (x == "Male") THEN
-	                         @@maleGenderCount += 1
-	                       ELSE
-	                         @@femaleGenderCount += 1
-	                       END
-                         END;
-
-  PRINT @@maleGenderCount;
-  PRINT @@femaleGenderCount;
+    PRINT @@male_gender_count;
+    PRINT @@female_gender_count;
 }
 ----
 --
@@ -1771,23 +1786,23 @@ Below are a number of examples that demonstrate the use of `BREAK` and `CONTINUE
 .Continue and Break Semantics
 [source,gsql]
 ----
-# While loop with continue statement
-INT i = 0;
-INT nCount = 0;
-WHILE i < 10 DO
-  i = i + 1;
-  IF (i % 2 == 0) { CONTINUE; }
-  nCount = nCount + 1;
-END;
-# i is 10, nCount is 5 (skips the increment for every even i).
+// While loop with continue statement
+    INT i = 0;
+    INT nCount = 0;
+    WHILE i < 10 DO
+        i = i + 1;
+        IF (i % 2 == 0) { CONTINUE; }
+        nCount = nCount + 1;
+    END;
+    // i is 10, nCount is 5 (skips the increment for every even i).
 
-# While loop with a break statement
-i = 0;
-WHILE i < 10 DO
-  IF (i == 5) { BREAK; }  # When i is 5 the loop is exited
-  i = i + 1;
-END;
-# i is now 5
+    // While loop with a break statement
+    i = 0;
+    WHILE i < 10 DO
+        IF (i == 5) { BREAK; }  # When i is 5 the loop is exited
+        i = i + 1;
+    END;
+// i is now 5
 ----
 
 
@@ -1796,30 +1811,31 @@ END;
 Query::
 +
 --
+This query finds posts of a given person, and post of friends of that person, friends of friends, etc. until a post about cats is found.
+The number of friend-hops to reach is the 'degree' of cats.
+
 .Example 1. Break
 [source,gsql]
 ----
-# find posts of a given person, and post of friends of that person, friends of friends, etc
-# until a post about cats is found. The number of friend-hops to reach is the 'degree' of cats
-CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
+CREATE QUERY find_degree_of_cats(VERTEX<Person> seed) FOR GRAPH Social_Net
 {
     SumAccum<INT> @@degree = 0;
-    OrAccum @@foundCatPost = false;
-    OrAccum @visited = false;
+    OrAccum @@found_cat_post = FALSE;
+    OrAccum @visited = FALSE;
 
     friends (ANY) = {seed};
-    WHILE @@foundCatPost != true AND friends.size() > 0 DO
-          posts = SELECT v FROM friends-(posted>:e)-:v
-                  ACCUM CASE WHEN v.subject == "cats" THEN @@foundCatPost += true END;
-
-          IF @@foundCatPost THEN
+    WHILE @@found_cat_post != true AND friends.size() > 0 DO
+        posts = SELECT v FROM friends-(Posted>:e)-:v
+            ACCUM CASE WHEN v.subject == "cats" THEN @@found_cat_post += true END;
+            IF @@found_cat_post THEN
             BREAK;
-          END;
+            END;
 
-          friends = SELECT v FROM friends-(friend:e)-:v
-                  WHERE v.@visited == false
-                  ACCUM v.@visited = true;
-          @@degree += 1;
+        friends = SELECT v FROM friends-(Friend:e)-:v
+            WHERE v.@visited == false
+            ACCUM
+                v.@visited = true;
+                @@degree += 1;
     END;
     PRINT @@degree;
 }
@@ -1863,36 +1879,38 @@ GSQL > RUN QUERY findDegreeOfCats("person4")
 Query::
 +
 --
-.Example 2. findEnoughFriends.gsql: While loop using continue statement
+This query finds all 3-hop friends of a starting vertex.
+Count coworkers as friends if there are not enough friends
+
+.findEnoughFriends.gsql: While loop using continue statement
 [source,gsql]
 ----
-# find all 3-hop friends of a starting vertex. count coworkers as friends
-# if there are not enough friends
-CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
+CREATE QUERY find_enough_friends(VERTEX<Person> seed) FOR GRAPH Friend_Net
 {
-    SumAccum<INT> @@distance = 0;   # keep track of the distance from the seed
+    // Keep track of the distance from the seed
+    SumAccum<INT> @@distance = 0;
     OrAccum @visited = false;
-    visitedVertices = {seed};
+    visited_vertices = {seed};
     WHILE true LIMIT 3 DO
         @@distance += 1;
-        # traverse from visitedVertices to its friends
+        // Traverse from visited_vertices to its friends
         friends = SELECT v
-            FROM visitedVertices -(friend:e)- :v
+            FROM visited_vertices -(Friend:e)- :v
             WHERE v.@visited == false
             POST-ACCUM v.@visited = true;
         PRINT @@distance, friends;
 
-        # if number of friends at this level is sufficient, finish this iteration
-        IF visitedVertices.size() >= 2 THEN
-            visitedVertices = friends;
+        // If number of friends at this level is sufficient, finish this iteration
+        IF visited_vertices.size() >= 2 THEN
+            visited_vertices = friends;
             CONTINUE;
         END;
-        # if fewer than 4 friends, add in coworkers
+        // If fewer than 4 friends, add in coworkers
         coworkers = SELECT v
-            FROM visitedVertices -(coworker:e)- :v
+            FROM visited_vertices -(Coworker:e)- :v
             WHERE v.@visited == false
             POST-ACCUM v.@visited = true;
-        visitedVertices = friends UNION coworkers;
+        visited_vertices = friends UNION coworkers;
         PRINT @@distance, coworkers;
     END;
 }
@@ -2034,31 +2052,35 @@ GSQL > RUN QUERY findEnoughFriends("person1")
 Query::
 +
 --
+This query finds at least the top-k companies closest to a given seed vertex, if they exist.
+
 .Example 3. While loop using break statement
 [source,gsql]
 ----
-# find at least the top-k companies closest to a given seed vertex, if they exist
-CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
+CREATE QUERY topk_companies(VERTEX<Person> seed, INT k) FOR GRAPH Work_Net
 {
-    SetAccum<vertex<company>> @@companyList;
-    OrAccum @visited = false;
-    visitedVertices (ANY) = {seed};
+    SetAccum<VERTEX<Company>> @@company_list;
+    OrAccum @visited = FALSE;
+    visited_vertices (ANY) = {seed};
     WHILE true DO
-        visitedVertices = SELECT v                  # traverse from x to its unvisited neighbors
-                FROM visitedVertices -(:e)- :v
-                WHERE v.@visited == false
-                ACCUM CASE
-                    WHEN (v.type == "company") THEN # count the number of company vertices encountered
-                        @@companyList += v
-                    END
-                POST-ACCUM v.@visited += true;      # mark vertices as visited
+        //  Traverse from x to its unvisited neighbors
+        visited_vertices = SELECT v
+            FROM visited_vertices -(:e)- :v
+            WHERE v.@visited == FALSE
+            ACCUM CASE
+                // Count the number of company vertices encountered
+                WHEN (v.type == "company") THEN
+                        @@company_list += v
+                END
+            // Mark vertices as visited
+            POST-ACCUM v.@visited += TRUE;
 
-        # exit loop when at least k companies have been counted
-        IF @@companyList.size() >= k OR visitedVertices.size() == 0 THEN
+        // Exit loop when at least k companies have been counted
+        IF @@company_list.size() >= k OR visited_vertices.size() == 0 THEN
            BREAK;
         END;
     END;
-    PRINT @@companyList;
+    PRINT @@company_list;
 }
 ----
 --
@@ -2107,30 +2129,31 @@ GSQL > RUN QUERY topkCompanies("person2", 3)
 Query::
 +
 --
+This query lists all companies from a given country.
+
 .Example 4 - Usage of CONTINUE in FOREACH
 [source,gsql]
 ----
-#List out all companies from a given country
-CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
+CREATE QUERY company_by_country(STRING country_name) FOR GRAPH Work_Net {
   MapAccum <STRING, ListAccum<STRING>> @@companies;
-  start = {company.*};                   # start will have a set of all company type vertices
+  start = {Company.*};
 
-  #Build a map using company country as a key and a list of strings to hold multiple company ids
+  // Build a map using company country as a key and a list of strings to hold multiple company ids
   s = SELECT v FROM start:v
       ACCUM @@companies += (v.country -> v.id);
 
-  #Iterate the map using (key,value) pairs
+  // Iterate the map using (key,value) pairs
   FOREACH (key,val) IN @@companies DO
-    IF key != countryName THEN
-      CONTINUE;
-    END;
+      IF key != country_name THEN
+          CONTINUE;
+      END;
 
-    PRINT val.size();
+      PRINT val.size();
 
-    #Nested foreach to iterate over the list of company ids
-    FOREACH comp IN val DO
-      PRINT comp;
-    END;
+      // Nested foreach to iterate over the list of company ids
+      FOREACH comp IN val DO
+          PRINT comp;
+      END;
   END;
 }
 ----
@@ -2160,66 +2183,3 @@ GSQL > RUN QUERY companyByCountry("us")
 ----
 --
 ====
-
-[tabs]
-====
-Query::
-+
---
-.Example 5 - Usage of BREAK in FOREACH
-[source,gsql]
-----
-#List all the persons located in the specified country
-CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
-  MapAccum < STRING, ListAccum<STRING> > @@employees;
-  start = {person.*};                   # start will have a set of all person type vertices
-
-  #Build a map using person locationId as a key and a list of strings to hold multiple person ids
-  s = SELECT v FROM start:v
-      ACCUM @@employees += (v.locationId -> v.id);
-
-  #Iterate the map using (key,value) pairs
-  FOREACH (key,val) IN @@employees DO
-    IF key == countryName THEN
-      PRINT val.size();
-
-      #Nested foreach to iterate over the list of person ids
-      FOREACH employee IN val DO
-        PRINT employee;
-      END;
-
-      BREAK;
-    END;
-  END;
-}
-----
---
-
-Results::
-+
---
-.employmentByCountry Result
-[source,gsql]
-----
-GSQL > RUN QUERY employmentByCountry("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"val.size()": 5},
-    {"employee": "person1"},
-    {"employee": "person4"},
-    {"employee": "person7"},
-    {"employee": "person9"},
-    {"employee": "person10"}
-  ]
-}
-----
---
-====
-

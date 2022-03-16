@@ -334,7 +334,7 @@ For example:
 
 
 ==== Pattern repetition
-The Kleene star``*`` and `min..max` range specifiers are used to say "repeat this edge pattern from min to max times."
+The Kleene star``*`` and `min..max` range specifiers repeat an edge pattern for a specified number of times.
 See xref:tutorials:pattern-matching/repeating-a-pattern.adoc[] for a tutorial on how to use pattern repetition in a path edge pattern.
 
 .EBNF for star pattern
@@ -354,8 +354,10 @@ starBounds := CONST_INT ".." CONST_INT
 For example, a path like `person1 -(Friendship)- dog1 - (Friendship) - person2` matches the star pattern.
 * Add `*` to the end of a pattern, and then a number after the star to have the star pattern match paths where the edge pattern occurs for the specified number of times.
 ** For example, `Person:s - (Friendship*2) - Person` matches all paths between two `Person` vertices connected by exactly two `Friendship` edges.
+The vertices in the middle do not need to be `Person` vertices.
 * Add `*` to the end of a pattern, and then a range after the star (`*x..y`) to have the star pattern match all paths where the edge pattern occurs as many times as within the specified range.
 ** For example, `Employee:s - (Works_For>*2..4) - Employee` matches all paths between two `Employee` vertices with 2 - 4 right-directed `Works_For` edges.
+The vertices in the middle do not need to be `Person` vertices.
 
 
 

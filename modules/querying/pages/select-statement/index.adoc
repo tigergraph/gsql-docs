@@ -335,6 +335,7 @@ For example:
 
 ==== Pattern repetition
 The Kleene star``*`` and `min..max` range specifiers repeat an edge pattern for a specified number of times.
+The range specifiers must be integers and must be constants.
 See xref:tutorials:pattern-matching/repeating-a-pattern.adoc[] for a tutorial on how to use pattern repetition in a path edge pattern.
 
 .EBNF for star pattern

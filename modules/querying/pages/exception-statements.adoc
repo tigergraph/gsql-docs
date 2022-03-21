@@ -190,42 +190,39 @@ In the current version, a RAISE statement can only be used as a query-body-state
 The example below defines and checks for two types of exceptions: an empty input set (40001) and no matching edges (40002). Remember that the minimum allowed code number is 40001.
 
 .Example: Unhandled User-Defined Exceptions
-
 [source,gsql]
 ----
-CREATE QUERY excpCountActivity(SET<VERTEX<person>> vSet, STRING eType) FOR GRAPH socialNet {
-  # Count how many edges there are from each member of the input person set to posts,
-  # along the specified edge type.
+CREATE QUERY excp_count_activity(SET<VERTEX<Person>> v_set, STRING e_type) FOR GRAPH Social_Net {
+    /* Count how many edges there are from each member of the input person set to posts, along the specified edge type. */
 
-  MapAccum<STRING,INT> @@allCount;
-  EXCEPTION emptyList (40001);
-  EXCEPTION noEdges   (40002);
+    MapAccum<STRING,INT> @@all_count;
+    EXCEPTION empty_list (40001);
+    EXCEPTION no_edges   (40002);
 
-  IF ISEMPTY(vSet) THEN ## Raise 40001
-    RAISE emptyList ("Error: Input parameter 'vSet' (type SET<VERTEX<person>>) is empty");
-  END;
+    IF ISEMPTY(v_set) THEN
+        RAISE empty_list ("Error: Input parameter 'v_set' (type SET<VERTEX<Person>>) is empty");
+    END;
 
-  Start = vSet;
-  Results = SELECT s
-    FROM Start:s -(:e)- post:t
-    WHERE e.type == eType
-    ACCUM @@allCount += (t.subject -> 1);
+    Start = v_set;
+    Results = SELECT s
+        FROM Start:s -(:e)- post:t
+        WHERE e.type == e_type
+        ACCUM @@all_count += (t.subject -> 1);
 
-  IF Results.size() == 0 THEN ## Raise 40002
-    RAISE noEdges ("Error: No '" + eType + "' edges from the vertex set");
-  END;
-  PRINT @@allCount;
+    IF Results.size() == 0 THEN
+        RAISE no_edges ("Error: No '" + eType + "' edges from the vertex set");
+    END;
+    PRINT @@all_count;
 }
 ----
 
 
 
 .Results
-
 [source,gsql]
 ----
 // Valid input: no exceptions
-$ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vSet=person2&vSet=person6&eType=posted"
+$ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?v_set=person2&vSet=person6&eType=posted"
 {
   "error": false,
   "message": "",
@@ -281,14 +278,22 @@ caseExceptBlock := WHEN exceptVarName THEN queryBodyStmts+
 elseExceptBlock := ELSE queryBodyStmts
 ----
 
-The TRY...EXCEPTION Statement is used to define and apply user-defined exception handling to a block of query-body statements. A TRY...EXCEPTION statement can be nested within a TRY block or EXCEPTION block.
+The `TRY...EXCEPTION` Statement is used to define and apply user-defined exception handling to a block of query-body statements.
+A `TRY...EXCEPTION` statement can be nested within a `TRY` block or `EXCEPTION` block.
 
 [WARNING]
 ====
-The current version of GSQL does not support custom handling of built-in exceptions. Therefore, if a built-in exception occurs, it ignores the TRY..EXCEPTION blocks and simply applies the default handling, and the query aborts. In future updates, we plan to support custom handling of both custom exceptions (RAISE) and built-in exception with the TRY...EXCEPTION block.
+The current version of GSQL does not support custom handling of built-in exceptions.
+Therefore, if a built-in exception occurs, it ignores the `TRY..EXCEPTION` blocks and simply applies the default handling, and the query aborts.
+In future updates, we plan to support custom handling of both custom exceptions (`RAISE`) and built-in exception with the `TRY...EXCEPTION` block.
 ====
 
-The TRY...EXCEPTION Statement is a compound statement containing two blocks. The first block (TRY) consists of the query-body statements for which custom error handling should be applied. The second block (EXCEPTION) contains a series of WHEN...THEN exception handling clauses.  Each exception handling clause names an exception type and specifies what actions to take in the event of the exception. An optional ELSE clause contains handling statements for all other exceptions. The following text and visual flowchart details how the TRY... EXCEPTION block handles an exception.
+The `TRY...EXCEPTION` Statement is a compound statement containing two blocks.
+The first block (`TRY`) consists of the query-body statements for which custom error handling should be applied.
+The second block (`EXCEPTION`) contains a series of WHEN...THEN exception handling clauses.
+Each exception handling clause names an exception type and specifies what actions to take in the event of the exception.
+An optional ELSE clause contains handling statements for all other exceptions.
+The following text and visual flowchart details how the TRY... EXCEPTION block handles an exception.
 
 When an exception occurs within a TRY block, the flow of execution skips the remainder of the TRY block and jumps to the EXCEPTION block. The GSQL flow now seeks to match the exception type with a handler. After executing the handling statements in the THEN or ELSE clause, the flow skips the remainder of the EXCEPTION block and continues with the statement following the END statement. However, if there is no matching WHEN or ELSE handler, then the exception is propagated. That is, the RAISE state is maintained after exiting the EXCEPTION block. If the TRY...EXCEPTION block is nested inside another TRY block, then the handling process is repeated at this upper level. This repeats until either the exception is handled or there are no more TRY...EXCEPTION blocks.
 
@@ -323,28 +328,26 @@ The following example is a modified shortest path query.  It looks for all paths
 Note that cases 1 and 2 do NOT mean that a negative or slow speed edge is actually on a shortest path, only that the query noticed a bad edge during its search. Also, because we cannot RAISE within the SELECT block, we use a workaround: set an integer variable with an error code.  Immediately after the SELECT block, test the integer variable and RAISE exceptions as needed.
 
 .Example: Path Search with Exceptions
-
 [source,gsql]
 ----
-CREATE QUERY compPathValid (vertex<computer> src, vertex<computer> tgt, BOOL enExcp)
-FOR GRAPH computerNet {
-# Find valid paths in a computer network from a source to a target.
-# Stop search once you have found some paths.
-# 3 Exceptions: (1) Negative connection speed, (2) Slow connection speed, (3) No path.
-# Set enExcp=true to raise exceptions. enExcp=false will find paths, good or bad.
+CREATE QUERY comp_path_valid (VERTEX<Computer> src, VERTEX<Computer> tgt, BOOL en_excp) FOR GRAPH Computer_Net {
+/* Find valid paths in a computer network from a source to a target.
+ Stop search once you have found some paths.
+ 3 Exceptions: (1) Negative connection speed, (2) Slow connection speed, (3) No path.
+Set en_excp=true to raise exceptions. en_excp=false will find paths, good or bad. */
 
 	OrAccum @@reached, @visited;
 	ListAccum<STRING> @paths;
-	DOUBLE minSpeed = 0.4;
+	DOUBLE min_speed = 0.4;
 	INT err;
 
-	EXCEPTION negSpeed (40001);
-	EXCEPTION slowSpeed (40002);
-	EXCEPTION notReached (40003);
+	EXCEPTION neg_speed (40001);
+	EXCEPTION slow_speed (40002);
+	EXCEPTION not_reached (40003);
 
 	TRY
 		Start = {src};
-		# Initialize: path to src is itself.
+		// Initialize: path to src is itself.
 		Start = SELECT s
 			FROM Start:s
 			ACCUM s.@paths = s.id;
@@ -354,30 +357,30 @@ FOR GRAPH computerNet {
 				FROM Start:s -(:e)- :t
 				WHERE t.@visited == false
 				ACCUM CASE
-					WHEN e.connectionSpeed < 0 THEN err = 1
-					WHEN e.connectionSpeed < minSpeed THEN err = 2
+					WHEN e.connection_speed < 0 THEN err = 1
+					WHEN e.connection_speed < min_speed THEN err = 2
 					WHEN t == tgt THEN @@reached += true
-					END,
-			# List1 * List2 -> List(each elem of List1 concat w/each elem of List2)
+        END,
+        // List1 * List2 -> List(each elem of List1 concat w/each elem of List2)
 					t.@paths += (s.@paths * ["~"]) * [t.id]
 				POST-ACCUM t.@visited = true;
-			IF err == 1 AND enExcp THEN
-				RAISE negSpeed ("Negative Speed");
-			ELSE IF err == 2 AND enExcp THEN
-				RAISE slowSpeed ("Slow Speed");
+        IF err == 1 AND en_excp THEN
+				RAISE neg_speed ("Negative Speed");
+        ELSE IF err == 2 AND en_excp THEN
+				RAISE slow_speed ("Slow Speed");
 			END;
-		END; # WHILE
+		END;
 
-		IF NOT @@reached AND enExcp THEN
-			RAISE notReached ("No path to target");
+		IF NOT @@reached AND en_excp THEN
+			RAISE not_reached ("No path to target");
 		ELSE
-			Result = {tgt};
-			PRINT Result[Result.@paths]; // api v2
+			result = {tgt};
+			PRINT result[result.@paths];
 		END;
 	EXCEPTION
-		WHEN negSpeed THEN PRINT "bad path: negative speed";
-		WHEN slowSpeed THEN PRINT "bad path: slow speed";
-		WHEN notReached THEN PRINT "no path from source to target";
+		WHEN neg_speed THEN PRINT "bad path: negative speed";
+		WHEN slow_speed THEN PRINT "bad path: slow speed";
+		WHEN not_reached THEN PRINT "no path from source to target";
 	END;
 }
 ----
@@ -390,9 +393,8 @@ As the data in Appendix D show:
 * Any search passing through c12 will see negative and slow edges.
 * Any search passing through c14 will see negative edges.
 
-The results for 5 cases are shown: 1 valid search plus each of the 3 exception conditions.  The 5th case is the same as the 4th, but exception handling is not enabled.
-
-.compPathValid.json
+The results for 5 cases are shown: 1 valid search plus each of the 3 exception conditions.
+The 5th case is the same as the 4th, but exception handling is not enabled.
 
 [source,gsql]
 ----

@@ -96,7 +96,7 @@ GSQL > CREATE GRAPH social (person, friendship)
 Stopping GPE GSE RESTPP
 Successfully stopped GPE GSE RESTPP in 16.554 seconds
 Starting GPE GSE RESTPP
-Successfully strated GPE GSE RESTPP in 0.119 seconds
+Successfully started GPE GSE RESTPP in 0.119 seconds
 The graph social is created.
 ----
 
@@ -108,7 +108,7 @@ At this point, we have created a *person* vertex type, a *friendship* edge type,
 [.wrap,gsql]
 ----
 GSQL > ls
----- Global vertices, edges, and all graphs
+---- Graph social
 Vertex Types:
   - VERTEX person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 Edge Types:
@@ -117,9 +117,11 @@ Edge Types:
 Graphs:
   - Graph social(person:v, friendship:e)
 Jobs:
+Queries:
 
 
-Json API version: v2
-Syntax version: v2
+
+
+
 ----
 

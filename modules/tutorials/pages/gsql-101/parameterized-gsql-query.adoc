@@ -43,7 +43,12 @@ Last, we print out the Result vertex set, in JSON format.
 
 == Create A Query
 
-Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the @filename syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using @hello.qsql ( Note that if you are not in the /home/tigergraph folder when you start gsql, then you can use the absolute path to invoke a gsql file. e.g., `@/home/tigergraph/hello.gsql` *``*) Then run the "ls" command to see that the query is now in the catalog.
+Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the `@filename` syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using `@hello.qsql`.
+
+[NOTE]
+IF you are not in the `/home/tigergraph` folder when you start GSQL, you can use the absolute path to invoke a `.gsql` file. e.g., `@/home/tigergraph/hello.gsql`
+
+Run the "ls" command to see that the query is now in the catalog.
 
 .GSQL shell
 
@@ -110,7 +115,7 @@ It takes about 1 minute for the database to install this new query. Be patient! 
 
 == Run a Query in GSQL
 
-To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of parameter values.
+To run a query in GSQL, use `RUN QUERY` followed by the query name and a set of parameter values.
 
 .GSQL command - run query examples
 
@@ -165,7 +170,9 @@ GSQL > RUN QUERY hello("Tom")
 
 == Run a Query as a REST Endpoint
 
-Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the curl command is the most popular way to submit an http request. In the example below, the portion that is standard for all queries is shown in bold _**_; the portion in normal weight pertains to this particular query and parameter value. The JSON result will be returned to the Linux shell's standard output. So, our parameterized query becomes a http service!
+Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the `curl` command is the most popular way to submit an http request.
+
+The JSON result will be returned to the Linux shell's standard output. Our parameterized query thus becomes an http service!
 
 .Linux shell
 
@@ -176,23 +183,13 @@ curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 
 
 
-Finally, to see the GSQL text of a query in the catalog, you can use
-
-.GSQL command - show query example
-
-[source,gsql]
-----
-#SHOW QUERY query_name. E.g.
-SHOW QUERY hello
-----
-
-
+Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.
 
 Congratulations! At this point, you have gone through the whole process of defining, installing, and running a query.
 
 == Running Anonymous Queries Without Installing
 
-Installing query will give the fastest query speed, but user needs to wait for the installation overhead.
+Installing a query will give the fastest query speed, but the user needs to wait for the installation overhead.
 
 The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL. Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 

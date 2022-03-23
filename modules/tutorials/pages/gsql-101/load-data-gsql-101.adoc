@@ -6,11 +6,11 @@ You should have the two data files person.csv and friendship.csv on your local d
 
 If you need to exit the GSQL shell for any reason, you can do so by typing "quit" without the quotes.  Type gsql to enter again.
 
-== Define a Loading Job
+== Define a loading job
 
 The loading job below assumes that your data files are in the folder `/home/tigergraph`.
 If they are elsewhere, then in the loading job script below replace `/home/tigergraph/person.csv` and `/home/tigergraph/friendship.csv` with their corresponding file paths respectively.
-Assuming you're (back) in the GSQL shell, enter the following set of commands.
+Enter the following set of commands in the GSQL shell.
 
 [NOTE]
 In the default Docker installation described in xref:tigergraph-server:getting-started:docker.adoc[], these files are in the folder `/home/tigergraph/tutorial/3.x/gsql101/`
@@ -42,12 +42,13 @@ Each file must be assigned to a filename variable.
 The field labels can be either by name or by position.
 By-name labelling requires a header line in the source file.
 By-position labelling uses integers to indicate source column position 0, 1,...
-In the example above, the first LOAD statement refers to the source file columns by name, whereas the second `LOAD` statement refers to the source file columns by position. Note the following details:
-** The column "name" in file1 gets mapped to two fields, both the PRIMARY_ID and the "name" attribute of the person vertex.
-** In file1, gender comes before age.  In the person vertex, gender comes after age. When loading, state your attributes in the order needed by the target object (in this case, the person vertex).
-** Each LOAD statement has a USING clause.  Here it tells GSQL that both files contain a header (whether we choose to use the names or not, GSQL still needs to know whether to consider the first line as data or not). It also says the column separator is comma. GSQL can handle any single-character separator, not just commas.
+In the example above, the first `LOAD` statement refers to the source file columns by name, whereas the second `LOAD` statement refers to the source file columns by position. Note the following details:
+** The column "name" in `file1` gets mapped to two fields, both the `PRIMARY_ID` and the "name" attribute of the per`son vertex.
+** In `file1`, gender comes before age.  In the `person` vertex, gender comes after age. When loading, state your attributes in the order needed by the target object (in this case, the `person` vertex).
+** Each `LOAD` statement has a `USING` clause.  Here it tells GSQL that both files contain a header (whether we choose to use the names or not, GSQL still needs to know whether to consider the first line as data or not).
+It also says the column separator is a comma. GSQL can handle any single-character separator, not just commas.
 
-When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
+When you run the `CREATE LOADING JOB` statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
 
 .GSQL shell
 [.wrap,gsql]
@@ -68,7 +69,7 @@ Successfully created loading jobs: [load_social].
 
 
 
-== Run a Loading Job
+== Run a loading job
 
 You can now run your loading job to load data into your graph:
 

@@ -2,9 +2,13 @@
 
 == Introduction
 
-In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries. Before you start, you need to have installed the TigerGraph system, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries.
 
-== What is a Graph?
+Before you start, you need to have installed the TigerGraph system locally or in a Docker container, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+
+Although TigerGraph does have a cloud-based system in TigerGraph Cloud, it doesn't have a GSQL interface and so can't be used for this tutorial.
+
+== What is a graph?
 
 A graph is a collection of data entities and the connections between them.  That is, it's a network of data entities.
 
@@ -20,9 +24,15 @@ image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
 
 The friendship loop shows that a friendship is between a person and another person.
 
-=== Data Set
+=== Data set
 
-For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
+For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph.
+The data for this graph consists of two files in csv (comma-separated values) format.
+
+To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk.
+If you downloaded the Docker container, these files can be found in `/home/tigergraph/tutorial/3.x/gsql101/`.
+
+In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
 
 .person.csv
 [,csv]
@@ -54,7 +64,7 @@ Dan,Kevin,2015-12-30
 
 
 
-=== Prepare Your TigerGraph Environment +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
+=== Prepare your TigerGraph environment +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
 
 First, let's check that you can access GSQL.
 

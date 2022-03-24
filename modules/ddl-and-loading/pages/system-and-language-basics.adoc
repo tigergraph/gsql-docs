@@ -362,7 +362,7 @@ Additionally, GSQL also supports the following complex data types:
 
 * `LIST`: A list is an *ordered* collection of elements of the same type.
  ** Default value: an empty list `[]`
- ** Supported element types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `DATETIME`, and `UDT`
+ ** Supported element types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`
  ** To declare a list type, use angle brackets `<>` to enclose the element type, e.g. `LIST<STRING>.`
 
 [WARNING]
@@ -372,12 +372,12 @@ Due to multithreaded GSQL loading, the initial order of elements loaded into a L
 
 * `SET`: A set is an *unordered* collection of *unique* elements of the same type.
  ** Default value: an empty set `()`
- ** Supported element types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `DATETIME`, and `UDT`.
+ ** Supported element types: `INT`, `DOUBLE``, `STRING`, `DATETIME`, and `UDT`.
  ** To declare a set type, use angle brackets `<>` to enclose the element type, e.g. `SET<INT>`
 * `MAP`: A map is a collection of key-value pairs. It cannot contain duplicate keys and each key maps to one value.
  ** Default value: an empty map
- ** Supported key types: `INT`, `STRING`, `STRING COMPRESS`, and `DATETIME`
- ** Supported value types: `INT`, `DOUBLE`, `STRING`, `STRING COMPRESS`, `DATETIME`, and `UDT`.
+ ** Supported key types: `INT`, `STRING`, and `DATETIME`
+ ** Supported value types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`.
  ** To declare a map type, use `<>` to enclose the types, with a comma to separate the key and value types, e.g., `MAP<INT, DOUBLE>`.
 
 === TYPEDEF TUPLE

@@ -1,0 +1,17 @@
+CREATE QUERY and_or_accum_ex() FOR GRAPH Minimal_Net {
+
+    AndAccum @@and_accum_var; // (default value = TRUE)
+    OrAccum  @@or_accum_var;  // (default value = FALSE)
+
+    @@and_accum_var += TRUE;  // T and T = T
+    @@and_accum_var += FALSE; // T and F = F
+    @@and_accum_var += TRUE;  // F and T = F
+
+    PRINT @@and_accum_var;
+
+    @@or_accum_var += FALSE;  // F or F == F
+    @@or_accum_var += TRUE;   // F or T == T
+    @@or_accum_var += FALSE;  // T or F == T
+
+    PRINT @@or_accum_var;
+}

@@ -1,0 +1,15 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [ {"@@intBagAccum": [ 2, 3, 1, 1, 11, 11, 4, 4 ]},
+    {"@@intBagAccum.size()": 8},
+    {"@@intBagAccum.contains(4)": true},
+    {"@@stringBagAccum.contains(Hello)": true},
+    {"@@stringBagAccum": [ "World", "Hello" ]}
+  ]
+}

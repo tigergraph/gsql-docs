@@ -1,0 +1,15 @@
+CREATE QUERY avg_accum_ex() FOR GRAPH Minimal_Net {
+
+  AvgAccum @@average_accum;
+
+  @@average_accum += 10;
+  @@average_accum += 5.5; // avg = (10+5.5) / 2.0
+  @@average_accum += -1;  // avg = (10+5.5-1) / 3.0
+
+  PRINT @@average_accum;  // 4.8333...
+
+  @@average_accum = 99;   // reset
+  @@average_accum += 101; // avg = (99 + 101) / 2
+
+  PRINT @@average_accum;  // 100
+}

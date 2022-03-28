@@ -1,0 +1,37 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"S1": [
+      {
+        "v_id": "person1",
+        "attributes": {
+          "S1.@stringList": [ "management","fizz" ],
+          "S1.interestList": [ "management", "financial"],
+          "S1.skillList": [  1, 2, 3 ],
+          "S1.@intList": [ 1, 2, -99 ]
+        },
+        "v_type": "person"
+      },
+      {
+        "v_id": "person5",
+        "attributes": {
+          "S1.@stringList": [ "sport", "financial", "fizz" ],
+          "S1.interestList": [ "sport", "financial", "engineering" ],
+          "S1.skillList": [ 8, 2, 5 ],
+          "S1.@intList": [ 8, 2, -99 ]
+        },
+        "v_type": "person"
+      }
+    ]},
+    {
+      "@@strFails": [],
+      "@@intFails": []
+    }
+  ]
+}

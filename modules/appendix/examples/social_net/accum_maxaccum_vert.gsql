@@ -1,0 +1,10 @@
+CREATE QUERY min_max_accum_vertex() FOR GRAPH Social_Net api("v2") {
+
+  MaxAccum<VERTEX> @max_vertex;
+  all_user = {Person.*};
+  all_user = SELECT src
+            FROM all_user:src -(Posted>)- Post:tgt
+            ACCUM src.@max_vertex += tgt
+            ORDER BY src.id;
+  PRINT all_user[all_user.@max_vertex]; // api v2
+}

@@ -1,0 +1,111 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"@@topTestResults.top()": {
+      "firstName": "",
+      "lastName": "",
+      "score": 0
+    }},
+    {"@@topTestResults.top()": {
+      "firstName": "Tony",
+      "lastName": "Stark",
+      "score": 100
+    }},
+    {
+      "@@topTestResults.top().firstName": "Tony",
+      "@@topTestResults.top().lastName": "Stark",
+      "@@topTestResults.top().score": 100
+    },
+    {"@@topTestResults": [
+      {
+        "firstName": "Tony",
+        "lastName": "Stark",
+        "score": 100
+      },
+      {
+        "firstName": "Bruce",
+        "lastName": "Banner",
+        "score": 95
+      },
+      {
+        "firstName": "Jean",
+        "lastName": "Summers",
+        "score": 95
+      },
+      {
+        "firstName": "Clark",
+        "lastName": "Kent",
+        "score": 80
+      }
+    ]},
+    {"@@topTestResults.size()": 4},
+    {"@@topTestResults": [
+      {
+        "firstName": "Tony",
+        "lastName": "Stark",
+        "score": 100
+      },
+      {
+        "firstName": "Bruce",
+        "lastName": "Banner",
+        "score": 95
+      },
+      {
+        "firstName": "Jean",
+        "lastName": "Summers",
+        "score": 95
+      },
+      {
+        "firstName": "Clark",
+        "lastName": "Kent",
+        "score": 80
+      },
+      {
+        "firstName": "Peter",
+        "lastName": "Parker",
+        "score": 80
+      }
+    ]},
+    {"@@topTestResults": [
+      {
+        "firstName": "Tony",
+        "lastName": "Stark",
+        "score": 100
+      },
+      {
+        "firstName": "Bruce",
+        "lastName": "Banner",
+        "score": 95
+      },
+      {
+        "firstName": "Jean",
+        "lastName": "Summers",
+        "score": 95
+      }
+    ]},
+    {"@@topTestResults": [
+      {
+        "firstName": "Tony",
+        "lastName": "Stark",
+        "score": 100
+      },
+      {
+        "firstName": "Bruce",
+        "lastName": "Banner",
+        "score": 95
+      },
+      {
+        "firstName": "Jean",
+        "lastName": "Summers",
+        "score": 95
+      }
+    ]},
+    {"@@topTestResults.size()": 0}
+  ]
+}

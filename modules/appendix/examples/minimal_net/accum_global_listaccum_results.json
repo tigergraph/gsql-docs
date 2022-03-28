@@ -1,0 +1,14 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{
+    "@@passFail": [ true, true, true, false ],
+    "@@intListAccum": [ 0, -99, 4, 6, 40 ],
+    "@@stringListAccum": [ "zero", "banana", "carrot", "daikon" ]
+  }]
+}

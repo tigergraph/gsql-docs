@@ -1,0 +1,15 @@
+CREATE QUERY sub_find_friends_in_distance(SET<VERTEX> seeds, INT distance)
+FOR GRAPH Friend_Net RETURNS (SET<VERTEX>)
+{
+	IF distance <= 0 THEN   // Base case
+        // When distance is 0, return the seed vertices themselves
+        RETURN seeds;
+	ELSE
+        seed_vs = seeds; // Initialize starting vertices
+        /* Select 1-hop neighbors from the starting points
+          next_vs = SELECT v FROM seed_vs -(Friendship:e)- :v;
+        Find the (distance-1)-hop neighbors of the 1-hop neighbors
+          and return the union of the starting vertices and neighbors */
+        RETURN seeds UNION sub_find_friends_in_distance(next_vs, distance - 1);
+    END;
+}

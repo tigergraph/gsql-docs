@@ -1,0 +1,9 @@
+CREATE QUERY bit_operation_test() FOR GRAPH Minimal_Net{
+    PRINT 80 >> 2;     // 20
+    PRINT 80 << 2;     // 320
+    PRINT 2 + 80 >> 4; // 5
+    PRINT 2 | 3 ;      // 3
+    PRINT 2 & 3 ;      // 2
+    PRINT 2 | 3 + 2;   // 7
+    PRINT 2 & 3 - 2;   // 0
+}

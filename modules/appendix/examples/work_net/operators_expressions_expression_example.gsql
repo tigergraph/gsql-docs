@@ -1,0 +1,87 @@
+CREATE QUERY expression_ex() FOR GRAPH Work_Net {
+    TYPEDEF TUPLE<STRING country_name, STRING company_name> company_info;
+
+    ListAccum<STRING> @company_names;
+    SumAccum<INT> @company_count;
+    SumAccum<INT> @number_of_relationships;
+    ListAccum<company_info> @info;
+    MapAccum< STRING,ListAccum<STRING> > @@company_employee_relationships;
+    SumAccum<INT> @@total_relationship_count;
+
+    ListAccum<INT> @@value_list;
+    SetAccum<INT> @@value_set;
+
+    SumAccum<INT> @@a;
+    SumAccum<INT> @@b;
+
+    // expr := constant
+    @@a = 10;
+
+    // expr := ["@@"] name
+    @@b = @@a;
+
+    // expr := expr mathOperator expr
+    @@b = @@a + 5;
+
+    // expr := "(" expr ")"
+    @@b = (@@a + 5);
+
+    // expr := "-" expr
+    @@b = -(@@a + 5);
+
+    PRINT @@a, @@b;
+
+    // expr := "[" argList "]"   // a list
+    @@value_list = [1,2,3,4,5];
+    @@value_list += [24,80];
+
+    // expr := "(" argList ")"  // setBagExpr
+    @@value_set += (1,2,3,4,5);
+
+    // expr := ( COUNT | ISEMPTY | MAX | MIN | AVG | SUM ) "(" setBagExpr ")"
+    PRINT MAX(@@value_list);
+    PRINT AVG(@@value_list);
+
+    seed = {ANY};
+
+    company1 = SELECT t FROM seed:s -(Works_For)- :t WHERE (s.id == "company1");
+    company2 = SELECT t FROM seed:s -(Works_For)- :t WHERE (s.id == "company2");
+
+    // expr := setBagExpr
+    works_for_both = company1 INTERSECT company2;
+    PRINT works_for_both;
+
+    // expr := name "." "type"
+    employees = SELECT s FROM seed:s WHERE (s.type == "Person");
+
+    employees = SELECT s FROM employees:s -(Works_For)- :t
+
+    ACCUM
+        // expr := name "." ["@"] name
+        s.@company_names += t.id,
+
+        // expr := name "."name "(" [argList] ")" [ "."FILTER "(" condition ")" ]
+        s.@number_of_relationships += s.outdegree(),
+
+        // expr := name ["<" type ["," type"]* ">"] "(" [argList] ")"
+        s.@info += company_info(t.country, t.id)
+
+    POST-ACCUM
+        // expr := name "."localAccum_name ("."name "(" [argList] ")")+ ["."name]
+        s.@company_count += s.@company_names.size(),
+
+    // expr := name "."localAccum_name ["\'"]
+    @@total_relationship_count += s.@company_count,
+
+    FOREACH comp IN s.@company_names DO
+       // expr := "(" argList "->" argList ")"
+       @@company_employee_relationships += (s.id -> comp)
+    END;
+
+    PRINT employees;
+    PRINT @@total_relationship_count;
+    PRINT @@company_employee_relationships;
+
+    // expr := globalAccum_name ("."name "(" [argList] ")")+ ["."name]
+    PRINT @@company_employee_relationships.size();
+}

@@ -1,0 +1,7 @@
+CREATE QUERY print_a_posts() FOR GRAPH SocialNet {
+    posts = {Post.*};
+    a_posts = SELECT v FROM posts:v
+        // Returns all posts with the character "a" in the subject
+        WHERE v.subject LIKE "%a%";
+	PRINT a_posts;
+}

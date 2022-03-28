@@ -1,0 +1,9 @@
+CREATE QUERY print_posts(STRING search_string) FOR GRAPH Social_Net {
+    STRING search_param;
+    search_param = "%" + search_string + "%";
+    posts = {Post.*};
+    a_posts = SELECT v FROM posts:v
+        // Returns all posts with the search_string in the subject
+        HERE v.subject LIKE search_param;
+    PRINT a_posts;
+}

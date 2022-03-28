@@ -1,0 +1,28 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "xTIMESy": 21,
+      "xPLUSy": 10,
+      "xMINUSy": 4,
+      "xDIVy": 2,
+      "xDIV4f": 1
+    },
+    {
+      "xMODy": 1,
+      "xMOD3": 1,
+      "xDIVy": 2,
+      "xDIV4f": 1.75
+    }
+  ]
+}

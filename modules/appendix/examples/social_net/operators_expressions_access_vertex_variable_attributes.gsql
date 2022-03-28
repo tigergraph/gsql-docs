@@ -1,0 +1,9 @@
+CREATE QUERY coffee_related_posts() FOR GRAPH Social_Net {
+    all_vertices = {ANY};
+    results = SELECT v FROM all_vertices:s -(:e)- Post:v
+        WHERE v.subject == "coffee";
+    PRINT results;
+    results = SELECT v FROM all_vertices:s -(:e)- :v
+        WHERE v.type == "Post" AND v.subject == "coffee";
+    PRINT results;
+}

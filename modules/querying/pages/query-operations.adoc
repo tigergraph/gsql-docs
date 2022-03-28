@@ -146,19 +146,9 @@ See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[
 === Examples
 
 .Example of a `CREATE QUERY` statement
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
-  SYNTAX v2 {
-  # declaration statements
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts;
-  RETURN posts.size();
-}
+include::appendix:example$social_net/query_operations_example_create_query.gsql[]
 ----
 
 === Default query parameter values
@@ -177,19 +167,9 @@ You can specify default values for parameters of primitive types when creating a
 To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
 
 .Example of a `CREATE QUERY` command with a default parameter value
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int)
-  SYNTAX v2 {
-  # declaration statements
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts;
-  RETURN posts.size();
-}
+include::appendix:example$social_net/query_operations_example_create_query_defaults.gsql[]
 ----
 
 
@@ -223,62 +203,19 @@ The query is written with schema information embedded statically in it:
 Embedded schema::
 +
 --
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
-  FLOAT damping=0.85)  //parameters
-  FOR GRAPH gsql_demo
-{
-  MaxAccum<float> @@maxDiff = 9999;
-  SumAccum<float> @rcvd_score = 0;
-  SumAccum<float> @score = 1;
-
-  Start = {Page.*};
-  WHILE @@maxDiff > maxChange LIMIT maxIter DO
-      @@maxDiff = 0;
-      V = SELECT s
-          FROM Start:s -(Linkto:e)- Page:t       //hardcoded types
-          ACCUM t.@rcvd_score += s.@score/(s.outdegree("Linkto")) //Param
-          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
-                      s.@rcvd_score = 0,
-                      @@maxDiff += abs(s.@score - s.@score');
-  END;
-
-  V = SELECT s FROM Start:s
-      POST-ACCUM s.Score = s.@score;    //hardcoded attribute
-}
-RUN QUERY pageRank(_,_,_)
+include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
+RUN QUERY page_rank(_,_,_)
 ----
 --
-Dynamic Querying::
+Dynamic querying::
 +
 --
 [source,gsql]
 ----
-CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
-  FLOAT damping=0.85,
-  STRING vType, STRING eType, STRING attr)  //parameterized schema
-//no graph name
-{
-  MaxAccum<float> @@maxDiff = 9999;
-  SumAccum<float> @rcvd_score = 0;
-  SumAccum<float> @score = 1;
-
-  Start = {vType};
-  WHILE @@maxDiff > maxChange LIMIT maxIter DO
-      @@maxDiff = 0;
-      V = SELECT s
-          FROM Start:s -(eType:e)- vType:t //parameterized
-          ACCUM t.@rcvd_score += s.@score/(s.outdegree(eType)) //param
-          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
-                      s.@rcvd_score = 0,
-                      @@maxDiff += abs(s.@score - s.@score');
-  END;
-
-  V = SELECT s FROM Start:s
-      POST-ACCUM s.setAttr(attr, s.@score); //parameterized
-}
-RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
+include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
+RUN QUERY page_rank_dyn(_,_,_,"Page", "Link", "Score")
 ----
 --
 ====
@@ -355,25 +292,25 @@ Guidelines for understanding statement type hierarchy:
 
 [source,gsql]
 ----
-# Each statement's operation type is either ControlFlow, DML, or other.
-# Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
+// Each statement's operation type is either ControlFlow, DML, or other.
+// Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
 
-CREATE QUERY stmtTypes (parameterList) FOR GRAPH g [
+CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
 	other queryBodyStmt1;
-	ControlFlow queryBodyStmt2   # ControlFlow inside top level.
-		other queryBodyStmt2.1;      # subStmts in ControlFlow are queryBody unless inside DML.
-		ControlFlow queryBodyStmt2.2 # ControlFlow inside ControlFlow inside top level
+	ControlFlow queryBodyStmt2   // ControlFlow inside top level.
+		other queryBodyStmt2.1;      // subStmts in ControlFlow are queryBody unless inside DML.
+		ControlFlow queryBodyStmt2.2 // ControlFlow inside ControlFlow inside top level
 			other queryBodyStmt2.2.1;
 			other queryBodyStmt2.2.2;
 		END;
-		DML queryBodyStmt2.3     # DML inside ControlFlow inside top-level
-			other DMLSubStmt2.3.1,   # switch to DMLSubStmt
+		DML queryBodyStmt2.3     // DML inside ControlFlow inside top-level
+			other DMLSubStmt2.3.1,   // switch to DMLSubStmt
 			other DMLSubStmt2.3.2
 		;
 	END;
-	DML queryBodyStmt3           # DML inside top level.
-		other DMLSubStmt3.1,      # All subStmts in DML must be DMLSubStmt type
-		ControlFlow DMLSubStmt3.2 # ControlFlow inside DML inside top level
+	DML queryBodyStmt3           // DML inside top level.
+		other DMLSubStmt3.1,      // All subStmts in DML must be DMLSubStmt type
+		ControlFlow DMLSubStmt3.2 // ControlFlow inside DML inside top level
 			other DMLSubStmt3.2.1,
 			other DMLSubStmt3.2.2
 		,
@@ -487,7 +424,7 @@ Here is a descriptive list of DML-sub-statements:
 
 | lAccumAccumStmt
 | Local Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"
+| See "Declaration and Assignment Statements"/
 
 | attrAccumStmt
 | Attribute Accumulation Statement
@@ -551,8 +488,8 @@ There are two GSQL syntax options for Interpreted GSQL:
 [source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
-               [FOR GRAPH graphName]
-               [SYNTAX syntaxName]
+               [FOR GRAPH graph_name]
+               [SYNTAX syntax_name]
                "{" queryBody "}"
 ----
 
@@ -567,16 +504,7 @@ Compare the example below to the example in the `Create Query` section:
 .Example of Immediate Mode for INTERPRET QUERY
 [source,gsql]
 ----
-INTERPRET QUERY () FOR GRAPH socialNet {
-  # declaration statements
-  STRING uid = "Jane.Doe";
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts, posts.size();
-}
+include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 ----
 
 
@@ -708,19 +636,14 @@ For example, if we have the following query definition:
 
 [source,gsql]
 ----
-CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
-  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
-{
-  PRINT age, name, birthday;
-}
+include::appendix:example$social_net/query_operations_parameter_list.gsql[]
 ----
 
 To run the query with default values for the parameter `name,` use `_` in the place of the second parameter value:
 
 [source,console]
 ----
-GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
-# Below is the query output
+GSQL > RUN QUERY greet_person (21, _, "2020-02-02 20:02:20")
 {
   "error": false,
   "message": "",
@@ -741,8 +664,7 @@ To use the default values for both the second and the third parameters, you can 
 
 [source,console]
 ----
-GSQL > RUN QUERY greetPerson(21)
-# Below is the query output
+GSQL > RUN QUERY greet_person(21)
 {
   "error": false,
   "message": "",
@@ -767,18 +689,14 @@ For example, if we have the following query:
 
 [source,gsql]
 ----
-CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
-  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
-{
-  PRINT age, name, birthday;
-}
+include::appendix:example$social_net/query_operations_parameter_json.gsql[]
 ----
 
 Supplying the parameters with a JSON object will look like the following. The parameter `birthday` is not named in the parameter JSON object and therefore takes the default value:
 
 [source,gsql]
 ----
-RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
+RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 ----
 
 === Complex type parameter passing

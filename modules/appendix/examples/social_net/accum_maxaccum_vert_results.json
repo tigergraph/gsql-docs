@@ -1,0 +1,51 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"allUser": [
+    {
+      "v_id": "person1",
+      "attributes": {"allUser.@maxVertex": "0"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {"allUser.@maxVertex": "1"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {"allUser.@maxVertex": "2"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person4",
+      "attributes": {"allUser.@maxVertex": "3"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {"allUser.@maxVertex": "11"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {"allUser.@maxVertex": "10"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {"allUser.@maxVertex": "9"},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {"allUser.@maxVertex": "7"},
+      "v_type": "person"
+    }
+  ]}]
+}

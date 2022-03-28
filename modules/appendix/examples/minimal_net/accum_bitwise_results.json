@@ -1,0 +1,15 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"@@bwAndAccumVar": 0},
+    {"@@bwAndAccumVar": 5},
+    {"@@bwOrAccumVar": 255},
+    {"@@bwOrAccumVar": 95}
+  ]
+}

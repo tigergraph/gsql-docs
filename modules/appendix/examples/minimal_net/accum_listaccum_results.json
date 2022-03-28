@@ -1,0 +1,29 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [ {"@@intListAccum": [ 1, 3, 5, 7, 9, 11, 13, 15 ]},
+    {
+      "@@intListAccum.get(0)": 1,
+      "@@intListAccum.get(1)": 3
+    },
+    {"@@intListAccum.get(8)": 0},
+    {"@@intListAccum.size()": 8},
+    {"@@intListAccum.contains(2)": false},
+    {"@@intListAccum.contains(3)": true},
+    {"@@stringListAccum": [ "Hello", "World" ]},
+    {"@@stringAdditionAccum": [ "Hello", "World", "a", "b"]},
+    {"@@stringMultiplyListAccum": [ "Helloa", "Worlda", "Hellob", "Worldb" ]},
+    {"@@nestedListAccum": [
+      [ "foo", "bar" ],
+      [ "Big", "Bang", "Theory" ],
+      [ "String", "Theory" ]
+    ]},
+    {"@@nestedListAccum.get(0)": [ "foo", "bar" ]},
+    {"@@nestedListAccum.get(0).get(1)": "bar"}
+  ]
+}

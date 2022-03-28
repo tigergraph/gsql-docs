@@ -1,0 +1,16 @@
+CREATE QUERY min_max_accum_ex() FOR GRAPH Minimal_Net {
+
+  MinAccum<INT> @@min_accum;
+  MaxAccum<FLOAT> @@max_accum;
+
+  @@min_accum += 40;
+  @@min_accum += 20;
+  @@min_accum += -10;
+
+  @@max_accum += -1.1;
+  @@max_accum += 2.5;
+  @@max_accum += 2.8;
+
+  PRINT @@min_accum;
+  PRINT @@max_accum;
+}

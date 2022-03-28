@@ -1,0 +1,36 @@
+CREATE QUERY array_accum_op3(INT lenA) FOR GRAPH Minimal_Net {
+
+	ArrayAccum<SumAccum<INT>> @@arrayA[5]; // Original size
+	ArrayAccum<SumAccum<INT>> @@arrayB[2];
+	ArrayAccum<SumAccum<INT>> @@arrayC[][]; // No size
+	STRING msg;
+	@@arrayA.reallocate(lenA);  // Set/Change size dynamically
+	@@arrayB.reallocate(lenA+1);
+	@@arrayC.reallocate(lenA, lenA+1);
+
+	// Initialize arrays
+	FOREACH i IN RANGE[0,lenA-1] DO
+		@@arrayA[i] += i*i;
+		FOREACH j IN RANGE[0,lenA] DO
+			@@arrayC[i][j] += j*10 + i;
+		END;
+	END;
+	FOREACH i IN RANGE[0,lenA] DO
+		@@arrayB[i] += 100-i;
+	END;
+	msg = "Initial Values";
+	PRINT msg, @@arrayA, @@arrayB, @@arrayC;
+
+    msg = "Test 1: A = C, C = B";	// = operator
+    @@arrayA = @@arrayC;		// change dimensions: 1D <- 2D
+    @@arrayC = @@arrayB;		// change dimensions: 2D <- 1D
+    PRINT msg, @@arrayA, @@arrayC;
+
+    msg = "Test 2: B += C"; 		// += operator
+    @@arrayB += @@arrayC; 		// B and C must have same size & dim
+    PRINT msg, @@arrayB, @@arrayC;
+
+    msg = "Test 3: A = B + C"; 		// + operator
+    @@arrayA = @@arrayB + @@arrayC; // B & C must have same size & dim
+    PRINT msg, @@arrayA; 			// A changes size & dim
+}

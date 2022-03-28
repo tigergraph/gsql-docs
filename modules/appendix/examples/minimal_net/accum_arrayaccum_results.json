@@ -1,0 +1,44 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {"@@aaSumD": [
+      [ 3.33333, 12.22222 ],
+      [ 7.77778, 16.66667 ]
+    ]},
+    {"@@aaSumS": [
+      [ "2nd3rd", "4th1st" ],
+      [ "3rd4th", "1st2nd" ]
+    ]},
+    {"@@aaMax": [ 2, 4 ]},
+    {"@@aaMin": [ 1, 3 ]},
+    {"@@aaAvg": [ 1.5, 3.5 ]},
+    {"@@aaAnd": [ false, false ]},
+    {"@@aaOr": [ true, true ]},
+    {"@@aaBitAnd": [ 0, 0 ]},
+    {"@@aaBitOr": [ 3, 7]},
+    {"@@aaList": [
+      [
+        [ 1, 2 ],
+        [ 5, 6]
+      ],
+      [
+        [ 3, 4 ],
+        [ 7, 8 ]
+      ]
+    ]},
+    {"@@aaSetF": [
+      [ 2.22222, 1.11111],
+      [ 4.44444, 3.33333 ]
+    ]},
+    {"@@aaBagT": [
+      [ 2, 1 ],
+      [ 4, 3 ]
+    ]}
+  ]
+}

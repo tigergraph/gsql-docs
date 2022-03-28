@@ -1,0 +1,30 @@
+CREATE QUERY nested_accum_ex() FOR GRAPH Minimal_Net {
+    ListAccum<ListAccum<INT>> @@_2d_list;
+    ListAccum<ListAccum<ListAccum<INT>>> @@_3d_list;
+    ListAccum<INT> @@_1d_list;
+    SumAccum <INT> @@sum = 4;
+
+    @@_1d_list += 1;
+    @@_1d_list += 2;
+    // add 1D-list to 2D-list as element
+    @@_2d_list += @@_1d_list;
+
+    // add 1D-enum-list to 2D-list as element
+    @@_2d_list += [@@sum, 5, 6];
+    // combine 2D-enum-list and 2d-list
+    @@_2d_list += [[7, 8, 9], [10, 11], [12]];
+
+    // add an empty 1D-list
+    @@_1d_list.clear();
+    @@_2d_list += @@_1d_list;
+
+    // combine two 2D-list
+    @@_2d_list += @@_2d_list;
+
+    PRINT @@_2d_list;
+
+    // test 3D-list
+    @@_3d_list += @@_2d_list;
+    @@_3d_list += [[7, 8, 9], [10, 11], [12]];
+    PRINT @@_3d_list;
+}

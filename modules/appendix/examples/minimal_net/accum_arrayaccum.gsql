@@ -1,0 +1,53 @@
+CREATE QUERY array_accum_elem() FOR GRAPH Minimal_Net {
+
+	ArrayAccum<SumAccum<DOUBLE>> @@aa_sumD[2][2];  // 2D Sum Double
+	ArrayAccum<SumAccum<STRING>> @@aa_sumS[2][2];  // 2D Sum String
+	ArrayAccum<MaxAccum<INT>> @@aa_max[2];
+	ArrayAccum<MinAccum<UINT>> @@aa_min[2];
+	ArrayAccum<AvgAccum> @@aa_avg[2];
+	ArrayAccum<AndAccum<BOOL>> @@aa_and[2];
+	ArrayAccum<OrAccum<BOOL>> @@aa_or[2];
+	ArrayAccum<BitwiseAndAccum> @@aa_bit_and[2];
+	ArrayAccum<BitwiseOrAccum> @@aa_bit_or[2];
+	ArrayAccum<ListAccum<INT>> @@aa_list[2][2];    // 2D List
+	ArrayAccum<SetAccum<FLOAT>> @@aa_setF[2];
+	ArrayAccum<BagAccum<DATETIME>> @@aa_bagT[2];
+
+	// for test data
+	ListAccum<STRING> @@words;
+	BOOL toggle = false;
+	@@words += "1st"; @@words += "2nd"; @@words += "3rd"; @@words += "4th";
+
+	// Int:  a[0] += 1, 2;   a[1] += 3, 4
+	// Bool: alternate true/false
+	// Float: a[0] += 1.111, 2.222;  a[1] += 3.333, 4.444
+	// 2D Double: a[0][0] += 1.111, 2.222;   a[0][1] += 5.555, 6.666;
+	//          a[1][0] += 3.333, 4.444;   a[0][1] += 7.777, 8.888;
+
+	FOREACH i IN RANGE [0,1] DO
+		FOREACH n IN RANGE [1, 2] DO
+			toggle = NOT toggle;
+			@@aa_max[i] += i*2 + n;
+			@@aa_min[i] += i*2 + n;
+			@@aa_avg[i] += i*2 + n;
+			@@aa_and[i] += toggle;
+			@@aa_or[i] += toggle;
+			@@aa_bit_and[i] += i*2 + n;
+			@@aa_bit_or[i] += i*2 + n;
+			@@aa_setF[i] += (i*2 + n)/0.9;
+			@@aa_bagT[i] += epoch_to_datetime(i*2 + n);
+
+			FOREACH j IN RANGE [0,1] DO
+				@@aa_sumD[i][j] += (j*4 + i*2 + n)/0.9;
+				@@aa_sumS[i][j] += @@words.get((j*2 + i + n)%4);
+				@@aa_list[i][j] += j*4 +i*2 + n ;
+			END;
+		END;
+	END;
+
+	PRINT @@aa_sumD;		PRINT @@aa_sumS;
+	PRINT @@aa_max;		PRINT @@aa_min;		PRINT @@aa_avg;
+	PRINT @@aa_and;		PRINT @@aa_or;
+	PRINT @@aa_bit_and;	PRINT @@aa_bit_or;
+	PRINT @@aa_list;		PRINT @@aa_setF;		PRINT @@aa_bagT;
+}

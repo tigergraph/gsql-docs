@@ -237,8 +237,8 @@ CREATE QUERY count_friends_of_2(vertex<person> seed) FOR GRAPH Friend_Net
 Global accumulator::
 +
 --
-A step vertex set can be represented by a global accumulator.
-It can be an accumulator of strings (the strings are vertex types) or vertices, but the accumulator itself must be a `SetAccum`, `BagAccum` or `ListAccum`.
+A step vertex set can be represented by a global accumulator of strings (the strings are vertex types).
+The accumulator must be of type `SetAccum`, `BagAccum` or `ListAccum`.
 
 [.wrap,gsql]
 ----
@@ -335,9 +335,9 @@ For example:
 * `-(KNOWS|_>)-` refers to traversing an undirected `KNOWS` edge or any directed edge from left to right.
 
 
-[discrete]
 ==== Pattern repetition
-Star pattern is used to how the Kleene star``*`` and `min..max` range specifiers can be used to say "repeat this edge pattern from min to max times."
+The Kleene star``*`` and `min..max` range specifiers repeat an edge pattern for a specified number of times.
+The range specifiers must be integers and must be constants.
 See xref:tutorials:pattern-matching/repeating-a-pattern.adoc[] for a tutorial on how to use pattern repetition in a path edge pattern.
 
 .EBNF for star pattern
@@ -351,7 +351,19 @@ starBounds := CONST_INT ".." CONST_INT
             | CONST_INT
 ----
 
-[discrete]
+* Add `*` to the end of a pattern to have the star pattern match all paths where the edge pattern occurs one or more times.
+** For example, `Person:s - (Friendship*) - Person` matches all paths between two `Person` vertices connected by any number of `Friendship` edges.
+** The vertices in the middle do not need to be `Person` vertices.
+For example, a path like `person1 -(Friendship)- dog1 - (Friendship) - person2` matches the star pattern.
+* Add `*` to the end of a pattern, and then a number after the star to have the star pattern match paths where the edge pattern occurs for the specified number of times.
+** For example, `Person:s - (Friendship*2) - Person` matches all paths between two `Person` vertices connected by exactly two `Friendship` edges.
+The vertices in the middle do not need to be `Person` vertices.
+* Add `*` to the end of a pattern, and then a range after the star (`*x..y`) to have the star pattern match all paths where the edge pattern occurs as many times as within the specified range.
+** For example, `Employee:s - (Works_For>*2..4) - Employee` matches all paths between two `Employee` vertices with 2 - 4 right-directed `Works_For` edges.
+The vertices in the middle do not need to be `Person` vertices.
+
+
+
 ==== Pattern concatenation
 The dot operator``.`` means concatenate the two edge patterns into one.
 The vertex joining the two edges is omitted from the syntax.
@@ -373,7 +385,6 @@ FROM X:x -(E2>.<E3.E4)- U:u; <2>
 <1> This `FROM` clauses uses a longer pattern, but gives you access to `y`, `e2`, `z` and `e4`.
 <2> This `FROM` clauses is more concise than the first `FROM` clause, but does not give you access to the intermediate vertex and edge sets.
 
-[discrete]
 ==== Conjunctive Pattern Matching
 
 The optional repeating phrase `["," pathPattern]*` allows you to have multiple path patterns.
@@ -2287,7 +2298,6 @@ CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
     SumAccum<INT> @activity_amount;
     start = {Person.*};
-
     // The two statements produce equivalent results
     result1 = SELECT v FROM start:v -(:e)- Post:tgt
         WHERE v.gender == "Male"
@@ -2321,60 +2331,102 @@ GSQL > RUN QUERY active_male_members()
   "results": [
     {"result2": [
       {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
         "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       },
       {
-        "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
         "v_type": "person"
       },
       {
-        "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
         "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
+        "v_id": "person6",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
+        "v_id": "person1",
         "v_type": "person"
       }
-    ]},
-    {"result2": [
+    ]
+  },
+  {
+    "result2": [
       {
-        "v_id": "person3",
-        "attributes": {"result2.@activityAmount": 4},
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {"result2.@activityAmount": 6},
-        "v_type": "person"
-      },
-      {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person1"
+        },
         "v_id": "person1",
-        "attributes": {"result2.@activityAmount": 4},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 4,
+          "gender": "Male",
+          "id": "person3"
+        },
+        "v_id": "person3",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person6"
+        },
         "v_id": "person6",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       },
       {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person7"
+        },
+        "v_id": "person7",
+        "v_type": "person"
+      },
+      {
+        "attributes": {
+          "@activityAmount": 6,
+          "gender": "Male",
+          "id": "person8"
+        },
         "v_id": "person8",
-        "attributes": {"result2.@activityAmount": 6},
         "v_type": "person"
       }
-    ]}
-  ]
-}
+    ]
+  }
+]}
 ----
 --
 ====

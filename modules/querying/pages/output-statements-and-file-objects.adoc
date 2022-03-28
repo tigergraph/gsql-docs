@@ -49,7 +49,7 @@ str = "second statement";
 number = number + 1;
 PRINT str, number;
 
-# The statements above produce the following output
+// The statements above produce the following output
 {
   "version": {"edition": "developer","api": "v2","schema": 0},
   "error": false,
@@ -260,14 +260,7 @@ The easiest way to understand this is to consider examples containing only one t
 
 [source,gsql]
 ----
-# CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
-
-CREATE QUERY vExprSet () FOR GRAPH workNet {
-  SumAccum<INT> @count;
-  C = {company.*};
-
-  # include some print statements here
-}
+include::appendix:example$work_net/output_statements_vertex_expression_set.gsql[]
 ----
 
 
@@ -304,50 +297,10 @@ An example which shows all of the cases described above, in combination, is show
 
 .Print Basic Example
 
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY printExampleV2(VERTEX<person> v) FOR GRAPH socialNet {
-
-  SetAccum<VERTEX> @@setOfVertices;
-  SetAccum<EDGE> @postedSet;
-  MapAccum<VERTEX,ListAccum<VERTEX>> @@testMap;
-  FLOAT paperWidth = 8.5;
-  INT paperHeight = 11;
-  STRING Alpha = "ABC";
-
-  Seed = person.*;
-  A = SELECT s
-      FROM Seed:s
-      WHERE s.gender == "Female"
-      ACCUM @@setOfVertices += s;
-
-  B = SELECT t
-      FROM Seed:s - (posted>:e) - post:t
-      ACCUM s.@postedSet += e,
-        @@testMap += (s -> t);
-
-# Numeric, String, and Boolean expressions, with renamed keys:
-  PRINT paperHeight*paperWidth AS PaperSize, Alpha+"XYZ" AS Letters,
-    A.size() > 10 AS AsizeMoreThan10;
-# Note how an expression is named if "AS" is not used:
-  PRINT A.size() > 10;
-
-# Vertex variables.  Only the vertex id is included (no attributes):
-  PRINT v, @@setOfVertices;
-
-# Map of Person -> Posts posted by that person:
-  PRINT @@testMap;
-
-# Vertex Set Variable. Each vertex has a vertex-attached accumulator, which
-# happens to be a set of edges (SetAccum<EDGE>), so edge format is shown also:
-  PRINT A AS VSetVarWomen;
-
-# Vertex Set Expression. The same set of vertices as above, but with only
-# one attribute plus one computed attribute:
-  PRINT A[A.gender, A.@postedSet.size()] AS VSetExpr;
-}
+include::appendix:example$social_net/output_statements_vertex_expression_set_print_basic_example.gsql[]
 ----
-
 
 
 [NOTE]
@@ -500,7 +453,7 @@ Instead of printing output in JSON format, output can be written to a FILE objec
 
 [source,gsql]
 ----
-PRINT @@setOfVertices TO_CSV file1;
+PRINT @@set_of_vertices TO_CSV file1;
 ----
 
 
@@ -530,28 +483,7 @@ Writing to FILE objects is optimized for parallel processing. Consequently, the 
 
 [source,gsql]
 ----
-CREATE QUERY printExampleFile() FOR GRAPH socialNet {
-  SetAccum<VERTEX> @@testSet, @@testSet2;
-  ListAccum<STRING> @@strList;
-  int x = 3;
-  FILE file1 ("/home/tigergraph/printExampleFile.txt");
-
-  Seed = person.*;
-  A = SELECT s
-      FROM Seed:s
-      WHERE s.gender == "Female"
-      ACCUM @@testSet += s, @@strList += s.gender;
-  A = SELECT s
-      FROM Seed:s
-      WHERE s.gender == "Male"
-      ACCUM @@testSet2 += s;
-
-  PRINT @@testSet, @@testSet2 TO_CSV file1;  # 1st line: 2 4 5, 1 3 6 7 8 (order not guaranteed)
-  PRINT x WHERE x < 0 TO_CSV file1;   # 2nd line: <skipped because no content>
-  PRINT x WHERE x > 0 TO_CSV file1;   # 3rd line: 3
-  PRINT @@strList TO_CSV file1;       # 4th line: Female Female Female
-  PRINT A.gender TO_CSV file1;     # 5th line: Male\n Male\n Male\n Male\n Male
-}
+include::appendix:example$social_net/output_statements_print_where_and_csv.gsql[]
 ----
 
 
@@ -587,21 +519,10 @@ The data from query-body level `FILE` print statements (either `TO_CSV` or `prin
 
 [source,gsql]
 ----
-CREATE QUERY fileEx (STRING fileLocation) FOR GRAPH workNet {
+include::appendix:example$work_net/output_statements_file_object_query_example.gsql[]
+INSTALL QUERY file_ex
+RUN QUERY file_ex("/home/tigergraph/files")
 
-    FILE f1 (fileLocation);
-    P = {person.*};
-
-    PRINT "header" TO_CSV f1;
-
-    USWorkers = SELECT v FROM P:v
-              WHERE v.locationId == "us"
-              ACCUM f1.println(v.id, v.interestList);
-
-    PRINT "footer" TO_CSV f1;
-}
-INSTALL QUERY fileEx
-RUN QUERY fileEx("/home/tigergraph/files")
 ----
 
 
@@ -612,7 +533,7 @@ All of the `PRINT` statements in this example use the `TO_CSV` option, so there 
 
 [source,gsql]
 ----
-GSQL > RUN QUERY fileEx("/home/tigergraph/fileEx.txt")
+GSQL > RUN QUERY file_ex("/home/tigergraph/file_ex.txt")
 {
   "error": false,
   "message": "",
@@ -629,11 +550,11 @@ GSQL > RUN QUERY fileEx("/home/tigergraph/fileEx.txt")
 
 All the output in this case goes to the `FILE` object. In the query definition, the line `"header"` is printed first, followed by the `println` statements in the `ACCUM` clause, and `"footer"` is printed last. The output in the file follows this order because the order of query-body level statements is maintained in the output.
 
-.File contents produced by fileEx example
+.File contents produced by file_ex example
 
 [source,gsql]
 ----
-[tigergraph@localhost]$ more /home/tigergraph/fileEx.txt
+[tigergraph@localhost]$ more /home/tigergraph/file_ex.txt
 header
 person7,art sport
 person10,football sport
@@ -655,33 +576,17 @@ A FILE Object can be passed from one query to a subquery.  The subquery can then
 
 [source,gsql]
 ----
-CREATE QUERY fileParamSub(FILE f, STRING label, INT num) FOR GRAPH socialNet {
-    f.println(label, "header");
-    FOREACH i IN RANGE [1,2] DO
-        f.println(label, num+i);
-    END;
-    f.println(label, "footer");
-}
-
-CREATE QUERY fileParamMain(STRING mainlabel) FOR GRAPH socialNet {
-    FILE f ("/home/tigergraph/fileParam.txt");
-    f.println(mainlabel, "header");
-    FOREACH i IN RANGE [1,2] DO
-        f.println(mainlabel, i);
-        fileParamSub(f, " sub", 10*i);
-    END;
-    f.println(mainlabel, "footer");
-}
+include::appendix:example$social_net/output_statements_passing_file_object.gsql[]
 ----
 
 
 
 [source,text]
 ----
-GSQL > RUN QUERY fileParamMain("main")
+GSQL > RUN QUERY file_param_main("main")
 GSQL > EXIT
-
-$ cat /home/tigergraph/fileParam.txt
+a
+$ cat /home/tigergraph/file_param.txt
 main,header
 main,1
  sub,header
@@ -744,22 +649,7 @@ For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum
 .Subquery Returning HeapAccum Example
 [source,gsql]
 ----
-TYPEDEF tuple<name string, friends int> myTuple
-TYPEDEF HeapAccum<myTuple>(3, friends DESC) myHeap
-
-CREATE QUERY subquery1() FOR GRAPH socialNet RETURNS (myHeap){
-	myHeap @@heap;  	// Define the heap accumulator at the global level
-	SumAccum<int> @friends;
-	Start = {person.*};
-	Start = select s from Start:s-(friend:e)-:t
-	        accum s.@friends += 1
-	        post-accum @@heap += myTuple(s.id,s.@friends);
-	RETURN @@heap;
-}
-
-CREATE QUERY query1() FOR GRAPH socialNet {
-	PRINT subquery1();
-}
+include::appendix:example$social_net/output_statements_passing_file_object.gsql[]
 ----
 
 

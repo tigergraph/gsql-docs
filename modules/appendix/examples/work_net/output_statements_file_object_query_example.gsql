@@ -1,0 +1,13 @@
+CREATE QUERY file_ex (STRING file_location) FOR GRAPH Work_Net {
+
+    FILE f1 (file_location);
+    P = {Person.*};
+
+    PRINT "header" TO_CSV f1;
+
+    USWorkers = SELECT v FROM P:v
+        WHERE v.locationId == "us"
+        ACCUM f1.println(v.id, v.interestList);
+
+    PRINT "footer" TO_CSV f1;
+}

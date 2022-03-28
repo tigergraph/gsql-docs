@@ -1,0 +1,8 @@
+// CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
+
+CREATE QUERY v_expr_set () FOR GRAPH Work_Net {
+    SumAccum<INT> @count;
+    C = {company.*};
+
+    // include some print statements here
+}

@@ -206,7 +206,6 @@ Embedded schema::
 [source.wrap,gsql]
 ----
 include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
-RUN QUERY page_rank(_,_,_)
 ----
 --
 Dynamic querying::
@@ -215,7 +214,6 @@ Dynamic querying::
 [source,gsql]
 ----
 include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
-RUN QUERY page_rank_dyn(_,_,_,"Page", "Link", "Score")
 ----
 --
 ====

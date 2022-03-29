@@ -1,0 +1,17 @@
+CREATE QUERY get_US_worker_interests (STRING file_location) FOR GRAPH Work_Net {
+    // Declare FILE object f1
+    FILE f1 (file_location);
+    // Initialize a seed set of all person vertices
+    P = {Person.*};
+
+    PRINT "header" TO_CSV f1;
+
+    // Select workers located in the US and print their interests onto
+    // the FILE object
+    US_workers = SELECT v FROM P:v
+        WHERE v.location_id == "us"
+        ACCUM f1.println(v.id, v.interest_list);
+    PRINT "footer" TO_CSV f1;
+}
+INSTALL QUERY get_US_worker_interests
+RUN QUERY get_US_worker_interests("/home/tigergraph/fileEx.txt")

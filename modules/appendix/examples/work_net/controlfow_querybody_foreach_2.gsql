@@ -1,0 +1,25 @@
+CREATE QUERY employee_by_country(STRING country_name) FOR GRAPH Work_Net {
+    MapAccum <STRING, ListAccum<STRING>> @@employees;
+
+    // Start will have a set of all person type vertices
+    start = {Person.*};
+
+    // Build a map using person location_id as a key and a list of strings to hold multiple person ids
+    s = SELECT v FROM start:v
+        ACCUM @@employees += (v.location_id -> v.id);
+
+    // Iterate the map using (key,value) pairs
+    FOREACH (key,val) in @@employees DO
+        IF key == country_name THEN
+        PRINT val.size();
+
+            // Nested foreach to iterate over the list of person ids
+            FOREACH employee in val DO
+                PRINT employee;
+            END;
+
+            // MapAccum keys are unique so we can BREAK out of the loop
+            BREAK;
+        END;
+    END;
+}

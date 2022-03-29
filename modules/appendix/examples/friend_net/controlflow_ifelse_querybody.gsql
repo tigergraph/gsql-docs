@@ -1,0 +1,14 @@
+CREATE QUERY count_friends_of2(VERTEX<Person> seed, BOOL include_coworkers) FOR GRAPH Friend_Net
+{
+    SumAccum<INT> @@num_friends = 0;
+    start = {seed};
+
+    IF include_coworkers THEN
+        friends = SELECT v FROM start -((Friend | Coworker):e)- :v
+            ACCUM @@num_friends +=1;
+    ELSE
+        friends = SELECT v FROM start -(Friend:e)- :v
+            ACCUM @@num_friends +=1;
+    END;
+    PRINT @@num_friends, include_coworkers;
+}

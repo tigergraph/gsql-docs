@@ -1,0 +1,29 @@
+CREATE QUERY find_enough_friends(VERTEX<Person> seed) FOR GRAPH Friend_Net
+{
+    // Keep track of the distance from the seed
+    SumAccum<INT> @@distance = 0;
+    OrAccum @visited = false;
+    visited_vertices = {seed};
+    WHILE true LIMIT 3 DO
+        @@distance += 1;
+        // Traverse from visited_vertices to its friends
+        friends = SELECT v
+            FROM visited_vertices -(Friend:e)- :v
+            WHERE v.@visited == false
+            POST-ACCUM v.@visited = true;
+        PRINT @@distance, friends;
+
+        // If number of friends at this level is sufficient, finish this iteration
+        IF visited_vertices.size() >= 2 THEN
+            visited_vertices = friends;
+            CONTINUE;
+        END;
+        // If fewer than 4 friends, add in coworkers
+        coworkers = SELECT v
+            FROM visited_vertices -(Coworker:e)- :v
+            WHERE v.@visited == false
+            POST-ACCUM v.@visited = true;
+        visited_vertices = friends UNION coworkers;
+        PRINT @@distance, coworkers;
+    END;
+}

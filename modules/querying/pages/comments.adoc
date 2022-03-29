@@ -1,7 +1,8 @@
 = Comments
 :pp: {plus}{plus}
 
-A comment is a section of text that is ignored by the language parser; its purpose is to provide information to human readers.  The comment markers follow the conventions used in C{pp} and SQL:
+A comment is a section of text that is ignored by the language parser; its purpose is to provide information to human readers.
+The comment markers follow the conventions used in C{pp} and SQL:
 
-* Single-line or partial-line comments begin with either # or // and end at the end of the line (with the newline character).
-* Multi-line comment blocks begin with /* and end with */
+* Single-line or partial-line comments begin with `//` and end at the end of the line (with the newline character).
+* Multi-line comment blocks begin with `/\*` and end with `*/`

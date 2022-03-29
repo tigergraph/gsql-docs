@@ -1,0 +1,18 @@
+CREATE QUERY company_count(STRING country_name) FOR GRAPH Work_Net {
+    ListAccum<STRING> @@company_list;
+    INT country_count;
+    start = {ANY};
+
+    // Select all vertices with type "Company", and append country attribute from all company vertices to list accum
+    s = SELECT v FROM start:v
+        WHERE v.type == "Company"
+        ACCUM @@company_list += v.country;
+
+    // Iterate the ListAccum and compare each element to the country_name parameter
+    FOREACH item in @@company_list DO
+        IF item == country_name THEN
+            country_count = country_count + 1;
+        END;
+    END;
+  PRINT country_count;
+}

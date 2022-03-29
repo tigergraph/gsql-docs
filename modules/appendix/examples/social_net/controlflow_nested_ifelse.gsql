@@ -1,0 +1,26 @@
+CREATE QUERY calculate_in_depth_activity(VERTEX<Person> seed) FOR GRAPH Social_Net
+{
+    SumAccum<INT> @@number_posts = 0;
+    SumAccum<INT> @@number_likes = 0;
+    start = {seed};
+    result = SELECT post_vertex FROM start -(Posted>:e)- :post_vertex
+        ACCUM @@number_posts += 1;
+    result = SELECT liked_post FROM start -(Liked>:e)- :liked_post
+        ACCUM @@number_likes += 1;
+
+    IF @@number_posts < 2 THEN
+        IF @@number_likes < 1 THEN
+            PRINT "Not very active";
+        ELSE
+            PRINT "Semi-active";
+        END;
+    ELSE IF @@number_posts < 3 THEN
+        IF @@number_likes < 2 THEN
+            PRINT "Semi-active";
+        ELSE
+            PRINT "Active";
+        END;
+    ELSE
+        PRINT "Very active";
+    END;
+}

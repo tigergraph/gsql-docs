@@ -1,0 +1,119 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "@@distance": 1,
+      "friends": [
+        {
+          "v_id": "person4",
+          "attributes": {
+            "@visited": true,
+            "id": "person4"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person2",
+          "attributes": {
+            "@visited": true,
+            "id": "person2"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person3",
+          "attributes": {
+            "@visited": true,
+            "id": "person3"
+          },
+          "v_type": "person"
+        }
+      ]
+    },
+    {
+      "coworkers": [
+        {
+          "v_id": "person5",
+          "attributes": {
+            "@visited": true,
+            "id": "person5"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person6",
+          "attributes": {
+            "@visited": true,
+            "id": "person6"
+          },
+          "v_type": "person"
+        }
+      ],
+      "@@distance": 1
+    },
+    {
+      "@@distance": 2,
+      "friends": [
+        {
+          "v_id": "person9",
+          "attributes": {
+            "@visited": true,
+            "id": "person9"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person1",
+          "attributes": {
+            "@visited": true,
+            "id": "person1"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person8",
+          "attributes": {
+            "@visited": true,
+            "id": "person8"
+          },
+          "v_type": "person"
+        }
+      ]
+    },
+    {
+      "@@distance": 3,
+      "friends": [
+        {
+          "v_id": "person12",
+          "attributes": {
+            "@visited": true,
+            "id": "person12"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person10",
+          "attributes": {
+            "@visited": true,
+            "id": "person10"
+          },
+          "v_type": "person"
+        },
+        {
+          "v_id": "person7",
+          "attributes": {
+            "@visited": true,
+            "id": "person7"
+          },
+          "v_type": "person"
+        }
+      ]
+    }
+  ]
+}

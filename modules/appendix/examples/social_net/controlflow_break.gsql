@@ -1,0 +1,22 @@
+CREATE QUERY find_degree_of_cats(VERTEX<Person> seed) FOR GRAPH Social_Net
+{
+    SumAccum<INT> @@degree = 0;
+    OrAccum @@found_cat_post = FALSE;
+    OrAccum @visited = FALSE;
+
+    friends (ANY) = {seed};
+    WHILE @@found_cat_post != true AND friends.size() > 0 DO
+        posts = SELECT v FROM friends-(Posted>:e)-:v
+            ACCUM CASE WHEN v.subject == "cats" THEN @@found_cat_post += true END;
+            IF @@found_cat_post THEN
+            BREAK;
+    END;
+
+    friends = SELECT v FROM friends-(Friend:e)-:v
+        WHERE v.@visited == false
+        ACCUM
+            v.@visited = true;
+            @@degree += 1;
+    END;
+    PRINT @@degree;
+}

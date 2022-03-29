@@ -1,0 +1,159 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"reachableVertices": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "interestList": ["football"],
+        "skillSet": [ 10, 1, 4 ],
+        "skillList": [ 4, 1, 10 ],
+        "locationId": "us",
+        "interestSet": ["football"],
+        "@visited": true,
+        "id": "person4"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {
+        "interestList": ["teaching"],
+        "skillSet": [ 6, 1, 4 ],
+        "skillList": [ 4, 1, 6 ],
+        "locationId": "jp",
+        "interestSet": ["teaching"],
+        "@visited": true,
+        "id": "person3"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person9",
+      "attributes": {
+        "interestList": [ "financial", "teaching" ],
+        "skillSet": [ 2, 7, 4 ],
+        "skillList": [ 4, 7, 2 ],
+        "locationId": "us",
+        "interestSet": [ "teaching", "financial" ],
+        "@visited": true,
+        "id": "person9"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "interestList": [ "sport", "financial", "engineering" ],
+        "skillSet": [ 5, 2, 8 ],
+        "skillList": [ 8, 2, 5 ],
+        "locationId": "can",
+        "interestSet": [ "engineering", "financial", "sport" ],
+        "@visited": true,
+        "id": "person5"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "interestList": [ "music", "art" ],
+        "skillSet": [ 10, 7 ],
+        "skillList": [ 7, 10 ],
+        "locationId": "jp",
+        "interestSet": [ "art", "music" ],
+        "@visited": true,
+        "id": "person6"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "interestList": [ "football", "sport" ],
+        "skillSet": [3],
+        "skillList": [3],
+        "locationId": "us",
+        "interestSet": [ "sport", "football" ],
+        "@visited": true,
+        "id": "person10"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {
+        "interestList": ["management"],
+        "skillSet": [ 2, 5, 1 ],
+        "skillList": [ 1, 5, 2 ],
+        "locationId": "chn",
+        "interestSet": ["management"],
+        "@visited": true,
+        "id": "person8"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "company1",
+      "attributes": {
+        "country": "us",
+        "@visited": true,
+        "id": "company1"
+      },
+      "v_type": "company"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {
+        "interestList": ["engineering"],
+        "skillSet": [ 6, 5, 3, 2 ],
+        "skillList": [ 2, 3, 5, 6 ],
+        "locationId": "chn",
+        "interestSet": ["engineering"],
+        "@visited": true,
+        "id": "person2"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "company2",
+      "attributes": {
+        "country": "chn",
+        "@visited": true,
+        "id": "company2"
+      },
+      "v_type": "company"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "interestList": [ "art", "sport" ],
+        "skillSet": [ 6, 8 ],
+        "skillList": [ 8, 6 ],
+        "locationId": "us",
+        "interestSet": [ "sport", "art" ],
+        "@visited": true,
+        "id": "person7"
+      },
+      "v_type": "person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "interestList": [ "management", "financial" ],
+        "skillSet": [ 3, 2, 1 ],
+        "skillList": [ 1, 2, 3 ],
+        "locationId": "us",
+        "interestSet": [ "financial", "management" ],
+        "@visited": true,
+        "id": "person1"
+      },
+      "v_type": "person"
+    }
+  ]}]
+}

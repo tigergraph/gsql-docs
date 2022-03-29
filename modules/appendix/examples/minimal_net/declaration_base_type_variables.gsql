@@ -1,0 +1,7 @@
+CREATE QUERY base_type_variable() {
+    STRING a;
+    DOUBLE num1, num2 = 3.2;
+    INT year = 2020, month = 12, day = 115;
+    INT b = rand(5);
+    PRINT a, b, num;
+}

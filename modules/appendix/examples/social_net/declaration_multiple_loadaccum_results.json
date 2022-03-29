@@ -1,0 +1,37 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{
+    "@@testGroupBy": [
+      {
+        "a": "3",
+        "b": "\"test3\"",
+        "strList": {"5": "5"}
+      },
+      {
+        "a": "2",
+        "b": "\"test2\"",
+        "strList": {"4": "4"}
+      }
+    ],
+    "@@testMap": {
+      "person1": {"1": {
+        "aaa": "\"test1\"",
+        "ddd": "3"
+      }},
+      "person6": {"3": {
+        "aaa": "\"test3\"",
+        "ddd": "5"
+      }},
+      "person5": {"2": {
+        "aaa": "\"test2\"",
+        "ddd": "4"
+      }}
+    }
+  }]
+}

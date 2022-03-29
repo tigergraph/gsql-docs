@@ -1,0 +1,16 @@
+// An example showing a local base type variable succeeds
+// where a base type variable fails
+CREATE QUERY local_variable(VERTEX<Person> m1) FOR GRAPH Social_Net {
+    MaxAccum<INT> @@max_date, @@max_date_glob;
+    DATETIME dt_glob;
+
+    all_user = {Person.*};
+    all_user = SELECT src
+        FROM all_user:src - (Liked>:e) - Post
+        ACCUM
+            DATETIME dt = e.action_time,      // Declare and assign local dt
+            dt_glob = e.action_time,          // dt_glob isn't updated yet
+            @@max_date     += datetime_to_epoch(dt),
+            @@max_date_glob += datetime_to_epoch(dt_glob);
+    PRINT @@max_date, @@max_date_glob, dt_glob;  // @@max_date_glob will be 0
+}

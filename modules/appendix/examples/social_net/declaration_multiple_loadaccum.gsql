@@ -1,0 +1,10 @@
+CREATE QUERY load_accum_ex (STRING filename) FOR GRAPH Social_Net {
+    TYPEDEF TUPLE<STRING aaa, VERTEX<Post> ddd> Your_Tuple;
+    MapAccum<VERTEX<Person>, MapAccum<INT, Your_Tuple>> @@test_map;
+    GroupByAccum<STRING a, STRING b, MapAccum<STRING, STRING> strList> @@test_group_by;
+
+    @@test_map = { LOADACCUM (filename, $0, $1, $2, $3, ",", false)};
+    @@test_group_by = { LOADACCUM ( filename, $1, $2, $3, $3, ",", true) };
+
+    PRINT @@test_map, @@test_group_by;
+}

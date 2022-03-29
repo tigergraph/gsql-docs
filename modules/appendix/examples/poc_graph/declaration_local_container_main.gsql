@@ -1,0 +1,26 @@
+CREATE QUERY test() FOR GRAPH POC_Graph {
+    TYPEDEF TUPLE<INT i, STRING s> Main_Tuple;
+    SumAccum<INT> @@A;
+    SetAccum<Main_Tuple> @@set_acc;
+    SetAccum<Main_Tuple> @@set_acc2;
+
+    L0 = { Person.* };
+    L1 = SELECT p
+        FROM L0:p
+        ACCUM
+        // Local container with base type
+        List<INT> a = sub_query1(p),
+        FOREACH e IN a DO
+          @@A +=  e,
+        // user defined tuple
+        Set<Main_Tuple> set_A = sub_query2(p)
+        @@set_acc += set_A,
+        // anonymous tuple(define signature of tuple in declaration)
+        Set<tuple<INT, STRING>> set_B = sub_query2(p),
+        @@set_acc2 += set_B
+      end;
+
+  print @@A;
+  print @@set_acc;
+  print @@set_acc2;
+}

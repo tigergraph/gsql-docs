@@ -1,0 +1,10 @@
+CREATE QUERY sub_query2 (VERTEX node) FOR GRAPH POC_Graph
+RETURNS (SetAccum<TUPLE<INT, STRING>>){
+    TYPEDEF TUPLE<INT i, STRING s> Sub_Tuple;
+    SetAccum<Sub_Tuple> @@res;
+    v_set = { Person.* };
+    Result1 = SELECT p FROM v_set:p
+        WHERE p.name == "Charlie"
+        ACCUM @@res += Sub_Tuple(-1, "hello");
+    RETURN @@res;
+}

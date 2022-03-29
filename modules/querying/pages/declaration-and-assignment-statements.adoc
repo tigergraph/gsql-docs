@@ -132,13 +132,7 @@ You can declare multiple variables of the same type in a single declaration stat
 
 [source,gsql]
 ----
-CREATE QUERY base_type_variable() {
-    STRING a;
-    DOUBLE num1, num2 = 3.2;
-    INT year = 2020, month = 12, day = 115;
-    INT b = rand(5);
-    PRINT a, b, num;
-}
+include::appendix:example$minimal_net/declaration_base_type_variables.gsql[]
 ----
 
 When a base type variable is assigned a new value in an `ACCUM` or `POST-ACCUM` clause, the change will not take place until exiting the clause.
@@ -149,18 +143,7 @@ Therefore, the accumulator will not receive the value and will hold a value of 0
 
 [source,gsql]
 ----
-CREATE QUERY base_type_variable() FOR GRAPH Social_Net {
-    MaxAccum<INT> @@max_date_glob;
-    DATETIME dt;
-
-    all_user = {Person.*};
-    all_user = SELECT src
-        FROM all_user:src - (liked>:e) - post
-        ACCUM
-            dt = e.action_time,           // dt isn't updated yet
-            @@max_date_glob += datetime_to_epoch(dt);
-    PRINT @@max_date_glob, dt;  // @@max_date_glob will be 0
-}
+include::appendix:example$social_net/declaration_base_type_variables_value_assignment.gsql[]
 ----
 
 [#_local_base_type_variables]
@@ -192,22 +175,7 @@ Query::
 .Base type variable declaration in DML statements
 [source,gsql]
 ----
-// An example showing a local base type variable succeeds
-// where a base type variable fails
-CREATE QUERY local_variable(VERTEX<Person> m1) FOR GRAPH Social_Net {
-    MaxAccum<INT> @@max_date, @@max_date_glob;
-    DATETIME dt_glob;
-
-    all_user = {Person.*};
-    all_user = SELECT src
-        FROM all_user:src - (Liked>:e) - Post
-        ACCUM
-            DATETIME dt = e.action_time,      // Declare and assign local dt
-            dt_glob = e.action_time,          // dt_glob isn't updated yet
-            @@max_date     += datetime_to_epoch(dt),
-            @@max_date_glob += datetime_to_epoch(dt_glob);
-    PRINT @@max_date, @@max_date_glob, dt_glob;  // @@max_date_glob will be 0
-}
+include::appendix:example$social_net/declaration_base_type_variables_dml_statements.gsql[]
 ----
 --
 Result::
@@ -216,21 +184,8 @@ Result::
 .localVariable Query Results
 [source,gsql]
 ----
-GSQL > RUN QUERY localVariable("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "dtGlob": "2010-01-11 03:26:05",
-    "@@maxDateGlob": 0,
-    "@@maxDate": 1263618953
-  }]
-}
+GSQL > RUN QUERY local_variable("person1")
+include::appendix:example$social_net/declaration_base_type_variables_dml_statements_results.json[]
 ----
 --
 ====
@@ -306,63 +261,21 @@ Main query::
 --
 [source,gsql]
 ----
-CREATE QUERY test() FOR GRAPH poc_graph {
-    TYPEDEF TUPLE<INT i, STRING s> Main_Tuple;
-    SumAccum<INT> @@A;
-    SetAccum<Main_Tuple> @@set_acc;
-    SetAccum<Main_Tuple> @@set_acc2;
-
-    L0 = { Person.* };
-    L1 = SELECT p
-        FROM L0:p
-        ACCUM
-        // Local container with base type
-        List<INT> a = sub_query(p),
-        FOREACH e IN a DO
-          @@A +=  e,
-        // user defined tuple
-        Set<Main_Tuple> set_A = sub_query1(p)
-        @@set_acc += set_A,
-        // anonymous tuple(define signature of tuple in declaration)
-        Set<tuple<INT, STRING>> set_B = sub_query1(p),
-        @@set_acc2 += set_B
-      end;
-
-  print @@A;
-  print @@set_acc;
-  print @@set_acc2;
-}
+include::appendix:example$poc_graph/declaration_local_container_main.gsql[]
 ----
 --
 Subquery 1::
 +
 --
 ----
-CREATE QUERY subQuery(VERTEX node) FOR GRAPH poc_graph
-returns(ListAccum<int>)
-{
-    ListAccum<INT> @@res;
-    Start = { node };
-    Result = select t from Start:t
-    Accum @@res += 1;
-    return @@res;
-}
+include::appendix:example$poc_graph/declaration_local_container_sub_1.gsql[]
 ----
 --
 Subquery 2::
 +
 --
 ----
-CREATE QUERY sub_query1(VERTEX node) FOR GRAPH poc_graph
-RETURNS (SetAccum<TUPLE<INT, STRING>>){
-    TYPEDEF TUPLE<INT i, STRING s> Sub_Tuple;
-    SetAccum<Sub_Tuple> @@res;
-    v_set = { Person.* };
-    Result1 = SELECT p FROM v_set:p
-        WHERE p.name == "Charlie"
-        ACCUM @@res += Sub_Tuple(-1, "hello");
-    RETURN @@res;
-}
+include::appendix:example$poc_graph/declaration_local_container_sub_2.gsql[]
 ----
 --
 ====
@@ -389,24 +302,7 @@ assignDeclLocalTuple := (tupleTypeName | anonymousTupleType) localTupleVal = exp
 
 [,gsql]
 ----
-CREATE QUERY test_udf() FOR GRAPH poc_graph {
-     TYPEDEF TUPLE<INT i, STRING s> Main_Tuple;
-     SetAccum<Main_Tuple> @@set_acc;
-     SetAccum<Main_Tuple> @@set_acc2;
-
-    L0 = { Person.* };
-    L1 = SELECT p
-        FROM L0:p
-        WHERE p.name == "Charlie"
-        ACCUM
-            Main_Tuple a = Main_Tuple(1, "well"), <1>
-            @@set_acc += a,
-            TUPLE<INT, STRING> b = Main_Tuple(2, "good"), <2>
-            @@set_acc2 += b;
-
-  PRINT @@set_acc;
-  PRINT @@set_acc2;
-}
+include::appendix:example$poc_graph/declaration_local_tuple_variable.gsql[]
 ----
 <1> This statement defines a local tuple variable `a` with a defined tuple type.
 <2> This statement defines a local tuple variable `b` with an anonymous tuple type.
@@ -466,27 +362,7 @@ The query below lists all ways of assigning a vertex set variable an initial set
 .Vertex set example
 [source.wrap,gsql]
 ----
-CREATE QUERY seed_set_example(VERTEX v1, VERTEX<Person> v2, SET<VERTEX> v3, SET<VERTEX<Person>> v4) FOR GRAPH Social_Net {
-    SetAccum<VERTEX> @@test_set;
-    SetAccum<VERTEX<person>> @@test_set2;
-    S1 = { v1 };    // Untyped vertex parameter enclosed in curly brackets
-    S2 = { v2 };    // Typed vertex parameter enclosed in curly brackets
-    S3 = v3;                       // Untyped vertex set parameter
-    S4 = v4;                       // Typed vertex set parameter
-    S5 = @@test_set;                // Untyped global set accumulator
-    S6 = @@test_set2;               // Typed global set accumulator
-    S7 = ANY;                      // All vertices
-    S8 = Person.*;                 // All person vertices
-    S9 = {_};                      // Equivalent to ANY, braces are optional
-    S10 = SelectVertex("absolute_path_to_input_file", $0, post, ",", false); <1>
-    S11 = S1;                      // copy of another vertex set
-    S12 = {@@test_set, v2, v3};     // Individual vertex: v2
-                                 // Vertex set parameter: v3
-                                 // Global accumulator: @@test_set
-                                 // Inside curly brackets cannot be put another
-                                 // Seedset, e.g., S1
-    S13 = S11 UNION S12;           // But we can use UNION to combine S1
-}
+include::appendix:example$social_net/declaration_vertex_set_example.gsql[]
 ----
 <1> See xref:func/vertex-methods.adoc#_selectvertex[SelectVertex()].
 
@@ -505,16 +381,7 @@ The following is an example in which we must declare the vertex set variable typ
 .Vertex set variable type
 [source,gsql]
 ----
-CREATE QUERY vertex_set_variable_type_example(VERTEX<Person> m1) FOR GRAPH Social_Net {
-    INT ite = 0;
-    S (ANY) = {m1};   # ANY is necessary
-    WHILE  ite < 5 DO
-        S = SELECT t
-            FROM S:s - (ANY:e) - ANY:t;
-        ite = ite + 1;
-    END;
-    PRINT S;
-}
+include::appendix:example$social_net/declaration_vertex_set_variable_type.gsql[]
 ----
 
 In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex.
@@ -544,23 +411,7 @@ When the query where the `FILE` object is declared finishes running, the content
 .File object query example
 [source,gsql]
 ----
-CREATE QUERY get_US_worker_interests (STRING file_location) FOR GRAPH Work_Net {
-    // Declare FILE object f1
-    FILE f1 (file_location);
-    // Initialize a seed set of all person vertices
-    P = {Person.*};
-
-    PRINT "header" TO_CSV f1;
-
-    // Select workers located in the US and print their interests onto
-    // the FILE object
-    US_workers = SELECT v FROM P:v
-        WHERE v.location_id == "us"
-        ACCUM f1.println(v.id, v.interest_list);
-    PRINT "footer" TO_CSV f1;
-}
-INSTALL QUERY get_US_worker_interests
-RUN QUERY get_US_worker_interests("/home/tigergraph/fileEx.txt")
+include::appendix:example$work_net/declaration_file_object_query.gsql[]
 ----
 
 
@@ -682,16 +533,7 @@ Query::
 --
 [source,gsql]
 ----
-CREATE QUERY load_accum_ex(STRING filename) FOR GRAPH Social_Net {
-    TYPEDEF TUPLE<STRING aaa, VERTEX<Post> ddd> Your_Tuple;
-    MapAccum<VERTEX<Person>, MapAccum<INT, Your_Tuple>> @@test_map;
-    GroupByAccum<STRING a, STRING b, MapAccum<STRING, STRING> strList> @@test_group_by;
-
-    @@test_map = { LOADACCUM (filename, $0, $1, $2, $3, ",", false)};
-    @@test_group_by = { LOADACCUM ( filename, $1, $2, $3, $3, ",", true) };
-
-    PRINT @@test_map, @@test_group_by;
-}
+include::appendix:example$social_net/declaration_multiple_loadaccum.gsql[]
 ----
 --
 Result::
@@ -699,44 +541,8 @@ Result::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY loadAccumEx("/file_directory/loadAccumInput.csv")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "@@testGroupBy": [
-      {
-        "a": "3",
-        "b": "\"test3\"",
-        "strList": {"5": "5"}
-      },
-      {
-        "a": "2",
-        "b": "\"test2\"",
-        "strList": {"4": "4"}
-      }
-    ],
-    "@@testMap": {
-      "person1": {"1": {
-        "aaa": "\"test1\"",
-        "ddd": "3"
-      }},
-      "person6": {"3": {
-        "aaa": "\"test3\"",
-        "ddd": "5"
-      }},
-      "person5": {"2": {
-        "aaa": "\"test2\"",
-        "ddd": "4"
-      }}
-    }
-  }]
-}
+GSQL > RUN QUERY load_accum_ex("/file_directory/loadAccumInput.csv")
+include::appendix:example$social_net/declaration_multiple_loadaccum_results.json[]
 ----
 --
 ====
@@ -790,31 +596,7 @@ Query::
 --
 [source,gsql]
 ----
-CREATE DISTRIBUTED QUERY reset_accum()
-FOR GRAPH Work_Net SYNTAX v2 {
-    ListAccum<STRING> @stuff;
-    ListAccum<STRING> @@all_stuff;
-
-    Comp = SELECT c
-        FROM    Person:p -(Works_For:w)- Company:c
-        ACCUM   c.@stuff += p.id,
-            @@all_stuff += p.id,
-            c.@stuff += p.location_id,
-            @@all_stuff += p.location_id,
-            FOREACH interest IN p.interest_list DO
-                c.@stuff += interest,
-                @@all_stuff += interest
-            END;
-    // Display accum size: should be full
-    PRINT Comp[Comp.@stuff.size()] AS stuffCount;
-    PRINT @@all_stuff.size() AS all_stuffCount;
-
-    reset_collection_accum(@stuff);
-    reset_collection_accum(@@all_stuff);
-    // display accum size: should be empty
-    PRINT Comp[Comp.@stuff.size()] AS stuffClear;
-    PRINT @@all_stuff.size() AS all_stuffClear;
-}
+include::appendix:example$work_net/declaration_clear_collection_accum.gsql[]
 ----
 --
 Results::
@@ -822,58 +604,7 @@ Results::
 --
 [source,json]
 ----
-[{
-    "stuffCount": [
-      {"attributes": {"Comp.@stuff.size()": 23},
-        "v_id": "company2",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 7},
-        "v_id": "company4",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 12},
-        "v_id": "company3",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 21},
-        "v_id": "company1",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 4},
-        "v_id": "company5",
-        "v_type": "company"
-      }]
-  },
-  {
-    "allStuffCount": 67
-  },
-  {
-    "stuffClear": [
-      {"attributes": {"Comp.@stuff.size()": 0},
-        "v_id": "company2",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 0},
-        "v_id": "company4",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 0},
-        "v_id": "company3",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 0},
-        "v_id": "company1",
-        "v_type": "company"
-      },
-      {"attributes": {"Comp.@stuff.size()": 0},
-        "v_id": "company5",
-        "v_type": "company"
-      }]
-  },
-  {
-    "allStuffClear": 0
-  }]
+include::appendix:example$work_net/declaration_clear_collection_accum_results.json[]
 ----
 --
 ====

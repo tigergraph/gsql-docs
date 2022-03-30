@@ -53,7 +53,7 @@ Once the graph designer has chosen a graph schema, the schema is ready to be for
 ====
 You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 
-To learn more about permission and privileges, see xref:tigergraph-server:user-access:roles-and-privileges.adoc[].
+To learn more about permission and privileges, see xref:tigergraph-server:user-access:access-control-model.adoc[].
 ====
 
 == `CREATE VERTEX`
@@ -163,7 +163,7 @@ CREATE VERTEX Movie (id UINT, title STRING, year UINT, PRIMARY KEY (title,year,i
 Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
 
-==== *Vertex Attribute List*
+==== Vertex Attribute List
 
 The attribute list, enclosed in parentheses, is a list of one or more _id definitions_ and _attribute descriptions_ separated by commas:
 
@@ -186,12 +186,7 @@ Example:
 
 [source,gsql]
 ----
-CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
-CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING)
-    WITH STATS="outdegree_by_edgetype"
-CREATE VERTEX Book (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT)
-    WITH STATS="none"
-CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
+include::appendix:example$book_rating/d_schema_vertex_attributes.gsql[]
 ----
 
 Unlike the tables in a relational database, vertex types do not need to have a foreign key attribute for one vertex type to have a relationship to another vertex type.  Such relationships are handled by edge types.
@@ -276,7 +271,6 @@ The edge type may also be a distinguishing characteristic. For example, as shown
 An edge type can be defined which connects FROM and/or TO any of the currently defined types of vertices.  Use the wildcard symbol `*` to indicate "any vertex type". For example, the Any_Edge type below can connect from any vertex to any other vertex:
 
 .Wildcard edge type
-
 [source,gsql]
 ----
 CREATE DIRECTED EDGE Any_Edge (FROM *, TO *, label STRING)
@@ -312,7 +306,7 @@ CREATE UNDIRECTED EDGE User_Book_Rating (FROM User, TO Book, rating UINT, date_t
 
 The *`User_Occupation`* and *`Book_Genre`* edges have no attributes. A *`User_Book_Rating`* edge symbolizes that a user has assigned a rating to a book. Therefore it includes an additional attribute *`rating`*. In this case the *`rating`* attribute is defined to be an integer, but it could just as easily have been set to be a float attribute.
 
-*Example :*
+*Example:*
 
 Create the additional edges depicted in Figure 2.
 
@@ -345,39 +339,22 @@ The example below defines a tuple type `My_Tuple` and a heap accumulator type `M
 
 [source,gsql]
 ----
-// Define the heap accumulator at the catalog level
-TYPEDEF tuple<name string, friends int> My_Tuple
-TYPEDEF HeapAccum<myTuple>(3, friends DESC) My_Heap
-
-CREATE QUERY subquery1() FOR GRAPH Social_Net RETURNS (My_Heap){
-	My_Heap @@heap;
-	SumAccum<int> @friends;
-	Start = {Person.*};
-	Start = select s from Start:s-(friend:e)-:t
-	        accum s.@friends += 1
-	        post-accum @@heap += My_Tuple(s.id,s.@friends);
-	RETURN @@heap;
-}
-
-CREATE QUERY Query_1() FOR GRAPH Social_Net {
-	PRINT Sub_Query_1();
-}
+include::appendix:example$social_net/d_schema_typedef.gsql[]
 ----
 
-== *Special Options*
+== Special Options
 
-=== *Sharing a Compression Dictionary*
+=== Sharing a Compression Dictionary
 
 The `STRING COMPRESS` data type achieves compression by mapping each unique attribute value to a small integer. The mapping table ("this string" = "this integer") is called the dictionary. If two such attributes have the same or similar sets of possible values, then it is desirable to have them share one dictionary because it uses less storage space.
 
 When a `STRING COMPRESS` attribute is declared in a vertex or edge, the user can optionally provide a name for the dictionary. Any attributes which share the same dictionary name will share the same dictionary. For example, v1.attr1, v1.attr2, and e.attr1 below share the same dictionary named "e1".
 
 .Shared `STRING COMPRESS` dictionaries
-
 [source,gsql]
 ----
-CREATE VERTEX v1 (PRIMARY_ID main_id STRING, att1 STRING COMPRESS e1, att2 STRING COMPRESS e1)
-CREATE UNDIRECTED EDGE e (FROM v1, TO v2, att1 STRING COMPRESS e1)
+CREATE VERTEX V1 (PRIMARY_ID main_id STRING, att1 STRING COMPRESS e1, att2 STRING COMPRESS e1)
+CREATE UNDIRECTED EDGE E (FROM V1, TO V2, att1 STRING COMPRESS e1)
 ----
 
 
@@ -456,19 +433,7 @@ image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-R
 .Full definition for the Expanded User-Book-Rating graph
 [source,gsql]
 ----
-CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
-CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING)
-    WITH STATS="outdegree_by_edgetype"
-CREATE VERTEX Book  (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT)
-    WITH STATS="none"
-CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
-CREATE UNDIRECTED EDGE User_Occupation (FROM User, TO Occupation)
-CREATE UNDIRECTED EDGE Book_Genre (FROM Book, TO Genre)
-CREATE UNDIRECTED EDGE User_Book_Rating (FROM User, TO Book, rating UINT, date_time UINT)
-CREATE UNDIRECTED EDGE Friend_Of (FROM User, TO User, on_date UINT)
-CREATE UNDIRECTED EDGE User_Book_Read (FROM User, To Book, on_date UINT)
-CREATE DIRECTED EDGE Sequel_Of (FROM Book, TO Book) WITH REVERSE_EDGE="Preceded_By"
-CREATE GRAPH Book_Rating (*) <1>
+include::appendix:example$book_rating/d_schema_bootrating_schema.gsql[]
 ----
 <1> Having created all the necessary vertex and edge types, use the `*` sign to include all vertex and edge types in the graph.
 
@@ -524,7 +489,7 @@ New requirement for MultiGraph support. Applies even if only one graph exists.
 
 Before a user can use a graph, the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The `USE GRAPH` command sets or changes the user's working graph, for the current session.
 
-For more about roles and privileges, see the document xref:3.2@tigergraph-server:user-access:README.adoc[Managing User Privileges and Authentication].
+For more about roles and privileges, see the document xref:tigergraph-server:user-access:index.adoc[Managing User Privileges and Authentication].
 
 .USE GRAPH syntax
 [source,gsql]
@@ -555,7 +520,7 @@ The `DROP GRAPH` command deletes the logical definition of the named graph. It w
 
 The `DROP ALL` command clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
-Unlike xref:3.2@tigergraph-server:data-definition:README.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
+Unlike xref:tigergraph-server:data-definition:README.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
 
 [CAUTION]
 ====

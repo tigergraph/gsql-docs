@@ -1,0 +1,9 @@
+CREATE VERTEX Test_Vertex (PRIMARY_ID id STRING, iset SET<INT>, ilist LIST<INT>)
+CREATE UNDIRECTED EDGE Test_Edge(FROM Test_vertex, TO Test_vertex)
+CREATE GRAPH Test_Set_List (*)
+
+CREATE LOADING JOB load_set_list FOR GRAPH Test_Set_List {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX Test_Vertex VALUES ($0, $1, $1);
+}
+RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"

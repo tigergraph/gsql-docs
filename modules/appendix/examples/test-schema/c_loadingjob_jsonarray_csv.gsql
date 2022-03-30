@@ -1,0 +1,12 @@
+CREATE VERTEX Encoding3 (PRIMARY_ID id STRING, score FLOAT default -1.0, age STRING default "Unknown", length INT default -1)
+CREATE UNDIRECTED EDGE Encoding3_Edge (FROM Encoding3, TO Encoding3)
+CREATE GRAPH Encoding_Graph (*)
+
+CREATE LOADING JOB json_flatten_cvs FOR GRAPH Encoding_Graph {
+  LOAD "encoding.csv" TO TEMP_TABLE t4 (name, score, prop_age, indent_length)
+    VALUES ($0,flatten_json_array($1, $"score", $"prop":"age", $"indent":"length"))
+    USING SEPARATOR="|";
+  LOAD TEMP_TABLE t4
+    TO VERTEX Encoding3 VALUES ($"name", $"score", $"prop_age", $"indent_length");
+}
+RUN LOADING JOB json_flatten_cvs

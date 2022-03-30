@@ -1,0 +1,9 @@
+CREATE VERTEX Test_Vertex (PRIMARY_ID id STRING, ustrset SET<STRING>, ilist LIST<INT>)
+CREATE UNDIRECTED EDGE Test_Edge(FROM Test_Vertex, TO Test_Vertex)
+CREATE GRAPH Test_Split (*)
+
+CREATE LOADING JOB set_list_job FOR GRAPH Test_Split {
+    DEFINE FILENAME f;
+    LOAD f TO VERTEX Test_Vertex VALUES ($0, SPLIT($1,"|") , SPLIT($2,"#"));
+}
+RUN LOADING JOB set_list_job USING f="./split_list_set.csv"

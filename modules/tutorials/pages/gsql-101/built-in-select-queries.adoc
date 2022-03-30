@@ -77,7 +77,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 
 == Select vertices
 
-If you want to lookup the details about a vertex with its `primary_id`, you can use the following REST call.
+If you want to look up the details about a vertex with its primary ID, you can use the following REST call.
 
 .Linux Shell
 

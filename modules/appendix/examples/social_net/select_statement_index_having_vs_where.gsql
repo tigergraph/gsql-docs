@@ -1,0 +1,16 @@
+CREATE QUERY active_male_members() FOR GRAPH Social_Net
+{
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+    // The two statements produce equivalent results
+    result1 = SELECT v FROM start:v -(:e)- Post:tgt
+        WHERE v.gender == "Male"
+        ACCUM v.@activity_amount +=1;
+
+    result2 = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING v.gender == "Male";
+
+    PRINT result1[result1.@activity_amount];
+    PRINT result2[result2.@activity_amount];
+}

@@ -1,0 +1,25 @@
+CREATE QUERY sample_ex_3() FOR GRAPH Computer_Net {
+    // record each selected edge as (src->tgt)
+    MapAccum<STRING,ListAccum<STRING>> @@abs_edges;
+    SumAccum<INT> @@total_abs;
+    // record each selected edge as (src->tgt)
+    MapAccum<STRING,ListAccum<STRING>> @@pct_edges;
+    SumAccum<INT> @@total_pct;
+
+    start = {Computer.*};
+
+    // Sample one outgoing edge per source vertex = Random Walk
+    abs_sample = SELECT v FROM start:s -(:e)- :v
+        SAMPLE 1 EDGE WHEN s.outdegree() >= 1    // sample 1 target vertex from each source vertex
+        ACCUM
+            @@abs_edges += (s.id -> v.id),
+            @@total_abs += 1;
+    PRINT @@total_abs, @@abs_edges;
+
+    pct_sample = SELECT v FROM start:s -(:e)- :v
+        SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
+        ACCUM
+            @@pct_edges += (s.id -> v.id),
+            @@total_pct += 1;
+    PRINT @@total_pct, @@pct_edges;
+}

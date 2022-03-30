@@ -1,0 +1,11 @@
+CREATE QUERY user_posts() FOR GRAPH Social_Net {
+    // For each person, make a list of all their post subjects
+    ListAccum<STRING> @person_posts;
+    start = {Person.*};
+
+    // Find all user post topics and append them to the vertex list accum
+    user_postings = SELECT s FROM start:s -(Posted)- :g
+        ACCUM s.@person_posts += g.subject;
+
+  PRINT user_postings;
+}

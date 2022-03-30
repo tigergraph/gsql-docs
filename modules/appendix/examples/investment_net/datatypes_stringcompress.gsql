@@ -1,0 +1,32 @@
+CREATE QUERY string_compress_ex(VERTEX<Person> m1) FOR GRAPH Work_Net {
+    ListAccum<STRING COMPRESS> @@str_compress_list, @@str_compress_list2;
+    SetAccum<STRING COMPRESS> @@str_compress_set, @@str_compress_set2;
+    ListAccum<STRING> @@str_list, @@str_list2;
+    SetAccum<STRING> @@str_set, @@str_set2;
+
+    S = {m1};
+
+    S = SELECT s
+        FROM S:s
+        ACCUM @@str_set += s.interest_set,
+            @@str_list += s.interest_list,
+            // Uses the dictionary from person.interest_set
+            @@str_compress_set += s.interest_set,
+            // Use the dictionary from person.interest_list
+            @@str_compress_list += s.interest_list;
+
+    // @@str_compress_list2 gets the dictionary from @@str_compress_list, which is from person.interest_list
+    @@str_compress_list2 += @@str_compress_list;
+    // "xyz" is not in the dictionary, so store the actual string value
+    @@str_compress_list2 += "xyz";
+
+    @@str_compress_set2 += @@str_compress_set;
+    @@str_compress_set2 += @@str_set;
+
+    // String compress integer values are decoded to strings
+    @@str_list2 += @@str_compress_list;
+    @@str_set2 += @@str_compress_set;
+
+    PRINT @@str_set, @@str_list, @@str_compress_set, @@str_compress_list;
+    PRINT @@str_set2, @@str_list2, @@str_compress_set2, @@str_compress_list2;
+}

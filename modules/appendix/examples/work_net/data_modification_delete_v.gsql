@@ -1,0 +1,7 @@
+CREATE QUERY delete_ex() FOR GRAPH Work_Net {
+    // Delete all "Person" vertices with location equal to "us"
+
+    S = {Person.*};
+    DELETE s FROM S:s
+        WHERE s.location_id == "us";
+}

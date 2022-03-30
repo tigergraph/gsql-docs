@@ -1,0 +1,39 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [
+    {
+      "@@info": [{
+        "mothersName": "JAMES",
+        "age": 25
+      }],
+      "@@portf": {
+        "AAPL": 3142.24,
+        "MS": 5000,
+        "G": 6112.23
+      }
+    },
+    {"@@orderRecords": [
+      {
+        "ticker": "AAPL",
+        "orderTime": "2017-03-03 18:42:28",
+        "price": 34.42
+      },
+      {
+        "ticker": "B",
+        "orderTime": "2017-03-03 18:42:30",
+        "price": 202.32001
+      },
+      {
+        "ticker": "A",
+        "orderTime": "2017-03-03 18:42:29",
+        "price": 50.55
+      }
+    ]}
+  ]
+}

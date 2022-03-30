@@ -1,0 +1,25 @@
+CREATE QUERY insert_ex(STRING name, STRING name2, STRING name3, STRING comp) FOR GRAPH Works_Net {
+    /* Vertex insertion
+     Adds 2 'Company' vertices. One is located in the USA, and a sister company in Japan.
+    Company:
+     Company(PRIMARY_ID client_id STRING, id STRING, country STRING) */
+    INSERT INTO Company VALUES ( comp, comp, "us" );
+    INSERT INTO Company (PRIMARY_ID, country) VALUES ( comp + "_jp", "jp" );
+
+    /* Edge insertion
+    Adds a 'Works_For' edge from person 'name' to the company 'comp', filling in default
+    values for startYear (0), startMonth (0), and fullTime (false).
+    Works_For:
+    Works_For(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL) */
+    INSERT INTO Works_For VALUES (name Person, comp Company, _, _, _);
+
+    /* Adds a 'Works_For' edge from person 'name2' to the company 'comp', filling in
+        default values for startMonth (0), but specifying values for startYear and
+        fullTime. */
+    INSERT INTO Works_For (FROM, TO, start_year, full_time) VALUES (name2 Person, comp Company, 2017, true);
+
+    /* Adds a 'Works_For' edge from person 'name3' to the company 'comp', filling in
+    default values for startMonth (0), and fullTime (false) but specifying a value
+    for startYear (2017). */
+    INSERT INTO Works_For (FROM, TO, start_year) VALUES (name3 Person, comp Company, 2000 + 17);
+}

@@ -253,12 +253,12 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 SET exit_on_error = FALSE
 
 CREATE VERTEX v(PRIMARY_ID id INT, name STRING)
-CREATE VERTEX v(PRIMARY_ID id INT, weight FLOAT) #error 1: can't define VERTEX v
+CREATE VERTEX v(PRIMARY_ID id INT, weight FLOAT) // error 1: can't define VERTEX v
 
-CREATE UNDIRECTED EDGE e2 (FROM u, TO v) #error 2: vertex type u doesn't exist
+CREATE UNDIRECTED EDGE e2 (FROM u, TO v) // error 2: vertex type u doesn't exist
 CREATE UNDIRECTED EDGE e1 (FROM v, TO v)
 
-CREATE GRAPH g(v) #error 3: no graph definition has no edge type
+CREATE GRAPH g(v) // error 3: no graph definition has no edge type
 CREATE GRAPH g2(*)
 ----
 

@@ -269,14 +269,12 @@ GSQL > DROP JOB local_schema_change123
 The job local_schema_change123 is dropped!
 ----
 
-== *`USE GLOBAL`*
+== `USE GLOBAL`
 
-[NOTE]
-====
+
 The `USE GLOBAL` command changes a superuser's mode to Global mode.  In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.  For example, the user should run `USE GLOBAL` before creating or running a `GLOBAL SCHEMA_CHANGE JOB`.
-====
 
-== *`CREATE GLOBAL SCHEMA_CHANGE JOB`*
+== `CREATE GLOBAL SCHEMA_CHANGE JOB`
 
 The `CREATE GLOBAL SCHEMA_CHANGE JOB` block defines a sequence of `ADD`, `ALTER`, and `DROP` statements that modify either the attributes or the graph membership of global vertex or edge types. Unlike the non-global schema change job, the header does not include a graph name. However, the `ADD`/`ALTER`/`DROP` statements in the body do mention graphs.
 
@@ -460,17 +458,14 @@ DROP EDGE Edge_Type_Name   [',' Edge_Type_Name...] FROM GRAPH Graph_Name;
 
 
 
-== *`RUN GLOBAL SCHEMA_CHANGE JOB`*
+== `RUN GLOBAL SCHEMA_CHANGE JOB`
 
-[NOTE]
-====
-`RUN GLOBAL SCHEMA_CHANGE JOB job_name` performs the global schema change job. After the schema has been changed, the GSQL system checks all existing GSQL queries. If an existing GSQL query uses a dropped vertex, edge, or attribute, the query becomes invalid, and GSQL will show the message "Query _query_name_ becomes invalid after schema update, please update it.".
-====
+`RUN GLOBAL SCHEMA_CHANGE JOB job_name` performs a global schema change job. After the schema has been changed, the GSQL system checks all existing GSQL queries. If an existing GSQL query uses a dropped vertex, edge, or attribute, the query becomes invalid, and GSQL will show the message "Query _query_name_ becomes invalid after schema update, please update it.".
+
 
 Below is an example. The schema change alter_friendship_make_library drops the on_date attribute from the friend_of edge and adds Book type to the library graph.
 
 .GLOBAL SCHEMA_CHANGE JOB example
-
 [source,gsql]
 ----
 USE GLOBAL

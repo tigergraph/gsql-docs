@@ -1,0 +1,14 @@
+// Schema setup
+CREATE VERTEX User (PRIMARY_ID id UINT)
+CREATE VERTEX Product (PRIMARY_ID id UINT)
+CREATE VERTEX Picture (PRIMARY_ID id UINT)
+CREATE UNDIRECTED EDGE Purchase (FROM *, TO *)
+CREATE GRAPH Test_Graph(*)
+
+// Loading job
+CREATE LOADING JOB test_2 FOR GRAPH Test_Graph {
+    DEFINE FILENAME f;
+    LOAD f
+      TO EDGE Purchase VALUES ($0 User, $1 Product),
+      TO EDGE Purchase VALUES ($0 User, $2 Picture);
+}

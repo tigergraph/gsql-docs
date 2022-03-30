@@ -1,0 +1,9 @@
+TYPEDEF TUPLE <f1 INT (1), f2 UINT, f3 STRING (10), f4 DOUBLE > My_Tuple   // define a UDT
+CREATE VERTEX Vertex_UDT  (id STRING PRIMARY KEY, att_udt My_Tuple)
+CREATE GRAPH Test_Graph (Vertex_UDT)
+CREATE LOADING JOB load_udt FOR GRAPH Test_Graph {
+    DEFINE FILENAME f;
+    LOAD f TO VERTEX Vertex_UDT VALUES ($0, My_Tuple($1, $2, $3, $4));
+    // $1 is loaded as f1, $2 is loaded as f2, and so on
+}
+RUN LOADING JOB load_udt USING f="./udt.csv"

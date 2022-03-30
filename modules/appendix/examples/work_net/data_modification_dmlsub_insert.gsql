@@ -1,0 +1,10 @@
+CREATE QUERY add_new_child_company(STRING name) FOR GRAPH Work_Net {
+    // Adds a child company of a given company name. The new child company is in japan
+
+    all_companies = {Company.*};
+    X = SELECT s
+        FROM all_companies:s
+        WHERE s.id == name
+        ACCUM
+            INSERT INTO Company VALUES ( name + "_jp", name + "_jp", "jp" );
+}

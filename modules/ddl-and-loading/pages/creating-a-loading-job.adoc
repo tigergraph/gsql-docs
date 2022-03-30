@@ -46,7 +46,7 @@ Furthermore, if the TigerGraph graph is distributed (partitioned) across multipl
 To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
 ====
 
-A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
+A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
 
 [NOTE]
 ====
@@ -73,7 +73,6 @@ A loading job that includes both will be rejected when the `CREATE` statement is
 === Example
 
 .Loading Job Example
-
 [source.wrap,gsql]
 ----
 CREATE LOADING JOB job_1 FOR GRAPH Graph_1 {
@@ -260,7 +259,7 @@ means to skip the next-to-last attribute. This technique is used when it is know
 . If the load operation is creating a new vertex or edge, then the skipped attribute will be assigned the default value.
 . If the load operation is overwriting an existing vertex or edge, then the skipped attribute will retain its existing value.
 
-=== *More Complex Attribute Expressions*
+=== More Complex Attribute Expressions
 
 An attribute expression may use column tokens (e.g., `$0`), literals (constant numeric or string values), any of the built-in loader token functions, or a user-defined token function. Attribute expressions may *not* contain mathematical or boolean operators (such as `+`, `*`, `AND`). The rules for attribute expressions are the same as those for id expressions, but an attribute expression can additionally use a reducer function:
 
@@ -340,15 +339,7 @@ To load a UDT attribute, state the name of the UDT type, followed by the list of
 
 [source,gsql]
 ----
-TYPEDEF TUPLE <f1 INT (1), f2 UINT, f3 STRING (10), f4 DOUBLE > myTuple   # define a UDT
-CREATE VERTEX Vertex_UDT  (id STRING PRIMARY KEY, att_udt myTuple)
-CREATE GRAPH Test_Graph (Vertex_UDT)
-CREATE LOADING JOB load_udt FOR GRAPH Test_Graph {
-    DEFINE FILENAME f;
-    LOAD f TO VERTEX Vertex_UDT VALUES ($0, myTuple($1, $2, $3, $4));
-    # $1 is loaded as f1, $2 is loaded as f2, and so on
-}
-RUN LOADING JOB load_udt USING f="./udt.csv"
+include::appendix:example$test-schema/c_loadingjob_udt.gsql[]
 ----
 
 
@@ -369,18 +360,11 @@ Below shows an example:
 Schema and loading job::
 +
 --
+
 .Example: Cumulative loading of multiple rows to a SET/LIST
 [source,gsql]
 ----
-CREATE VERTEX test_vertex (PRIMARY_ID id STRING, iset SET<INT>, ilist LIST<INT>)
-CREATE UNDIRECTED EDGE test_edge(FROM test_vertex, TO test_vertex)
-CREATE GRAPH test_set_list (*)
-
-CREATE LOADING JOB load_set_list FOR GRAPH test_set_list {
-  DEFINE FILENAME f;
-  LOAD f TO VERTEX test_vertex VALUES ($0, $1, $1);
-}
-RUN LOADING JOB load_set_list USING f="./list_set_vertex.csv"
+include::appendix:example$test-schema/c_loadingjob_list_set.gsql[]
 ----
 --
 Data file::
@@ -414,18 +398,13 @@ If the input file contains multiple columns which should be all added to the LIS
 .Example: loading multiple columns to a SET/LIST
 [source,gsql]
 ----
-CREATE VERTEX v_set  (PRIMARY_ID id STRING, nick_names SET<STRING>)
-CREATE VERTEX v_list (PRIMARY_ID id STRING, lucky_nums LIST<INT>)
-CREATE GRAPH Test_Graph (*)
-CREATE LOADING JOB load_set_list FOR GRAPH Test_Graph {
-    DEFINE FILENAME f;
-    LOAD f TO VERTEX v_set  VALUES ($0, SET($1,$2,$3));
-    LOAD f TO VERTEX v_list VALUES ($0, LIST($2,$4));
-}
+include::appendix:example$test-schema/c_loadingjob_set_list_multicolumn.gsql[]
 ----
 
 
-The third method is to use the *`SPLIT()`* function to read a compound token and split it into a collection of elements, to form a `LIST` or `SET` collection.The `SPLIT()` function takes two arguments: the column index and the element separator.The element separator should be distinct from the separator throughout the whole file.Below shows an example:
+The third method is to use the `SPLIT()` function to read a compound token and split it into a collection of elements, to form a `LIST` or `SET` collection.
+The `SPLIT()` function takes two arguments: the column index and the element separator.
+The element separator should be distinct from the separator throughout the whole file.Below shows an example:
 
 [tabs]
 ====
@@ -435,23 +414,15 @@ Schema and loading job::
 .Example: SET/LIST loading by SPLIT() example
 [source,gsql]
 ----
-CREATE VERTEX test_vertex (PRIMARY_ID id STRING, ustrset SET<STRING>, ilist LIST<INT>)
-CREATE UNDIRECTED EDGE test_edge(FROM test_vertex, TO test_vertex)
-CREATE GRAPH test_split (*)
-
-CREATE LOADING JOB set_list_job FOR GRAPH test_split {
-  DEFINE FILENAME f;
-  LOAD f TO VERTEX test_vertex VALUES ($0, SPLIT($1,"|") , SPLIT($2,"#"));
-}
-RUN LOADING JOB set_list_job USING f="./split_list_set.csv"
+include::appendix:example$test-schema/c_loading_job_split.gsql[]
 ----
 --
 Data file::
 +
 --
 xref:attachment$split_list_set.csv[Download split_test_set.csv]
-.split_list_set.csv
 
+.split_list_set.csv
 [source,text]
 ----
 vid,names,numbers
@@ -471,7 +442,13 @@ The `SPLIT()` function cannot be used for UDT type elements.
 
 There are three methods to load a `MAP`.
 
-The first method is to load multiple rows of data that share the same id values.The maps are formed incrementally by reading one key-value pair from each eligible data line.When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not.If the id value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.If the id(s) has been used before, then the loading job checks whether the key exists in the map or not.If the key doesn't exist in the map, the new key-value pair is inserted.Otherwise, the value will be replaced by the new value.
+The first method is to load multiple rows of data that share the same id values.
+The maps are formed incrementally by reading one key-value pair from each eligible data line.
+When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not.
+If the id value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.
+If the id(s) has been used before, then the loading job checks whether the key exists in the map or not.
+If the key doesn't exist in the map, the new key-value pair is inserted.
+Otherwise, the value will be replaced by the new value.
 
 [WARNING]
 ====
@@ -483,27 +460,16 @@ The loading order might not be the same as the order in the raw data.If a data f
 .Loading a MAP by method 1: \-> separator
 [source,gsql]
 ----
-CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
-CREATE GRAPH Test_Graph (*)
-CREATE LOADING JOB load_map FOR GRAPH Test_Graph {
-    DEFINE FILENAME f;
-    LOAD f TO VERTEX v_map  VALUES ($0, ($1 -> $2));
-}
+include::appendix:example$test-schema/c_loadingjob_map_1.gsql[]
 ----
 
 
 *Method 2*: The second method is to use the `MAP()` function.If there are multiple key-value pairs among multiple columns, `MAP()` can load them together.Below is an example:
 
 .Loading a MAP by method 2: MAP() function
-
 [source,gsql]
 ----
-CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
-CREATE GRAPH Test_Graph (*)
-CREATE LOADING JOB load_map FOR GRAPH Test_Graph {
-    DEFINE FILENAME f;
-    LOAD f TO VERTEX v_map  VALUES ($0, MAP(($1 -> $2), ($3 -> $4)));  # $1 and $3 are keys and $2 and $4 are the corresponding values.
-}
+include::appendix:example$test-schema/c_loadingjob_map_2.gsql[]
 ----
 
 
@@ -549,15 +515,9 @@ Loading job::
 +
 --
 .Loading a MAP by method 3: SPLIT() function
-
 [source,gsql]
 ----
-CREATE VERTEX v_map  (PRIMARY_ID id STRING, att_map MAP<INT, STRING>)
-CREATE GRAPH Test_Graph (*)
-CREATE LOADING JOB load_map FOR GRAPH Test_Graph {
-    DEFINE FILENAME f;
-    LOAD f TO VERTEX v_map  VALUES ($0, SPLIT($1, ":", "#"));
-}
+include::appendix:example$test-schema/c_loadingjob_map_split.gsql[]
 ----
 --
 ====
@@ -574,27 +534,9 @@ Loading a Composite Key for a vertex works no differently than normal loading. S
 When loading to an edge where either `TO_VERTEX` or `FROM_VERTEX` contains a composite key, the composite set of attributes must be enclosed in parentheses. See the example below.
 
 .Example: loading composite key to vertex and edge
-
-[source,coffeescript]
+[source,gsql]
 ----
-#schema setup
-CREATE VERTEX compositePerson (id uint, name string, PRIMARY KEY (name,id))
-CREATE VERTEX compositeMovie (id uint, title string, country string, year uint, primary key (title,year,id))
-CREATE DIRECTED EDGE compositeRoles (from compositePerson,to compositeMovie, role string) with reverse_edge="composite_roles_reverse"
-CREATE GRAPH MyGraph(*)
-
-#loading job
-CREATE LOADING JOB composite_load FOR GRAPH MyGraph {
-  LOAD "$sys.data_root/movies.csv" TO VERTEX compositeMovie VALUES
-       ($"id", $"title", $"country" ,$"year") USING header ="true", separator=",";
-
-  LOAD "$sys.data_root/persons.csv" TO VERTEX compositePerson VALUES
-       ($"id",$"name") USING header = "true", separator =",";
-
-  LOAD "$sys.data_root/compositeroles.csv" TO EDGE compositeRoles VALUES
-       (($"personName", $"personId"),($"movieTitle",$"movieYear",$"movieId"),$"role")
-       USING header="true", separator = ",";
-}
+include::appendix:example$test-schema/c_loadingjob_compositekey.gsql[]
 ----
 
 
@@ -603,23 +545,9 @@ CREATE LOADING JOB composite_load FOR GRAPH MyGraph {
 If an edge has been defined using a wildcard vertex type, a vertex type name must be specified, following the vertex id, in a `LOAD` statement for the edge. An example is shown below:
 
 .Example: explicit vertex typing for an untyped edge
-
-[source,coffeescript]
+[source,gsql]
 ----
-#schema setup
-CREATE VERTEX User (PRIMARY_ID id UINT)
-CREATE VERTEX Product (PRIMARY_ID id UINT)
-CREATE VERTEX Picture (PRIMARY_ID id UINT)
-CREATE UNDIRECTED EDGE Purchase (FROM *, TO *)
-CREATE GRAPH Test_Graph(*)
-
-#loading job
-CREATE LOADING JOB test_2 FOR GRAPH Test_Graph {
-  DEFINE FILENAME f;
-  LOAD f
-     TO EDGE Purchase VALUES ($0 User, $1 Product),
-     TO EDGE Purchase VALUES ($0 User, $2 Picture);
-  }
+include::appendix:example$test-schema/c_loadingjob_wildcard.gsql[]
 ----
 
 
@@ -634,16 +562,12 @@ To use a token function, replace the attribute in the destination clause of the 
 
 [source,gsql]
 ----
-CREATE LOADING JOB load_orders {
-    DEFINE FILENAME f;
-    LOAD f
-        TO VERTEX Order VALUES (gsql_trim($"id"), $"date");
-}
+include::appendix:example$test-schema/c_loadingjob_tokenfunction.gsql[]
 ----
 
 === Token Functions for Attribute Expressions
 
-The following token functions can be used in an id or attribute expression
+The following token functions can be used in an ID or attribute expression
 
 [width="100%",cols="2,1,2",options="header",]
 |===
@@ -882,7 +806,6 @@ Each function supports a certain set of attribute types.Calling a reducer functi
 The keyword `TEMP_TABLE` triggers the use of a temporary data table which is used to store data generated by one `LOAD` statement, for use by a later `LOAD` statement.Earlier we introduced the syntax for loading data to a `TEMP_TABLE`:
 
 .TEMP_TABLE Destination Clause
-
 [source,gsql]
 ----
 TO TEMP_TABLE table_name (id_name [, attr_name]*) VALUES (id_expr [, attr_expr]*)
@@ -910,18 +833,7 @@ Schema and loading jobs::
 .One-level Flatten Function loading (load_book_flatten1.gsql)
 [source,gsql]
 ----
-CREATE LOADING JOB load_books_flatten_1 FOR GRAPH Book_Rating {
-  DEFINE FILENAME f;
-  LOAD f
-      TO VERTEX Book VALUES ($0, $1, _),
-      TO TEMP_TABLE t1 (bookcode,genre) VALUES ($0, flatten ($2,",",1))
-      USING QUOTE="double", SEPARATOR="|";
-
-  LOAD TEMP_TABLE t1
-      TO VERTEX Genre VALUES ($"genre", $"genre"),
-      TO EDGE Book_Genre VALUES ($"bookcode", $"genre");
-}
-RUN LOADING JOB load_books_flatten_1 USING f="../data/book1.dat"
+include::appendix:example$book_rating/c_loadingjob_flatten1.gsql[]
 ----
 --
 Data file::
@@ -1052,25 +964,14 @@ flatten (_column_to_be_split, group_separator, sub_field_separator, number_of_su
 The flatten function now has four parameters instead of three.  The additional parameter is used to record the genre_name in the Genre vertices.
 
 .Two-level Flatten Function loading (book_flatten2_load.gsql)
-
 [source,gsql]
 ----
-CREATE LOADING JOB load_books_flatten_2 FOR GRAPH Book_Rating {
-  DEFINE FILENAME f;
-  LOAD f
-      TO VERTEX Book VALUES ($0, $1, _),
-      TO TEMP_TABLE t2 (bookcode,genre_id,genre_name) VALUES ($0, flatten ($2,",",":",2))
-      USING QUOTE="double", SEPARATOR="|";
-
-  LOAD TEMP_TABLE t2
-      TO VERTEX Genre VALUES ($"genre_id", $"genre_name"),
-      TO EDGE Book_Genre VALUES ($"bookcode", $"genre_id");
-}
-RUN LOADING JOB load_books_flatten_2 USING f="book2.dat"
+include::appendix:example$book_rating/c_loadingjob_flatten2.gsql[]
 ----
 
 
-In this example, in the genres column ($2), there are multiple groups, and each group has two sub-fields, genre_id and genre_name. After running the loading job, the file book2.dat will be loaded into the TEMP_TABLE t2 as shown below.
+In this example, in the genres column ($2), there are multiple groups, and each group has two sub-fields, genre_id and genre_name.
+After running the loading job, the file book2.dat will be loaded into the TEMP_TABLE t2 as shown below.
 
 |===
 | bookcode | genre_id |
@@ -1102,7 +1003,8 @@ In this example, in the genres column ($2), there are multiple groups, and each 
 
 === Flatten a JSON Array of Primitive Values
 
-flatten_json_array($" _array_name_ ") parses a JSON array of primitive (string, numberic, or bool) values, where "array_name" is the name of the array. Each value in the array creates a record. Below is an example:
+flatten_json_array($" _array_name_ ") parses a JSON array of primitive (string, numberic, or bool) values, where "array_name" is the name of the array.
+Each value in the array creates a record. Below is an example:
 
 [tabs]
 ====
@@ -1112,7 +1014,6 @@ Data file::
 xref:attachment$encoding2.json[Download encoding2.json]
 
 .encoding2.json
-
 [source,javascript]
 ----
 {"plug-ins" : ["C", "c++"],"encoding" : "UTF-6","indent" : { "length" : 3, "use_space": false}}
@@ -1121,20 +1022,9 @@ xref:attachment$encoding2.json[Download encoding2.json]
 Loading job::
 +
 --
-.flatten_json_array_values loading
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE VERTEX Encoding (PRIMARY_ID id STRING, length FLOAT default 10)
-CREATE UNDIRECTED EDGE Encoding_Edge (FROM encoding, TO encoding)
-CREATE GRAPH Encoding_Graph (*)
-
-CREATE LOADING JOB json_flatten FOR GRAPH Encoding_Graph {
-  LOAD "encoding2.json" TO TEMP_TABLE t2 (name, length)
-    VALUES (flatten_json_array($"plug-ins"), $"indent":"length") USING JSON_FILE ="true";
-  LOAD TEMP_TABLE t2
-    TO VERTEX encoding VALUES ($"name", $"length");
-}
-RUN LOADING JOB json_flatten
+include::appendix:example$test-schema/c_loadingjob_flatten_jsonarray.gsql[]
 ----
 --
 Temporary table::
@@ -1178,21 +1068,9 @@ Loading job::
 +
 --
 .json_flatten_array_test.gsql
-
 [source,gsql]
 ----
-CREATE VERTEX Encoding3 (PRIMARY_ID id STRING, score FLOAT default -1.0, age STRING default "Unknown", length INT default -1)
-CREATE UNDIRECTED EDGE Encoding3_Edge (FROM Encoding3, TO Encoding3)
-CREATE GRAPH Encoding_Graph (*)
-
-CREATE LOADING JOB json_flatten_array FOR GRAPH Encoding_Graph {
-  LOAD "encoding3.json" TO TEMP_TABLE t3 (name, score, prop_age, indent_length)
-    VALUES (flatten_json_array($"plug-ins", $"lang", $"score", $"prop":"age"), $"indent":"length")
-    USING JSON_FILE="true";
-  LOAD TEMP_TABLE t3
-    TO VERTEX encoding3 VALUES ($"name", $"score", $"prop_age", $"indent_length");
-}
-RUN LOADING JOB json_flatten_array
+include::appendix:example$test-schema/c_loadingjob_flatten_jsonobjects.gsql[]
 ----
 --
 ====
@@ -1265,18 +1143,7 @@ The second column in the csv file is a JSON array which we want to split.
 .json_flatten_cvs.gsql
 [source,gsql]
 ----
-CREATE VERTEX Encoding3 (PRIMARY_ID id STRING, score FLOAT default -1.0, age STRING default "Unknown", length INT default -1)
-CREATE UNDIRECTED EDGE Encoding3_Edge (FROM Encoding3, TO Encoding3)
-CREATE GRAPH Encoding_Graph (*)
-
-CREATE LOADING JOB json_flatten_cvs FOR GRAPH Encoding_Graph {
-  LOAD "encoding.csv" TO TEMP_TABLE t4 (name, score, prop_age, indent_length)
-    VALUES ($0,flatten_json_array($1, $"score", $"prop":"age", $"indent":"length"))
-    USING SEPARATOR="|";
-  LOAD TEMP_TABLE t4
-    TO VERTEX Encoding3 VALUES ($"name", $"score", $"prop_age", $"indent_length");
-}
-RUN LOADING JOB json_flatten_cvs
+include::appendix:example$test-schema/c_loadingjob_jsonarray_csv.gsql[]
 ----
 --
 Temporary table::
@@ -1336,7 +1203,7 @@ Therefore, it is recommended that the csv file use a special column separator, s
 ====
 
 [#_delete_statement]
-== *DELETE statement*
+== DELETE statement
 
 In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement.
 DELETE cannot be used in offline loading.
@@ -1350,21 +1217,20 @@ In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause
 There are four variations of the DELETE statement.The syntax of the four cases is shown below.
 
 .DELETE VERTEX | EDGE Syntax
-
 [source,gsql]
 ----
 CREATE LOADING JOB abc FOR GRAPH Graph_Name {
   DEFINE FILENAME f;
-  # 1. Delete each vertex which has the given vertex type and primary id.
+  // 1. Delete each vertex which has the given vertex type and primary id.
   DELETE VERTEX vertex_type_name (PRIMARY_ID id_expr) FROM f [WHERE condition] ;
 
-  # 2. Delete each edge which has the given edge type, source vertex id, and destination vertex id.
-  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr) FROM f [WHERE condition] ;
+  // 2. Delete each edge which has the given edge type, source vertex id, and destination vertex id.
+  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr) FROM f [WHERE condition] ;
 
-  # 3. Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
-  DELETE EDGE edge_type_name (FROM id_expr) FROM f [WHERE condition] ;
+  // 3. Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
+  DELETE EDGE edge_type_name (FROM id_expr) FROM f [WHERE condition] ;
 
-  # 4. Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
+  // 4. Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
   DELETE EDGE * (FROM id_expr vertex_type_name) FROM f [WHERE condition] ;
 }
 ----
@@ -1373,10 +1239,9 @@ CREATE LOADING JOB abc FOR GRAPH Graph_Name {
 An example using Book_Rating data is shown below:
 
 .DELETE example
-
 [source,gsql]
 ----
-# Delete all user occupation edges if the user is in the new files, then load the new files
+// Delete all user occupation edges if the user is in the new files, then load the new files
 CREATE LOADING JOB clean_user_occupation FOR GRAPH Book_Rating {
   DEFINE FILENAME f;
   DELETE EDGE User_Occupation (FROM $0) FROM f;

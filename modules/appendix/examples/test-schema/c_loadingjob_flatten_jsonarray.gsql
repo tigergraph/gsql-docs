@@ -1,0 +1,11 @@
+CREATE VERTEX Encoding (PRIMARY_ID id STRING, length FLOAT DEFAULT 10)
+CREATE UNDIRECTED EDGE Encoding_Edge (FROM encoding, TO encoding)
+CREATE GRAPH Encoding_Graph (*)
+
+CREATE LOADING JOB json_flatten FOR GRAPH Encoding_Graph {
+    LOAD "encoding2.json" TO TEMP_TABLE t2 (name, length)
+      VALUES (flatten_json_array($"plug-ins"), $"indent":"length") USING JSON_FILE ="true";
+    LOAD TEMP_TABLE t2
+      TO VERTEX encoding VALUES ($"name", $"length");
+}
+RUN LOADING JOB json_flatten

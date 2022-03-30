@@ -1,0 +1,66 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"start": [
+    {
+      "v_id": "person4",
+      "attributes": {
+        "gender": "Female",
+        "@person_posts": ["3"],
+        "id": "person4",
+        "@person_liked_info": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person4",
+          "to_id": "4",
+          "attributes": {"action_time": "2010-01-13 03:16:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@person_posts": [ "9", "6" ],
+        "id": "person7",
+        "@person_liked_info": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person7",
+          "to_id": "10",
+          "attributes": {"action_time": "2010-01-12 11:22:05"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@person_posts": ["0"],
+        "id": "person1",
+        "@person_liked_info": [{
+          "from_type": "person",
+          "to_type": "post",
+          "directed": true,
+          "from_id": "person1",
+          "to_id": "0",
+          "attributes": {"action_time": "2010-01-11 11:32:00"},
+          "e_type": "liked"
+        }]
+      },
+      "v_type": "Person"
+    },
+    /*** other vertices omitted ***/
+  ]}]
+}

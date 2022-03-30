@@ -1,0 +1,8 @@
+CREATE QUERY full_time_workers() FOR GRAPH Work_Net {
+	// find all workers who are full time at some company
+    start = {Person.*};
+	full_time_workers = SELECT v FROM start:v -(Works_For:e)- Company:t
+			WHERE e.full_time;	// full_time is a boolean attribute on the edge
+
+	PRINT full_time_workers;
+}

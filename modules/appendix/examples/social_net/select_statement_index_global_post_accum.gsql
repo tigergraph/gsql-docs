@@ -1,0 +1,16 @@
+CREATE QUERY person_gender(STRING gender) FOR GRAPH Social_Net {
+    // Count the number of persons of a given gender
+    SumAccum<INT> @@gender_count;
+
+    start = {ANY};
+
+    // Select all person vertices and check the gender attribute
+    friends = SELECT v FROM start:v
+        WHERE v.type == "Person"
+        POST-ACCUM (v) CASE
+            WHEN (v.gender == gender) THEN
+                @@gender_count += 1
+        END;
+
+    PRINT @@gender_count;
+}

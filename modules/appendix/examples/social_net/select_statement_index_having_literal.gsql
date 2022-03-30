@@ -1,0 +1,15 @@
+CREATE QUERY print_member_activity() FOR GRAPH Social_Net
+{
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+
+    /* --- equivalent statements -----
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING true; */
+
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1;
+
+    PRINT result;
+}

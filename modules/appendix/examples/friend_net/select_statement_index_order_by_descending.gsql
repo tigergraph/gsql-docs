@@ -1,0 +1,14 @@
+CREATE QUERY top_popular() FOR GRAPH Friend_Net {
+	SumAccum<INT> @num_friends;
+	SumAccum<INT> @num_coworkers;
+	start = {Person.*};
+
+	result = SELECT v FROM start -((Friend|Coworker):e)- Person:v
+      ACCUM CASE
+          WHEN e.type == "friend" THEN v.@num_friends += 1
+          WHEN e.type == "coworker" THEN v.@num_coworkers += 1
+      END
+      ORDER BY v.@num_friends DESC, v.@num_coworkers DESC;
+
+	PRINT result;
+}

@@ -1,0 +1,7 @@
+CREATE VERTEX Person (
+    PRIMARY_ID name STRING,
+    name STRING, age INT,
+    gender STRING, state STRING
+)
+CREATE UNDIRECTED EDGE friendship (FROM Person, TO Person, connect_day DATETIME)
+CREATE GRAPH social (Person, Friendship)

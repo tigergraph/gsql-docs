@@ -16,13 +16,14 @@ Now, let's write our first GSQL query. We'll display all the direct (1-hop) neig
 .GSQL command
 [source,gsql]
 ----
+B
 USE GRAPH social
 SET syntax_version="v2"
 
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello (VERTEX<Person> p) {
   Start = {p};
   Result = SELECT tgt
-           FROM Start:s -(friendship:e)- person:tgt;
+           FROM Start:s -(Friendship:e)- Person:tgt;
   PRINT Result;
 }
 ----

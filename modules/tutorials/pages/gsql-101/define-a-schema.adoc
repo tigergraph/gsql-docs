@@ -12,7 +12,7 @@ Use CREATE VERTEX command to define a vertex type named *person.* Here, PRIMARY_
 
 [,gsql]
 ----
-CREATE VERTEX person (
+CREATE VERTEX Person (
     PRIMARY_ID name STRING,
     name STRING, age INT,
     gender STRING, state STRING
@@ -31,8 +31,8 @@ GSQL will confirm the creation of the vertex type.
 .GSQL shell
 [.wrap,gsql]
 ----
-GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
-Successfully created vertex types: [person].
+GSQL > CREATE VERTEX Person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+Successfully created vertex types: [Person].
 GSQL >
 ----
 
@@ -53,7 +53,7 @@ These are followed by an optional list of attributes, just as in the vertex defi
 
 [,gsql]
 ----
-CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+CREATE UNDIRECTED EDGE friendship (FROM Person, TO Person, connect_day DATETIME)
 ----
 
 
@@ -64,8 +64,8 @@ GSQL will confirm the creation of the edge type.
 
 [.wrap,gsql]
 ----
-GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
-Successfully created edge types: [friendship].
+GSQL > CREATE UNDIRECTED EDGE Friendship (FROM Person, TO Person, connect_day DATETIME)
+Successfully created edge types: [Friendship].
 GSQL >
 ----
 
@@ -81,7 +81,7 @@ Next, use the CREATE GRAPH command to create a graph named *social*. Here, we ju
 
 [,gsql]
 ----
-CREATE GRAPH social (person, friendship)
+CREATE GRAPH social (Person, Friendship)
 ----
 
 
@@ -92,7 +92,7 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 
 [.wrap,gsql]
 ----
-GSQL > CREATE GRAPH social (person, friendship)
+GSQL > CREATE GRAPH social (Person, Fiendship)
 Stopping GPE GSE RESTPP
 Successfully stopped GPE GSE RESTPP in 16.554 seconds
 Starting GPE GSE RESTPP

@@ -1,0 +1,12 @@
+USE GRAPH ldbc_snb
+
+// find Viktor's 2012 favorite posts' authors, whose last_name prefix with S.
+INTERPRET QUERY() SYNTAX V2 {
+
+  R  =  SELECT t
+        FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+         AND t.last_name LIKE "S%" AND year(msg.creationDate) == 2012;
+
+  PRINT R[R.id, R.first_name, R.last_name];
+}

@@ -1,0 +1,17 @@
+
+USE GRAPH ldbc_snb
+
+# start from a vertex type "Person"
+INTERPRET QUERY () SYNTAX v2 {
+
+  SumAccum<int> @@cnt;
+
+  F  =  SELECT t
+        FROM Person:s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- Person:t
+        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+              AND t.lastName LIKE "S%"
+        POST-ACCUM @@cnt+=1;
+
+  PRINT  @@cnt;
+
+}

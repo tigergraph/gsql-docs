@@ -1,0 +1,13 @@
+CREATE QUERY delete_edge_and_vertex () SYNTAX v2 {
+
+  R  =  SELECT t
+        FROM Person:s -(Knows:e)- Person:t
+        WHERE s.first_name == "Tiger" AND s.last_name == "Woods"
+        ACCUM
+           //delete edges
+           DELETE(e)
+        POST-ACCUM DELETE(s); //delete src vertex
+
+
+  PRINT  R [R.id, R.first_name, R.last_name];
+}

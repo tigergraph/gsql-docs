@@ -1,0 +1,17 @@
+CREATE QUERY bi_4(STRING tc_name, STRING c_name) FOR GRAPH ldbc_snb SYNTAX v2 {
+  SetAccum<vertex<Post>> @post_set;
+  SumAccum<int> @person_id, @post_count;
+
+  ForumSet =
+    SELECT f
+    FROM Forum:f -(HAS_MODERATOR>)- Person:a -(IS_LOCATED_IN>.IS_PART_OF>)- Country:c,
+         :f -(CONTAINER_OF>)- Post:p -(HAS_TAG>.HAS_TYPE>)- TagClass:tc
+    WHERE c.name == c_name AND tc.name == tc_name
+    ACCUM f.@person_id = a.id, f.@post_set += p
+    POST-ACCUM f.@post_count = f.@post_set.size(), f.@post_set.clear()
+    ORDER BY f.@post_count DESC, f.id ASC
+    LIMIT 3;
+
+  PRINT ForumSet[ForumSet.id, ForumSet.title, ForumSet.creationDate,
+                 ForumSet.@person_id, ForumSet.@post_count];
+}

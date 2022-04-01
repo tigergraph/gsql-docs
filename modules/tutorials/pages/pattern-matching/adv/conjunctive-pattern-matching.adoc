@@ -19,7 +19,7 @@ SelectBlock := SELECT alias
                     ...
 
 pattern := vertexPattern | edgePattern | (pathPattern ["," pathPattern])
-# vertexPattern and edgePattern are from classic GSQL
+// vertexPattern and edgePattern are from classic GSQL
 ----
 
 
@@ -70,21 +70,19 @@ If the match tables of the patterns in a FROM clause can be naturally joined int
 
 For example, below we show two valid CPM inputs and one invalid CPM input.
 
-[source,gsql]
+[source.wrap,gsql]
 ----
-# a valid CPM, since the two patterns natrually join on :tgt
+// a valid CPM, since the two patterns natrually join on :tgt
 SELECT
 FROM Person:p - (KNOWS) - :tgt,
      Post:s -(<LIKES) - :tgt
 
-# a valid CPM, since the two patterns naturally join on :f
+// a valid CPM, since the two patterns naturally join on :f
 SELECT
 FROM Person:p - (KNOWS) - :f - (LIKES>) - Post:tgt,
      :f - (LIKES>) - Comment:c
 
-# an invalid CPM, since the two patterns do not share any vertex variables.
-# they cannot be naturally joined.
-# One pattern has (p, tgt); the other has (s, t).
+// an invalid CPM, since the two patterns do not share any vertex variables, they cannot be naturally joined. One pattern has (p, tgt); the other has (s, t).
 SELECT
 FROM Person:p - (KNOWS) - :tgt,
      Post:s - (<LIKES) - Person:t
@@ -113,7 +111,7 @@ The ACCUM clause by default will execute _*as many times*_ _*as*_ the row (match
 
 [source,gsql]
 ----
-#accum to x1, x2 and x4.
+//accum to x1, x2 and x4.
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3,
      X1:x1-(E3:e3)-X4:x4
 ACCUM x1.@cnt +=1, x2.@cnt += x3.quantity, x4.@cnt += x3.quantity
@@ -148,162 +146,34 @@ POST-ACCUm @@cnt += x3.@cnt;
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_1.gsql[]
 
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  F  =  SELECT f
-        FROM Person:s - (LIKES>:e1) - :msg - (HAS_CREATOR>) - Person:t,
-             Forum:f - (CONTAINER_OF>:e2) - :msg
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-              AND t.lastName LIKE "S%"
-              AND e1.creationDate >DATETIME_ADD(msg.creationDate, INTERVAL 100 DAY);
-
-  PRINT F;
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"F": [{
-    "v_id": "962072688797",
-    "attributes": {
-      "id": 962072688797,
-      "title": "Album 12 of Mario Santos",
-      "creationDate": "2011-04-12 09:36:50"
-    },
-    "v_type": "Forum"
-  }]}]
-}
+// results
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_1_results.json[]
 ----
 
 *Example 2.* Find any authors who wrote posts that Viktor Akhiezer's liked and whose last name begins with S. Find the country for each of these authors and report on the countries.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_2.gsql[]
+// results
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_2_results.json[]
 
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  C  =  SELECT ctry
-        FROM Person:s - (LIKES>:e1) - Post:msg - (HAS_CREATOR>) - Person:t,
-             :t - (WORK_AT>:e2) - Company:c,
-             :c - (IS_LOCATED_IN>) - Country:ctry
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-              AND t.lastName LIKE "S%" ;
-
-  PRINT C;
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"C": [{
-    "v_id": "93",
-    "attributes": {
-      "name": "Portugal",
-      "id": 93,
-      "url": "http://dbpedia.org/resource/Portugal"
-    },
-    "v_type": "Country"
-  }]}]
-}
 ----
 
 *Example 3.* Given a TagClass and a Country, find all the Forums created in the given Country, containing at least one Post with Tags belonging directly to the given TagClass. The location of a Forum is identified by the location of the Forum's moderator.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_3.gsql[]
 
-DROP QUERY bi_4
-
-CREATE QUERY bi_4(string tcName, string cName) for graph ldbc_snb syntax v2 {
-  SetAccum<vertex<Post>> @postSet;
-  SumAccum<int> @personId, @postCount;
-
-  ForumSet =
-    SELECT f
-    FROM Forum:f -(HAS_MODERATOR>)- Person:a -(IS_LOCATED_IN>.IS_PART_OF>)- Country:c,
-         :f -(CONTAINER_OF>)- Post:p -(HAS_TAG>.HAS_TYPE>)- TagClass:tc
-    WHERE c.name == cName and tc.name == tcName
-    ACCUM f.@personId = a.id, f.@postSet += p
-    POST-ACCUM f.@postCount = f.@postSet.size(), f.@postSet.clear()
-    ORDER BY f.@postCount DESC, f.id ASC
-    LIMIT 3;
-
-  PRINT ForumSet[ForumSet.id, ForumSet.title, ForumSet.creationDate,
-                 ForumSet.@personId, ForumSet.@postCount];
-}
 ----
 
 [source,gsql]
 ----
-INSTALL QUERY bi_4
-
-RUN QUERY bi_4("MusicalArtist", "Burma")
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"ForumSet": [
-    {
-      "v_id": "81903",
-      "attributes": {
-        "ForumSet.title": "Wall of Donald Steele-Perkins",
-        "ForumSet.@personId": 5226,
-        "ForumSet.id": 81903,
-        "ForumSet.@postCount": 65,
-        "ForumSet.creationDate": "2010-02-15 06:48:04"
-      },
-      "v_type": "Forum"
-    },
-    {
-      "v_id": "137438953686",
-      "attributes": {
-        "ForumSet.title": "Wall of Eric Law-Yone",
-        "ForumSet.@personId": 2199023262994,
-        "ForumSet.id": 137438953686,
-        "ForumSet.@postCount": 65,
-        "ForumSet.creationDate": "2010-04-25 22:10:32"
-      },
-      "v_type": "Forum"
-    },
-    {
-      "v_id": "687194810508",
-      "attributes": {
-        "ForumSet.title": "Wall of Hector Hugh Michie",
-        "ForumSet.@personId": 10995116283784,
-        "ForumSet.id": 687194810508,
-        "ForumSet.@postCount": 39,
-        "ForumSet.creationDate": "2010-12-19 15:33:30"
-      },
-      "v_type": "Forum"
-    }
-  ]}]
-}
+// results of RUN QUERY bi_4("MusicalArtist", "Burma")
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_3_results.json[]
 ----
 
 *Example 4.* For a given country, count all the distinct triples of Persons such that:
@@ -316,44 +186,10 @@ Distinct means that if a certain 3 vertices appear once in the results, it will 
 
 [source,gsql]
 ----
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_4.gsql[]
+// results of RUN QUERY bi_17("Spain")
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_4_results.json[]
 
-USE GRAPH ldbc_snb
-
-CREATE QUERY bi_17(string cName) FOR GRAPH ldbc_snb SYNTAX v2 {
-  TYPEDEF TUPLE <uint a, uint b, uint c> triplet;
-  SetAccum<triplet> @@tripletSet;
-  SumAccum<int> @@tripletCount;
-
-  C =
-    SELECT c
-    FROM Country:c -(<IS_PART_OF.<IS_LOCATED_IN)- Person:p1,
-         :c -(<IS_PART_OF.<IS_LOCATED_IN)- Person:p2,
-         :c -(<IS_PART_OF.<IS_LOCATED_IN)- Person:p3,
-         :p1 -(KNOWS)- :p2 -(KNOWS)- :p3 -(KNOWS)- :p1
-    WHERE c.name == cName AND p1.id < p2.id AND p2.id < p3.id
-    ACCUM @@tripletSet += triplet(p1.id, p2.id, p3.id);
-
-  @@tripletCount = @@tripletSet.size();
-  @@tripletSet.clear();
-  PRINT @@tripletCount;
-}
-
-
-INSTALL QUERY bi_17
-
-RUN QUERY bi_17("Spain")
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@tripletCount": 242}]
-}
 ----
 
 *More Examples.* We translated http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC-SNB] BI and IC queries using CPM, and shared the translation in github. Please refer to the query translation https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries_conjunctive/queries[here]. Most of the queries are installed as functions, you can find sample parameter(s) of the functions from https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/seeds[here].
@@ -366,95 +202,29 @@ As mentioned when we first described pattern matching, in xref:tutorials:pattern
 
 [source,gsql]
 ----
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_1.gsql[]
 
-USE GRAPH ldbc_snb
-
-#start from a vertex type "Person"
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  F  =  SELECT t
-        FROM Person:s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- Person:t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-              AND t.lastName LIKE "S%"
-        POST-ACCUM @@cnt+=1;
-
-  PRINT  @@cnt;
-
-}
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 8}]
-}
+// results
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_1_results.json[]
 ----
 
 *Example 2.* Same query as example 1, but without beginning with vertex types. GSQL compiler can infer the types of :s.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_2.gsql[]
 
-#both end points of the pattern do not have vertex types.
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  F  =  SELECT t
-        FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" AND t.lastName LIKE "S%"
-        POST-ACCUM @@cnt+=1;
-
-  PRINT  @@cnt;
-
-}
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 8}]
-}
+// results
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_3_results.json[]
 ----
 
 *Example 3.* Count the LIKES edge.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_3.gsql[]
 
-# a pattern starts without any information.
-INTERPRET QUERY () SYNTAX v2 {
+// results
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_source_vertex_set_ex_3_results.json[]
 
-  SumAccum<int> @@cnt;
-
-  F  =  SELECT msg
-        FROM  -(LIKES>:e1)- :msg
-        ACCUM @@cnt+=1;
-
-  PRINT  @@cnt;
-
-}
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 2190095}]
-}
 ----

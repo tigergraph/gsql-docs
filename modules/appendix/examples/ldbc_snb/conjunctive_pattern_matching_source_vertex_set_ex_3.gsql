@@ -1,0 +1,14 @@
+USE GRAPH ldbc_snb
+
+// a pattern starts without any information.
+INTERPRET QUERY () SYNTAX v2 {
+
+  SumAccum<int> @@cnt;
+
+  F  =  SELECT msg
+        FROM  -(LIKES>:e1)- :msg
+        ACCUM @@cnt+=1;
+
+  PRINT  @@cnt;
+
+}

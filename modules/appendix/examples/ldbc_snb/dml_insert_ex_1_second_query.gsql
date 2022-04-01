@@ -1,0 +1,16 @@
+CREATE QUERY insert_edge_and_vertex () SYNTAX v2{
+
+  // add a celebrity person node using INSERT INTO statement.
+  INSERT INTO Person VALUES (100000000,"Tiger", "Woods", "m", _, _,_,_,_,_);
+
+  R  =  SELECT t
+        FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+         AND t.last_name LIKE "S%" AND year(msg.creationDate) == 2012
+        PER (s, t)
+        ACCUM
+            // add edges connecting "tiger" and t with a 6/1/2020 time stamp
+            INSERT INTO Knows VALUES(100000000, t, to_datetime("2020-06-01"));
+
+  PRINT R [R.id, R.first_name, R.last_name];
+}

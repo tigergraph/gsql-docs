@@ -1,0 +1,20 @@
+CREATE QUERY update_knows_ts () SYNTAX v2 {
+
+  // update the vertex tiger's attributes
+  // creationDate and languages spoken in POST-ACCUM
+  R = SELECT p
+      FROM Person:p
+      WHERE p.first_name == "Tiger" AND p.last_name == "Woods"
+      POST-ACCUM
+            # update simple base type attribute
+            p.creationDate = to_datetime("2020-6-1"),
+            # update  collection-type attribute
+            p.speaks = ("english", "golf");
+
+  // DML-sub level, update Knows edge attribute "creationDate" in ACCUM
+  R  =  SELECT t
+        FROM Person:s-(Knows:e) -:t
+        WHERE s.first_name == "Tiger" and s.last_name == "Woods"
+        #update the Knows edge time stamp
+        ACCUM e.creationDate = to_datetime("2020-10-01");
+}

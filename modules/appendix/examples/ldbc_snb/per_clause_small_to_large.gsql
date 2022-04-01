@@ -1,0 +1,12 @@
+// recommended, start from small cardinality end (Tag), and use per tgt
+CREATE QUERY q4 () SYNTAX v2 {
+
+  SumAccum<int> @cnt;
+
+  V = SELECT s
+      FROM Tag:t-(<HAS_TAG)-Forum:f -(CONTAINER_OF>)-Post:p  - (<LIKES)- Person:s
+      PER (s)
+      ACCUM s.@cnt += 1;
+
+  PRINT V.size();
+}

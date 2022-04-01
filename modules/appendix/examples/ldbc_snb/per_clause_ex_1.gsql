@@ -1,0 +1,12 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+  SumAccum<int> @@cnt;
+
+ R =   SELECT c
+       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
+       PER    (c)
+       ACCUM  @@cnt +=1;
+
+ PRINT @@cnt;
+}

@@ -1,0 +1,15 @@
+USE GRAPH ldbc_snb
+
+// not recommended, since it does per (src).
+CREATE QUERY q1 () SYNTAX v2 {
+
+  SumAccum<int> @@cnt ;
+
+  T = SELECT c
+      FROM Comment:c - (<LIKES) - Person:ps - (IS_LOCATED_IN>) - City:city
+      WHERE year(c.creationDate) >= 2006
+      PER (c)
+      ACCUM @@cnt += 1;
+
+  PRINT @@cnt;
+}

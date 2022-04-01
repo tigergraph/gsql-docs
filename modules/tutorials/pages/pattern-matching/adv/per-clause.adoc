@@ -179,166 +179,42 @@ S3 = SELECT s
 
 [source,gsql]
 ----
-//Example 1.
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/per_clause_ex_1.gsql[]
 
-INTERPRET QUERY () SYNTAX v2 {
-  SumAccum<int> @@cnt;
+// results
+include::appendix:example$ldbc_snb/per_clause_ex_1_results.json[]
 
- R =   SELECT c
-       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
-       PER    (c)
-       ACCUM  @@cnt +=1;
-
- PRINT @@cnt;
-}
-
-//results
-Using graph 'ldbc_snb'
-The query AA is dropped.
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 111}]
-}
 ----
 
 *Example 2.* Count the number of posts liked by a person who is located in a city that belongs to a country. (All cities are in a country, but humor us.  We are reusing the same FROM pattern in several examples.)
 
 [source,gsql]
 ----
-//Example 2.
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-  SumAccum<int> @@cnt;
-
- R =   SELECT p
-       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
-       PER    (p)
-       ACCUM  @@cnt +=1;
-
- PRINT @@cnt;
+include::appendix:example$ldbc_snb/per_clause_ex_2.gsql[]
 
 //result
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 70668}]
-}
+
+include::appendix:example$ldbc_snb/per_clause_ex_2_results.json[]
+
 ----
 
 *Example 3.* Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country.
 
 [source,gsql]
 ----
-//Exmaple 3
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/per_clause_ex_3.gsql[]
+// results
+include::appendix:example$ldbc_snb/per_clause_ex_3_results.json[]
 
-INTERPRET QUERY () SYNTAX v2{
-
- MapAccum<string, SumAccum<int>> @@postPerCountry;
-
- R =   SELECT p
-       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
-       WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
-       PER    (c, p)
-       ACCUM  @@postPerCountry += (c.name -> 1);
-
- PRINT @@postPerCountry;
-}
-
-//results
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@postPerCountry": {
-    "Dominican_Republic": 395,
-    "Angola": 12,
-    "Cambodia": 4002
-  }}]
-}
 ----
 
 *Example 4.*  Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country. Use local accumulators this time.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2{
-
- SumAccum<int> @postCnt;
-
- R =   SELECT c
-       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
-       WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
-       PER    (c, p) //per (country, post), add 1 to c.@postCnt
-       ACCUM  c.@postCnt += 1;
-
- PRINT R;
-}
-
-//results
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"R": [
-    {
-      "v_id": "2",
-      "attributes": {
-        "@postCnt": 12,
-        "name": "Angola",
-        "id": 2,
-        "url": "http://dbpedia.org/resource/Angola"
-      },
-      "v_type": "Country"
-    },
-    {
-      "v_id": "67",
-      "attributes": {
-        "@postCnt": 4002,
-        "name": "Cambodia",
-        "id": 67,
-        "url": "http://dbpedia.org/resource/Cambodia"
-      },
-      "v_type": "Country"
-    },
-    {
-      "v_id": "11",
-      "attributes": {
-        "@postCnt": 395,
-        "name": "Dominican_Republic",
-        "id": 11,
-        "url": "http://dbpedia.org/resource/Dominican_Republic"
-      },
-      "v_type": "Country"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/per_clause_ex_4.gsql[]
+// results
+include::appendix:example$ldbc_snb/per_clause_ex_4_results.json[]
 ----
 
 == Performance and Best Practices
@@ -353,35 +229,12 @@ Per target is in general faster than Per source. In the example below, query q2 
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
 
-# not recommended, since it does per (src).
-CREATE QUERY q1 () SYNTAX v2 {
+include::appendix:example$ldbc_snb/per_clause_per_source.gsql[]
 
-  SumAccum<int> @@cnt ;
+// recommended, since it does per (tgt)
+include::appendix:example$ldbc_snb/per_clause_per_target.gsql[]
 
-  T = SELECT c
-      FROM Comment:c - (<LIKES) - Person:ps - (IS_LOCATED_IN>) - City:city
-      WHERE year(c.creationDate) >= 2006
-      PER (c)
-      ACCUM @@cnt += 1;
-
-  PRINT @@cnt;
-}
-
-# recommended, since it does per (tgt)
-CREATE QUERY q2 () SYNTAX v2 {
-
-  SumAccum<int> @@cnt ;
-
-  T = SELECT c
-      FROM City:city - (<IS_LOCATED_IN) - Person:ps - (LIKES>) - Comment:c
-      WHERE year(c.creationDate) >= 2006
-      PER (c)
-      ACCUM @@cnt += 1;
-
-  PRINT @@cnt;
-}
 ----
 
 === Write Patterns with Smallest Expected Vertex Set on the Left
@@ -390,34 +243,11 @@ The match table is built by traversing the pattern from left to right. Follow th
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
 
-# not recommended, since the pattern starts from a large cardinality vertex type
-# (Person), and ends at a small cardinality vertex type (Tag).
-CREATE QUERY q3 () SYNTAX v2 {
+include::appendix:example$ldbc_snb/per_clause_large_to_small.gsql[]
 
-  SumAccum<int> @cnt;
+include::appendix:example$ldbc_snb/per_clause_small_to_large.gsql[]
 
-  V = SELECT s
-      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-:f - (HAS_TAG>) - :t
-      PER (s)
-      ACCUM s.@cnt += 1;
-
-  PRINT V.size();
-}
-
-# recommended, start from small cardinality end (Tag), and use per tgt
-CREATE QUERY q4 () SYNTAX v2 {
-
-  SumAccum<int> @cnt;
-
-  V = SELECT s
-      FROM Tag:t-(<HAS_TAG)-Forum:f -(CONTAINER_OF>)-Post:p  - (<LIKES)- Person:s
-      PER (s)
-      ACCUM s.@cnt += 1;
-
-  PRINT V.size();
-}
 ----
 
 === Specify Complete Type Information
@@ -426,34 +256,11 @@ Specifying complete type information improves performance. For example, query q6
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
 
-#we do not put Forum befoe :f, even if we know it.
-CREATE QUERY q5 () SYNTAX v2 {
+include::appendix:example$ldbc_snb/per_clause_not_specify_complete_type_info.gsql[]
 
-  SumAccum<int> @@person_cnt;
+include::appendix:example$ldbc_snb/per_clause_specify_complete_type_info.gsql[]
 
-  V = SELECT s
-      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-:f - (HAS_TAG>) - :t
-      PER (s)
-      ACCUM @@person_cnt += 1;
-
-  PRINT @@person_cnt;
-}
-
-
-#recommended: we put Forum as the type info.
-CREATE QUERY q6 () SYNTAX v2 {
-
-  SumAccum<int> @@person_cnt;
-
-  V = SELECT s
-      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-Forum:f - (HAS_TAG>) - :t
-      PER (s)
-      ACCUM @@person_cnt += 1;
-
-  PRINT @@person_cnt;
-}
 ----
 
 == LDBC Benchmark Queries

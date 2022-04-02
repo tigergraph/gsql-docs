@@ -1,0 +1,52 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"acc_msg_continent": [
+    {
+      "v_id": "824640012997",
+      "attributes": {
+        "browser_used": "Firefox",
+        "length": 7,
+        "location_ip": "27.112.21.246",
+        "@continent_name": "Asia",
+        "id": 824640012997,
+        "creation_date": "2011-01-31 23:54:28",
+        "content": "no way!"
+      },
+      "v_type": "Comment"
+    },
+    {
+      "v_id": "824636727408",
+      "attributes": {
+        "browser_used": "Firefox",
+        "length": 3,
+        "location_ip": "31.2.225.17",
+        "@continent_name": "Europe",
+        "id": 824636727408,
+        "creation_date": "2011-01-31 23:57:46",
+        "content": "thx"
+      },
+      "v_type": "Comment"
+    },
+    {
+      "v_id": "824634837528",
+      "attributes": {
+        "image_file": "",
+        "browser_used": "Internet Explorer",
+        "length": 115,
+        "location_ip": "87.251.6.121",
+        "@continent_name": "Asia",
+        "id": 824634837528,
+        "creation_date": "2011-01-31 23:58:03",
+        "lang": "tk",
+        "content": "About Adolf Hitler, iews. His writings and methods were often adapted to need and circumstance, although there were"
+      },
+      "v_type": "Post"
+    }
+  ]}]
+}

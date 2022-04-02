@@ -1,0 +1,18 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+  SumAccum<INT> @@commentCnt = 0;
+
+  // find top 3 latest comments that is liked or created by Viktor Akhiezer
+  // and the total number of comments related to Viktor Akhiezer
+  top_3_comments = SELECT p
+                 FROM Person:s - ((<HAS_CREATOR|LIKES>)*1) - Comment:p
+                 WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+                 ACCUM @@comment_cnt += 1
+                 ORDER BY p.creation_date DESC
+                 LIMIT 3;
+
+  PRINT top_3_comments;
+  // total number of comments related to Viktor Akhiezer
+  PRINT  @@comment_cnt;
+}

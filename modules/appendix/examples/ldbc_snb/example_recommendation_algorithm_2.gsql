@@ -1,0 +1,41 @@
+CREATE QUERY recommend_message (String fn, String ln) SYNTAX v2{
+
+  SumAccum<int> @msg_in_common = 0;
+  SumAccum<int> @msg_cnt = 0 ;
+  SumAccum<int> @@input_person_msg_cnt= 0;
+  SumAccum<float> @similarity_score;
+  SumAccum<float> @rank;
+  SumAccum<float> @tag_cnt = 0;
+  OrAccum @Liked = false;
+  float sqrt_of_input_person_msg_cnt;
+
+   #1. mark messages liked by input user
+   #2. find common messages between input user and other persons
+    Others =
+       SELECT p
+       FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
+       WHERE s.first_name == fn AND s.last_name == ln
+       ACCUM msg.@Liked = true, @@input_person_msg_cnt+= 1,
+             p.@msg_in_common += 1;
+
+    sqrt_of_input_person_msg_cnt = sqrt(@@input_person_msg_cnt);
+
+    #calculate cosine similarity score.
+    #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
+    Others  =
+        SELECT o
+        FROM Others:o-(LIKES>)-:msg
+        ACCUM o.@msg_cnt += 1
+        POST-ACCUM o.@similarity_score = o.@msg_in_common/(sqrt_of_input_person_msg_cnt * sqrt(o.@msg_cnt));
+
+   #recommend new messages to input user that have not been liked by him.
+    recommended_message =
+             SELECT msg
+             FROM Others:o-(LIKES>) - :msg
+             WHERE  msg.@Liked == false
+             ACCUM msg.@rank +=o.@similarity_score
+             ORDER BY msg.@rank DESC
+             LIMIT 3;
+
+  PRINT   recommended_message[recommended_message.content, recommended_message.@rank];
+}

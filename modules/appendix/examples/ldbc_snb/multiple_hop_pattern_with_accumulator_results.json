@@ -1,0 +1,39 @@
+
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"favorite_authors": [
+    {
+      "v_id": "8796093025410",
+      "attributes": {
+        "favorite_authors.first_name": "Priyanka",
+        "favorite_authors.last_name": "Singh",
+        "favorite_authors.@likes_cnt": 1
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "2199023260091",
+      "attributes": {
+        "favorite_authors.first_name": "Janne",
+        "favorite_authors.last_name": "Seppala",
+        "favorite_authors.@likes_cnt": 1
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "15393162796846",
+      "attributes": {
+        "favorite_authors.first_name": "Mario",
+        "favorite_authors.last_name": "Santos",
+        "favorite_authors.@likes_cnt": 1
+      },
+      "v_type": "Person"
+    }
+  ]}]
+}

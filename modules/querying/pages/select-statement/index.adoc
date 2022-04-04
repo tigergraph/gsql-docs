@@ -487,8 +487,8 @@ Results::
 .sampleEx3.json
 [source,gsql]
 ----
-GSQL > RUN QUERY sample_ex_3()
-include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex.gsql[]
+include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex_run.gsql[]
+include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex_results.json[]
 ----
 --
 ====

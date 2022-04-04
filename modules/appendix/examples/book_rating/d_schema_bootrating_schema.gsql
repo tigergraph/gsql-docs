@@ -1,8 +1,6 @@
 CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
-CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING)
-    WITH STATS="outdegree_by_edgetype"
-CREATE VERTEX Book  (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT)
-    WITH STATS="none"
+CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING) WITH STATS="outdegree_by_edgetype"
+CREATE VERTEX Book (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT) WITH STATS="none"
 CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
 CREATE UNDIRECTED EDGE User_Occupation (FROM User, TO Occupation)
 CREATE UNDIRECTED EDGE Book_Genre (FROM Book, TO Genre)

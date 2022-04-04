@@ -6,8 +6,8 @@ CREATE QUERY file_ex (STRING file_location) FOR GRAPH Work_Net {
     PRINT "header" TO_CSV f1;
 
     USWorkers = SELECT v FROM P:v
-        WHERE v.locationId == "us"
-        ACCUM f1.println(v.id, v.interestList);
+        WHERE v.location_id == "us"
+        ACCUM f1.println(v.id, v.interest_list);
 
     PRINT "footer" TO_CSV f1;
 }

@@ -1,5 +1,5 @@
-// Change all "Person" vertices with location equal to "us" to "USA"
 CREATE QUERY update_ex() FOR GRAPH Work_Net  {
+    // This query changes all "Person" vertices with location equal to "us" to "USA"
     S = {Person.*};
 
     UPDATE s FROM S:s

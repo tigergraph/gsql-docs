@@ -279,7 +279,7 @@ The following query finds all vertices which are reachable from a starting seed 
 .Example 1. Simple WHILE loop
 [source,gsql]
 ----
-include::appendix:example$work_net/controlfow_while.gsql[]
+include::appendix:example$work_net/controlflow_while.gsql[]
 ----
 --
 
@@ -289,7 +289,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY reachable("person1")
+RUN QUERY reachable("person1")
 include::appendix:example$work_net/controlflow_while_results.json[]
 ----
 --
@@ -314,7 +314,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY reachableWithinTwo("person1")
+include::appendix:example$work_net/controlflow_while_2_run.gsql[]
 include::appendix:example$work_net/controlflow_while_2_results.json[]
 ----
 --
@@ -465,7 +465,7 @@ This query counts the number of employees from a given country and list their ID
 
 [source,gsql]
 ----
-include::appendix:example$work_net/controlfow_querybody_foreach_2.gsql[]
+include::appendix:example$work_net/controlflow_querybody_foreach_2.gsql[]
 ----
 --
 
@@ -475,7 +475,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY employeeByCountry("us")
+include::appendix:example$work_net/controlflow_querybody_foreach_2_run.gsql[]
 include::appendix:example$work_net/controlflow_querybody_foreach_2_results.json[]
 ----
 --

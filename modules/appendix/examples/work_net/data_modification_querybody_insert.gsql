@@ -1,4 +1,4 @@
-CREATE QUERY insert_ex(STRING name, STRING name2, STRING name3, STRING comp) FOR GRAPH Works_Net {
+CREATE QUERY insert_ex(STRING name, STRING name2, STRING name3, STRING comp) FOR GRAPH Work_Net {
     /* Vertex insertion
      Adds 2 'Company' vertices. One is located in the USA, and a sister company in Japan.
     Company:

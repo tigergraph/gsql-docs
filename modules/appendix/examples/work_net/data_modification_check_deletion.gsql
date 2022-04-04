@@ -1,6 +1,6 @@
 CREATE QUERY count_at_location(STRING loc) FOR GRAPH Work_Net {
     SetAccum<EDGE> @@sel_edge;
-    Start = {person.*};
+    Start = {Person.*};
 
     SV = SELECT s FROM Start:s
         WHERE s.location_id == loc;

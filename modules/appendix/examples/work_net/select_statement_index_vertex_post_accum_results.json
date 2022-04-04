@@ -2,52 +2,35 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [{"employees": [
     {
-      "v_id": "person11",
-      "attributes": {
-        "interestList": [
-          "sport",
-          "football"
-        ],
-        "skillSet": [10],
-        "skillList": [10],
-        "@worksAndLives": true,
-        "location_id": "can",
-        "interestSet": [ "football", "sport" ],
-        "id": "person11",
-        "@company": ["company5"]
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "id": "person10",
-        "@company": ["company1"]
-      },
-      "v_type": "Person"
-    },
-    {
       "v_id": "person1",
       "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
+        "skill_set": [
+          1,
+          2,
+          3
+        ],
+        "skill_list": [
+          1,
+          2,
+          3
+        ],
+        "@works_and_lives": true,
+        "interest_list": [
+          "management",
+          "financial"
+        ],
         "id": "person1",
+        "interest_set": [
+          "financial",
+          "management"
+        ],
+        "location_id": "us",
         "@company": ["company1"]
       },
       "v_type": "Person"
@@ -55,14 +38,64 @@
     {
       "v_id": "person2",
       "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "@worksAndLives": true,
-        "locationId": "chn",
-        "interestSet": ["engineering"],
+        "skill_set": [
+          2,
+          3,
+          5,
+          6
+        ],
+        "skill_list": [
+          2,
+          3,
+          5,
+          6
+        ],
+        "@works_and_lives": true,
+        "interest_list": ["engineering"],
         "id": "person2",
+        "interest_set": ["engineering"],
+        "location_id": "chn",
         "@company": ["company2"]
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person11",
+      "attributes": {
+        "skill_set": [10],
+        "skill_list": [10],
+        "@works_and_lives": true,
+        "interest_list": [
+          "sport",
+          "football"
+        ],
+        "id": "person11",
+        "interest_set": [
+          "football",
+          "sport"
+        ],
+        "location_id": "can",
+        "@company": ["company5"]
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person10",
+      "attributes": {
+        "skill_set": [3],
+        "skill_list": [3],
+        "@works_and_lives": true,
+        "interest_list": [
+          "football",
+          "sport"
+        ],
+        "id": "person10",
+        "interest_set": [
+          "sport",
+          "football"
+        ],
+        "location_id": "us",
+        "@company": ["company1"]
       },
       "v_type": "Person"
     }

@@ -9,7 +9,7 @@ CREATE QUERY employee_by_country(STRING country_name) FOR GRAPH Work_Net {
         ACCUM @@employees += (v.location_id -> v.id);
 
     // Iterate the map using (key,value) pairs
-    FOREACH (key,val) in @@employees DO
+    FOREACH (key,val) IN @@employees DO
         IF key == country_name THEN
         PRINT val.size();
 

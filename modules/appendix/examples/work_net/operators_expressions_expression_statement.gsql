@@ -1,5 +1,5 @@
 CREATE QUERY expression_stmnt_ex() FOR GRAPH Work_Net {
-    TYPEDEF tuple<STRING country_name, STRING company_name> Company_Info;
+    TYPEDEF TUPLE<STRING country_name, STRING company_name> Company_Info;
 
     ListAccum<Company_Info> @employer_info;
     SumAccum<INT> @@a;
@@ -21,15 +21,15 @@ CREATE QUERY expression_stmnt_ex() FOR GRAPH Work_Net {
 
     employees = SELECT s FROM start:s -(Works_For)- :t
         ACCUM // exprStmnt := name "."localAccumName ("+="| "=") expr
-                    s.@employers += t.id,
-       		        #exprStmnt := name ["<" type ["," type"]* ">"] "(" [argList] ")"
-		            s.@employer_info += Company_Info(t.country, t.id),
-                    #gAccumAccumStmt := globalAccumName "+=" expr
-		            @@countrySet += t.country
-	                #exprStmnt := name "."localAccumName ["."name "(" [argList] ")"]
-	          POST-ACCUM s.@employerCount += s.@employers.size();
+             s.@employers += t.id,
+       		 // exprStmnt := name ["<" type ["," type"]* ">"] "(" [argList] ")"
+		     s.@employer_info += Company_Info(t.country, t.id),
+             // gAccumAccumStmt := globalAccumName "+=" expr
+		     @@country_set += t.country
+	         // exprStmnt := name "."localAccumName ["."name "(" [argList] ")"]
+	         POST-ACCUM s.@employer_count += s.@employers.size();
 
-  #exprStmnt := globalAccumName ["."name "(" [argList] ")"]+
-  PRINT @@country_set.size();
-  PRINT employees;
+    // exprStmnt := globalAccumName ["."name "(" [argList] ")"]+
+    PRINT @@country_set.size();
+    PRINT employees;
 }

@@ -1,115 +1,114 @@
-
 {
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
     {"before_sample": [
       {
+        "v_id": "company2",
+        "attributes": {
+          "country": "chn",
+          "@times_traversed_with_sample": 2,
+          "@times_traversed_no_sample": 6,
+          "id": "company2"
+        },
+        "v_type": "Company"
+      },
+      {
         "v_id": "company4",
         "attributes": {
           "country": "us",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
+          "@times_traversed_with_sample": 1,
+          "@times_traversed_no_sample": 1,
           "id": "company4"
         },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company5",
-        "attributes": {
-          "country": "can",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company5"
-        },
-        "v_type": "company"
+        "v_type": "Company"
       },
       {
         "v_id": "company3",
         "attributes": {
           "country": "jp",
-          "@timesTraversedNoSample": 3,
-          "@timesTraversedWithSample": 3,
+          "@times_traversed_with_sample": 2,
+          "@times_traversed_no_sample": 3,
           "id": "company3"
         },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company2",
-        "attributes": {
-          "country": "chn",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 4,
-          "id": "company2"
-        },
-        "v_type": "company"
+        "v_type": "Company"
       },
       {
         "v_id": "company1",
         "attributes": {
           "country": "us",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 3,
+          "@times_traversed_with_sample": 6,
+          "@times_traversed_no_sample": 6,
           "id": "company1"
         },
-        "v_type": "company"
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {
+          "country": "can",
+          "@times_traversed_with_sample": 1,
+          "@times_traversed_no_sample": 1,
+          "id": "company5"
+        },
+        "v_type": "Company"
       }
     ]},
     {"after_sample": [
       {
+        "v_id": "company2",
+        "attributes": {
+          "country": "chn",
+          "@times_traversed_with_sample": 2,
+          "@times_traversed_no_sample": 6,
+          "id": "company2"
+        },
+        "v_type": "Company"
+      },
+      {
         "v_id": "company4",
         "attributes": {
           "country": "us",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
+          "@times_traversed_with_sample": 1,
+          "@times_traversed_no_sample": 1,
           "id": "company4"
         },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company5",
-        "attributes": {
-          "country": "can",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company5"
-        },
-        "v_type": "company"
+        "v_type": "Company"
       },
       {
         "v_id": "company3",
         "attributes": {
           "country": "jp",
-          "@timesTraversedNoSample": 3,
-          "@timesTraversedWithSample": 3,
+          "@times_traversed_with_sample": 2,
+          "@times_traversed_no_sample": 3,
           "id": "company3"
         },
-        "v_type": "company"
+        "v_type": "Company"
       },
       {
-        "v_id": "company2",
+        "v_id": "company5",
         "attributes": {
-          "country": "chn",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 4,
-          "id": "company2"
+          "country": "can",
+          "@times_traversed_with_sample": 1,
+          "@times_traversed_no_sample": 1,
+          "id": "company5"
         },
-        "v_type": "company"
+        "v_type": "Company"
       },
       {
         "v_id": "company1",
         "attributes": {
           "country": "us",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 3,
+          "@times_traversed_with_sample": 6,
+          "@times_traversed_no_sample": 6,
           "id": "company1"
         },
-        "v_type": "company"
+        "v_type": "Company"
       }
     ]}
   ]

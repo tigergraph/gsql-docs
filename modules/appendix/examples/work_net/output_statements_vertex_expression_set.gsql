@@ -2,7 +2,7 @@
 
 CREATE QUERY v_expr_set () FOR GRAPH Work_Net {
     SumAccum<INT> @count;
-    C = {company.*};
+    C = {Company.*};
 
     // include some print statements here
 }

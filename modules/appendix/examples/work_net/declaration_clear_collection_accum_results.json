@@ -1,52 +1,67 @@
-[{
-  "stuff_count": [
-    {"attributes": {"Comp.@stuff.size()": 23},
-      "v_id": "company2",
-      "v_type": "company"
-    },
-    {"attributes": {"Comp.@stuff.size()": 7},
-      "v_id": "company4",
-      "v_type": "company"
-    },
-    {"attributes": {"Comp.@stuff.size()": 12},
-      "v_id": "company3",
-      "v_type": "company"
-    },
-    {"attributes": {"Comp.@stuff.size()": 21},
-      "v_id": "company1",
-      "v_type": "company"
-    },
-    {"attributes": {"Comp.@stuff.size()": 4},
-      "v_id": "company5",
-      "v_type": "company"
-    }]
-},
-  {
-    "all_stuff_count": 67
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
   },
-  {
-    "stuffClear": [
-      {"attributes": {"Comp.@stuff.size()": 0},
+  "results": [
+    {"stuff_count": [
+      {
         "v_id": "company2",
-        "v_type": "company"
+        "attributes": {"Comp.@stuff.size()": 23},
+        "v_type": "Company"
       },
-      {"attributes": {"Comp.@stuff.size()": 0},
+      {
         "v_id": "company4",
-        "v_type": "company"
+        "attributes": {"Comp.@stuff.size()": 7},
+        "v_type": "Company"
       },
-      {"attributes": {"Comp.@stuff.size()": 0},
+      {
         "v_id": "company3",
-        "v_type": "company"
+        "attributes": {"Comp.@stuff.size()": 12},
+        "v_type": "Company"
       },
-      {"attributes": {"Comp.@stuff.size()": 0},
+      {
         "v_id": "company1",
-        "v_type": "company"
+        "attributes": {"Comp.@stuff.size()": 21},
+        "v_type": "Company"
       },
-      {"attributes": {"Comp.@stuff.size()": 0},
+      {
         "v_id": "company5",
-        "v_type": "company"
-      }]
-  },
-  {
-    "all_stuff_clear": 0
-  }]
+        "attributes": {"Comp.@stuff.size()": 4},
+        "v_type": "Company"
+      }
+    ]},
+    {"all_stuff_count": 67},
+    {"stuff_clear": [
+      {
+        "v_id": "company2",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company4",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company3",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company1",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      }
+    ]},
+    {"all_stuff_clear": 0}
+  ]
+}

@@ -1,13 +1,13 @@
 CREATE QUERY list_accum_update_ex2(SET<VERTEX<Person>> seed) FOR GRAPH Work_Net api("v2") {
 
-    // Each person has an LIST<INT> of skills and a LIST<STRING COMPRESS> of interests.
+    // Each person has an LIST<INT> of skills and a LIST<STRING> of interests.
     // This function copies their lists into ListAccums, and then udpates the last
     // int with -99 and updates the last string with "fizz".
     ListAccum<INT> @int_list;
-    ListAccum<STRING COMPRESS> @string_list;
+    ListAccum<STRING> @string_list;
     ListAccum<STRING> @@int_fails, @@str_fails;
 
-    S0 (person) = seed;
+    S0 (Person) = seed;
     S1 = SELECT s
         FROM S0:s
         ACCUM
@@ -25,3 +25,4 @@ CREATE QUERY list_accum_update_ex2(SET<VERTEX<Person>> seed) FOR GRAPH Work_Net 
     PRINT S1[S1.skill_list, S1.interest_list, S1.@int_list, S1.@string_list]; // api v2
     PRINT @@int_fails, @@str_fails;
 }
+// RUN QUERY list_accum_update_ex2(["person1","person5"])

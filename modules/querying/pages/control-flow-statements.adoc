@@ -448,10 +448,9 @@ include::appendix:example$work_net/controlflow_querybody_foreach.gsql[]
 Results::
 +
 --
-.companyCount Results
 [source,gsql]
 ----
-GSQL > RUN QUERY company_count("us")
+include::appendix:example$work_net/controlflow_querybody_foreach_run.gsql[]
 include::appendix:example$work_net/controlflow_querybody_foreach_results.json[]
 ----
 --

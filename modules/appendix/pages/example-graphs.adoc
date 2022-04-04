@@ -1,53 +1,56 @@
 = Example Graphs
 :page-aliases: querying:appendix-query/example-graphs
 
-Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: *workNet* , *socialNet* , *friendNet* , *computerNet* , *minimalNet* , and**investmentNet** .  The tar-gzip file *gsql_ref_examples_2.0.gz* contains all of these files. Each graph has its own folder. To create a particular graph, go in its folder and run the following command: +
-gsql graph_create.gsql
+Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: `Work_Net` , `Social_Net`, `Friend_Net`, `Computer_Net` , `Minimal_Net` , and `Investment_Net`.
+
+The tar-gzip file `gsql_ref_examples_2.0.gz` contains all of these files. Each graph has its own folder.
+
+To create a particular graph, go in its folder and run the following command:
+
+`gsql graph_create.gsql`
 
 link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Example Graph files]
 
-== *workNet*
+== Work_Net
 
-.graph_create.gsql for Work_Net
-
+.Schema for Work_Net
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX Person(PRIMARY_ID person_id STRING, id STRING, location_id STRING, skillSet SET<INT>, skill_list LIST<INT>, interest_set SET<STRING>, interestList LIST<STRING>)
-CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
-CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
-CREATE GRAPH workNet(*)
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, id STRING, location_id STRING, skill_set SET<INT>, skill_list LIST<INT>, interest_set SET<STRING>, interest_list LIST<STRING>)
+CREATE VERTEX Company(PRIMARY_ID client_id STRING, id STRING, country STRING)
+CREATE UNDIRECTED EDGE Works_For(FROM Person, TO Company, start_year INT, start_month INT, full_time BOOL)
+CREATE GRAPH Work_Net(*)
 
-USE GRAPH workNet // v1.2
-CREATE LOADING JOB loadMember FOR GRAPH workNet {
+USE GRAPH Work_Net 
+CREATE LOADING JOB load_member FOR GRAPH Work_Net {
   DEFINE FILENAME f;
   LOAD f
-    TO VERTEX person VALUES($0, $0, $1, _, _, SPLIT($3,"|"), SPLIT($3,"|") ),
+    TO VERTEX Person VALUES($0, $0, $1, _, _, SPLIT($3,"|"), SPLIT($3,"|") ),
     TO TEMP_TABLE t2(id, skill) VALUES ($0, flatten($2,"|",1));
 
   LOAD TEMP_TABLE t2
-    TO VERTEX person VALUES($0, _, _, $"skill", $"skill", _, _);
+    TO VERTEX Person VALUES($0, _, _, $"skill", $"skill", _, _);
 }
 
-CREATE LOADING JOB loadCompany FOR GRAPH workNet {
+CREATE LOADING JOB load_company FOR GRAPH Work_Net {
   DEFINE FILENAME f;
-  LOAD f TO VERTEX company VALUES($0, $0, $1);
+  LOAD f TO VERTEX Company VALUES($0, $0, $1);
 }
 
-CREATE LOADING JOB loadMemberCompany FOR GRAPH workNet {
+CREATE LOADING JOB load_member_company FOR GRAPH Work_Net {
   DEFINE FILENAME f;
-  LOAD f TO EDGE worksFor VALUES($0, $1, $2, $3, $4);
+  LOAD f TO EDGE Works_For VALUES($0, $1, $2, $3, $4);
 }
 
-RUN LOADING JOB loadMember USING f="./persons"
-RUN LOADING JOB loadCompany USING f="./companies"
-RUN LOADING JOB loadMemberCompany USING f="./person_company"
+RUN LOADING JOB load_member USING f="./persons"
+RUN LOADING JOB load_company USING f="./companies"
+RUN LOADING JOB load_member_company USING f="./person_company"
 ----
 
 
 
 .file: persons (vertices)
-
 [source,gsql]
 ----
 person1,us,1|2|3,management|financial
@@ -104,52 +107,50 @@ person12,company4,2014,1,1
 
 
 
-== *socialNet*
+== Social_Net
 
-.graph_create.gsql for socialNet
-
+.Schema for Social_Net
 [source,gsql]
 ----
-# Updated 5/1/18 for v2.0
 DROP ALL
-CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+CREATE VERTEX person(PRIMARY_ID person_id UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 CREATE UNDIRECTED EDGE friend(FROM person, TO person)
-CREATE VERTEX post(PRIMARY_ID postId UINT, subject STRING, postTime DATETIME)
+CREATE VERTEX post(PRIMARY_ID post_id UINT, subject STRING, post_time DATETIME)
 CREATE DIRECTED EDGE posted(FROM person, TO post)
-CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
-CREATE GRAPH socialNet(*)
+CREATE DIRECTED EDGE liked(FROM person, TO post, action_time DATETIME)
+CREATE GRAPH Social_Net(*)
 
-USE GRAPH socialNet // v1.2
-CREATE LOADING JOB loadMember FOR GRAPH socialNet {
+USE GRAPH Social_Net // v1.2
+CREATE LOADING JOB load_member FOR GRAPH Social_Net {
   DEFINE FILENAME f;
   LOAD f TO VERTEX person VALUES($0, $0, $1) ;
 }
 
-CREATE LOADING JOB loadFriend FOR GRAPH socialNet {
+CREATE LOADING JOB load_friend FOR GRAPH Social_Net {
   DEFINE FILENAME f;
   LOAD f TO EDGE friend VALUES($0, $1) ;
 }
 
-CREATE LOADING JOB loadPost FOR GRAPH socialNet {
+CREATE LOADING JOB load_post FOR GRAPH Social_Net {
   DEFINE FILENAME f;
   LOAD f TO VERTEX post VALUES($0, $1, $2);
 }
 
-CREATE LOADING JOB loadPosted FOR GRAPH socialNet {
+CREATE LOADING JOB load_posted FOR GRAPH Social_Net {
   DEFINE FILENAME f;
   LOAD f TO EDGE posted VALUES($0, $1) ;
 }
 
-CREATE LOADING JOB loadLiked FOR GRAPH socialNet {
+CREATE LOADING JOB load_liked FOR GRAPH Social_Net {
   DEFINE FILENAME f;
   LOAD f TO EDGE liked VALUES($0, $1, $2) ;
 }
 
-RUN LOADING JOB loadMember USING f="./persons"
-RUN LOADING JOB loadFriend USING f="./friends"
-RUN LOADING JOB loadPost USING f="./posts"
-RUN LOADING JOB loadPosted USING f="./posted"
-RUN LOADING JOB loadLiked USING f="./liked"
+RUN LOADING JOB load_member USING f="./persons"
+RUN LOADING JOB load_friend USING f="./friends"
+RUN LOADING JOB load_post USING f="./posts"
+RUN LOADING JOB load_posted USING f="./posted"
+RUN LOADING JOB load_liked USING f="./liked"
 ----
 
 
@@ -244,38 +245,36 @@ person8,4,2010-01-11 03:26:05
 
 
 
-== *friendNet*
+== Friend_Net
 
-.graph_create.gsql for friendNet
-
+.Schema for Friend_Net
 [source,gsql]
 ----
-# Updated 5/1/18 for v2.0
 DROP ALL
-CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING)
+CREATE VERTEX person(PRIMARY_ID person_id UINT, id STRING)
 CREATE UNDIRECTED EDGE friend(FROM person, TO person)
 CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
-CREATE GRAPH friendNet(*)
+CREATE GRAPH Friend_Net(*)
 
-USE GRAPH friendNet // v1.2
-CREATE LOADING JOB loadMember FOR GRAPH friendNet {
+USE GRAPH Friend_Net // v1.2
+CREATE LOADING JOB load_member FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
   LOAD f TO VERTEX person VALUES($0, $0);
 }
 
-CREATE LOADING JOB loadFriend FOR GRAPH friendNet {
+CREATE LOADING JOB load_friend FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
   LOAD f TO EDGE friend VALUES($0, $1);
 }
 
-CREATE LOADING JOB loadCoworker FOR GRAPH friendNet {
+CREATE LOADING JOB load_coworker FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
   LOAD f TO EDGE coworker VALUES($0, $1);
 }
 
-RUN LOADING JOB loadMember USING f="./persons"
-RUN LOADING JOB loadFriend USING f="./friends"
-RUN LOADING JOB loadCoworker USING f="./coworkers"
+RUN LOADING JOB load_member USING f="./persons"
+RUN LOADING JOB load_friend USING f="./friends"
+RUN LOADING JOB load_coworker USING f="./coworkers"
 ----
 
 
@@ -468,7 +467,7 @@ c4,c23,3,2
 
 == Minimal_Net
 
-.graph_create.gsql for minimalNet
+.graph_create.gsql for Minimal_Net
 
 [source,gsql]
 ----
@@ -478,7 +477,7 @@ CREATE UNDIRECTED EDGE Test_E(FROM testV, TO testV)
 CREATE GRAPH Minimal_Net(*)
 ----
 
-There is no loading job or data for minimalNet (hence, "minimal.")
+There is no loading job or data for Minimal_Net (hence, "minimal.")
 
 == Investment_Net
 

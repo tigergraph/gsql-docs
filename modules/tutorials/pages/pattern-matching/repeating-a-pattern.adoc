@@ -51,24 +51,14 @@ The first path is shorter than the rest; it is considered the only match.
 
 In this tutorial, we will use the Interpreted Mode for GSQL, introduced in TigerGraph 2.4. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
 
-*Example 1*. Find the direct or indirect superclass (including the self class) of the TagClass whose name is "TennisPlayer".
+*Example 1*. Find the direct or indirect superclass (including the self class) of the tag_class whose name is "tennis_player".
 
 .Example 1.  Directed Edge Pattern Unconstrained Repetition 
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =  SELECT t
-               FROM TagClass:s - (IS_SUBCLASS_OF>*) - TagClass:t
-               WHERE s.name == "TennisPlayer";
-
-    PRINT  TagClass1;
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1.gsql[]
 ----
-
 
 
 You can copy the above GSQL script to a file named example1.gsql, and invoke this script file in a Linux shell.
@@ -82,89 +72,25 @@ gsql example1.gsql
 
 
 
-Note below that the starting vertex s, whose name is TennisPlayer, is also a match, using a path with zero hops.
+Note below that the starting vertex s, whose name is tennis_player, is also a match, using a path with zero hops.
 
 . Output of Example 1
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [
-    {
-      "v_id": "211",
-      "attributes": {
-        "name": "Person",
-        "id": 211,
-        "url": "http://dbpedia.org/ontology/Person"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "0",
-      "attributes": {
-        "name": "Thing",
-        "id": 0,
-        "url": "http://www.w3.org/2002/07/owl#Thing"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "149",
-      "attributes": {
-        "name": "Athlete",
-        "id": 149,
-        "url": "http://dbpedia.org/ontology/Athlete"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "59",
-      "attributes": {
-        "name": "TennisPlayer",
-        "id": 59,
-        "url": "http://dbpedia.org/ontology/TennisPlayer"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "239",
-      "attributes": {
-        "name": "Agent",
-        "id": 239,
-        "url": "http://dbpedia.org/ontology/Agent"
-      },
-      "v_type": "TagClass"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1_results.json[]
+
 ----
 
 
 
-*Example 2*. Find the immediate superclass of the TagClass whose name is "TennisPlayer". (This is equivalent to a 1-hop non-repeating pattern.)
+*Example 2*. Find the immediate superclass of the tag_class whose name is "tennis_player". (This is equivalent to a 1-hop non-repeating pattern.)
 
 .Exmaple 2. Exactly 1 Repetition of A Directed Edge
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =  SELECT t
-               FROM TagClass:s - (IS_SUBCLASS_OF>*1) - TagClass:t
-               WHERE s.name == "TennisPlayer";
-
-  PRINT TagClass1;
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2.gsql[]
 ----
 
 
@@ -184,45 +110,19 @@ gsql example2.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [{
-    "v_id": "149",
-    "attributes": {
-      "name": "Athlete",
-      "id": 149,
-      "url": "http://dbpedia.org/ontology/Athlete"
-    },
-    "v_type": "TagClass"
-  }]}]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2_results.json[]
 ----
 
 
 
-*Example 3*. Find the 1 to 2 hops direct and indirect superclasses of the TagClass whose name is "TennisPlayer".
+*Example 3*. Find the 1 to 2 hops direct and indirect superclasses of the tag_class whose name is "tennis_player".
 
 .Example 3.  1 to 2 Repetition Of A Directed Edge. 
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3.gsql[]
 
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =  SELECT t
-               FROM TagClass:s - (IS_SUBCLASS_OF>*1..2) - TagClass:t
-               WHERE s.name == "TennisPlayer";
-
-    PRINT  TagClass1;
-}
 ----
 
 
@@ -242,56 +142,18 @@ gsql example3.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [
-    {
-      "v_id": "149",
-      "attributes": {
-        "name": "Athlete",
-        "id": 149,
-        "url": "http://dbpedia.org/ontology/Athlete"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "211",
-      "attributes": {
-        "name": "Person",
-        "id": 211,
-        "url": "http://dbpedia.org/ontology/Person"
-      },
-      "v_type": "TagClass"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3_results.json[]
 ----
 
 
 
-*Example 4*. Find the superclasses within 2 hops of the TagClass whose name is "TennisPlayer".
+*Example 4*. Find the superclasses within 2 hops of the tag_class whose name is "tennis_player".
 
 .Example 4.  Up-to 2 Repetition Of A Directed Edge. 
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =  SELECT t
-               FROM TagClass:s - (IS_SUBCLASS_OF>*..2) - TagClass:t
-               WHERE s.name == "TennisPlayer";
-
-    PRINT  TagClass1;
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4.gsql[]
 ----
 
 
@@ -311,65 +173,18 @@ gsql example4.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [
-    {
-      "v_id": "211",
-      "attributes": {
-        "name": "Person",
-        "id": 211,
-        "url": "http://dbpedia.org/ontology/Person"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "149",
-      "attributes": {
-        "name": "Athlete",
-        "id": 149,
-        "url": "http://dbpedia.org/ontology/Athlete"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "59",
-      "attributes": {
-        "name": "TennisPlayer",
-        "id": 59,
-        "url": "http://dbpedia.org/ontology/TennisPlayer"
-      },
-      "v_type": "TagClass"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4_results.json[]
 ----
 
 
 
-*Example 5*. Find the superclasses at least one hop from the TagClass whose name is "TennisPlayer".
+*Example 5*. Find the superclasses at least one hop from the tag_class whose name is "tennis_player".
 
 .Example 5.  At Least 1 Repetition Of A Directed Edge.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =  SELECT t
-               FROM TagClass:s - (IS_SUBCLASS_OF>*1..) - TagClass:t
-               WHERE s.name == "TennisPlayer";
-
-    PRINT  TagClass1;
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5.gsql[]
 ----
 
 
@@ -389,54 +204,7 @@ gsql example5.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [
-    {
-      "v_id": "211",
-      "attributes": {
-        "name": "Person",
-        "id": 211,
-        "url": "http://dbpedia.org/ontology/Person"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "0",
-      "attributes": {
-        "name": "Thing",
-        "id": 0,
-        "url": "http://www.w3.org/2002/07/owl#Thing"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "149",
-      "attributes": {
-        "name": "Athlete",
-        "id": 149,
-        "url": "http://dbpedia.org/ontology/Athlete"
-      },
-      "v_type": "TagClass"
-    },
-    {
-      "v_id": "239",
-      "attributes": {
-        "name": "Agent",
-        "id": 239,
-        "url": "http://dbpedia.org/ontology/Agent"
-      },
-      "v_type": "TagClass"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5_results.json[]
 ----
 
 
@@ -447,27 +215,8 @@ Using graph 'ldbc_snb'
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2{
-  SumAccum<INT> @@commentCnt = 0;
-
-  # find top 3 latest comments that is liked or created by Viktor Akhiezer
-  # and the total number of comments related to Viktor Akhiezer
-  Top3Comments = SELECT p
-                 FROM Person:s - ((<HAS_CREATOR|LIKES>)*1) - Comment:p
-                 WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-                 ACCUM @@commentCnt += 1
-                 ORDER BY p.creationDate DESC
-                 LIMIT 3;
-
-  PRINT Top3Comments;
-  # total number of comments related to Viktor Akhiezer
-  PRINT  @@commentCnt;
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6.gsql[]
 ----
-
-
 
 You can copy the above GSQL script to a file named example6.gsql, and invoke this script file in a Linux shell.
 
@@ -484,57 +233,8 @@ gsql example6.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [
-    {"Top3Comments": [
-      {
-        "v_id": "2061584720640",
-        "attributes": {
-          "browserUsed": "Chrome",
-          "length": 4,
-          "locationIP": "194.62.64.117",
-          "id": 2061584720640,
-          "creationDate": "2012-09-06 06:46:31",
-          "content": "fine"
-        },
-        "v_type": "Comment"
-      },
-      {
-        "v_id": "2061586872389",
-        "attributes": {
-          "browserUsed": "Chrome",
-          "length": 90,
-          "locationIP": "31.216.177.175",
-          "id": 2061586872389,
-          "creationDate": "2012-08-28 14:54:46",
-          "content": "About Hector Berlioz, his compositions Symphonie fantastique and GraAbout Who Knew, the gu"
-        },
-        "v_type": "Comment"
-      },
-      {
-        "v_id": "2061590804929",
-        "attributes": {
-          "browserUsed": "Chrome",
-          "length": 83,
-          "locationIP": "194.62.64.117",
-          "id": 2061590804929,
-          "creationDate": "2012-09-04 16:16:56",
-          "content": "About Muttiah Muralitharan, mit by nine degrees, five degrees being thAbout Steve M"
-        },
-        "v_type": "Comment"
-      }
-    ]},
-    {"@@commentCnt": 152}
-  ]
-}
+include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6_results.json[]
+
 ----
 
 

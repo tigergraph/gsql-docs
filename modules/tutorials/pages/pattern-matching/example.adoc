@@ -24,7 +24,7 @@ As a result, one way to avoid overfitting is to go one level upward. Instead of 
 * Others - (Likes>) -  NewMessage
 * Recommend NewMessage to Viktor
 
-*GSQL. RecommendMessage Application.*
+*GSQL. recommend_message Application.*
 
 This time, we create the query first and interpret the query by calling the query name with parameters. +
 If we are satisfied with this query, we can use `INSTALL QUERY queryName` to install the query, increasing performance.
@@ -33,43 +33,11 @@ If we are satisfied with this query, we can use `INSTALL QUERY queryName` to ins
 
 [source,gsql]
 ----
-use graph ldbc_snb
-set query_timeout=60000
-DROP QUERY RecommendMessage
+include::appendix:example$ldbc_snb/example_recommendation_algorithm.gsql[]
 
-CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
-
-  SumAccum<int> @TagInCommon;
-  SumAccum<float> @SimilarityScore;
-  SumAccum<float> @Rank;
-  OrAccum @Liked = false;
-
-   #1. mark messages liked by Viktor
-   #2. calculate log similarity score for each persons share the same
-   #   interests at Tag level.
-    Others =
-       SELECT p
-       FROM Person:s-(LIKES>)-:msg - (HAS_TAG>.<HAS_TAG.<LIKES)- :p
-       WHERE s.firstName == fn AND s.lastName == ln
-       ACCUM msg.@Liked = true, p.@TagInCommon +=1
-       POST-ACCUM p.@SimilarityScore = log (1 + p.@TagInCommon);
-
-    # recommend new messages to Viktor that have not liked by him.
-    RecommendedMessage =
-             SELECT msg
-             FROM Others:o-(LIKES>) - :msg
-             WHERE  msg.@Liked == false
-             ACCUM msg.@Rank +=o.@SimilarityScore
-             ORDER BY msg.@Rank DESC
-             LIMIT 2;
-
-  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
-}
-
-
-INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
-#try the second person with just parameter change.
-INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
+INTERPRET QUERY recommend_message ("Viktor", "Akhiezer")
+// try the second person with just parameter change.
+INTERPRET QUERY recommend_message ("Adriaan", "Jong")
 ----
 
 
@@ -89,36 +57,8 @@ gsql app1.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-The query RecommendMessage is dropped.
-The query RecommendMessage has been added!
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"RecommendedMessage": [
-    {
-      "v_id": "549760294602",
-      "attributes": {
-        "RecommendedMessage.@Rank": 4855.49219,
-        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
-      },
-      "v_type": "Post"
-    },
-    {
-      "v_id": "549760292109",
-      "attributes": {
-        "RecommendedMessage.@Rank": 4828.7251,
-        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
-      },
-      "v_type": "Post"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/example_recommendation_algorithm_results.json[]
+
 ----
 
 
@@ -132,12 +72,12 @@ When you are satisfied with your query in the GSQL interpreted mode, you can ins
 
 [source,coffeescript]
 ----
-#before installing the query, need to set the syntax version
+// before installing the query, need to set the syntax version
 SET syntax_version="v2"
 USE GRAPH ldbc_snb
 
-#install query
-INSTALL QUERY RecommendMessage
+// install query
+INSTALL QUERY recommend_message
 ----
 
 
@@ -146,12 +86,12 @@ INSTALL QUERY RecommendMessage
 
 [source,coffeescript]
 ----
-GSQL > install query RecommendMessage
+GSQL > INSTALL QUERY recommend_message
 Start installing queries, about 1 minute ...
-RecommendMessage query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/RecommendMessage?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+recommend_message query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/recommend_message?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
 
 [========================================================================================================] 100% (1/1)
-GSQL > run query RecommendMessage("Viktor", "Akhiezer")
+GSQL > run query recommend_message("Viktor", "Akhiezer")
 {
   "error": false,
   "message": "",
@@ -160,20 +100,20 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
     "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"RecommendedMessage": [
+  "results": [{"recommended_message": [
     {
       "v_id": "549760294602",
       "attributes": {
-        "RecommendedMessage.@Rank": 4855.49219,
-        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
+        "recommended_message.@rank": 4855.49219,
+        "recommended_message.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
       },
       "v_type": "Post"
     },
     {
       "v_id": "549760292109",
       "attributes": {
-        "RecommendedMessage.@Rank": 4828.7251,
-        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
+        "recommended_message.@rank": 4828.7251,
+        "recommended_message.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
       },
       "v_type": "Post"
     }
@@ -189,55 +129,11 @@ The above uses log-cosine as a similarity measurement. We can also use cosine si
 
 [source,gsql]
 ----
-use graph ldbc_snb
-set query_timeout=60000
-DROP QUERY RecommendMessage
+include::appendix:example$ldbc_snb/example_recommendation_algorithm_2.gsql[]
 
-CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
-
-  SumAccum<int> @MsgInCommon = 0;
-  SumAccum<int> @MsgCnt = 0 ;
-  SumAccum<int> @@InputPersonMsgCnt = 0;
-  SumAccum<float> @SimilarityScore;
-  SumAccum<float> @Rank;
-  SumAccum<float> @TagCnt = 0;
-  OrAccum @Liked = false;
-  float sqrtOfInputPersonMsgCnt;
-
-   #1. mark messages liked by input user
-   #2. find common messages between input user and other persons
-    Others =
-       SELECT p
-       FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
-       WHERE s.firstName == fn AND s.lastName == ln
-       ACCUM msg.@Liked = true, @@InputPersonMsgCnt += 1,
-             p.@MsgInCommon += 1;
-
-    sqrtOfInputPersonMsgCnt = sqrt(@@InputPersonMsgCnt);
-
-    #calculate cosine similarity score.
-    #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
-    Others  =
-        SELECT o
-        FROM Others:o-(LIKES>)-:msg
-        ACCUM o.@MsgCnt += 1
-        POST-ACCUM o.@SimilarityScore = o.@MsgInCommon/(sqrtOfInputPersonMsgCnt * sqrt(o.@MsgCnt));
-
-   #recommend new messages to input user that have not been liked by him.
-    RecommendedMessage =
-             SELECT msg
-             FROM Others:o-(LIKES>) - :msg
-             WHERE  msg.@Liked == false
-             ACCUM msg.@Rank +=o.@SimilarityScore
-             ORDER BY msg.@Rank DESC
-             LIMIT 3;
-
-  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
-}
-
-INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
-#try the second person with just parameter change.
-INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
+INTERPRET QUERY recommend_message ("Viktor", "Akhiezer")
+// try the second person with just parameter change.
+INTERPRET QUERY recommend_message ("Adriaan", "Jong")
 ----
 
 

@@ -1,0 +1,16 @@
+// to further verify, we picked one message from the above query result.
+// see if there exists a person who likes her own message.
+INTERPRET QUERY () SYNTAX v2 {
+
+    R = SELECT s
+        FROM :msg -(HAS_CREATOR>)- :s
+        WHERE msg.id == 1374390714042;
+
+    T =  SELECT s
+         FROM R:s -(LIKES>)- :msg
+         WHERE msg.id == 1374390714042;
+
+  PRINT R;
+  PRINT T;
+
+}

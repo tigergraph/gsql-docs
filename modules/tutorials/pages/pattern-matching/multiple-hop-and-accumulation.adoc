@@ -84,19 +84,19 @@ The SELECT clause specifies the output vertex set of a SELECT statement. For a m
 
 [source,gsql]
 ----
-#select starting end point x
+// select starting end point x
 SELECT x
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 
-#select y
+// select y
 SELECT y
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 
-#select z
+// select z
 SELECT z
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 
-#select ending end point u
+// select ending end point u
 SELECT u
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 ----
@@ -111,11 +111,11 @@ For a multiple-hop pattern, if you don't need to refer to the intermediate verte
 
 [source,gsql]
 ----
-#select starting end point x
+// select starting end point x
 SELECT x
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 
-#if we don't need to access y, z, we can write
+// if we don't need to access y, z, we can write
 SELECT u
 FROM X:x-(E2>.<E3.E4)-U:u;
 ----
@@ -135,12 +135,12 @@ FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 
 [source,gsql]
 ----
-# (x1, e1, x2) belongs to the 1st-hop
-# (x2, e2, x3) belongs to the 2nd-hop
-# (x3, e3, x4) belongs to the last-hop
-# below x1.age > x2.age is a local predicate
-# x2.@cnt != x4.@cnt is a cross-hop predicate
-# (x1.salary + x3.salary) < x4.salary is a cross-hop predicate
+// (x1, e1, x2) belongs to the 1st-hop
+// (x2, e2, x3) belongs to the 2nd-hop
+// (x3, e3, x4) belongs to the last-hop
+// below x1.age > x2.age is a local predicate
+// x2.@cnt != x4.@cnt is a cross-hop predicate
+// (x1.salary + x3.salary) < x4.salary is a cross-hop predicate
 SELECT x
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
@@ -215,51 +215,15 @@ The second `POST-ACCUM` iterations through `t`.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @cnt1;
-  SumAccum<int> @cnt2;
-
-  R   =  SELECT s
-         FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
-         WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-               AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
-         ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
-         POST-ACCUM s.@cnt2 += s.@cnt1 //execute once per s.
-         POST-ACCUM t.@cnt2 +=1;//execute once per t
-
-  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
-}
+include::appendix:example$ldbc_snb/multiple_hop_post_accum_clause.gsql[]
 ----
 
 which produces the result
 
 [source,gsql]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [
-    {"R": [{
-      "v_id": "28587302323577",
-      "attributes": {
-        "R.firstName": "Viktor",
-        "R.@cnt1": 3,
-        "R.lastName": "Akhiezer",
-        "R.@cnt2": 3
-      },
-      "v_type": "Person"
-    }]},
-  ]
-}
+include::appendix:example$ldbc_snb/multiple_hop_post_accum_clause_results.json[]
+
 ----
 
 However, the following is not allowed, since it involves two aliases (t and s) in one `POST-ACCUM` clause.
@@ -285,17 +249,8 @@ Also, you may not use more than one alias in a single assignment. The following 
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/multiple_hop_pattern_match.gsql[]
 
-INTERPRET QUERY () SYNTAX v2 {
-
-  TagClass1 =
-       SELECT t
-       FROM TagClass:s-(IS_SUBCLASS_OF>.IS_SUBCLASS_OF>.IS_SUBCLASS_OF>)-TagClass:t
-       WHERE s.name == "TennisPlayer";
-
-  PRINT TagClass1;
-}
 ----
 
 
@@ -313,25 +268,8 @@ gsql example1.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"TagClass2": [{
-    "v_id": "239",
-    "attributes": {
-      "name": "Agent",
-      "id": 239,
-      "url": "http://dbpedia.org/ontology/Agent"
-    },
-    "v_type": "TagClass"
-  }]}]
-}
+include::appendix:example$ldbc_snb/multiple_hop_pattern_match_results.json[]
+
 ----
 
 
@@ -342,22 +280,8 @@ Using graph 'ldbc_snb'
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/multiple_hop_disjunction.gsql[]
 
-INTERPRET QUERY () SYNTAX v2{
-
-  SumAccum<String> @continentName;
-
-  accMsgContinent =
-                 SELECT s
-                 FROM (Comment|Post):s-(IS_LOCATED_IN>.IS_PART_OF>)-Continent:t
-                 WHERE year(s.creationDate) == 2011 AND month(s.creationDate) == 1
-                 ACCUM s.@continentName = t.name
-                 ORDER BY s.creationDate DESC
-                 LIMIT 3;
-
-  PRINT accMsgContinent;
-}
 ----
 
 
@@ -377,59 +301,8 @@ gsql example2.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"accMsgContinent": [
-    {
-      "v_id": "824640012997",
-      "attributes": {
-        "browserUsed": "Firefox",
-        "length": 7,
-        "locationIP": "27.112.21.246",
-        "@continentName": "Asia",
-        "id": 824640012997,
-        "creationDate": "2011-01-31 23:54:28",
-        "content": "no way!"
-      },
-      "v_type": "Comment"
-    },
-    {
-      "v_id": "824636727408",
-      "attributes": {
-        "browserUsed": "Firefox",
-        "length": 3,
-        "locationIP": "31.2.225.17",
-        "@continentName": "Europe",
-        "id": 824636727408,
-        "creationDate": "2011-01-31 23:57:46",
-        "content": "thx"
-      },
-      "v_type": "Comment"
-    },
-    {
-      "v_id": "824634837528",
-      "attributes": {
-        "imageFile": "",
-        "browserUsed": "Internet Explorer",
-        "length": 115,
-        "locationIP": "87.251.6.121",
-        "@continentName": "Asia",
-        "id": 824634837528,
-        "creationDate": "2011-01-31 23:58:03",
-        "lang": "tk",
-        "content": "About Adolf Hitler, iews. His writings and methods were often adapted to need and circumstance, although there were"
-      },
-      "v_type": "Post"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/multiple_hop_disjunction_results.json[]
+
 ----
 
 
@@ -440,20 +313,7 @@ Using graph 'ldbc_snb'
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2{
-  SumAccum<int> @likesCnt;
-
-  FavoriteAuthors =
-            SELECT t
-            FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
-            WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-                      AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
-            ACCUM t.@likesCnt +=1;
-
-  PRINT FavoriteAuthors[FavoriteAuthors.firstName, FavoriteAuthors.lastName, FavoriteAuthors.@likesCnt];
-}
+include::appendix:example$ldbc_snb/multiple_hop_pattern_with_accumulator.gsql[]
 ----
 
 
@@ -472,49 +332,11 @@ gsql example3.gsql
 . Output of Example 3
 
 [source,coffeescript]
-----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"FavoriteAuthors": [
-    {
-      "v_id": "8796093025410",
-      "attributes": {
-        "FavoriteAuthors.firstName": "Priyanka",
-        "FavoriteAuthors.lastName": "Singh",
-        "FavoriteAuthors.@likesCnt": 1
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "2199023260091",
-      "attributes": {
-        "FavoriteAuthors.firstName": "Janne",
-        "FavoriteAuthors.lastName": "Seppala",
-        "FavoriteAuthors.@likesCnt": 1
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "15393162796846",
-      "attributes": {
-        "FavoriteAuthors.firstName": "Mario",
-        "FavoriteAuthors.lastName": "Santos",
-        "FavoriteAuthors.@likesCnt": 1
-      },
-      "v_type": "Person"
-    }
-  ]}]
-}
-----
 
+----
+include::appendix:example$ldbc_snb/multiple_hop_pattern_with_accumulator_results.json[]
 
+----
 
 == Multi-Block Queries
 
@@ -532,230 +354,51 @@ For example, if Set1, Set2, and Set3 were the outputs of three previous SELECT b
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries.gsql[]
+// results
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_results.json[]
 
-# a computed vertex set F is used to constrain the second pattern.
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  F  =  SELECT t
-        FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" AND t.lastName LIKE "S%";
-
-  Alumni = SELECT p
-           FROM Person:p -(STUDY_AT>) -:u - (<STUDY_AT)- F:s
-           WHERE s != p
-           Per (p)
-           POST-ACCUM @@cnt+=1;
-
-  PRINT @@cnt;
-
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 216}]
-}
 ----
 
 *Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that members from groups A and B studied at.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-#A and B are used to constrain the third pattern.
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_2.gsql[]
 
 
-  B  =  SELECT t
-        FROM :s -(LIKES>:e1)- Comment:msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
+// results
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_2_results.json[]
 
-  Univ = SELECT u
-         FROM A:p -(STUDY_AT>) -:u - (<STUDY_AT)- B:s
-         WHERE s != p
-         Per (u)
-         POST-ACCUM @@cnt+=1;
-
-  PRINT @@cnt;
-
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 4}]
-}
 ----
 
 *Example 3.* Find Viktor Akhiezer's liked posts' authors A. See how many pairs of persons exist in A such that one person likes a message authored by another person.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_3.gsql[]
 
-# a computed vertex set A is used twice in the second pattern.
-INTERPRET QUERY () SYNTAX v2 {
+// results
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_3_results.json[]
 
-  SumAccum<int> @@cnt;
-
-  A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" ;
-
-  A = SELECT p
-      FROM A:p -(LIKES>) -:msg - (HAS_CREATOR>) - A:p2
-      WHERE p2 != p
-      Per (p, p2)
-      ACCUM @@cnt +=1;
-
-
-  PRINT @@cnt;
-
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 14833}]
-}
 ----
 
 *Example 4.* Find how many messages are created and liked by the same person whose first name begins with the letter T.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_4.gsql[]
 
-# the same alias is used twice in a pattern
-INTERPRET QUERY () SYNTAX v2 {
-
-  SumAccum<int> @@cnt;
-
-  A  =  SELECT msg
-        FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :s
-        WHERE s.firstName LIKE "T%"
-        PER (msg)
-        ACCUM @@cnt +=1;
+// results
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_4_results.json[]
 
 
-  PRINT @@cnt;
 
-}
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 207}]
-}
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_5.gsql[]
 
-#to further verify, we picked one message from the above query result.
-#see if there exists a person who like her own message.
-INTERPRET QUERY () SYNTAX v2 {
+// results
+include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_5_results.json[]
 
-    R = SELECT s
-        FROM :msg -(HAS_CREATOR>)- :s
-        WHERE msg.id == 1374390714042;
-
-    T =  SELECT s
-         FROM R:s -(LIKES>)- :msg
-         WHERE msg.id == 1374390714042;
-
-  PRINT R;
-  PRINT T;
-
-}
-
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [
-    {"R": [{
-      "v_id": "13194139533433",
-      "attributes": {
-        "birthday": "1985-11-26 00:00:00",
-        "firstName": "Taras",
-        "lastName": "Kofler",
-        "gender": "female",
-        "speaks": [
-          "uk",
-          "ro",
-          "en"
-        ],
-        "browserUsed": "Internet Explorer",
-        "locationIP": "31.131.28.133",
-        "id": 13194139533433,
-        "creationDate": "2011-01-29 01:14:27",
-        "email": [
-          "Taras13194139533433@gmail.com",
-          "Taras13194139533433@yahoo.com"
-        ]
-      },
-      "v_type": "Person"
-    }]},
-    {"T": [{
-      "v_id": "13194139533433",
-      "attributes": {
-        "birthday": "1985-11-26 00:00:00",
-        "firstName": "Taras",
-        "lastName": "Kofler",
-        "gender": "female",
-        "speaks": [
-          "uk",
-          "ro",
-          "en"
-        ],
-        "browserUsed": "Internet Explorer",
-        "locationIP": "31.131.28.133",
-        "id": 13194139533433,
-        "creationDate": "2011-01-29 01:14:27",
-        "email": [
-          "Taras13194139533433@gmail.com",
-          "Taras13194139533433@yahoo.com"
-        ]
-      },
-      "v_type": "Person"
-    }]}
-  ]
-}
 ----
 
 ##

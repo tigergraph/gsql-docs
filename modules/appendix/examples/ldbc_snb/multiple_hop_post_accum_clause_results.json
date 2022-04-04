@@ -1,0 +1,21 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"R": [{
+      "v_id": "28587302323577",
+      "attributes": {
+        "R.first_name": "Viktor",
+        "R.@cnt1": 3,
+        "R.last_name": "Akhiezer",
+        "R.@cnt2": 3
+      },
+      "v_type": "Person"
+    }]},
+  ]
+}

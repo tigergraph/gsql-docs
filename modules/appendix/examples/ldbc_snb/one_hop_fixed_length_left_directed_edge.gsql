@@ -1,0 +1,12 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+   #1-hop pattern.
+   friends = SELECT p
+             FROM Person:s -(KNOWS:e)- Person:p <1>
+             WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+             ORDER BY p.birthday ASC
+             LIMIT 3;
+
+    PRINT  friends[friends.first_name, friends.last_name, friends.birthday];
+}

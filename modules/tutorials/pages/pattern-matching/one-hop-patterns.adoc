@@ -105,7 +105,7 @@ Interpreted queries may run slower than installed queries, so we recommend incre
 .GSQL: Set Query Timeout to 1 Minute
 [source,coffeescript]
 ----
-# 1 unit is 1 millisecond
+// 1 unit is 1 millisecond
 SET query_timeout = 60000
 ----
 
@@ -121,18 +121,7 @@ Find persons who know the person named "Viktor Akhiezer" and return the top 3 ol
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-   #1-hop pattern.
-   friends = SELECT p
-             FROM Person:s -(KNOWS:e)- Person:p <1>
-             WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-             ORDER BY p.birthday ASC
-             LIMIT 3;
-
-    PRINT  friends[friends.firstName, friends.lastName, friends.birthday];
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_left_directed_edge.gsql[]
 ----
 <1> In the `FROM` clause, we directly use vertex type Person as the starting vertex set.
 This syntax enhancement is available in syntax V2 only.
@@ -151,44 +140,7 @@ gsql example1.gsql
 .Output of Example 1
 [source,coffeescript]
 ----
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "developer",
-    "api": "v2"
-  },
-  "results": [{"friends": [
-    {
-      "v_id": "10995116279461",
-      "attributes": {
-        "friends.birthday": "1980-05-13 00:00:00",
-        "friends.lastName": "Cajes",
-        "friends.firstName": "Gregorio"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "4398046517846",
-      "attributes": {
-        "friends.birthday": "1980-04-24 00:00:00",
-        "friends.lastName": "Glosca",
-        "friends.firstName": "Abdul-Malik"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "6597069776731",
-      "attributes": {
-        "friends.birthday": "1981-02-25 00:00:00",
-        "friends.lastName": "Carlsson",
-        "friends.firstName": "Sven"
-      },
-      "v_type": "Person"
-    }
-  ]}]
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_left_directed_edge_results.json[]
 ----
 
 
@@ -199,24 +151,7 @@ Find the total number of comments and total number of posts liked by Viktor. A P
 .Example 2. Right-directed Edge Pattern
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2 {
-   SumAccum<int> @commentCnt= 0;
-   SumAccum<int> @postCnt= 0;
-
-   #1-hop pattern.
-   Result = SELECT s
-            FROM Person:s -(LIKES>)- :tgt
-            WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-            ACCUM CASE WHEN tgt.type == "Comment" THEN
-                           s.@commentCnt += 1
-                       WHEN tgt.type == "Post" THEN
-                           s.@postCnt += 1
-                   END;
-
-    PRINT  Result[Result.@commentCnt, Result.@postCnt];
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_right_directed_edge.gsql[]
 ----
 
 
@@ -236,24 +171,7 @@ gsql example2.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"Result": [{
-    "v_id": "28587302323577",
-    "attributes": {
-      "Result.@commentCnt": 108,
-      "Result.@postCnt": 51
-    },
-    "v_type": "Person"
-  }]}]
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_right_directed_edge_results.json[]
 ----
 
 
@@ -267,23 +185,7 @@ Note below (line 8) that the source vertex set are now Comment and Post, and the
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-​
-INTERPRET QUERY () SYNTAX v2{
-   SumAccum<int> @commentCnt= 0;
-   SumAccum<int> @postCnt= 0;
-​
-   Result = SELECT tgt
-            FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src
-            WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
-            ACCUM CASE WHEN src.type == "Comment" THEN
-                           tgt.@commentCnt += 1
-                       WHEN src.type == "Post" THEN
-                           tgt.@postCnt += 1
-                   END;
-​
-  PRINT Result[Result.@commentCnt, Result.@postCnt];
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_3.gsql[]
 ----
 
 
@@ -298,24 +200,7 @@ Note that the `HAS_CREATOR` edge type starts from `Comment|Post`, and the `LIKES
 .Example 4. Disjunctive 1-hop edge pattern.
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-set query_timeout=60000
-
-INTERPRET QUERY () SYNTAX v2{
-  SumAccum<int> @commentCnt= 0;
-  SumAccum<int> @postCnt= 0;
-
-  Result = SELECT tgt
-           FROM Person:tgt -(<HAS_CREATOR|LIKES>)- (Comment|Post):src
-           WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
-           ACCUM CASE WHEN src.type == "Comment" THEN
-                          tgt.@commentCnt += 1
-                      WHEN src.type == "Post" THEN
-                          tgt.@postCnt += 1
-                 END;
-
-  PRINT Result[Result.@commentCnt, Result.@postCnt];
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_4.gsql[]
 ----
 
 
@@ -335,24 +220,8 @@ gsql example4.gsql
 
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"Result": [{
-    "v_id": "28587302323577",
-    "attributes": {
-      "Result.@commentCnt": 152,
-      "Result.@postCnt": 96
-    },
-    "v_type": "Person"
-  }]}]
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_4_results.json[]
+
 ----
 
 
@@ -365,18 +234,7 @@ Both are following the same direction.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-INTERPRET QUERY () SYNTAX v2{
-  SumAccum<int> @@cnt= 0;
-
-  Result = SELECT tgt
-           FROM Person:tgt -(<_)- (Comment|Post):src
-           WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
-           ACCUM  @@cnt += 1;
-
-  PRINT @@cnt;
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_5.gsql[]
 ----
 
 
@@ -395,17 +253,7 @@ gsql example5.gsql
 .Output of Example 5.
 [source,coffeescript]
 ----
-Using graph 'ldbc_snb'
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"@@cnt": 248}]
-}
+include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_5_results.json[]
 ----
 
 

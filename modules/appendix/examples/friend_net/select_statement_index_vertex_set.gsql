@@ -1,5 +1,4 @@
-CREATE QUERY count_friends_of_2 (vertex<Person> seed) FOR GRAPH Friend_Net
-{
+CREATE QUERY count_friends_of_2 (VERTEX<Person> seed) FOR GRAPH Friend_Net {
     SumAccum<INT> @@num_friends = 0;
     seed_set = { seed };
     friends = SELECT v FROM seed_set:s -((Friend | Coworker):e)- :v

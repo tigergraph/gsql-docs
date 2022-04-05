@@ -2,8 +2,8 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
@@ -16,7 +16,7 @@
             "@visited": true,
             "id": "person4"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
           "v_id": "person2",
@@ -24,7 +24,7 @@
             "@visited": true,
             "id": "person2"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
           "v_id": "person3",
@@ -32,7 +32,7 @@
             "@visited": true,
             "id": "person3"
           },
-          "v_type": "person"
+          "v_type": "Person"
         }
       ]
     },
@@ -44,7 +44,7 @@
             "@visited": true,
             "id": "person5"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
           "v_id": "person6",
@@ -52,7 +52,7 @@
             "@visited": true,
             "id": "person6"
           },
-          "v_type": "person"
+          "v_type": "Person"
         }
       ],
       "@@distance": 1
@@ -61,20 +61,12 @@
       "@@distance": 2,
       "friends": [
         {
-          "v_id": "person9",
-          "attributes": {
-            "@visited": true,
-            "id": "person9"
-          },
-          "v_type": "person"
-        },
-        {
           "v_id": "person1",
           "attributes": {
             "@visited": true,
             "id": "person1"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
           "v_id": "person8",
@@ -82,7 +74,15 @@
             "@visited": true,
             "id": "person8"
           },
-          "v_type": "person"
+          "v_type": "Person"
+        },
+        {
+          "v_id": "person9",
+          "attributes": {
+            "@visited": true,
+            "id": "person9"
+          },
+          "v_type": "Person"
         }
       ]
     },
@@ -90,12 +90,12 @@
       "@@distance": 3,
       "friends": [
         {
-          "v_id": "person12",
+          "v_id": "person7",
           "attributes": {
             "@visited": true,
-            "id": "person12"
+            "id": "person7"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
           "v_id": "person10",
@@ -103,15 +103,15 @@
             "@visited": true,
             "id": "person10"
           },
-          "v_type": "person"
+          "v_type": "Person"
         },
         {
-          "v_id": "person7",
+          "v_id": "person12",
           "attributes": {
             "@visited": true,
-            "id": "person7"
+            "id": "person12"
           },
-          "v_type": "person"
+          "v_type": "Person"
         }
       ]
     }

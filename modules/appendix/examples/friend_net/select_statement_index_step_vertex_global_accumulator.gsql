@@ -1,8 +1,8 @@
-CREATE QUERY count_friends_of_2 (Vertex<Person> seed) FOR GRAPH Friend_Net{
+CREATE QUERY count_friends_of_2(STRING target_type) FOR GRAPH Friend_Net {
     SumAccum<INT> @@num_friends = 0;
-    SetAccum<VERTEX> @@seed_bag;
-    @@seed_bag += seed;
-    friends = SELECT s FROM :s -((Friend | Coworker):e)- @@seed_bag:v
+    SetAccum<STRING> @@target_set;
+    @@target_set += target_type;
+    friends = SELECT s FROM :s -((Friend | Coworker):e)- @@target_set:v
       ACCUM @@num_friends +=1;
     PRINT @@num_friends;
 }

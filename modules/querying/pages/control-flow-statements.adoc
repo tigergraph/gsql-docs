@@ -77,7 +77,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY count_friends_of2("person2", false)
+include::appendix:example$friend_net/controlflow_ifelse_querybody_run.gsql[]
 include::appendix:example$friend_net/controlflow_ifelse_querybody_results.json[]
 ----
 --
@@ -101,7 +101,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY calculate_in_depth_activity("person1")
+include::appendix:example$social_net/controlflow_nested_ifelse_run.gsql[]
 include::appendix:example$social_net/controlflow_nested_ifelse_results.json[]
 ----
 --
@@ -180,10 +180,10 @@ include::appendix:example$social_net/controlflow_case.gsql[]
 Results::
 +
 --
-.Example 2 Results for Query countGenderOfFriends
+.Example 2 Results for Query count_gender_of_friends
 [source,gsql]
 ----
-GSQL > RUN QUERY countGenderOfFriends("person4")
+include::appendix:example$social_net/controlflow_case_run.gsql[]
 include::appendix:example$social_net/controlflow_case_results.json[]
 ----
 --
@@ -613,7 +613,7 @@ Results::
 .findEnoughFriends.json Example 2 Results
 [source,gsql]
 ----
-GSQL > RUN QUERY findEnoughFriends("person1")
+include::appendix:example$friend_net/controlflow_continue_run.gsql[]
 include::appendix:example$friend_net/controlflow_continue_results.json[]
 ----
 --

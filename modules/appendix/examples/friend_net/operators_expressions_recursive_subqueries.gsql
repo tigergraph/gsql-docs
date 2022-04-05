@@ -6,9 +6,9 @@ FOR GRAPH Friend_Net RETURNS (SET<VERTEX>)
         RETURN seeds;
 	ELSE
         seed_vs = seeds; // Initialize starting vertices
-        /* Select 1-hop neighbors from the starting points
-          next_vs = SELECT v FROM seed_vs -(Friendship:e)- :v;
-        Find the (distance-1)-hop neighbors of the 1-hop neighbors
+        // Select 1-hop neighbors from the starting points
+        next_vs = SELECT v FROM seed_vs -(Friend:e)- :v;
+        /* Find the (distance-1)-hop neighbors of the 1-hop neighbors
           and return the union of the starting vertices and neighbors */
         RETURN seeds UNION sub_find_friends_in_distance(next_vs, distance - 1);
     END;

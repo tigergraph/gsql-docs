@@ -5,8 +5,8 @@ CREATE QUERY top_popular() FOR GRAPH Friend_Net {
 
 	result = SELECT v FROM start -((Friend|Coworker):e)- Person:v
       ACCUM CASE
-          WHEN e.type == "friend" THEN v.@num_friends += 1
-          WHEN e.type == "coworker" THEN v.@num_coworkers += 1
+          WHEN e.type == "Friend" THEN v.@num_friends += 1
+          WHEN e.type == "Coworker" THEN v.@num_coworkers += 1
       END
       ORDER BY v.@num_friends DESC, v.@num_coworkers DESC;
 

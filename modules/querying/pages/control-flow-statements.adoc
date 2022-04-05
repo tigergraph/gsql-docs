@@ -587,7 +587,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY findDegreeOfCats("person2")
+include::appendix:example$social_net/controlflow_break_run.gsql[]
 include::appendix:example$social_net/controlflow_break_results.json[]
 ----
 --

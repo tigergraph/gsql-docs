@@ -5,9 +5,9 @@ CREATE QUERY sub_query_1() FOR GRAPH Social_Net RETURNS (My_Heap){
 	My_Heap @@heap;  	// Define the heap accumulator at the global level
 	SumAccum<int> @friends;
 	Start = {Person.*};
-	Start = select s from Start:s-(friend:e)-:t
-        accum s.@friends += 1
-        post-accum @@heap += My_Tuple(s.id,s.@friends);
+	Start = SELECT s from Start:s-(Friend:e)-:t
+        ACCUM s.@friends += 1
+        POST-ACCUM @@heap += My_Tuple(s.id, s.@friends);
 	RETURN @@heap;
 }
 

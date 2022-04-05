@@ -14,7 +14,7 @@ CREATE QUERY print_example_v2(VERTEX<Person> v) FOR GRAPH Social_Net {
           ACCUM @@set_of_vertices += s;
 
     B = SELECT t
-        FROM Seed:s - (posted>:e) - post:t
+        FROM Seed:s - (Posted>:e) - Post:t
         ACCUM s.@posted_set += e,
             @@test_map += (s -> t);
 

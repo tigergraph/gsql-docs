@@ -6,12 +6,12 @@ CREATE QUERY friend_gender() FOR GRAPH Social_Net {
     start = {Person.*};
 
     // Record a list showing each friend's gender
-    socialMembers = SELECT s from start:s -(friend)- :g
+    social_members = SELECT s FROM start:s -(Friend)- :g
         ACCUM s.@friend_gender += (g.gender)
     // Loop over each list of genders and total them
         POST-ACCUM
-            FOREACH x in s.@friend_gender DO
-                CASE WHEN (x == "Male") THEN
+            FOREACH a in s.@friend_gender DO
+                CASE WHEN (a == "Male") THEN
                     @@male_gender_count += 1
                 ELSE
                     @@female_gender_count += 1

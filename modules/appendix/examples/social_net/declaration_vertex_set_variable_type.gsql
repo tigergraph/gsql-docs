@@ -1,6 +1,6 @@
 CREATE QUERY vertex_set_variable_type_example (VERTEX<Person> m1) FOR GRAPH Social_Net {
     INT ite = 0;
-    S (ANY) = {m1};   # ANY is necessary
+    S (ANY) = {m1};   // ANY is necessary
     WHILE  ite < 5 DO
         S = SELECT t
             FROM S:s - (ANY:e) - ANY:t;

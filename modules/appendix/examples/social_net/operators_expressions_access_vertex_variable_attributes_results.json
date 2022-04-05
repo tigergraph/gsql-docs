@@ -2,26 +2,26 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
     {"results": [{
       "v_id": "4",
       "attributes": {
-        "postTime": "2011-02-07 05:02:51",
-        "subject": "coffee"
+        "subject": "coffee",
+        "post_time": "2011-02-07 05:02:51"
       },
-      "v_type": "post"
+      "v_type": "Post"
     }]},
     {"results": [{
       "v_id": "4",
       "attributes": {
-        "postTime": "2011-02-07 05:02:51",
-        "subject": "coffee"
+        "subject": "coffee",
+        "post_time": "2011-02-07 05:02:51"
       },
-      "v_type": "post"
+      "v_type": "Post"
     }]}
   ]
 }

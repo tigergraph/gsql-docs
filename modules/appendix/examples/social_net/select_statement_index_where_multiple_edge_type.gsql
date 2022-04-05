@@ -1,4 +1,4 @@
-CREATE QUERY multiple_edge_type_where_ex(vertex<person> m1) FOR GRAPH Social_Net {
+CREATE QUERY multiple_edge_type_where_ex(VERTEX<Person> m1) FOR GRAPH Social_Net {
     all_user = {m1};
     filtered_user = SELECT s
         FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t

@@ -2,15 +2,15 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [{"@@post_topic_counts": {
     "cats": 5,
     "coffee": 1,
-    "query languages": 1,
     "Graphs": 2,
+    "query languages": 1,
     "tigergraph": 3
   }}]
 }

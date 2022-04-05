@@ -2,16 +2,43 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [{"result": [
     {
+      "v_id": "person7",
+      "attributes": {
+        "gender": "Male",
+        "@activity_amount": 3,
+        "id": "person7"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {
+        "gender": "Female",
+        "@activity_amount": 3,
+        "id": "person5"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {
+        "gender": "Male",
+        "@activity_amount": 2,
+        "id": "person1"
+      },
+      "v_type": "Person"
+    },
+    {
       "v_id": "person4",
       "attributes": {
         "gender": "Female",
-        "@activity_amount": 4,
+        "@activity_amount": 2,
         "id": "person4"
       },
       "v_type": "Person"
@@ -20,35 +47,8 @@
       "v_id": "person3",
       "attributes": {
         "gender": "Male",
-        "@activity_amount": 4,
+        "@activity_amount": 2,
         "id": "person3"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@activity_amount": 6,
-        "id": "person7"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@activity_amount": 4,
-        "id": "person1"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "gender": "Female",
-        "@activity_amount": 6,
-        "id": "person5"
       },
       "v_type": "Person"
     },
@@ -56,7 +56,7 @@
       "v_id": "person6",
       "attributes": {
         "gender": "Male",
-        "@activity_amount": 6,
+        "@activity_amount": 3,
         "id": "person6"
       },
       "v_type": "Person"
@@ -65,7 +65,7 @@
       "v_id": "person2",
       "attributes": {
         "gender": "Female",
-        "@activity_amount": 6,
+        "@activity_amount": 3,
         "id": "person2"
       },
       "v_type": "Person"
@@ -74,7 +74,7 @@
       "v_id": "person8",
       "attributes": {
         "gender": "Male",
-        "@activity_amount": 6,
+        "@activity_amount": 3,
         "id": "person8"
       },
       "v_type": "Person"

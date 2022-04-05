@@ -1,10 +1,10 @@
 INTERPRET QUERY () FOR GRAPH Social_Net {
     // declaration statements
     STRING uid = "Jane.Doe";
-    users = {person.*};
+    users = {Person.*};
     // body statements
     posts = SELECT p
-        FROM users:u-(posted>)-:p
+        FROM users:u-(Posted>)-:p
         WHERE u.id == uid;
     PRINT posts, posts.size();
 }

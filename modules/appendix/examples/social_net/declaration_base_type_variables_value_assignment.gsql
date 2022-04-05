@@ -4,7 +4,7 @@ CREATE QUERY base_type_variable() FOR GRAPH Social_Net {
 
     all_user = {Person.*};
     all_user = SELECT src
-        FROM all_user:src - (liked>:e) - post
+        FROM all_user:src - (Liked>:e) - Post
         ACCUM
             dt = e.action_time,           // dt isn't updated yet
             @@max_date_glob += datetime_to_epoch(dt);

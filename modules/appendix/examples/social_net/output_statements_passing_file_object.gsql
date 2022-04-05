@@ -8,10 +8,10 @@ CREATE QUERY file_param_sub(FILE f, STRING label, INT num) FOR GRAPH Social_Net 
 
 CREATE QUERY file_param_main(STRING main_label) FOR GRAPH Social_Net {
     FILE f ("/home/tigergraph/file_param.txt");
-    f.println(mainlabel, "header");
+    f.println(main_label, "header");
     FOREACH i IN RANGE [1,2] DO
-        f.println(mainlabel, i);
-        fileParamSub(f, " sub", 10*i);
+        f.println(main_label, i);
+        file_param_sub(f, "sub", 10*i);
     END;
-    f.println(mainlabel, "footer");
+    f.println(main_label, "footer");
 }

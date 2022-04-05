@@ -11,5 +11,5 @@ CREATE QUERY user_posts_2() FOR GRAPH Social_Net {
     user_postings = SELECT s from start:s -(Liked:e)- :g
         ACCUM s.@person_liked_info += e;
 
-  PRINT start;
+    PRINT start;
 }

@@ -2,13 +2,13 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [{
-    "dtGlob": "2010-01-11 03:26:05",
-    "@@maxDateGlob": 0,
-    "@@maxDate": 1263618953
+    "@@max_date": 1263618953,
+    "dt_glob": "2010-01-16 05:15:53",
+    "@@max_date_glob": 0
   }]
 }

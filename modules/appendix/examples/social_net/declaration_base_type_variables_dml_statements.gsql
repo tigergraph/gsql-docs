@@ -1,6 +1,6 @@
-// An example showing a local base type variable succeeds
-// where a base type variable fails
 CREATE QUERY local_variable(VERTEX<Person> m1) FOR GRAPH Social_Net {
+    // An example showing a local base type variable succeeds
+    // where a base type variable fails
     MaxAccum<INT> @@max_date, @@max_date_glob;
     DATETIME dt_glob;
 

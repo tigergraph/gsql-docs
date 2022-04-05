@@ -1,10 +1,9 @@
-
 {
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [{"result": [
@@ -27,20 +26,20 @@
       "v_type": "Person"
     },
     {
-      "v_id": "person6",
-      "attributes": {
-        "gender": "Male",
-        "@activity_amount": 3,
-        "id": "person6"
-      },
-      "v_type": "Person"
-    },
-    {
       "v_id": "person2",
       "attributes": {
         "gender": "Female",
         "@activity_amount": 3,
         "id": "person2"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {
+        "gender": "Male",
+        "@activity_amount": 3,
+        "id": "person6"
       },
       "v_type": "Person"
     },

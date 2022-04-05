@@ -8,14 +8,14 @@ CREATE QUERY find_female_members() FOR GRAPH Social_Net
 	females = SELECT v FROM all_vertices:v
         WHERE v.type == "Person" AND v.gender != "Male";
 
-	females = SELECT v FROM allVertices:v
+	females = SELECT v FROM all_vertices:v
         WHERE v.type == "Person" AND v.gender == "Female";
 
-	females = SELECT v FROM allVertices:v
+	females = SELECT v FROM all_vertices:v
         WHERE v.type == "Person" AND
         NOT v.gender == "Male";
 
-	females = SELECT v FROM allVertices:v
+	females = SELECT v FROM all_vertices:v
         WHERE v.type != "Post" AND
         NOT v.gender == "Male";
 
@@ -25,7 +25,7 @@ CREATE QUERY find_female_members() FOR GRAPH Social_Net
 		  	    NOT v.gender == "Male";
 
   	 does not compile. cannot use NOT operator in combination with type attribute
-     females = SELECT v FROM allVertices:v
+     females = SELECT v FROM all_vertices:v
         WHERE NOT v.type   == "Post" AND
         NOT v.gender == "Male"; */
 

@@ -1,4 +1,4 @@
-CREATE QUERY print_a_posts() FOR GRAPH SocialNet {
+CREATE QUERY print_a_posts() FOR GRAPH Social_Net {
     posts = {Post.*};
     a_posts = SELECT v FROM posts:v
         // Returns all posts with the character "a" in the subject

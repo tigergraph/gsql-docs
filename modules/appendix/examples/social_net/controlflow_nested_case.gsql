@@ -1,15 +1,15 @@
-CREATE QUERY rate_posts() FOR GRAPH Social_Net api("v2") {
+CREATE QUERY rate_posts() FOR GRAPH Social_Net API("v2") {
     SumAccum<INT> @rating = 0;
     all_people = {Person.*};
 
     results = SELECT v FROM all_people -(:e)- Post:v
         ACCUM CASE e.type
-            WHEN "posted" THEN
+            WHEN "Posted" THEN
                 CASE
                     WHEN v.subject == "cats" THEN v.@rating += -1
                     WHEN v.subject == "Graphs" THEN v.@rating += 2
                     WHEN v.subject == "tigergraph" THEN v.@rating += 10
                 END
-            WHEN "liked" THEN v.@rating += 3
+            WHEN "Liked" THEN v.@rating += 3 END;
     PRINT results[results.@rating];
 }

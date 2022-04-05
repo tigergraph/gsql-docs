@@ -1,6 +1,6 @@
 CREATE QUERY seed_set_example (VERTEX v1, VERTEX<Person> v2, SET<VERTEX> v3, SET<VERTEX<Person>> v4) FOR GRAPH Social_Net {
     SetAccum<VERTEX> @@test_set;
-    SetAccum<VERTEX<person>> @@test_set2;
+    SetAccum<VERTEX<Person>> @@test_set2;
     S1 = { v1 };    // Untyped vertex parameter enclosed in curly brackets
     S2 = { v2 };    // Typed vertex parameter enclosed in curly brackets
     S3 = v3;                       // Untyped vertex set parameter
@@ -10,7 +10,7 @@ CREATE QUERY seed_set_example (VERTEX v1, VERTEX<Person> v2, SET<VERTEX> v3, SET
     S7 = ANY;                      // All vertices
     S8 = Person.*;                 // All person vertices
     S9 = {_};                      // Equivalent to ANY, braces are optional
-    S10 = SelectVertex("absolute_path_to_input_file", $0, post, ",", false); <1>
+    S10 = SelectVertex("absolute_path_to_input_file", $0, Post, ",", false); // <1>
     S11 = S1;                      // copy of another vertex set
     S12 = {@@test_set, v2, v3};     // Individual vertex: v2
                                  // Vertex set parameter: v3

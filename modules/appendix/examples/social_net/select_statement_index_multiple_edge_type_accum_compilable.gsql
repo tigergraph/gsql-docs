@@ -1,15 +1,15 @@
-CREATE QUERY multiple_edge_type_check_ex_2(vertex<Person> m1) FOR GRAPH Social_Net {
-  ListAccum<STRING> @@test_list1;
-  all_user = {m1};
-  all_user = SELECT s
-    FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
-    ACCUM CASE
-        WHEN e.type == "Liked" THEN    // for Liked edges
-            @@test_list1 += to_string(datetime_to_epoch(e.action_time))
-        WHEN e.type == "Friend" THEN   // for Friend edges
-            @@test_list1 += t.gender
-        ELSE      // For the remaining edge type, which is Posted edges
-            @@test_list1 += to_string(datetime_to_epoch(t.post_time))
-        END;
-  PRINT @@test_list1;
+CREATE QUERY multiple_edge_type_check_ex_2(VERTEX<Person> m1) FOR GRAPH Social_Net {
+    ListAccum<STRING> @@test_list1;
+    all_user = {m1};
+    all_user = SELECT s
+        FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
+        ACCUM CASE
+            WHEN e.type == "Liked" THEN    // for Liked edges
+                @@test_list1 += to_string(datetime_to_epoch(e.action_time))
+            WHEN e.type == "Friend" THEN   // for Friend edges
+                @@test_list1 += t.gender
+            ELSE      // For the remaining edge type, which is Posted edges
+                @@test_list1 += to_string(datetime_to_epoch(t.post_time))
+            END;
+    PRINT @@test_list1;
 }

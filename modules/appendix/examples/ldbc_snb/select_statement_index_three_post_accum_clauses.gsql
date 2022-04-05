@@ -1,0 +1,17 @@
+INTERPRET QUERY () {
+
+    SumAccum<INT> @cnt1;
+    SumAccum<INT> @cnt2;
+    SumAccum<INT> @@global_t_count;
+
+    R   =  SELECT s
+        FROM Person:s-(Likes>) -:msg - (Has_Creator>)-Person:t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+          AND t.last_name LIKE "S%" AND year(msg.creationDate) == 2012
+        ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
+        POST-ACCUM s.@cnt2 += s.@cnt1 // <1>
+        POST-ACCUM t.@cnt2 +=1 // <2>
+        POST-ACCUM(t) @@global_t_count += 1; // <3>
+
+        PRINT R [R.first_name, R.last_name, R.@cnt1, R.@cnt2];
+}

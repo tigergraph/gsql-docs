@@ -3,7 +3,7 @@ CREATE QUERY create_query_ex (STRING uid = "Tom") FOR GRAPH Social_Net RETURNS (
     users = {Person.*};
     // body statements
     posts = SELECT p
-        FROM users:u-(posted>)-:p
+        FROM users:u-(Posted>)-:p
         WHERE u.id == uid;
     PRINT posts;
     RETURN posts.size();

@@ -1326,7 +1326,7 @@ Results::
 .top_popular.json
 [source,gsql]
 ----
-GSQL > RUN QUERY top_popular()
+include::appendix:example$friend_net/select_statement_index_order_by_descending.gsql[]
 include::appendix:example$friend_net/select_statement_index_order_by_descending_results.json[]
 ----
 --
@@ -1411,7 +1411,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY limit_ex_1(4)
+include::appendix:example$friend_net/select_statement_index_limit_by_run.gsql[]
 include::appendix:example$friend_net/select_statement_index_limit_by_results.json[]
 
 ----
@@ -1439,7 +1439,7 @@ Results::
 .limit2Ex.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY limit_ex_2(2,3)
+include::appendix:example$friend_net/select_statement_index_limit_lower_bound_and_size_run.gsql[]
 include::appendix:example$friend_net/select_statement_index_limit_lower_bound_and_size_results.json[]
 ----
 --
@@ -1468,7 +1468,7 @@ Results::
 .limit_ex_3.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY limit_ex_3(5,20)
+include::appendix:example$friend_net/select_statement_index_limit_with_offset_run.gsql[]
 include::appendix:example$friend_net/select_statement_index_limit_with_offset_results.json[]
 ----
 --

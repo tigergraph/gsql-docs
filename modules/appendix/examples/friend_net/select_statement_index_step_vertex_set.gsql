@@ -1,4 +1,4 @@
-CREATE QUERY count_friends_of_2 (Vertex<Person> seed) FOR GRAPH Friend_Net
+CREATE QUERY count_friends_of_2 (VERTEX<Person> seed) FOR GRAPH Friend_Net
 {
     SumAccum<INT> @@num_friends = 0;
     seed_set = { seed };

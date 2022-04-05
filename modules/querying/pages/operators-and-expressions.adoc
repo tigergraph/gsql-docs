@@ -16,7 +16,7 @@ condition := expr
            | expr comparisonOperator expr
            | expr [ NOT ] IN setBagExpr
            | expr IS [ NOT ] NULL
-           | expr BETWEEN expr AND expr
+            | expr BETWEEN expr AND expr
            | "(" condition ")"
            | NOT condition
            | condition (AND | OR) condition
@@ -640,10 +640,10 @@ Test cases: Starting from `person1`, search to a distance of `1` and a distance 
 
 [source,gsql]
 ----
-GSQL> RUN QUERY findFriendsInDistance("person1", 1)
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_run_1.gsql[]
 include::appendix:example$friend_net/operators_expressions_recursive_subqueries_results_1.json[]
 
-GSQL> RUN QUERY findFriendsInDistance("person1", 2)
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_run_2.gsql[]
 include::appendix:example$friend_net/operators_expressions_recursive_subqueries_results_2.json[]
 ----
 --

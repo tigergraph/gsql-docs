@@ -9,7 +9,7 @@ To create a particular graph, go in its folder and run the following command:
 
 `gsql graph_create.gsql`
 
-link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Example Graph files]
+link:{attachmentsdir}/example_graphs.tar.gz[Download Example Graph files]
 
 == Work_Net
 
@@ -251,25 +251,25 @@ person8,4,2010-01-11 03:26:05
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX person(PRIMARY_ID person_id UINT, id STRING)
-CREATE UNDIRECTED EDGE friend(FROM person, TO person)
-CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
+CREATE VERTEX Person(PRIMARY_ID person_id UINT, id STRING)
+CREATE UNDIRECTED EDGE Friend(FROM Person, TO Person)
+CREATE UNDIRECTED EDGE Coworker(FROM Person, TO Person)
 CREATE GRAPH Friend_Net(*)
 
-USE GRAPH Friend_Net // v1.2
+USE GRAPH Friend_Net
 CREATE LOADING JOB load_member FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
-  LOAD f TO VERTEX person VALUES($0, $0);
+  LOAD f TO VERTEX Person VALUES($0, $0);
 }
 
 CREATE LOADING JOB load_friend FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
-  LOAD f TO EDGE friend VALUES($0, $1);
+  LOAD f TO EDGE Friend VALUES($0, $1);
 }
 
 CREATE LOADING JOB load_coworker FOR GRAPH Friend_Net {
   DEFINE FILENAME f;
-  LOAD f TO EDGE coworker VALUES($0, $1);
+  LOAD f TO EDGE Coworker VALUES($0, $1);
 }
 
 RUN LOADING JOB load_member USING f="./persons"
@@ -473,7 +473,7 @@ c4,c23,3,2
 ----
 DROP ALL
 CREATE VERTEX Test_V(PRIMARY_ID id STRING)
-CREATE UNDIRECTED EDGE Test_E(FROM testV, TO testV)
+CREATE UNDIRECTED EDGE Test_E(FROM Test_V, TO Test_V)
 CREATE GRAPH Minimal_Net(*)
 ----
 

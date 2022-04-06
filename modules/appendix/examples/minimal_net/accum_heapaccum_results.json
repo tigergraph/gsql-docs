@@ -2,110 +2,110 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
-    {"@@topTestResults.top()": {
-      "firstName": "",
-      "lastName": "",
-      "score": 0
+    {"@@top_test_results.top()": {
+      "score": 0,
+      "last_name": "",
+      "first_name": ""
     }},
-    {"@@topTestResults.top()": {
-      "firstName": "Tony",
-      "lastName": "Stark",
-      "score": 100
+    {"@@top_test_results.top()": {
+      "score": 100,
+      "last_name": "Stark",
+      "first_name": "Tony"
     }},
     {
-      "@@topTestResults.top().firstName": "Tony",
-      "@@topTestResults.top().lastName": "Stark",
-      "@@topTestResults.top().score": 100
+      "@@top_test_results.top().first_name": "Tony",
+      "@@top_test_results.top().last_name": "Stark",
+      "@@top_test_results.top().score": 100
     },
-    {"@@topTestResults": [
+    {"@@top_test_results": [
       {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
+        "score": 100,
+        "last_name": "Stark",
+        "first_name": "Tony"
       },
       {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
+        "score": 95,
+        "last_name": "Banner",
+        "first_name": "Bruce"
       },
       {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
+        "score": 95,
+        "last_name": "Summers",
+        "first_name": "Jean"
       },
       {
-        "firstName": "Clark",
-        "lastName": "Kent",
-        "score": 80
+        "score": 80,
+        "last_name": "Kent",
+        "first_name": "Clark"
       }
     ]},
-    {"@@topTestResults.size()": 4},
-    {"@@topTestResults": [
+    {"@@top_test_results.size()": 4},
+    {"@@top_test_results": [
       {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
+        "score": 100,
+        "last_name": "Stark",
+        "first_name": "Tony"
       },
       {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
+        "score": 95,
+        "last_name": "Banner",
+        "first_name": "Bruce"
       },
       {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
+        "score": 95,
+        "last_name": "Summers",
+        "first_name": "Jean"
       },
       {
-        "firstName": "Clark",
-        "lastName": "Kent",
-        "score": 80
+        "score": 80,
+        "last_name": "Kent",
+        "first_name": "Clark"
       },
       {
-        "firstName": "Peter",
-        "lastName": "Parker",
-        "score": 80
+        "score": 80,
+        "last_name": "Parker",
+        "first_name": "Peter"
       }
     ]},
-    {"@@topTestResults": [
+    {"@@top_test_results": [
       {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
+        "score": 100,
+        "last_name": "Stark",
+        "first_name": "Tony"
       },
       {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
+        "score": 95,
+        "last_name": "Banner",
+        "first_name": "Bruce"
       },
       {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
+        "score": 95,
+        "last_name": "Summers",
+        "first_name": "Jean"
       }
     ]},
-    {"@@topTestResults": [
+    {"@@top_test_results": [
       {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
+        "score": 100,
+        "last_name": "Stark",
+        "first_name": "Tony"
       },
       {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
+        "score": 95,
+        "last_name": "Banner",
+        "first_name": "Bruce"
       },
       {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
+        "score": 95,
+        "last_name": "Summers",
+        "first_name": "Jean"
       }
     ]},
-    {"@@topTestResults.size()": 0}
+    {"@@top_test_results.size()": 0}
   ]
 }

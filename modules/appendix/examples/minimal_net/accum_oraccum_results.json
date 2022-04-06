@@ -2,12 +2,12 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
-    {"@@andAccumVar": false},
-    {"@@orAccumVar": true}
+    {"@@and_accum_var": false},
+    {"@@or_accum_var": true}
   ]
 }

@@ -423,8 +423,8 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY foreachRangeStep(100,0,-9)
-include::appendix:example$minimal_net/controlflow_foreach_range_results.json[]
+include::appendix:example$minimal_net/controlflow_foreach_step_run.gsql[]
+include::appendix:example$minimal_net/controlflow_foreach_step_results.json[]
 ----
 --
 ====

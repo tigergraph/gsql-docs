@@ -737,7 +737,7 @@ Query::
 .Example for update function on a global ListAccum
 [source,gsql]
 ----
-include::appendix:example$minimal_net/accum_global_listaccum.gsql[]
+include::appendix:example$work_net/accum_global_listaccum.gsql[]
 ----
 --
 
@@ -747,8 +747,8 @@ Results::
 .Results in listAccumUpdateEx.json
 [source,gsql]
 ----
-GSQL > RUN QUERY listAccumUpdateEx()
-include::appendix:example$minimal_net/accum_global_listaccum_results.json[]
+GSQL > RUN QUERY list_accum_update_ex()
+include::appendix:example$work_net/accum_global_listaccum_results.json[]
 ----
 --
 ====
@@ -1175,7 +1175,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY ArrayAccumOp3(3)
+include::appendix:example$minimal_net/accum_arrayaccum_op_run.gsql[]
 include::appendix:example$minimal_net/accum_arrayaccum_op_results.json[]
 ----
 --
@@ -1188,7 +1188,7 @@ Query::
 --
 [source,gsql]
 ----
-include::appendix:example$minimal_net/accum_arrayaccum_local.gsql[]
+include::appendix:example$social_net/accum_arrayaccum_local.gsql[]
 ----
 --
 
@@ -1198,7 +1198,7 @@ Results::
 [source,gsql]
 ----
 GSQL > RUN QUERY array_accum_local()
-include::appendix:example$minimal_net/accum_arrayaccum_local_results.json[]
+include::appendix:example$social_net/accum_arrayaccum_local_results.json[]
 ----
 --
 ====

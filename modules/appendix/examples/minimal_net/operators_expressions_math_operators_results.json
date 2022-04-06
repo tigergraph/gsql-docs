@@ -2,8 +2,8 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
@@ -12,17 +12,17 @@
       "y": 3
     },
     {
-      "xTIMESy": 21,
-      "xPLUSy": 10,
-      "xMINUSy": 4,
-      "xDIVy": 2,
-      "xDIV4f": 1
+      "x_div_4f": 1,
+      "x_times_y": 21,
+      "x_div_y": 2,
+      "x_minus_y": 4,
+      "x_plus_y": 10
     },
     {
-      "xMODy": 1,
-      "xMOD3": 1,
-      "xDIVy": 2,
-      "xDIV4f": 1.75
+      "x_mod_3": 1,
+      "x_div_4f": 1.75,
+      "x_mod_y": 1,
+      "x_div_y": 2
     }
   ]
 }

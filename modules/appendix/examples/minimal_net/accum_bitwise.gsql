@@ -1,28 +1,28 @@
 CREATE QUERY bitwise_accum_ex() FOR GRAPH Minimal_Net {
 
-  BitwiseAndAccum @@bw_and_accum_var; // default value = 64-bits of 1 = -1 (INT)
-  BitwiseOrAccum  @@bw_or_accum_var;  // default value = 64-bits of 0 = 0 (INT))
+    BitwiseAndAccum @@bw_and_accum_var; // default value = 64-bits of 1 = -1 (INT)
+    BitwiseOrAccum    @@bw_or_accum_var;    // default value = 64-bits of 0 = 0 (INT))
 
-  // 11110000 = 240
-  // 00001111 =  15
-  // 10101010 = 170
-  // 01010101 =  85
+    // 11110000 = 240
+    // 00001111 =    15
+    // 10101010 = 170
+    // 01010101 =    85
 
-  // BitwiseAndAccum
-  @@bw_and_accum_var += 170; // 11111111 & 10101010 -> 10101010
-  @@bw_and_accum_var +=  85; // 10101010 & 01010101 -> 00000000
-  PRINT @@bw_and_accum_var;  // 0
+    // BitwiseAndAccum
+    @@bw_and_accum_var += 170; // 11111111 & 10101010 -> 10101010
+    @@bw_and_accum_var +=    85; // 10101010 & 01010101 -> 00000000
+    PRINT @@bw_and_accum_var;    // 0
 
-  @@bw_and_accum_var = 15;   // reset to 00001111
-  @@bw_and_accum_var += 85;  // 00001111 & 01010101 -> 00000101
-  PRINT @@bw_and_accum_var;  // 5
+    @@bw_and_accum_var = 15;     // reset to 00001111
+    @@bw_and_accum_var += 85;    // 00001111 & 01010101 -> 00000101
+    PRINT @@bw_and_accum_var;    // 5
 
-  // BitwiseOrAccum
-  @@bw_or_accum_var += 170; // 00000000 | 10101010 -> 10101010
-  @@bw_or_accum_var +=  85; // 10101010 | 01010101 -> 11111111 = 255
-  PRINT @@bw_or_accum_var;  // 255
+    // BitwiseOrAccum
+    @@bw_or_accum_var += 170; // 00000000 | 10101010 -> 10101010
+    @@bw_or_accum_var +=    85; // 10101010 | 01010101 -> 11111111 = 255
+    PRINT @@bw_or_accum_var;    // 255
 
-  @@bw_or_accum_var = 15;   // reset to 00001111
-  @@bw_or_accum_var += 85;  // 00001111 | 01010101 -> 01011111 = 95
-  PRINT @@bw_or_accum_var;  // 95
+    @@bw_or_accum_var = 15;     // reset to 00001111
+    @@bw_or_accum_var += 85;    // 00001111 | 01010101 -> 01011111 = 95
+    PRINT @@bw_or_accum_var;    // 95
 }

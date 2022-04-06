@@ -14,7 +14,7 @@ CREATE QUERY map_accum_ex() FOR GRAPH Minimal_Net {
     @@int_map_accum += ("baz" -> 2);
     @@int_map_accum += ("baz" -> 1); //add 1 to existing value
 
-    PRINT @@int_map_accum.contains_key("baz");
+    PRINT @@int_map_accum.containsKey("baz");
     PRINT @@int_map_accum.get("bar");
     PRINT @@int_map_accum.get("root");
 
@@ -29,7 +29,7 @@ CREATE QUERY map_accum_ex() FOR GRAPH Minimal_Net {
     PRINT @@string_map_accum;
 
     //Checking and getting keys
-    if @@string_map_accum.contains_key(1) THEN
+    if @@string_map_accum.containsKey(1) THEN
         PRINT @@string_map_accum.get(1);
     END;
 
@@ -41,8 +41,8 @@ CREATE QUERY map_accum_ex() FOR GRAPH Minimal_Net {
 
     PRINT @@nested_map_accum;
 
-    if @@nested_map_accum.contains_key(1) THEN
-        if @@nested_map_accum.get(1).contains_key("foo") THEN
+    IF @@nested_map_accum.containsKey(1) THEN
+        IF @@nested_map_accum.get(1).containsKey("foo") THEN
              PRINT @@nested_map_accum.get(1).get("foo");
         END;
     END;

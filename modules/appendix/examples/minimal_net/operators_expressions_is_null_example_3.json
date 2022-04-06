@@ -2,9 +2,9 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"p is not null": "p is not null"}]
+  "results": [{"\"p is not null\"": "p is not null"}]
 }

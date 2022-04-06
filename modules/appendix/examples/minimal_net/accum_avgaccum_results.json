@@ -2,12 +2,12 @@
   "error": false,
   "message": "",
   "version": {
-    "edition": "developer",
     "schema": 0,
+    "edition": "enterprise",
     "api": "v2"
   },
   "results": [
-    {"@@averageAccum": 4.83333},
-    {"@@averageAccum": 100}
+    {"@@average_accum": 4.83333},
+    {"@@average_accum": 100}
   ]
 }

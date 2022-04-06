@@ -6,16 +6,16 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
+        FROM :s -(Likes>:e1)- Post:msg -(Has_Creator>)- :t
         WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" ;
 
 
   B  =  SELECT t
-        FROM :s -(LIKES>:e1)- Comment:msg -(HAS_CREATOR>)- :t
+        FROM :s -(Likes>:e1)- Comment:msg -(Has_Creator>)- :t
         WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" ;
 
   Univ = SELECT u
-         FROM A:p -(STUDY_AT>) -:u - (<STUDY_AT)- B:s
+         FROM A:p -(Study_At>) -:u - (<Study_At)- B:s
          WHERE s != p
          Per (u)
          POST-ACCUM @@cnt+=1;

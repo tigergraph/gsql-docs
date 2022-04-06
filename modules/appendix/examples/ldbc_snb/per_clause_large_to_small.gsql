@@ -7,7 +7,7 @@ CREATE QUERY q3 () SYNTAX v2 {
   SumAccum<int> @cnt;
 
   V = SELECT s
-      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-:f - (HAS_TAG>) - :t
+      FROM Person:s- (Likes>)-Post:p - (<Container_Of)-:f - (Has_Tag>) - :t
       PER (s)
       ACCUM s.@cnt += 1;
 

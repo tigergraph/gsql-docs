@@ -1,4 +1,3 @@
-
 {
   "error": false,
   "message": "",
@@ -7,16 +6,7 @@
     "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"tag_class2": [
-    {
-      "v_id": "149",
-      "attributes": {
-        "name": "Athlete",
-        "id": 149,
-        "url": "http://dbpedia.org/ontology/Athlete"
-      },
-      "v_type": "tag_class"
-    },
+  "results": [{"tag_class1": [
     {
       "v_id": "211",
       "attributes": {
@@ -24,7 +14,16 @@
         "id": 211,
         "url": "http://dbpedia.org/ontology/Person"
       },
-      "v_type": "tag_class"
+      "v_type": "Tag_Class"
+    },
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "Tag_Class"
     }
   ]}]
 }

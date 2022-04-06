@@ -6,7 +6,7 @@ INTERPRET QUERY () SYNTAX v2{
   SumAccum<int> @post_cnt= 0;
 
   Result = SELECT tgt
-           FROM Person:tgt -(<HAS_CREATOR|LIKES>)- (Comment|Post):src
+           FROM Person:tgt -(<Has_Creator|Likes>)- (Comment|Post):src
            WHERE tgt.first_name == "Viktor" AND tgt.last_name == "Akhiezer"
            ACCUM CASE WHEN src.type == "Comment" THEN
                           tgt.@comment_cnt += 1

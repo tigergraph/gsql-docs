@@ -172,7 +172,7 @@ include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_3.gsql[]
 
 [source,gsql]
 ----
-// results of RUN QUERY bi_4("MusicalArtist", "Burma")
+include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_3_run.gsql[]
 include::appendix:example$ldbc_snb/conjunctive_pattern_matching_ex_3_results.json[]
 ----
 

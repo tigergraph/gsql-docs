@@ -1,16 +1,15 @@
-
 USE GRAPH ldbc_snb
 
 INTERPRET QUERY () SYNTAX v2 {
 
-  SumAccum<int> @@cnt;
+    SumAccum<int> @@cnt;
 
-  C  =  SELECT ctry
-        FROM Person:s - (LIKES>:e1) - Post:msg - (HAS_CREATOR>) - Person:t,
-             :t - (WORK_AT>:e2) - Company:c,
-             :c - (IS_LOCATED_IN>) - Country:ctry
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-              AND t.lastName LIKE "S%" ;
+    C  =  SELECT ctry
+        FROM Person:s - (Likes>:e1) - Post:msg - (Has_Creator>) - Person:t,
+             :t - (Work_At>:e2) - Company:c,
+             :c - (Is_Located_In>) - Country:ctry
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+              AND t.last_name LIKE "S%" ;
 
-  PRINT C;
+    PRINT C;
 }

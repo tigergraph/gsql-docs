@@ -6,7 +6,7 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   A  =  SELECT msg
-        FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :s
+        FROM :s -(Likes>:e1)- :msg -(Has_Creator>)- :s
         WHERE s.first_name LIKE "T%"
         PER (msg)
         ACCUM @@cnt +=1;

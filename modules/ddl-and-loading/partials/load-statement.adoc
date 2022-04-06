@@ -346,7 +346,12 @@ For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifi
 
 An example is shown below:
 
-.USING JSON_FILE test schema and loading job
+[tabs]
+====
+Loading job::
++
+--
+.JSON loading using EOL
 [source,gsql]
 ----
 CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
@@ -358,25 +363,6 @@ CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
     VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
 }
 RUN LOADING JOB json_load
-----
-
-
-To specify an end-of-line character other than the standard one, use the EOL option, as shown below.
-
-[tabs]
-====
-Loading job::
-+
---
-.JSON loading using EOL
-[source,gsql]
-----
-CREATE LOADING JOB json_load2 FOR GRAPH companyGraph {
-
-  LOAD "/tmp/data.json"
-    TO VERTEX company VALUES($"company":"name":"value",$"company":"name":"value"),
-    TO VERTEX members VALUES($"members",$"members") USING JSON_FILE="true", EOL="\03";
-}
 ----
 --
 .json file::

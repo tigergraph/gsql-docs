@@ -1,0 +1,22 @@
+CREATE QUERY excp_count_activity(SET<VERTEX<Person>> v_set, STRING e_type) FOR GRAPH Social_Net {
+    /* Count how many edges there are from each member of the input person set to posts, along the specified edge type. */
+
+    MapAccum<STRING,INT> @@all_count;
+    EXCEPTION empty_list (40001);
+    EXCEPTION no_edges   (40002);
+
+    IF ISEMPTY(v_set) THEN
+        RAISE empty_list ("Error: Input parameter 'v_set' (type SET<VERTEX<Person>>) is empty");
+    END;
+
+    Start = v_set;
+    Results = SELECT s
+        FROM Start:s -(:e)- post:t
+        WHERE e.type == e_type
+        ACCUM @@all_count += (t.subject -> 1);
+
+    IF Results.size() == 0 THEN
+        RAISE no_edges ("Error: No '" + eType + "' edges from the vertex set");
+    END;
+    PRINT @@all_count;
+}

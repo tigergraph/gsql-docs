@@ -351,7 +351,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY Min_Max_Accum_Ex()
+GSQL > RUN QUERY min_max_accum_Ex()
 include::appendix:example$minimal_net/accum_minaccum_results.json[]
 ----
 --
@@ -386,7 +386,7 @@ Results::
 .minMaxAccuxVertex.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY Min_Max_Accum_Vertex()
+GSQL > RUN QUERY min_max_accum_vertex()
 include::appendix:example$social_net/accum_maxaccum_vert_results.json[]
 ----
 --
@@ -474,7 +474,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY andOrAccumEx()
+GSQL > RUN QUERY and_or_accum_ex()
 include::appendix:example$minimal_net/accum_oraccum_results.json[]
 ----
 --
@@ -869,7 +869,7 @@ Results::
 .setAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY setAccumEx()
+GSQL > RUN QUERY set_accum_ex()
 {
   "error": false,
   "message": "",
@@ -1040,7 +1040,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY mapAccumEx()
+GSQL > RUN QUERY map_accum_ex()
 include::appendix:example$minimal_net/accum_mapaccum_results.gsql[]
 ----
 --
@@ -1289,7 +1289,7 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY Heap_Accum_Ex()
+GSQL > RUN QUERY heap_accum_ex()
 include::appendix:example$minimal_net/accum_heapaccum_results.json[]
 ----
 --

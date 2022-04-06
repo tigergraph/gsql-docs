@@ -1,15 +1,14 @@
-
 USE GRAPH ldbc_snb
 
-# start from a vertex type "Person"
+// start from a vertex type "Person"
 INTERPRET QUERY () SYNTAX v2 {
 
   SumAccum<int> @@cnt;
 
   F  =  SELECT t
-        FROM Person:s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- Person:t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-              AND t.lastName LIKE "S%"
+        FROM Person:s -(Likes>:e1)- :msg -(Has_Creator>)- Person:t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+              AND t.last_name LIKE "S%"
         POST-ACCUM @@cnt+=1;
 
   PRINT  @@cnt;

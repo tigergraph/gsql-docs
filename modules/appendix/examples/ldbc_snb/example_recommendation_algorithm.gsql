@@ -1,4 +1,4 @@
-CREATE QUERY recommend_message (String fn, String ln) SYNTAX v2{
+CREATE QUERY recommend_message (STRING fn, STRING ln) SYNTAX v2{
 
   SumAccum<int> @tag_in_common;
   SumAccum<float> @similarity_score;
@@ -10,19 +10,19 @@ CREATE QUERY recommend_message (String fn, String ln) SYNTAX v2{
    //   interests at Tag level.
     Others =
        SELECT p
-       FROM Person:s-(LIKES>)-:msg - (HAS_TAG>.<HAS_TAG.<LIKES)- :p
-       WHERE s.firstName == fn AND s.lastName == ln
+       FROM Person:s-(Likes>)-:msg - (Has_Tag>.<Has_Tag.<Likes)- :p
+       WHERE s.first_name == fn AND s.last_name == ln
        ACCUM msg.@Liked = true, p.@tag_in_common +=1
        POST-ACCUM p.@similarity_score = log (1 + p.@tag_in_common);
 
     // recommend new messages to Viktor that have not been liked by him.
     recommended_message =
              SELECT msg
-             FROM Others:o-(LIKES>) - :msg
+             FROM Others:o-(Likes>) - :msg
              WHERE  msg.@Liked == false
              ACCUM msg.@rank +=o.@similarity_score
              ORDER BY msg.@rank DESC
              LIMIT 2;
 
-  PRINT   recommended_message[recommended_message.content, recommended_message.@rank];
+  PRINT recommended_message[recommended_message.content, recommended_message.@rank];
 }

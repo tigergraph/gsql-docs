@@ -6,8 +6,8 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   F  =  SELECT t
-        FROM :s -(LIKES>:e1)- :msg -(HAS_CREATOR>)- :t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer" AND t.lastName LIKE "S%"
+        FROM :s -(Likes>:e1)- :msg -(Has_Creator>)- :t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" AND t.last_name LIKE "S%"
         POST-ACCUM @@cnt+=1;
 
   PRINT  @@cnt;

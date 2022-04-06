@@ -6,11 +6,11 @@ INTERPRET QUERY () SYNTAX v2 {
   SumAccum<int> @@cnt;
 
   A  =  SELECT t
-        FROM :s -(LIKES>:e1)- Post:msg -(HAS_CREATOR>)- :t
+        FROM :s -(Likes>:e1)- Post:msg -(Has_Creator>)- :t
         WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" ;
 
   A = SELECT p
-      FROM A:p -(LIKES>) -:msg - (HAS_CREATOR>) - A:p2
+      FROM A:p -(Likes>) -:msg - (Has_Creator>) - A:p2
       WHERE p2 != p
       Per (p, p2)
       ACCUM @@cnt +=1;

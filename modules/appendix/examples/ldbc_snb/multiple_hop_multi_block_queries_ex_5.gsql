@@ -3,11 +3,11 @@
 INTERPRET QUERY () SYNTAX v2 {
 
     R = SELECT s
-        FROM :msg -(HAS_CREATOR>)- :s
+        FROM :msg -(Has_Creator>)- :s
         WHERE msg.id == 1374390714042;
 
     T =  SELECT s
-         FROM R:s -(LIKES>)- :msg
+         FROM R:s -(Likes>)- :msg
          WHERE msg.id == 1374390714042;
 
   PRINT R;

@@ -9,15 +9,20 @@ A GSQL parameterized query has three steps.
 . Install one or more queries in the catalog, generating a REST endpoint for each query.
 . Run an installed query, supplying appropriate parameters, either as a GSQL command or by sending an HTTP request to the REST endpoint.
 
-== A Simple 1-Hop Query
+== A simple 1-hop query
 
-Now, let's write our first GSQL query. We'll display all the direct (1-hop) neighbors of a person, given as an input parameter.
+Now, let's write our first GSQL query.
+We'll display all the direct (1-hop) neighbors of a person, given as an input parameter.
+
+If you run this query in interactive mode, you'll need to add `BEGIN` and `END` statements.
+However, just examine it for now. You will save this query to a file and run it from the GSQL shell.
 
 .GSQL command
 [source,gsql]
 ----
 B
 USE GRAPH social
+
 SET syntax_version="v2"
 
 CREATE QUERY hello (VERTEX<Person> p) {
@@ -42,9 +47,14 @@ Refer back to the initial clause and the assignment ("[.code]``Result = SELECT t
 
 Last, we print out the Result vertex set, in JSON format.
 
-== Create A Query
+== Create a query
 
-Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the @filename syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using @hello.qsql ( Note that if you are not in the /home/tigergraph folder when you start gsql, then you can use the absolute path to invoke a gsql file. e.g., `@/home/tigergraph/hello.gsql` *``*) Then run the "ls" command to see that the query is now in the catalog.
+Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the `@filename` syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using `@hello.qsql`.
+
+[NOTE]
+IF you are not in the `/home/tigergraph` folder when you start GSQL, you can use the absolute path to invoke a `.gsql` file. e.g., `@/home/tigergraph/hello.gsql`
+
+Run the "ls" command to see that the query is now in the catalog.
 
 .GSQL shell
 
@@ -80,7 +90,7 @@ SessionParameters:
 
 
 
-== Install a Query
+== Install a query
 
 However, the query is not installed yet. In the GSQL shell, type the following command to install the newly-added query "hello".
 
@@ -107,11 +117,14 @@ Node 'm1' is prepared as compile server.
 
 
 
-It takes about 1 minute for the database to install this new query. Be patient! For queries on large datasets, this small investment pays off many times over in faster query execution, particularly if you will run the query many times, with different parameters. The installation will generate machine instructions and a REST endpoint. After the progress bar reaches 100%, we are ready to run this query.
+It takes about 1 minute for the database to install this new query. Be patient!
+For queries on large datasets, this small investment pays off many times over in faster query execution, particularly if you will run the query many times, with different parameters.
+The installation will generate machine instructions and a REST endpoint.
+After the progress bar reaches 100%, we are ready to run this query.
 
-== Run a Query in GSQL
+== Run a query in GSQL
 
-To run a query in GSQL, use "RUN QUERY" followed by the query name and a set of parameter values.
+To run a query in GSQL, use `RUN QUERY` followed by the query name and a set of parameter values.
 
 .GSQL command - run query examples
 
@@ -164,9 +177,11 @@ GSQL > RUN QUERY hello("Tom")
 
 
 
-== Run a Query as a REST Endpoint
+== Run a query as a REST endpoint
 
-Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the curl command is the most popular way to submit an http request. In the example below, the portion that is standard for all queries is shown in bold _**_; the portion in normal weight pertains to this particular query and parameter value. The JSON result will be returned to the Linux shell's standard output. So, our parameterized query becomes a http service!
+Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the `curl` command is the most popular way to submit an http request.
+
+The JSON result will be returned to the Linux shell's standard output. Our parameterized query thus becomes an http service!
 
 .Linux shell
 
@@ -177,29 +192,21 @@ curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 
 
 
-Finally, to see the GSQL text of a query in the catalog, you can use
-
-.GSQL command - show query example
-
-[source,gsql]
-----
-#SHOW QUERY query_name. E.g.
-SHOW QUERY hello
-----
-
-
+Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.
 
 Congratulations! At this point, you have gone through the whole process of defining, installing, and running a query.
 
-== Running Anonymous Queries Without Installing
+== Running anonymous queries without installing
 
-Installing query will give the fastest query speed, but user needs to wait for the installation overhead.
+Installing a query will give the fastest query speed, but the user needs to wait for the installation overhead.
 
 The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL. Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 
-== A More Advanced Query
+== A more advanced query
 
-Now, let's do a more advanced query. This time, we are going to learn to use the powerful built-in accumulators, which serves as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.  Runtime means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
+Now, let's do a more advanced query.
+This time, we are going to learn to use the powerful built-in accumulators, which serve as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.
+Runtime means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
 
 .GSQL command file - hello2.gsql
 
@@ -266,7 +273,7 @@ gsql hello2.gsql
 
 
 [discrete]
-==== GSQL Query Summary:
+==== GSQL query summary:
 
 * Queries are installed in the catalog and can have one or more input parameters, enabling reuse of queries.
 * A GSQL query consists of a series of SELECT query blocks, each generating a named vertex set.

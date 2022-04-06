@@ -2,13 +2,20 @@
 
 == Introduction
 
-In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries. Before you start, you need to have installed the TigerGraph system, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries.
 
-== What is a Graph?
+Before you start, you need to have installed the TigerGraph system locally or in a Docker container, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+
+Although TigerGraph does have a cloud-based system in TigerGraph Cloud, it doesn't have a GSQL interface and so can't be used for this tutorial.
+
+== What is a graph?
 
 A graph is a collection of data entities and the connections between them.  That is, it's a network of data entities.
 
-Many people call a data entity a *node* ; at TigerGraph we call it a *vertex*. The plural is *vertices*. We call a connection an *edge*.  Both vertices and edges can have properties or attributes.  The figure below is a visual representation of a graph containing 7 vertices (shown as circles) and 7 edges (the lines).
+Many people call a data entity a *node* ; at TigerGraph we call it a *vertex*. The plural is *vertices*. We call a connection an *edge*.
+
+Both vertices and edges can have properties or attributes.
+The figure below is a visual representation of a graph containing seven vertices (shown as circles) and seven edges (the lines).
 
 image::friendship-social-graph.png[Friendship Social Graph]
 
@@ -20,9 +27,15 @@ image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
 
 The friendship loop shows that a friendship is between a person and another person.
 
-=== Data Set
+=== Data set
 
-For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
+For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph.
+The data for this graph consists of two files in csv (comma-separated values) format.
+
+To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk.
+If you downloaded the Docker container, these files can be found in `/home/tigergraph/tutorial/3.x/gsql101/`.
+
+In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
 
 .person.csv
 [,csv]
@@ -54,12 +67,12 @@ Dan,Kevin,2015-12-30
 
 
 
-=== Prepare Your TigerGraph Environment +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
+=== Prepare your TigerGraph environment
 
 First, let's check that you can access GSQL.
 
 . Open a Linux shell.
-. Type gsql as below. A GSQL shell prompt should appear as below.
+. Type `gsql` as below. A GSQL shell prompt should appear as below.
 +
 .Linux Shell
 +
@@ -71,9 +84,11 @@ GSQL >
 +
 
 
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". If you need further help, please see xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
+. If the GSQL shell does not launch, try resetting the system with `gadmin start all`.
+If you need further help, please see xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
 
-If this is your first time using GSQL, the TigerGraph data store is probably empty.  However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
+If this is your first time using GSQL, the TigerGraph data store is probably empty.
+However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
 
 .GSQL shell - an empty database catalog
 [,text]
@@ -92,7 +107,10 @@ Syntax version: v2
 
 
 
-If the data catalog is not empty, you will need to empty it to start this tutorial. We'll assume you have your coworkers' permission.  Use the command DROP ALL to delete all the database data, its schema, and all related definitions. This command takes about a minute to run.
+If the data catalog is not empty, you will need to empty it to start this tutorial.
+We'll assume you have your coworkers' permission.
+Use the command `DROP ALL` to delete all the database data, its schema, and all related definitions.
+This command takes about a minute to run.
 
 .GSQL shell - DROP ALL
 
@@ -154,4 +172,4 @@ gsql 'ls'
 You can also execute a series of commands which you have stored in a file, by simply invoking "gsql" following by the name of the file.
 ====
 
-When you are done, you can exit the GSQL shell with the command "quit" (without the quotes).
+When you are done, you can exit the GSQL shell with the command `quit`.

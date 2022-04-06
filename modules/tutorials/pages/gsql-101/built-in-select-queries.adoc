@@ -1,14 +1,16 @@
 = Run Built-in Queries
 
-You now have a graph with data!  You can run some  queries using the built-in REST endpoint calls.
+You now have a graph with data!  You can run some queries using the built-in REST endpoint calls.
 
-== Get Vertex/Edge Statistics
+== Get vertex/edge statistics
 
-Below we call two functions, stat_vertex_number and stat_edge_number to return the cardinality of each vertex and edge type.
+Here we call two functions, `stat_vertex_number` and `stat_edge_number` to return the cardinality of each vertex and edge type.
 
 [NOTE]
 ====
-REST endpoints return results in JSON format. JSON data are used for various purposes. But JSON data can't be read easily from JSON file by using bash script like other normal files. *jq* tool is used to solve this problem
+REST endpoints return results in JSON format.
+However, JSON data can't be read easily from JSON files by using bash script like other normal files.
+The *jq* tool is used to solve this problem.
 
 We recommend you install jq and redirect the REST call result to jq before it is output. +
 ====
@@ -73,9 +75,9 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 }
 ----
 
-== Select Vertices
+== Select vertices
 
-If you want to lookup the details about a vertex with its primary_id, you can use the following REST call.
+If you want to look up the details about a vertex with its primary ID, you can use the following REST call.
 
 .Linux Shell
 
@@ -86,7 +88,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 
 
-*Example*. Find a person vertex whose primary_id is "Tom".
+*Example*. Find a person vertex whose `primary_id` is "Tom".
 
 .Linux Shell
 
@@ -123,9 +125,10 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 }
 ----
 
-== Select Edges
+== Select edges
 
-In similar fashion, we can see details about edges.  To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
+In similar fashion, we can see details about edges.
+To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
 
 .Linux Shell
 [.wrap,bash]
@@ -139,7 +142,7 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 
 
 
-*Example*. Find all friendship edges whose source vertex's primary_id is "Tom".
+*Example*. Find all friendship edges whose source vertex's `primary_id` is "Tom".
 
 .Linux Shell
 [.wrap,bash]
@@ -187,4 +190,4 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 }
 ----
 
-For more built-in REST endpoints, you can the xref:tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].
+For more built-in REST endpoints, visit the xref:tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].

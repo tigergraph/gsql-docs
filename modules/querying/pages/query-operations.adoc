@@ -205,7 +205,7 @@ Embedded schema::
 --
 [source.wrap,gsql]
 ----
-include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
+include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
 ----
 --
 Dynamic querying::
@@ -213,7 +213,7 @@ Dynamic querying::
 --
 [source,gsql]
 ----
-include::appendix:example$social_net/query_operations_embedded_schema.gsql[]
+include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
 ----
 --
 ====

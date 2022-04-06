@@ -1319,14 +1319,12 @@ This query finds the most popular people, sorting first based on the number of f
 include::appendix:example$friend_net/select_statement_index_order_by_descending.gsql[]
 ----
 --
-
 Results::
 +
 --
-.top_popular.json
 [source,gsql]
 ----
-include::appendix:example$friend_net/select_statement_index_order_by_descending.gsql[]
+include::appendix:example$friend_net/select_statement_index_order_by_descending_run.gsql[]
 include::appendix:example$friend_net/select_statement_index_order_by_descending_results.json[]
 ----
 --

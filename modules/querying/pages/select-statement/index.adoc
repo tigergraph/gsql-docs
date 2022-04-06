@@ -665,7 +665,7 @@ Query::
 .`WHERE` using edge attributes
 [source.wrap,gsql]
 ----
-include::appendix:example$social_net/select_statement_index_where_using_edge_attributes.gsql[]
+include::appendix:example$work_net/select_statement_index_where_using_edge_attributes.gsql[]
 ----
 --
 
@@ -676,7 +676,7 @@ Results::
 [source.wrap,gsql]
 ----
 GSQL > RUN QUERY full_time_workers()
-include::appendix:example$social_net/select_statement_index_where_using_edge_attributes_results.json[]
+include::appendix:example$work_net/select_statement_index_where_using_edge_attributes_results.json[]
 ----
 --
 ====
@@ -967,7 +967,7 @@ For example, below we have three `POST-ACCUM` clauses.
 
 [source,gsql]
 ----
-include::appendix:example$social_net/select_statement_index_three_post_accum_clauses.gsql[]
+include::appendix:example$ldbc_snb/select_statement_index_three_post_accum_clauses.gsql[]
 ----
 <1> The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
 <2> The second `POST-ACCUM` iterates through `t`.

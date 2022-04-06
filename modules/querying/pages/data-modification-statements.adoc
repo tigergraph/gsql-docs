@@ -77,11 +77,11 @@ Query::
 .deleteEx.run
 [source,gsql]
 ----
-RUN QUERY countAtLocation("us")
-RUN QUERY deleteEx2()
-RUN QUERY countAtLocation("us")
+RUN QUERY count_at_location("us")
+RUN QUERY delete_ex2()
+RUN QUERY count_at_location("us")
 RUN QUERY deleteEx()
-RUN QUERY countAtLocation("us")
+RUN QUERY count_at_location("us")
 ----
 --
 Results::
@@ -413,9 +413,9 @@ List all the Japan-based companies before and after the insertion.
 .addNewChildCompany.run
 [source,gsql]
 ----
-RUN QUERY listCompanyNames("jp")
-RUN QUERY addNewChildCompany("company4")
-RUN QUERY listCompanyNames("jp")
+RUN QUERY list_company_names("jp")
+RUN QUERY add_new_child_company("company4")
+RUN QUERY list_company_names("jp")
 ----
 
 

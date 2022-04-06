@@ -46,11 +46,9 @@ When an exception occurs during the execution of a query, the default response i
 
 The example below show two common errors: wrong data type and divide-by-zero. First we define a simple query that divides 100.0 by the query's input parameter.
 
-.Example: query excpBuiltin
-
 [source,gsql]
 ----
-CREATE QUERY excpBuiltin(INT n1) FOR GRAPH minimalNet {
+CREATE QUERY excpBuiltin(INT n1) FOR GRAPH Minimal_Net {
   PRINT 100.0/n1;
 }
 ----
@@ -66,10 +64,9 @@ We then test three cases:
 First we test using the GSQL interface. When the query runs without error, the output is in JSON format. Where there is a built-in exception, however, only an error message is displayed.
 
 .Exception response for RUN QUERY
-
 [source,gsql]
 ----
-GSQL > RUN QUERY excpBuiltin(7)
+GSQL > RUN QUERY excp_builtin(7)
 {
   "error": false,
   "message": "",
@@ -81,10 +78,10 @@ GSQL > RUN QUERY excpBuiltin(7)
   "results": [{"100.0/n1": 14.28571}]
 }
 
-GSQL > RUN QUERY excpBuiltin("a")
+GSQL > RUN QUERY excp_builtin("a")
 Values of parameter n1 must be INT64 type, invalid value [a] provided.
 
-GSQL > RUN QUERY excpBuiltin(0)
+GSQL > RUN QUERY excp_builtin(0)
 Runtime Error: divider is zero.
 ----
 
@@ -170,7 +167,7 @@ errorCode     := integer
 
 To use a user-defined exception, it must first be declared. An exception declaration statement declares a user-defined exception type, assigning a name and identification number. The id number errorCode must be greater than 40,000.  Numbers 40,000 and lower are reserved for system exceptions. Exception statements must be placed before any query-body statements, after accumulator declaration statements . A query can declare multiple exception types.
 
-=== *RAISE Statement*
+=== `RAISE` Statement
 
 [source,text]
 ----
@@ -192,28 +189,7 @@ The example below defines and checks for two types of exceptions: an empty input
 .Example: Unhandled User-Defined Exceptions
 [source,gsql]
 ----
-CREATE QUERY excp_count_activity(SET<VERTEX<Person>> v_set, STRING e_type) FOR GRAPH Social_Net {
-    /* Count how many edges there are from each member of the input person set to posts, along the specified edge type. */
-
-    MapAccum<STRING,INT> @@all_count;
-    EXCEPTION empty_list (40001);
-    EXCEPTION no_edges   (40002);
-
-    IF ISEMPTY(v_set) THEN
-        RAISE empty_list ("Error: Input parameter 'v_set' (type SET<VERTEX<Person>>) is empty");
-    END;
-
-    Start = v_set;
-    Results = SELECT s
-        FROM Start:s -(:e)- post:t
-        WHERE e.type == e_type
-        ACCUM @@all_count += (t.subject -> 1);
-
-    IF Results.size() == 0 THEN
-        RAISE no_edges ("Error: No '" + eType + "' edges from the vertex set");
-    END;
-    PRINT @@all_count;
-}
+include::appendix:example$social_net/exception_raise.gsql[]
 ----
 
 
@@ -269,7 +245,7 @@ $ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vSet=pers
 
 
 
-=== *TRY...EXCEPTION Statement for Custom Error Handling*
+=== TRY...EXCEPTION Statement for Custom Error Handling
 
 [source,text]
 ----
@@ -330,59 +306,7 @@ Note that cases 1 and 2 do NOT mean that a negative or slow speed edge is actual
 .Example: Path Search with Exceptions
 [source,gsql]
 ----
-CREATE QUERY comp_path_valid (VERTEX<Computer> src, VERTEX<Computer> tgt, BOOL en_excp) FOR GRAPH Computer_Net {
-/* Find valid paths in a computer network from a source to a target.
- Stop search once you have found some paths.
- 3 Exceptions: (1) Negative connection speed, (2) Slow connection speed, (3) No path.
-Set en_excp=true to raise exceptions. en_excp=false will find paths, good or bad. */
-
-	OrAccum @@reached, @visited;
-	ListAccum<STRING> @paths;
-	DOUBLE min_speed = 0.4;
-	INT err;
-
-	EXCEPTION neg_speed (40001);
-	EXCEPTION slow_speed (40002);
-	EXCEPTION not_reached (40003);
-
-	TRY
-		Start = {src};
-		// Initialize: path to src is itself.
-		Start = SELECT s
-			FROM Start:s
-			ACCUM s.@paths = s.id;
-
-		WHILE Start.size() != 0 AND NOT @@reached DO
-			Start = SELECT t
-				FROM Start:s -(:e)- :t
-				WHERE t.@visited == false
-				ACCUM CASE
-					WHEN e.connection_speed < 0 THEN err = 1
-					WHEN e.connection_speed < min_speed THEN err = 2
-					WHEN t == tgt THEN @@reached += true
-        END,
-        // List1 * List2 -> List(each elem of List1 concat w/each elem of List2)
-					t.@paths += (s.@paths * ["~"]) * [t.id]
-				POST-ACCUM t.@visited = true;
-        IF err == 1 AND en_excp THEN
-				RAISE neg_speed ("Negative Speed");
-        ELSE IF err == 2 AND en_excp THEN
-				RAISE slow_speed ("Slow Speed");
-			END;
-		END;
-
-		IF NOT @@reached AND en_excp THEN
-			RAISE not_reached ("No path to target");
-		ELSE
-			result = {tgt};
-			PRINT result[result.@paths];
-		END;
-	EXCEPTION
-		WHEN neg_speed THEN PRINT "bad path: negative speed";
-		WHEN slow_speed THEN PRINT "bad path: slow speed";
-		WHEN not_reached THEN PRINT "no path from source to target";
-	END;
-}
+include::appendix:example$computer_net/exception_custom_handling.gsql[]
 ----
 
 

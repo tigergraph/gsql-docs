@@ -209,7 +209,7 @@ Results::
 .Example 4 Results for Query ratePosts
 [source,gsql]
 ----
-GSQL > RUN QUERY ratePosts()
+GSQL > RUN QUERY rate_posts()
 include::appendix:example$social_net/controlflow_nested_case_results.json[]
 ----
 --
@@ -396,7 +396,7 @@ Results::
 .Results for Query foreachRangeEx
 [source,gsql]
 ----
-GSQL > RUN QUERY foreachRangeEx()
+GSQL > RUN QUERY foreach_range_ex()
 include::appendix:example$social_net/controlflow_foreach_range_results.json[]
 ----
 --
@@ -503,7 +503,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY topicLikes()
+GSQL > RUN QUERY topic_likes()
 include::appendix:example$social_net/controlflow_dmlsub_foreach_results.json[]
 ----
 --
@@ -528,7 +528,7 @@ Results::
 
 [source,gsql]
 ----
-GSQL > RUN QUERY friendGender()
+GSQL > RUN QUERY friend_gender()
 include::appendix:example$social_net/controlflow_dmlsub_foreach_2_results.json[]
 ----
 --

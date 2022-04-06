@@ -308,10 +308,9 @@ Note how the results of the six `PRINT` statements are grouped in the JSON `resu
 ====
 
 .Results from Query printExampleV2 (WITH COMMENTS ADDED)
-
 [source,gsql]
 ----
-GSQL > RUN QUERY printExampleV2("person1")
+GSQL > RUN QUERY print_example_v2("person1")
 {
   "error": false,
   "message": "",

@@ -156,7 +156,7 @@ Results::
 .mathOperators.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY mathOperators()
+GSQL > RUN QUERY math_operators()
 include::appendix:example$minimal_net/operators_expressions_math_operators_results.json[]
 ----
 --

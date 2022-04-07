@@ -203,7 +203,7 @@ The query is written with schema information embedded statically in it:
 Embedded schema::
 +
 --
-[source.wrap,gsql]
+[source,gsql]
 ----
 include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
 ----
@@ -226,11 +226,18 @@ A _statement_ is a standalone instruction that expresses an action to be carried
 DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
 
 A GSQL query has two levels of statements.
-The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
+The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.
+This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
+If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
 
-The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short.This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.There is no comma or semicolon after the last DML-sub-statement in a block.For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
+The lower-level statement type is called _DML-sub-level statement_ or _DML-sub statement_ for short.
+This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.
+There is no comma or semicolon after the last DML-sub-statement in a block.
+For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.
+If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
 
-There is some overlap in the types.For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
+There is some overlap in the types.
+For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
 
 [source,ebnf]
 ----
@@ -286,13 +293,12 @@ Guidelines for understanding statement type hierarchy:
 * The statements within a DML statement are DML-sub statements (comma-separated list).
 * The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
 
-.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
-
-[source,gsql]
-----
 // Each statement's operation type is either ControlFlow, DML, or other.
 // Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
 
+.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
+[source,gsql]
+----
 CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
 	other queryBodyStmt1;
 	ControlFlow queryBodyStmt2   // ControlFlow inside top level.
@@ -318,8 +324,6 @@ CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
 	;
 	other queryBodyStmt4;
 ----
-
-
 
 Here is a descriptive list of query-body statements:
 
@@ -517,8 +521,8 @@ runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueLis
 
 This syntax is like `RUN` query, except
 
-. The keyword `RUN` is replaced with `INTERPRET`.
-. Some options may not be supported.
+* The keyword `RUN` is replaced with `INTERPRET`.
+* Some options may not be supported.
 
 .Example of Interpret-Only Mode for INTERPRET QUERY
 
@@ -536,7 +540,7 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
 ----
 
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
 
@@ -799,7 +803,7 @@ You will receive a JSON response immediately containing a query ID (`request_id`
 
 To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` header and set its value to true. If the query takes parameters, put them in the query string:
 
-[source,console]
+[source.wrap,console]
 ----
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
@@ -810,7 +814,9 @@ To check the status and results of the queries executed in Detached Mode, use th
 
 The standard output of GSQL queries is in industry-standard JSON format. A JSON *object* is an unordered set of *key-value pairs*, enclosed in curly braces. Among the acceptable data types for a JSON *value* are *array* and *object*. A JSON *array* is an ordered list of *values*, enclosed in square brackets. Since values can be objects or arrays, JSON supports hierarchical, nested structures. Strings are enclosed in double quotation marks. We also use the term *field* to refer to a key (or a key-value pair) of a given object.
 
-At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code"). If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query. If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
+At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code").
+If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query.
+If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
 
 Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:
 
@@ -886,9 +892,9 @@ The following GSQL statement can be used to set the JSON output API configuratio
 SET json_api = <version_string>
 ----
 
-This statement sets a persistent system parameter. Each version of the TigerGraph platform is pre-configured to what was the latest output API that at the time of release. For example, platform version 1.1 is configured so that each query will produce v2 output by default.
+NOTE: The only supported JSON API is "v2".
 
-As of TigerGraph v3.0, the only supported JSON API is "v2".
+This statement sets a persistent system parameter. Each version of the TigerGraph platform is pre-configured to what was the latest output API that at the time of release.
 
 == SHOW QUERY
 
@@ -911,10 +917,12 @@ dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 To drop a query, run `DROP QUERY query_name` __. The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
 
 To drop all queries, either of the following commands can be used: +
-`DROP QUERY ALL
-DROP QUERY *`
 
-[NOTE]
-====
-The scope of ALL depends on the user's current scope. If the user has set a working graph, then DROP ALL removes all the jobs for that graph. If a superuser has set their scope to be global, then DROP ALL removes all jobs across all graph spaces.
-====
+* `DROP QUERY ALL`
+* `DROP QUERY *`
+
+
+The scope of the command depends on the user's current scope.
+If the user has set a working graph, then `DROP ALL` removes all the queries for that graph.
+If a user has set their scope to be global, then `DROP ALL` removes all queries across all graph spaces.
+

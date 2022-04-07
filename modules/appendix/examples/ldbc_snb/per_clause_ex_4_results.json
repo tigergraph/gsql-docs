@@ -1,0 +1,41 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"R": [
+    {
+      "v_id": "2",
+      "attributes": {
+        "@postCnt": 12,
+        "name": "Angola",
+        "id": 2,
+        "url": "http://dbpedia.org/resource/Angola"
+      },
+      "v_type": "Country"
+    },
+    {
+      "v_id": "67",
+      "attributes": {
+        "@postCnt": 4002,
+        "name": "Cambodia",
+        "id": 67,
+        "url": "http://dbpedia.org/resource/Cambodia"
+      },
+      "v_type": "Country"
+    },
+    {
+      "v_id": "11",
+      "attributes": {
+        "@postCnt": 395,
+        "name": "Dominican_Republic",
+        "id": 11,
+        "url": "http://dbpedia.org/resource/Dominican_Republic"
+      },
+      "v_type": "Country"
+    }
+  ]}]
+}

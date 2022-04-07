@@ -1,0 +1,7 @@
+CREATE QUERY parameter_is_null (INT p) FOR GRAPH Minimal_Net {
+    IF p IS NULL THEN
+        PRINT "p is null";
+    ELSE
+        PRINT "p is not null";
+    END;
+}

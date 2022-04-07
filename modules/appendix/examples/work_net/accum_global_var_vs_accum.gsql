@@ -1,0 +1,15 @@
+// Count the total number of employment relationships for all companies
+CREATE QUERY count_employment_relationships() FOR GRAPH Work_Net SYNTAX V2 {
+
+    INT local_relationship_count;
+    SumAccum<INT> @@global_relationship_count;
+
+    start = {Company.*};
+
+    companies = SELECT s FROM start:s -(Works_For)- :t
+        ACCUM @@global_relationship_count += 1,
+        local_relationship_count = local_relationship_count + 1;
+
+    PRINT local_relationship_count;
+    PRINT @@global_relationship_count;
+}

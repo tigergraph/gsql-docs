@@ -1,0 +1,5 @@
+CREATE QUERY find_friends_in_distance(VERTEX<Person> p, INT distance) FOR GRAPH Friend_Net {
+	seed = {p};
+    //PRINT All Persons;
+	PRINT sub_find_friends_in_distance(seed, distance) AS friends;
+}

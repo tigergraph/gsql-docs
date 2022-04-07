@@ -1,0 +1,15 @@
+CREATE QUERY foreach_range_ex() FOR GRAPH Social_Net {
+    ListAccum<INT> @@t;
+    Start = {Person.*};
+    FOREACH i IN RANGE[0, 2] DO
+        @@t += i;
+        L = SELECT Start
+            FROM Start
+            WHERE Start.id == "person1"
+            ACCUM
+                FOREACH j IN RANGE[0, i] DO
+                    @@t += j
+                END;
+    END;
+    PRINT @@t;
+}

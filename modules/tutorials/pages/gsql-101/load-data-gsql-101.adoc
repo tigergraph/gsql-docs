@@ -25,8 +25,8 @@ CREATE LOADING JOB load_social FOR GRAPH social {
    DEFINE FILENAME file1="/home/tigergraph/person.csv";
    DEFINE FILENAME file2="/home/tigergraph/friendship.csv";
 
-   LOAD file1 TO VERTEX person VALUES ($"name", $"name", $"age", $"gender", $"state") USING header="true", separator=",";
-   LOAD file2 TO EDGE friendship VALUES ($0, $1, $2) USING header="true", separator=",";
+   LOAD file1 TO VERTEX Person VALUES ($"name", $"name", $"age", $"gender", $"state") USING header="true", separator=",";
+   LOAD file2 TO EDGE Friendship VALUES ($0, $1, $2) USING header="true", separator=",";
 }
 END
 ----
@@ -60,8 +60,8 @@ GSQL > CREATE LOADING JOB load_social FOR GRAPH social {
 GSQL >    DEFINE FILENAME file1="/home/tigergraph/person.csv";
 GSQL >    DEFINE FILENAME file2="/home/tigergraph/friendship.csv";
 GSQL >
-GSQL >    LOAD file1 TO VERTEX person VALUES ($"name", $"name", $"age", $"gender", $"state") USING header="true", separator=",";
-GSQL >    LOAD file2 TO EDGE friendship VALUES ($0, $1, $2) USING header="true", separator=",";
+GSQL >    LOAD file1 TO VERTEX Person VALUES ($"name", $"name", $"age", $"gender", $"state") USING header="true", separator=",";
+GSQL >    LOAD file2 TO EDGE Friendship VALUES ($0, $1, $2) USING header="true", separator=",";
 GSQL > }
 GSQL > END
 Successfully created loading jobs: [load_social].

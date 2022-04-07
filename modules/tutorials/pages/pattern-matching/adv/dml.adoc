@@ -21,84 +21,20 @@ Pattern matching Insert is supported at both the top-level and within-SELECT lev
 * For a top-level statement, use xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO],
 * Inside an ACCUM or POST-ACCUM clause, use the xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insert[DML-sub INSERT] statement.
 
-*Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  KNOWS edges connecting Tiger Woods with Viktor's favorite authors.
+*Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  Knows edges connecting Tiger Woods with Viktor's favorite authors.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
+include::appendix:example$ldbc_snb/dml_insert_ex_1.gsql[]
 
-#find Viktor's 2012 favorite posts' authors, whose lastName prefix with S.
-INTERPRET QUERY() SYNTAX V2 {
+// results
+include::appendix:example$ldbc_snb/dml_insert_ex_1_results.json[]
 
-  R  =  SELECT t
-        FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-         AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012;
 
-  PRINT R[R.id, R.firstName, R.lastName];
-}
+// create a Person node, whose name is tiger,
+// and connect this Person with above Victor's favorite authors
 
-#result
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"R": [
-    {
-      "v_id": "8796093025410",
-      "attributes": {
-        "R.id": 8796093025410,
-        "R.firstName": "Priyanka",
-        "R.lastName": "Singh"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "2199023260091",
-      "attributes": {
-        "R.id": 2199023260091,
-        "R.firstName": "Janne",
-        "R.lastName": "Seppala"
-      },
-      "v_type": "Person"
-    },
-    {
-      "v_id": "15393162796846",
-      "attributes": {
-        "R.id": 15393162796846,
-        "R.firstName": "Mario",
-        "R.lastName": "Santos"
-      },
-      "v_type": "Person"
-    }
-  ]}]
-}
-
-# create a Person node, whose name is tiger,
-# and connect this Person with above Victor's favorite authors
-CREATE QUERY InsertEdgeAndVertex () SYNTAX v2{
-
-  #add a celebrity person node using INSERT INTO statement.
-  INSERT INTO Person VALUES (100000000,"Tiger", "Woods", "m", _, _,_,_,_,_);
-
-  R  =  SELECT t
-        FROM Person:s -(LIKES>)- :msg -(HAS_CREATOR>)- Person:t
-        WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-         AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
-        PER (s, t)
-        ACCUM
-           #add edges connecting "tiger" and t with a 6/1/2020 time stamp
-          INSERT INTO KNOWS VALUES(100000000, t, to_datetime("2020-06-01"));
-
-  PRINT R [R.id, R.firstName, R.lastName];
-}
-
-INSTALL QUERY InsertEdgeAndVertex
-RUN QUERY InsertEdgeAndVertex()
+include::appendix:example$ldbc_snb/dml_insert_ex_1_second_query.gsql[]
 ----
 
 You can verify the result by running a simple built-in REST endpoint.
@@ -107,12 +43,12 @@ Check the inserted vertex.
 
 .Linux Shell
 
-[source,gsql]
+[source,bash]
 ----
-#check the inserted vertex
+// check the inserted vertex
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
 
-#result
+// result
 {
   "version": {
     "edition": "enterprise",
@@ -127,11 +63,11 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
       "v_type": "Person",
       "attributes": {
         "id": 100000000,
-        "firstName": "Tiger",
-        "lastName": "Woods",
+        "first_name": "Tiger",
+        "last_name": "Woods",
         "gender": "m",
         "birthday": "1970-01-01 00:00:00",
-        "creationDate": "1970-01-01 00:00:00",
+        "creation_date": "1970-01-01 00:00:00",
         "locationIP": "",
         "browserUsed": "",
         "speaks": [],
@@ -148,11 +84,11 @@ Check the inserted edges.
 
 .Linux file
 
-[source,gsql]
+[source,bash]
 ----
-#check the inserted edges using tiger's id (100,000,000)
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
-#result
+// check the inserted edges using tiger's id (100,000,000)
+curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
+// result
 {
   "version": {
     "edition": "enterprise",
@@ -163,41 +99,41 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
   "message": "",
   "results": [
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "8796093025410",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-06-01 00:00:00"
+        "creation_date": "2020-06-01 00:00:00"
       }
     },
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "2199023260091",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-06-01 00:00:00"
+        "creation_date": "2020-06-01 00:00:00"
       }
     },
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "15393162796846",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-06-01 00:00:00"
+        "creation_date": "2020-06-01 00:00:00"
       }
     }
   ]
 }
-#note you can use the vertex lookup API to verify the three connected authors. E.g
+// note you can use the vertex lookup API to verify the three connected authors. E.g
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410" | jq .
 ----
 
@@ -215,49 +151,23 @@ Vertex attributes can only be updated in POST-ACCUM clause, and  edge attributes
 * To perform within-SELECT updates, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
 ====
 
-*Example 2.* For all KNOWS edges that connect Viktor Akhiezer and his friends whose lastName begins with "S", update the edge creationDate to "2020-10-01".  Also, for the Person vertex (Tiger Woods) update the vertex's creationDate and language he speaks.
+*Example 2.* For all Knows edges that connect Viktor Akhiezer and his friends whose last_name begins with "S", update the edge creation_date to "2020-10-01".  Also, for the Person vertex (Tiger Woods) update the vertex's creation_date and language he speaks.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-DROP QUERY UpdateKnowsTS
-
-CREATE QUERY UpdateKnowsTS () SYNTAX v2 {
-
-  # update the vertex tiger's attributes
-  # creationDate and languages spoken in POST-ACCUM
-  R = SELECT p
-      FROM Person:p
-      WHERE p.firstName == "Tiger" AND p.lastName == "Woods"
-      POST-ACCUM
-            # update simple base type attribute
-            p.creationDate = to_datetime("2020-6-1"),
-            # update  collection-type attribute
-            p.speaks = ("english", "golf");
-
-  #DML-sub level, update KNOWS edge attribute "creationDate" in ACCUM
-  R  =  SELECT t
-        FROM Person:s-(KNOWS:e) -:t
-        WHERE s.firstName == "Tiger" and s.lastName == "Woods"
-        #update the KNOWS edge time stamp
-        ACCUM e.creationDate = to_datetime("2020-10-01");
-}
-
-INSTALL QUERY UpdateKnowsTS
-RUN QUERY UpdateKnowsTS()
+include::appendix:example$ldbc_snb/dml_update_example.gsql[]
 ----
 
 To verify the update, we can use REST calls.
 
-Check Tiger Woods' creationDate and language he speaks.
+Check Tiger Woods' creation_date and language he speaks.
 
 .Linux Shell
 
 [source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
-#result
+// result
 {
   "version": {
     "edition": "enterprise",
@@ -272,13 +182,13 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
       "v_type": "Person",
       "attributes": {
         "id": 100000000,
-        "firstName": "Tiger",
-        "lastName": "Woods",
+        "first_name": "Tiger",
+        "last_name": "Woods",
         "gender": "m",
         "birthday": "1970-01-01 00:00:00",
-        "creationDate": "2020-06-01 00:00:00",
-        "locationIP": "",
-        "browserUsed": "",
+        "creation_date": "2020-06-01 00:00:00",
+        "location_ip": "",
+        "browser_used": "",
         "speaks": [
           "english",
           "golf"
@@ -292,15 +202,15 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 
 
 
-Check KNOWS edges whose source is tiger woods.
+Check Knows edges whose source is tiger woods.
 
 .Linux Shell
 
 [source,gsql]
 ----
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
+curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
 
-#result
+// result
 {
   "version": {
     "edition": "enterprise",
@@ -311,36 +221,36 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
   "message": "",
   "results": [
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "8796093025410",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-10-01 00:00:00"
+        "creation_date": "2020-10-01 00:00:00"
       }
     },
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "2199023260091",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-10-01 00:00:00"
+        "creation_date": "2020-10-01 00:00:00"
       }
     },
     {
-      "e_type": "KNOWS",
+      "e_type": "Knows",
       "directed": false,
       "from_id": "100000000",
       "from_type": "Person",
       "to_id": "15393162796846",
       "to_type": "Person",
       "attributes": {
-        "creationDate": "2020-10-01 00:00:00"
+        "creation_date": "2020-10-01 00:00:00"
       }
     }
   ]
@@ -362,30 +272,11 @@ You  can use delete () function to delete edges and vertices in ACCUM and POST-A
 * To perform within-SELECT deletes, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
 ====
 
-*Example 3.* Delete vertex Tiger Woods and its KNOWS edges.
+*Example 3.* Delete vertex Tiger Woods and its Knows edges.
 
 [source,gsql]
 ----
-USE GRAPH ldbc_snb
-
-DROP QUERY  DeleteEdgeAndVertex
-
-CREATE QUERY DeleteEdgeAndVertex () SYNTAX v2{
-
-  R  =  SELECT t
-        FROM Person:s -(KNOWS:e)- Person:t
-        WHERE s.firstName == "Tiger" AND s.lastName == "Woods"
-        ACCUM
-           //delete edges
-           DELETE(e)
-        POST-ACCUM DELETE(s); //delete src vertex
-
-
-  PRINT  R [R.id, R.firstName, R.lastName];
-}
-
-INSTALL QUERY DeleteEdgeAndVertex
-RUN QUERY DeleteEdgeAndVertex()
+include::appendix:example$ldbc_snb/dml_delete_example.gsql[]
 ----
 
 To verify the result, you can use built-in REST calls.
@@ -405,7 +296,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
   "code": "601"
 }
 
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
+curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
 #edge results
 {
   "version": {

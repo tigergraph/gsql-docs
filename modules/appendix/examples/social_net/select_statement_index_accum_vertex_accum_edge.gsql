@@ -1,0 +1,15 @@
+CREATE QUERY user_posts_2() FOR GRAPH Social_Net {
+    // Show each user's post and liked post time
+    ListAccum<VERTEX> @person_posts;
+    ListAccum<EDGE> @person_liked_info;
+    start = {Person.*};
+
+    // Find all user post topics and append them to the vertex list accum
+    user_postings = SELECT s FROM start:s -(Posted)- :g
+        ACCUM s.@person_posts += g;
+
+    user_postings = SELECT s from start:s -(Liked:e)- :g
+        ACCUM s.@person_liked_info += e;
+
+    PRINT start;
+}

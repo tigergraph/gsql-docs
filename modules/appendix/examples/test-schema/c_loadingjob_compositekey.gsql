@@ -1,0 +1,18 @@
+// Schema setup
+CREATE VERTEX Composite_Person (id uint, name string, PRIMARY KEY (name,id))
+CREATE VERTEX Composite_Movie (id uint, title string, country string, year uint, primary key (title,year,id))
+CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role string) with reverse_edge="composite_roles_reverse"
+CREATE GRAPH My_Graph(*)
+
+// Loading job
+CREATE LOADING JOB composite_load FOR GRAPH My_Graph {
+  LOAD "$sys.data_root/movies.csv" TO VERTEX Composite_Movie VALUES
+       ($"id", $"title", $"country" ,$"year") USING header ="true", separator=",";
+
+  LOAD "$sys.data_root/persons.csv" TO VERTEX Composite_Person VALUES
+       ($"id",$"name") USING header = "true", separator =",";
+
+  LOAD "$sys.data_root/compositeroles.csv" TO EDGE Composite_Roles VALUES
+       (($"personName", $"personId"),($"movieTitle",$"movieYear",$"movieId"),$"role")
+       USING header="true", separator = ",";
+}

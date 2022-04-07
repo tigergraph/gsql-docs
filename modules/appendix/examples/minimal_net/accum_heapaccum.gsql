@@ -1,0 +1,44 @@
+CREATE QUERY heap_accum_ex() FOR GRAPH Minimal_Net {
+    TYPEDEF tuple<STRING first_name, STRING last_name, INT score> Test_Results;
+
+    //Heap with max size of 4 sorted descending by score then ascending last name
+    HeapAccum<Test_Results>(4, score DESC, last_name ASC) @@top_test_results;
+
+    PRINT @@top_test_results.top();
+
+    @@top_test_results += Test_Results("Bruce", "Wayne", 80);
+    @@top_test_results += Test_Results("Peter", "Parker", 80);
+    @@top_test_results += Test_Results("Tony", "Stark", 100);
+    @@top_test_results += Test_Results("Bruce", "Banner", 95);
+    @@top_test_results += Test_Results("Jean", "Summers", 95);
+    @@top_test_results += Test_Results("Clark", "Kent", 80);
+
+    //Show element with the highest sorted position
+    PRINT @@top_test_results.top();
+    PRINT @@top_test_results.top().first_name, @@top_test_results.top().last_name, @@top_test_results.top().score;
+
+    PRINT @@top_test_results;
+
+    //Increase the size of the heap to add more elements
+    @@top_test_results.resize(5);
+
+    //Find the size of the current heap
+    PRINT @@top_test_results.size();
+
+    @@top_test_results += Test_Results("Bruce", "Wayne", 80);
+    @@top_test_results += Test_Results("Peter", "Parker", 80);
+
+    PRINT @@top_test_results;
+
+    //Resizing smaller WILL REMOVE excess elements from the HeapAccum
+    @@top_test_results.resize(3);
+    PRINT @@top_test_results;
+
+    //Increasing capacity will not restore dropped elements
+    @@top_test_results.resize(5);
+    PRINT @@top_test_results;
+
+    //Removes all elements from the Heap_accum
+    @@top_test_results.clear();
+    PRINT @@top_test_results.size();
+}

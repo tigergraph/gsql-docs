@@ -1,0 +1,15 @@
+USE GRAPH ldbc_snb
+
+
+CREATE QUERY q2 () SYNTAX v2 {
+
+  SumAccum<int> @@cnt ;
+
+  T = SELECT c
+      FROM City:city - (<Is_Located_In) - Person:ps - (Likes>) - Comment:c
+      WHERE year(c.creation_date) >= 2006
+      PER (c)
+      ACCUM @@cnt += 1;
+
+  PRINT @@cnt;
+}

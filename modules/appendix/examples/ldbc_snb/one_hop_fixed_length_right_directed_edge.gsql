@@ -1,0 +1,18 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+   SumAccum<int> @comment_cnt= 0;
+   SumAccum<int> @post_cnt= 0;
+
+   // 1-hop pattern.
+   Result = SELECT s
+            FROM Person:s -(Likes>)- :tgt
+            WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+            ACCUM CASE WHEN tgt.type == "Comment" THEN
+                           s.@comment_cnt += 1
+                       WHEN tgt.type == "Post" THEN
+                           s.@post_cnt += 1
+                   END;
+
+    PRINT  Result[Result.@comment_cnt, Result.@post_cnt];
+}

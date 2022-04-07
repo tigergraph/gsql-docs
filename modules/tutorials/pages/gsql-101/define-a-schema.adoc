@@ -17,8 +17,7 @@ The rest is the optional list of attributes which characterize each person verte
 
 [,gsql]
 ----
-BEGIN
-CREATE VERTEX person (
+CREATE VERTEX Person (
     PRIMARY_ID name STRING,
     name STRING,
     age INT,
@@ -40,8 +39,8 @@ GSQL will confirm the creation of the vertex type.
 .GSQL shell
 [.wrap,gsql]
 ----
-GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
-Successfully created vertex types: [person].
+GSQL > CREATE VERTEX Person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+Successfully created vertex types: [Person].
 GSQL >
 ----
 
@@ -62,10 +61,11 @@ These are followed by an optional list of attributes, just as in the vertex defi
 
 [,gsql]
 ----
+CREATE UNDIRECTED EDGE friendship (FROM Person, TO Person, connect_day DATETIME)
 BEGIN
 CREATE UNDIRECTED EDGE friendship (
-    FROM person,
-    TO person,
+    FROM Person,
+    TO Person,
     connect_day DATETIME
 )
 END
@@ -79,8 +79,8 @@ GSQL will confirm the creation of the edge type.
 
 [.wrap,gsql]
 ----
-GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
-Successfully created edge types: [friendship].
+GSQL > CREATE UNDIRECTED EDGE Friendship (FROM Person, TO Person, connect_day DATETIME)
+Successfully created edge types: [Friendship].
 GSQL >
 ----
 
@@ -97,7 +97,7 @@ Here, we just list the vertex types and edge types that we want to include in th
 
 [,gsql]
 ----
-CREATE GRAPH social (person, friendship)
+CREATE GRAPH social (Person, Friendship)
 ----
 
 
@@ -108,7 +108,7 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 
 [.wrap,gsql]
 ----
-GSQL > CREATE GRAPH social (person, friendship)
+GSQL > CREATE GRAPH social (Person, Fiendship)
 Stopping GPE GSE RESTPP
 Successfully stopped GPE GSE RESTPP in 16.554 seconds
 Starting GPE GSE RESTPP

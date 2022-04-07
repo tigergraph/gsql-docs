@@ -1,0 +1,15 @@
+USE GRAPH ldbc_snb
+
+// not recommended, since the pattern starts from a large cardinality vertex type
+// (Person), and ends at a small cardinality vertex type (Tag).
+CREATE QUERY q3 () SYNTAX v2 {
+
+  SumAccum<int> @cnt;
+
+  V = SELECT s
+      FROM Person:s- (Likes>)-Post:p - (<Container_Of)-:f - (Has_Tag>) - :t
+      PER (s)
+      ACCUM s.@cnt += 1;
+
+  PRINT V.size();
+}

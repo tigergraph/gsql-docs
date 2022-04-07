@@ -1,0 +1,11 @@
+CREATE VERTEX User (PRIMARY_ID user_id UINT, name STRING, age UINT, gender STRING, postalCode STRING)
+CREATE VERTEX Occupation (PRIMARY_ID occ_id UINT, occ_name STRING) WITH STATS="outdegree_by_edgetype"
+CREATE VERTEX Book (PRIMARY_ID bookcode UINT, title STRING, pub_year UINT) WITH STATS="none"
+CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
+CREATE UNDIRECTED EDGE User_Occupation (FROM User, TO Occupation)
+CREATE UNDIRECTED EDGE Book_Genre (FROM Book, TO Genre)
+CREATE UNDIRECTED EDGE User_Book_Rating (FROM User, TO Book, rating UINT, date_time UINT)
+CREATE UNDIRECTED EDGE Friend_Of (FROM User, TO User, on_date UINT)
+CREATE UNDIRECTED EDGE User_Book_Read (FROM User, To Book, on_date UINT)
+CREATE DIRECTED EDGE Sequel_Of (FROM Book, TO Book) WITH REVERSE_EDGE="Preceded_By"
+CREATE GRAPH Book_Rating (*) // <1>

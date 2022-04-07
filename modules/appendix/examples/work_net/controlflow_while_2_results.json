@@ -1,0 +1,282 @@
+[
+  {
+    "reachable_vertices": [
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person6",
+          "interest_list": [
+            "music",
+            "art"
+          ],
+          "interest_set": [
+            "music",
+            "art"
+          ],
+          "location_id": "jp",
+          "skill_list": [
+            7,
+            10
+          ],
+          "skill_set": [
+            7,
+            10
+          ]
+        },
+        "v_id": "person6",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "country": "chn",
+          "id": "company2"
+        },
+        "v_id": "company2",
+        "v_type": "Company"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "country": "us",
+          "id": "company1"
+        },
+        "v_id": "company1",
+        "v_type": "Company"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person10",
+          "interest_list": [
+            "football",
+            "sport"
+          ],
+          "interest_set": [
+            "football",
+            "sport"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            3
+          ],
+          "skill_set": [
+            3
+          ]
+        },
+        "v_id": "person10",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person4",
+          "interest_list": [
+            "football"
+          ],
+          "interest_set": [
+            "football"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            4,
+            1,
+            10
+          ],
+          "skill_set": [
+            4,
+            1,
+            10
+          ]
+        },
+        "v_id": "person4",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person3",
+          "interest_list": [
+            "teaching"
+          ],
+          "interest_set": [
+            "teaching"
+          ],
+          "location_id": "jp",
+          "skill_list": [
+            4,
+            1,
+            6
+          ],
+          "skill_set": [
+            4,
+            1,
+            6
+          ]
+        },
+        "v_id": "person3",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person7",
+          "interest_list": [
+            "art",
+            "sport"
+          ],
+          "interest_set": [
+            "art",
+            "sport"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            8,
+            6
+          ],
+          "skill_set": [
+            8,
+            6
+          ]
+        },
+        "v_id": "person7",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person2",
+          "interest_list": [
+            "engineering"
+          ],
+          "interest_set": [
+            "engineering"
+          ],
+          "location_id": "chn",
+          "skill_list": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "skill_set": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        "v_id": "person2",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person1",
+          "interest_list": [
+            "management",
+            "financial"
+          ],
+          "interest_set": [
+            "management",
+            "financial"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            1,
+            2,
+            3
+          ],
+          "skill_set": [
+            1,
+            2,
+            3
+          ]
+        },
+        "v_id": "person1",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person5",
+          "interest_list": [
+            "sport",
+            "financial",
+            "engineering"
+          ],
+          "interest_set": [
+            "sport",
+            "financial",
+            "engineering"
+          ],
+          "location_id": "can",
+          "skill_list": [
+            8,
+            2,
+            5
+          ],
+          "skill_set": [
+            8,
+            2,
+            5
+          ]
+        },
+        "v_id": "person5",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person8",
+          "interest_list": [
+            "management"
+          ],
+          "interest_set": [
+            "management"
+          ],
+          "location_id": "chn",
+          "skill_list": [
+            1,
+            5,
+            2
+          ],
+          "skill_set": [
+            1,
+            5,
+            2
+          ]
+        },
+        "v_id": "person8",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@visited": true,
+          "id": "person9",
+          "interest_list": [
+            "financial",
+            "teaching"
+          ],
+          "interest_set": [
+            "financial",
+            "teaching"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            4,
+            7,
+            2
+          ],
+          "skill_set": [
+            4,
+            7,
+            2
+          ]
+        },
+        "v_id": "person9",
+        "v_type": "Person"
+      }
+    ]
+  }
+]

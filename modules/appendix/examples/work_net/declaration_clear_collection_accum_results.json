@@ -1,0 +1,67 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"stuff_count": [
+      {
+        "v_id": "company2",
+        "attributes": {"Comp.@stuff.size()": 23},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company4",
+        "attributes": {"Comp.@stuff.size()": 7},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company3",
+        "attributes": {"Comp.@stuff.size()": 12},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company1",
+        "attributes": {"Comp.@stuff.size()": 21},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {"Comp.@stuff.size()": 4},
+        "v_type": "Company"
+      }
+    ]},
+    {"all_stuff_count": 67},
+    {"stuff_clear": [
+      {
+        "v_id": "company2",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company4",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company3",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company1",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      },
+      {
+        "v_id": "company5",
+        "attributes": {"Comp.@stuff.size()": 0},
+        "v_type": "Company"
+      }
+    ]},
+    {"all_stuff_clear": 0}
+  ]
+}

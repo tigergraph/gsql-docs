@@ -1,0 +1,24 @@
+CREATE QUERY v_update_indirect_accum() FOR GRAPH Social_Net {
+
+    SetAccum<vertex<Person>> @posters;
+    SetAccum<vertex<Person>> @fellows;
+
+    persons = {Person.*};
+    // To each post, attach a list of persons who liked the post
+    liked_posts = SELECT p
+        FROM persons:src -(Liked:e)- Post:p
+        ACCUM
+        p.@posters += src;
+
+    // To each person who liked a post, attach a list of everyone
+    // who also liked one of this person's liked posts.
+    liked_posts = SELECT src
+        FROM liked_posts:src
+        ACCUM
+            FOREACH v IN src.@posters DO
+                v.@fellows += src.@posters
+            END
+        ORDER BY src.subject;
+
+    PRINT persons[persons.@fellows];
+}

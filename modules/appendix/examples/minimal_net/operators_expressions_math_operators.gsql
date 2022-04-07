@@ -1,0 +1,22 @@
+CREATE QUERY math_operators() FOR GRAPH Minimal_Net {
+    INT x,y;
+    INT z1,z2,z3,z4,z5;
+    FLOAT f1,f2,f3,f4;
+
+    x = 7;
+    y = 3;
+
+    z1 = x * y;    // z = 21
+    z2 = x - y;    // z = 4
+    z3 = x + y;    // z = 10
+    z4 = x / y;    // z = 2
+    z5 = x / 4.0;  // z = 1
+    f1 = x / y;    // v = 2
+    f2 = x / 4.0;  // v = 1.75
+    f3 = x % 3;    // v = 1
+    f4 = x % y;    // z = 1
+
+    PRINT x,y;
+    PRINT z1 AS x_times_y, z2 AS x_minus_y, z3 AS x_plus_y, z4 AS x_div_y, z5 AS x_div_4f;
+    PRINT f1 AS x_div_y,   f2 AS x_div_4f,  f3 AS x_mod_3,  f4 AS x_mod_y;
+}

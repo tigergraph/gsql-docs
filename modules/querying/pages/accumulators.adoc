@@ -53,7 +53,7 @@ More technically, accumulators are mutable mutex variables shared among all the 
 To improve performance, the graph processing engine employs multithreaded processing.
 Modification of accumulators is coordinated at run-time so the accumulation operator works correctly (i.e., mutually exclusively) across all threads.
 
-This is particularly relevant in the ACCUM clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
+This is particularly relevant in the `ACCUM` clause. During traversal of the graph, the selected set of edges or vertices is partitioned among a group of threads.
 These threads have shared mutually exclusive access to the accumulators.
 
 [#_declaration_of_accumulators]
@@ -92,8 +92,8 @@ All vertex-attached accumulator names have a single leading at-sign `@`.
 .Vertex-Attached Accumulators
 [source,gsql]
 ----
-SumAccum<int>   @neighbors;
-MaxAccum<float> @weight = 2.8;
+SumAccum<INT>   @neighbors;
+MaxAccum<FLOAT> @weight = 2.8;
 ----
 
 If there is a graph with 10 vertices, then there is an instance of `@neighbors` and `@weight` for each vertex (hence 10 of each, and 20 total accumulator instances).
@@ -102,32 +102,32 @@ The accumulator operator += only impacts the accumulator for the specific vertex
 A statement such as ``v1.@neighbors += 1``will only impact `v1` 's `@neighbors` and not the `@neighbors` for other vertices.
 
 
-== Global Accumulators
+== Global accumulators
 
 A global accumulator is a single mutable accumulator that can be accessed or updated within a query. The names of global accumulators start with a double at-sign `@@`.
 
 .Global Accumulators
 [source,gsql]
 ----
-SumAccum<int>   @@totalNeighbors;
-MaxAccum<float> @@entropy = 1.0;
+SumAccum<INT>   @@totalNeighbors;
+MaxAccum<FLOAT> @@entropy = 1.0;
 ----
 
 
 Global accumulators can only be assigned (using the `=` operator) outside a `SELECT` block (i.e., not within an `ACCUM` or `POST-ACCUM` clause).
-Global accumulators can be accessed or updated via the accumulate operator `+=` anywhere within a query, including inside a SELECT block.
+Global accumulators can be accessed or updated via the accumulate operator `+=` anywhere within a query, including inside a `SELECT` block.
 
-The accumulation operation for global accumulators in an ACCUM clause executes once for each process. That is:
+The accumulation operation for global accumulators in an `ACCUM` clause executes once for each process. That is:
 
-* if the FROM clause uses an edge-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each edge in the selected edge set.
-* If the FROM clause uses a vertex-induced selection (introduced in Section "SELECT Statement"), the ACCUM clause executes one process for each vertex in the selected vertex set.
+* if the `FROM` clause uses an edge-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each edge in the selected edge set.
+* If the `FROM` clause uses a vertex-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each vertex in the selected vertex set.
 
-Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an ACCUM clause.
+Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an `ACCUM` clause.
 
-Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `worksFor` edge traversed since it is shared among processes. Conversely, `relationshipCount` appears to have only been incremented once.
+Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `Works_For` edge traversed since it is shared among processes. Conversely, `Relationship_Count` appears to have only been incremented once.
 
 This is because a non-accumulator variable is not shared among processes.
-Each process has its own separate unshared copy of `relationshipCount` and increments the original value by one. (E.g., each process increments *relationshipCount* from 0 to 1.) There is no accumulation and the final value is one.
+Each process has its own separate unshared copy of `Relationship_Count` and increments the original value by one. (E.g., each process increments *Relationship_Count* from 0 to 1.) There is no accumulation and the final value is one.
 
 === Example
 [tabs]
@@ -136,23 +136,9 @@ Query::
 +
 --
 .Global Variable vs Global Accumulator
-[source,gsql]
+[source.wrap,gsql]
 ----
-#Count the total number of employment relationships for all companies
-CREATE QUERY countEmploymentRelationships() FOR GRAPH workNet {
-
-  INT localRelationshipCount;
-  SumAccum<INT> @@globalRelationshipCount;
-
-  start = {company.*};
-
-  companies = SELECT s FROM start:s -(worksFor>)- :t
-    ACCUM @@globalRelationshipCount += 1,
-    localRelationshipCount = localRelationshipCount + 1;
-
-  PRINT localRelationshipCount;
-  PRINT @@globalRelationshipCount;
-}
+include::appendix:example$work_net/accum_global_var_vs_accum.gsql[]
 ----
 --
 
@@ -162,20 +148,8 @@ Results::
 .countEmploymentRelationship.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY countEmploymentRelationships()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"localRelationshipCount": 1},
-    {"@@globalRelationshipCount": 17}
-  ]
-}
+GSQL > RUN QUERY count_employment_relationships()
+include::appendix:example$work_net/accum_global_var_vs_accum_results.json[]
 ----
 --
 ====
@@ -318,10 +292,10 @@ See Section
 
 === SumAccum
 
-The SumAccum type computes and stores the cumulative sum of numeric values or the cumulative concatenation of text values. The output of a SumAccum is a single numeric or string value. SumAccum variables operate on values of type INT, UINT, FLOAT, DOUBLE, or STRING only.
+The `SumAccum` type computes and stores the cumulative sum of numeric values or the cumulative concatenation of text values. The output of a `SumAccum` is a single numeric or string value. `SumAccum` variables operate on values of type `INT`, `UINT`, `FLOAT`, `DOUBLE`, or `STRING` only.
 
 The `+=` operator updates the accumulator's state.
-For `INT`, `FLOAT`, and `DOUBLE` types, `+= arg` performs a numeric addition, while for the `STRING` value type `+= arg` concatenates `arg` to the current value of the SumAccum.
+For `INT`, `FLOAT`, and `DOUBLE` types, `+= arg` performs a numeric addition, while for the `STRING` value type `+= arg` concatenates `arg` to the current value of the `SumAccum`.
 
 ==== Example
 
@@ -333,31 +307,7 @@ Query::
 .SumAccum Example
 [source,gsql]
 ----
-# SumAccum Example
-CREATE QUERY sumAccumEx() FOR GRAPH minimalNet {
-
-  SumAccum<INT>    @@intAccum;
-  SumAccum<FLOAT>  @@floatAccum;
-  SumAccum<DOUBLE> @@doubleAccum;
-  SumAccum<STRING> @@stringAccum;
-
-  @@intAccum  = 1;
-  @@intAccum += 1;
-
-  @@floatAccum = @@intAccum;
-  @@floatAccum = @@floatAccum / 3;
-
-  @@doubleAccum  = @@floatAccum * 8;
-  @@doubleAccum += -1;
-
-  @@stringAccum  = "Hello ";
-  @@stringAccum += "World";
-
-  PRINT @@intAccum;
-  PRINT @@floatAccum;
-  PRINT @@doubleAccum;
-  PRINT @@stringAccum;
-}
+include::appendix:example$minimal_net/accum_sumaccum.gsql[]
 ----
 --
 
@@ -367,22 +317,8 @@ Results::
 .sumAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY sumAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@intAccum": 2},
-    {"@@floatAccum": 0.66667},
-    {"@@doubleAccum": 4.33333},
-    {"@@stringAccum": "Hello World"}
-  ]
-}
+GSQL > RUN QUERY sum_accum_ex()
+include::appendix:example$minimal_net/accum_sumaccum_results.json[]
 ----
 --
 ====
@@ -390,9 +326,12 @@ GSQL > RUN QUERY sumAccumEx()
 
 === MinAccum / MaxAccum
 
-The `MinAccum` and `MaxAccum` types calculate and store the cumulative minimum or the cumulative maximum of a series of values. The output of a `MinAccum` or a `MaxAccum` is a single value of the type that was passed in. `MinAccum` and `MaxAccum` variables operate on values of type `INT, UINT, FLOAT, DOUBLE, STRING, TUPLE`, and `VERTEX` (with optional specific vertex type) only.
+The `MinAccum` and `MaxAccum` types calculate and store the cumulative minimum or the cumulative maximum of a series of values.
+The output of a `MinAccum` or a `MaxAccum` is a single value of the type that was passed in.
+`MinAccum` and `MaxAccum` variables operate on values of type `INT, UINT, FLOAT, DOUBLE, STRING, TUPLE`, and `VERTEX` (with optional specific vertex type) only.
 
-For `MinAccum`, `+= arg` checks if the current value held is less than `arg` and stores the smaller of the two. `MaxAccum` behaves the same, with the exception that it checks for and stores the greater instead of the lesser of the two.
+For `MinAccum`, `+= arg` checks if the current value held is less than `arg` and stores the smaller of the two.
+`MaxAccum` behaves the same, with the exception that it checks for and stores the greater instead of the lesser of the two.
 
 ==== Example
 [tabs]
@@ -403,46 +342,17 @@ Query::
 .MinAccum and MaxAccum Example
 [source,gsql]
 ----
-# MinAccum and MaxAccum Example
-CREATE QUERY minMaxAccumEx() FOR GRAPH minimalNet {
-
-  MinAccum<INT> @@minAccum;
-  MaxAccum<FLOAT> @@maxAccum;
-
-  @@minAccum += 40;
-  @@minAccum += 20;
-  @@minAccum += -10;
-
-  @@maxAccum += -1.1;
-  @@maxAccum += 2.5;
-  @@maxAccum += 2.8;
-
-  PRINT @@minAccum;
-  PRINT @@maxAccum;
-}
+include::appendix:example$minimal_net/accum_minaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.minMaxAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY minMaxAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@minAccum": -10},
-    {"@@maxAccum": 2.8}
-  ]
-}
+GSQL > RUN QUERY min_max_accum_Ex()
+include::appendix:example$minimal_net/accum_minaccum_results.json[]
 ----
 --
 ====
@@ -463,19 +373,10 @@ For example, the following query returns one post from each person. The returned
 Query::
 +
 --
+This query returns one random post vertex from each person
 [source,gsql]
 ----
-# Output one random post vertex from each person
-CREATE QUERY minMaxAccumVertex() FOR GRAPH socialNet api("v2") {
-
-  MaxAccum<VERTEX> @maxVertex;
-  allUser = {person.*};
-  allUser = SELECT src
-            FROM allUser:src -(posted>)- post:tgt
-            ACCUM src.@maxVertex += tgt
-            ORDER BY src.id;
-  PRINT allUser[allUser.@maxVertex]; // api v2
-}
+include::appendix:example$social_net/accum_maxaccum_vert.gsql[]
 ----
 --
 
@@ -485,58 +386,8 @@ Results::
 .minMaxAccuxVertex.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY minMaxAccumVertex()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"allUser": [
-    {
-      "v_id": "person1",
-      "attributes": {"allUser.@maxVertex": "0"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {"allUser.@maxVertex": "1"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {"allUser.@maxVertex": "2"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person4",
-      "attributes": {"allUser.@maxVertex": "3"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {"allUser.@maxVertex": "11"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {"allUser.@maxVertex": "10"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {"allUser.@maxVertex": "9"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {"allUser.@maxVertex": "7"},
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY min_max_accum_vertex()
+include::appendix:example$social_net/accum_maxaccum_vert_results.json[]
 ----
 --
 ====
@@ -548,15 +399,15 @@ For example, if we have the following tuple type and `MaxAccum` :
 
 [source,text]
 ----
-TYPEDEF TUPLE <FLOAT weight> EDGE_WEIGHT
-MinAccum<EDGE_WEIGHT> @@AccTest;
+TYPEDEF TUPLE <FLOAT weight> Edge_Weight
+MinAccum<EDGE_WEIGHT> @@acc_test;
 ----
 
 Then the `weight` field of the tuple can be accessed directly from the `MinAccum` through the doc operator(`.`):
 
 [source,cpp]
 ----
-@@AccTest.weight // Will return the weight field value for the EDGE_WEIGHT
+@@acc_test.weight // Will return the weight field value for the EDGE_WEIGHT
                  // type tuple stored in the MaxAccum
 ----
 
@@ -580,45 +431,17 @@ Query::
 .AvgAccum Example
 [source,gsql]
 ----
-# AvgAccum Example
-CREATE QUERY avgAccumEx() FOR GRAPH minimalNet {
-
-  AvgAccum @@averageAccum;
-
-  @@averageAccum += 10;
-  @@averageAccum += 5.5; # avg = (10+5.5) / 2.0
-  @@averageAccum += -1;  # avg = (10+5.5-1) / 3.0
-
-  PRINT @@averageAccum;  # 4.8333...
-
-  @@averageAccum = 99;   # reset
-  @@averageAccum += 101; # avg = (99 + 101) / 2
-
-  PRINT @@averageAccum;  # 100
-}
+include::appendix:example$minimal_net/accum_avgaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.avgAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY avgAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@averageAccum": 4.83333},
-    {"@@averageAccum": 100}
-  ]
-}
+GSQL > RUN QUERY avg_accum_ex()
+include::appendix:example$minimal_net/accum_avgaccum_results.json[]
 ----
 --
 ====
@@ -626,7 +449,9 @@ GSQL > RUN QUERY avgAccumEx()
 
 === AndAccum / OrAccum
 
-The AndAccum and OrAccum types calculate and store the cumulative result of a series of boolean operations. The output of an AndAccum or an OrAccum is a single boolean value (True or False). AndAccum and OrAccum variables operate on boolean values only.  The data type does not need to be declared.
+The AndAccum and OrAccum types calculate and store the cumulative result of a series of boolean operations.
+The output of an AndAccum or an OrAccum is a single boolean value (True or False). AndAccum and OrAccum variables operate on boolean values only.
+The data type does not need to be declared.
 
 For AndAccum, `+= arg` updates the state to be the logical `AND` between the current boolean state and `arg`.
 OrAccum behaves the same, with the exception that it stores the result of a logical OR operation.
@@ -640,49 +465,17 @@ Query::
 .AndAccum and OrAccum Example
 [source,gsql]
 ----
-# AndAccum and OrAccum Example
-CREATE QUERY andOrAccumEx() FOR GRAPH minimalNet {
-  # T = True
-  # F = False
-
-  AndAccum @@andAccumVar; # (default value = T)
-  OrAccum  @@orAccumVar;  # (default value = F)
-
-  @@andAccumVar += True;  # T and T = T
-  @@andAccumVar += False; # T and F = F
-  @@andAccumVar += True;  # F and T = F
-
-  PRINT @@andAccumVar;
-
-  @@orAccumVar += False;  # F or F == F
-  @@orAccumVar += True;   # F or T == T
-  @@orAccumVar += False;  # T or F == T
-
-  PRINT @@orAccumVar;
-}
+include::appendix:example$minimal_net/accum_oraccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.andOrAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY andOrAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@andAccumVar": false},
-    {"@@orAccumVar": true}
-  ]
-}
+GSQL > RUN QUERY and_or_accum_ex()
+include::appendix:example$minimal_net/accum_oraccum_results.json[]
 ----
 --
 ====
@@ -822,62 +615,19 @@ Returns a Bitwise accumulator whose every bit is the `OR` result between the two
 Query::
 +
 --
-.BitwiseAndAccum and BitwiseOrAccum Example
 [source,gsql]
 ----
-CREATE QUERY bitwiseAccumEx() FOR GRAPH minimalNet {
-
-  BitwiseAndAccum @@bwAndAccumVar; # default value = 64-bits of 1 = -1 (INT)
-  BitwiseOrAccum  @@bwOrAccumVar;  # default value = 64-bits of 0 = 0 (INT))
-
-  # 11110000 = 240
-  # 00001111 =  15
-  # 10101010 = 170
-  # 01010101 =  85
-
-  # BitwiseAndAccum
-  @@bwAndAccumVar += 170; # 11111111 & 10101010 -> 10101010
-  @@bwAndAccumVar +=  85; # 10101010 & 01010101 -> 00000000
-  PRINT @@bwAndAccumVar;  # 0
-
-  @@bwAndAccumVar = 15;   # reset to 00001111
-  @@bwAndAccumVar += 85;  # 00001111 & 01010101 -> 00000101
-  PRINT @@bwAndAccumVar;  # 5
-
-  # BitwiseOrAccum
-  @@bwOrAccumVar += 170; # 00000000 | 10101010 -> 10101010
-  @@bwOrAccumVar +=  85; # 10101010 | 01010101 -> 11111111 = 255
-  PRINT @@bwOrAccumVar;  # 255
-
-  @@bwOrAccumVar = 15;   # reset to 00001111
-  @@bwOrAccumVar += 85;  # 00001111 | 01010101 -> 01011111 = 95
-  PRINT @@bwOrAccumVar;  # 95
-}
+include::appendix:example$minimal_net/accum_bitwise.gsql[]
 ----
 --
 
 Results::
 +
 --
-.bitwiseAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY bitwiseAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@bwAndAccumVar": 0},
-    {"@@bwAndAccumVar": 5},
-    {"@@bwOrAccumVar": 255},
-    {"@@bwOrAccumVar": 95}
-  ]
-}
+GSQL > RUN QUERY bitwise_accum_ex()
+include::appendix:example$minimal_net/accum_bitwise_results.json[]
 ----
 --
 ====
@@ -962,100 +712,19 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 Query::
 +
 --
-.ListAccum Example
 [source,gsql]
 ----
-# ListAccum Example
-CREATE QUERY listAccumEx() FOR GRAPH minimalNet {
-
-  ListAccum<INT> @@intListAccum;
-  ListAccum<STRING> @@stringListAccum;
-  ListAccum<STRING> @@stringMultiplyListAccum;
-  ListAccum<STRING> @@stringAdditionAccum;
-  ListAccum<STRING> @@letterListAccum;
-  ListAccum<ListAccum<STRING>> @@nestedListAccum;
-
-  @@intListAccum = [1,3,5];
-  @@intListAccum += [7,9];
-  @@intListAccum += 11;
-  @@intListAccum += 13;
-  @@intListAccum += 15;
-
-  PRINT @@intListAccum;
-  PRINT @@intListAccum.get(0), @@intListAccum.get(1);
-  PRINT @@intListAccum.get(8); # Out of bound: default value of int: 0
-
-  #Other built-in functions
-  PRINT @@intListAccum.size();
-  PRINT @@intListAccum.contains(2);
-  PRINT @@intListAccum.contains(3);
-
-  @@stringListAccum += "Hello";
-  @@stringListAccum += "World";
-
-  PRINT @@stringListAccum; // ["Hello","World"]
-
-  @@letterListAccum += "a";
-  @@letterListAccum += "b";
-
-  # ListA + ListB produces a new list equivalent to ListB appended to ListA.
-  # Ex: [a,b,c] + [d,e,f] => [a,b,c,d,e,f]
-  @@stringAdditionAccum = @@stringListAccum + @@letterListAccum;
-
-  PRINT @@stringAdditionAccum;
-
-  #Multiplication produces a list of all list-to-list element combinations (STRING TYPE ONLY)
-  # Ex: [a,b] * [c,d] = [ac, ad, bc, bd]
-  @@stringMultiplyListAccum = @@stringListAccum * @@letterListAccum;
-
-  PRINT @@stringMultiplyListAccum;
-
-  #Two dimensional list (3 dimensions is possible as well)
-  @@nestedListAccum += [["foo", "bar"], ["Big", "Bang", "Theory"], ["String", "Theory"]];
-
-  PRINT @@nestedListAccum;
-  PRINT @@nestedListAccum.get(0);
-  PRINT @@nestedListAccum.get(0).get(1);
-}
+include::appendix:example$minimal_net/accum_listaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.listAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY listAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [ {"@@intListAccum": [ 1, 3, 5, 7, 9, 11, 13, 15 ]},
-    {
-      "@@intListAccum.get(0)": 1,
-      "@@intListAccum.get(1)": 3
-    },
-    {"@@intListAccum.get(8)": 0},
-    {"@@intListAccum.size()": 8},
-    {"@@intListAccum.contains(2)": false},
-    {"@@intListAccum.contains(3)": true},
-    {"@@stringListAccum": [ "Hello", "World" ]},
-    {"@@stringAdditionAccum": [ "Hello", "World", "a", "b"]},
-    {"@@stringMultiplyListAccum": [ "Helloa", "Worlda", "Hellob", "Worldb" ]},
-    {"@@nestedListAccum": [
-      [ "foo", "bar" ],
-      [ "Big", "Bang", "Theory" ],
-      [ "String", "Theory" ]
-    ]},
-    {"@@nestedListAccum.get(0)": [ "foo", "bar" ]},
-    {"@@nestedListAccum.get(0).get(1)": "bar"}
-  ]
-}
+GSQL > RUN QUERY list_accum_ex()
+include::appendix:example$minimal_net/accum_listaccum_results.json[]
 ----
 --
 ====
@@ -1068,24 +737,7 @@ Query::
 .Example for update function on a global ListAccum
 [source,gsql]
 ----
-CREATE QUERY listAccumUpdateEx() FOR GRAPH workNet {
-
-  # Global ListAccum
-  ListAccum<INT> @@intListAccum;
-  ListAccum<STRING> @@stringListAccum;
-  ListAccum<BOOL> @@passFail;
-
-  @@intListAccum += [0,2,4,6,8];
-  @@stringListAccum += ["apple","banana","carrot","daikon"];
-
-  # Global update at Query-Body Level
-  @@passFail += @@intListAccum.update(1,-99);
-  @@passFail += @@intListAccum.update(@@intListAccum.size()-1,40);  // last element
-  @@passFail += @@stringListAccum.update(0,"zero"); // first element
-  @@passFail += @@stringListAccum.update(4,"four"); // FAIL: out-of-range
-
-  PRINT @@intListAccum, @@stringListAccum, @@passFail;
-}
+include::appendix:example$work_net/accum_global_listaccum.gsql[]
 ----
 --
 
@@ -1095,21 +747,8 @@ Results::
 .Results in listAccumUpdateEx.json
 [source,gsql]
 ----
-GSQL > RUN QUERY listAccumUpdateEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "@@passFail": [ true, true, true, false ],
-    "@@intListAccum": [ 0, -99, 4, 6, 40 ],
-    "@@stringListAccum": [ "zero", "banana", "carrot", "daikon" ]
-  }]
-}
+GSQL > RUN QUERY list_accum_update_ex()
+include::appendix:example$work_net/accum_global_listaccum_results.json[]
 ----
 --
 ====
@@ -1122,79 +761,17 @@ Query::
 .Example for update function on a vertex-attached ListAccum
 [source,gsql]
 ----
-CREATE QUERY listAccumUpdateEx2(SET<VERTEX<person>> seed) FOR GRAPH workNet api("v2") {
-
-  # Each person has an LIST<INT> of skills and a LIST<STRING COMPRESS> of interests.
-  # This function copies their lists into ListAccums, and then udpates the last
-  # int with -99 and updates the last string with "fizz".
-  ListAccum<INT> @intList;
-  ListAccum<STRING COMPRESS> @stringList;
-  ListAccum<STRING> @@intFails, @@strFails;
-
-  S0 (person) = seed;
-  S1 = SELECT s
-    FROM S0:s
-    ACCUM
-      s.@intList = s.skillList,
-      s.@stringList = s.interestList
-    POST-ACCUM
-      INT len = s.@intList.size(),
-      IF NOT s.@intList.update(len-1,-99) THEN
-        @@intFails += s.id END,
-      INT len2 = s.@stringList.size(),
-      IF NOT s.@stringList.update(len2-1,"fizz") THEN
-        @@strFails += s.id END
-  ;
-  PRINT S1[S1.skillList, S1.interestList, S1.@intList, S1.@stringList]; // api v2
-  PRINT @@intFails, @@strFails;
-}
+include::appendix:example$work_net/accum_vertex_listaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for listAccumUpdateEx2
 [source,gsql]
 ----
-GSQL > RUN QUERY listAccumUpdateEx2(["person1","person5"])
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"S1": [
-      {
-        "v_id": "person1",
-        "attributes": {
-          "S1.@stringList": [ "management","fizz" ],
-          "S1.interestList": [ "management", "financial"],
-          "S1.skillList": [  1, 2, 3 ],
-          "S1.@intList": [ 1, 2, -99 ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person5",
-        "attributes": {
-          "S1.@stringList": [ "sport", "financial", "fizz" ],
-          "S1.interestList": [ "sport", "financial", "engineering" ],
-          "S1.skillList": [ 8, 2, 5 ],
-          "S1.@intList": [ 8, 2, -99 ]
-        },
-        "v_type": "person"
-      }
-    ]},
-    {
-      "@@strFails": [],
-      "@@intFails": []
-    }
-  ]
-}
+GSQL > RUN QUERY list_accum_update_ex2(["person1","person5"])
+include::appendix:example$work_net/accum_vertex_listaccum_results.json[]
 ----
 --
 ====
@@ -1254,7 +831,7 @@ Query::
 [source,gsql]
 ----
 # SetAccum Example
-CREATE QUERY setAccumEx() FOR GRAPH minimalNet {
+CREATE QUERY setAccumEx() FOR GRAPH Minimal_Net {
 
   SetAccum<INT> @@intSetAccum;
   SetAccum<STRING> @@stringSetAccum;
@@ -1292,7 +869,7 @@ Results::
 .setAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY setAccumEx()
+GSQL > RUN QUERY set_accum_ex()
 {
   "error": false,
   "message": "",
@@ -1372,60 +949,17 @@ Query::
 .BagAccum Example
 [source,gsql]
 ----
-# BagAccum Example
-CREATE QUERY bagAccumEx() FOR GRAPH minimalNet {
-
-  #Unordered collection
-  BagAccum<INT>    @@intBagAccum;
-  BagAccum<STRING> @@stringBagAccum;
-
-  @@intBagAccum += 5;
-  @@intBagAccum.clear();
-
-  @@intBagAccum += 4;
-  @@intBagAccum += 11;
-  @@intBagAccum += 1;
-  @@intBagAccum += 11;        #Bag accums can store duplicates
-  @@intBagAccum += (1,2,3,4);
-  PRINT @@intBagAccum;
-
-  PRINT @@intBagAccum.size();
-  PRINT @@intBagAccum.contains(4);
-
-  @@stringBagAccum += "Hello";
-  @@stringBagAccum += "Hello";
-  @@stringBagAccum += "There";
-  @@stringBagAccum += "World";
-  PRINT @@stringBagAccum.contains("Hello");
-  @@stringBagAccum.remove("Hello");    #Remove one matching element
-  @@stringBagAccum.removeAll("There"); #Remove all matching elements
-  PRINT @@stringBagAccum;
-}
+include::appendix:example$minimal_net/accum_bagaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.bagAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY bagAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [ {"@@intBagAccum": [ 2, 3, 1, 1, 11, 11, 4, 4 ]},
-    {"@@intBagAccum.size()": 8},
-    {"@@intBagAccum.contains(4)": true},
-    {"@@stringBagAccum.contains(Hello)": true},
-    {"@@stringBagAccum": [ "World", "Hello" ]}
-  ]
-}
+GSQL > RUN QUERY bag_accum_ex()
+include::appendix:example$minimal_net/accum_bagaccum.gsql[]
 ----
 --
 ====
@@ -1497,100 +1031,17 @@ Query::
 .MapAccum Example
 [source,gsql]
 ----
-#MapAccum Example
-CREATE QUERY mapAccumEx() FOR GRAPH minimalNet {
-
-  #Map(Key, Value)
-  # Keys can be INT or STRING only
-  MapAccum<STRING, INT> @@intMapAccum;
-  MapAccum<INT, STRING> @@stringMapAccum;
-  MapAccum<INT, MapAccum<STRING, STRING>> @@nestedMapAccum;
-
-  @@intMapAccum += ("foo" -> 1);
-  @@intMapAccum.clear();
-
-  @@intMapAccum += ("foo" -> 3);
-  @@intMapAccum += ("bar" -> 2);
-  @@intMapAccum += ("baz" -> 2);
-  @@intMapAccum += ("baz" -> 1); #add 1 to existing value
-
-  PRINT @@intMapAccum.containsKey("baz");
-  PRINT @@intMapAccum.get("bar");
-  PRINT @@intMapAccum.get("root");
-
-  @@stringMapAccum += (1 -> "apple");
-  @@stringMapAccum += (2 -> "pear");
-  @@stringMapAccum += (3 -> "banana");
-  @@stringMapAccum += (4 -> "a");
-  @@stringMapAccum += (4 -> "b"); #append "b" to existing value
-  @@stringMapAccum += (4 -> "c"); #append "c" to existing value
-
-  PRINT @@intMapAccum;
-  PRINT @@stringMapAccum;
-
-  #Checking and getting keys
-  if @@stringMapAccum.containsKey(1) THEN
-    PRINT @@stringMapAccum.get(1);
-  END;
-
-  #Map nesting
-  @@nestedMapAccum += ( 1 -> ("foo"  -> "bar") );
-  @@nestedMapAccum += ( 1 -> ("flip" -> "top") );
-  @@nestedMapAccum += ( 2 -> ("fizz" -> "pop") );
-  @@nestedMapAccum += ( 1 -> ("foo"  -> "s") );
-
-  PRINT @@nestedMapAccum;
-
-  if @@nestedMapAccum.containsKey(1) THEN
-    if @@nestedMapAccum.get(1).containsKey("foo") THEN
-       PRINT @@nestedMapAccum.get(1).get("foo");
-    END;
-  END;
-}
+include::appendix:example$minimal_net/accum_mapaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.mapAccumEx.json Result
 [source,gsql]
 ----
-GSQL > RUN QUERY mapAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@intMapAccum.containsKey(baz)": true},
-    {"@@intMapAccum.get(bar)": 2},
-    {"@@intMapAccum.get(root)": 0},
-    {"@@intMapAccum": {
-      "bar": 2,
-      "foo": 3,
-      "baz": 3
-    }},
-    {"@@stringMapAccum": {
-      "1": "apple",
-      "2": "pear",
-      "3": "banana",
-      "4": "abc"
-    }},
-    {"@@stringMapAccum.get(1)": "apple"},
-    {"@@nestedMapAccum": {
-      "1": {
-        "foo": "bars",
-        "flip": "top"
-      },
-      "2": {"fizz": "pop"}
-    }},
-    {"@@nestedMapAccum.get(1).get(foo)": "bars"}
-  ]
-}
+GSQL > RUN QUERY map_accum_ex()
+include::appendix:example$minimal_net/accum_mapaccum_results.gsql[]
 ----
 --
 ====
@@ -1693,113 +1144,17 @@ Query::
 .Example of ArrayAccum Element-level Operations
 [source,gsql]
 ----
-CREATE QUERY ArrayAccumElem() FOR GRAPH minimalNet {
-  	
-	ArrayAccum<SumAccum<DOUBLE>> @@aaSumD[2][2];  # 2D Sum Double
-	ArrayAccum<SumAccum<STRING>> @@aaSumS[2][2];  # 2D Sum String
-	ArrayAccum<MaxAccum<INT>> @@aaMax[2];
-	ArrayAccum<MinAccum<UINT>> @@aaMin[2];
-	ArrayAccum<AvgAccum> @@aaAvg[2];
-	ArrayAccum<AndAccum<BOOL>> @@aaAnd[2];
-	ArrayAccum<OrAccum<BOOL>> @@aaOr[2];
-	ArrayAccum<BitwiseAndAccum> @@aaBitAnd[2];
-	ArrayAccum<BitwiseOrAccum> @@aaBitOr[2];
-	ArrayAccum<ListAccum<INT>> @@aaList[2][2];    # 2D List
-	ArrayAccum<SetAccum<FLOAT>> @@aaSetF[2];
-	ArrayAccum<BagAccum<DATETIME>> @@aaBagT[2];
-	
-	## for test data	
-	ListAccum<STRING> @@words;
-	BOOL toggle = false;
-	@@words += "1st"; @@words += "2nd"; @@words += "3rd"; @@words += "4th";
-
-	# Int:  a[0] += 1, 2;   a[1] += 3, 4
-	# Bool: alternate true/false
-	# Float: a[0] += 1.111, 2.222;  a[1] += 3.333, 4.444
-	# 2D Doub: a[0][0] += 1.111, 2.222;   a[0][1] += 5.555, 6.666;
-	#          a[1][0] += 3.333, 4.444;   a[0][1] += 7.777, 8.888;
-	
-	FOREACH i IN RANGE [0,1] DO
-		FOREACH n IN RANGE [1, 2] DO
-			toggle = NOT toggle;
-			@@aaMax[i] += i*2 + n;
-			@@aaMin[i] += i*2 + n;
-			@@aaAvg[i] += i*2 + n;
-			@@aaAnd[i] += toggle;
-			@@aaOr[i] += toggle;
-			@@aaBitAnd[i] += i*2 + n;
-			@@aaBitOr[i] += i*2 + n;
-			@@aaSetF[i] += (i*2 + n)/0.9;
-			@@aaBagT[i] += epoch_to_datetime(i*2 + n);
-
-			FOREACH j IN RANGE [0,1] DO
-				@@aaSumD[i][j] += (j*4 + i*2 + n)/0.9;
-				@@aaSumS[i][j] += @@words.get((j*2 + i + n)%4);
-				@@aaList[i][j] += j*4 +i*2 + n ;
-			END;
-		END;
-	END;
-				
-	PRINT @@aaSumD;		PRINT @@aaSumS;
-	PRINT @@aaMax;		PRINT @@aaMin;		PRINT @@aaAvg;
-	PRINT @@aaAnd;		PRINT @@aaOr;
-	PRINT @@aaBitAnd;	PRINT @@aaBitOr;
-	PRINT @@aaList;		PRINT @@aaSetF;		PRINT @@aaBagT;
-}
+include::appendix:example$minimal_net/accum_arrayaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.ArrayAccumElem.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY ArrayAccumElem()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@aaSumD": [
-      [ 3.33333, 12.22222 ],
-      [ 7.77778, 16.66667 ]
-    ]},
-    {"@@aaSumS": [
-      [ "2nd3rd", "4th1st" ],
-      [ "3rd4th", "1st2nd" ]
-    ]},
-    {"@@aaMax": [ 2, 4 ]},
-    {"@@aaMin": [ 1, 3 ]},
-    {"@@aaAvg": [ 1.5, 3.5 ]},
-    {"@@aaAnd": [ false, false ]},
-    {"@@aaOr": [ true, true ]},
-    {"@@aaBitAnd": [ 0, 0 ]},
-    {"@@aaBitOr": [ 3, 7]},
-    {"@@aaList": [
-      [
-        [ 1, 2 ],
-        [ 5, 6]
-      ],
-      [
-        [ 3, 4 ],
-        [ 7, 8 ]
-      ]
-    ]},
-    {"@@aaSetF": [
-      [ 2.22222, 1.11111],
-      [ 4.44444, 3.33333 ]
-    ]},
-    {"@@aaBagT": [
-      [ 2, 1 ],
-      [ 4, 3 ]
-    ]}
-  ]
-}
+GSQL > RUN QUERY array_accum_elem()
+include::appendix:example$minimal_net/accum_arrayaccum_results.json[]
 ----
 --
 ====
@@ -1809,94 +1164,19 @@ GSQL > RUN QUERY ArrayAccumElem()
 Query::
 +
 --
-.Example of Operations between Whole ArrayAccums
 [source,gsql]
 ----
-CREATE QUERY ArrayAccumOp3(INT lenA) FOR GRAPH minimalNet {
-
-	ArrayAccum<SumAccum<INT>> @@arrayA[5]; // Original size
-	ArrayAccum<SumAccum<INT>> @@arrayB[2];
-	ArrayAccum<SumAccum<INT>> @@arrayC[][]; // No size
-	STRING msg;
-	@@arrayA.reallocate(lenA);  # Set/Change size dynamically
-	@@arrayB.reallocate(lenA+1);
-	@@arrayC.reallocate(lenA, lenA+1);
-
-	// Initialize arrays
-	FOREACH i IN RANGE[0,lenA-1] DO
-		@@arrayA[i] += i*i;
-		FOREACH j IN RANGE[0,lenA] DO
-			@@arrayC[i][j] += j*10 + i;
-		END;
-	END;
-	FOREACH i IN RANGE[0,lenA] DO
-		@@arrayB[i] += 100-i;
-	END;
-	msg = "Initial Values";
-	PRINT msg, @@arrayA, @@arrayB, @@arrayC;
-
-    msg = "Test 1: A = C, C = B";	// = operator
-    @@arrayA = @@arrayC;		// change dimensions: 1D <- 2D
-    @@arrayC = @@arrayB;		// change dimensions: 2D <- 1D
-    PRINT msg, @@arrayA, @@arrayC;
-
-    msg = "Test 2: B += C"; 		// += operator
-    @@arrayB += @@arrayC; 		// B and C must have same size & dim
-    PRINT msg, @@arrayB, @@arrayC;
-
-    msg = "Test 3: A = B + C"; 		// + operator
-    @@arrayA = @@arrayB + @@arrayC; // B & C must have same size & dim
-    PRINT msg, @@arrayA; 			// A changes size & dim
-}
+include::appendix:example$minimal_net/accum_arrayaccum_op.gsql[]
 ----
 --
 
 Results::
 +
 --
-.ArrayAccumOp3.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY ArrayAccumOp3(3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "msg": "Initial Values",
-      "@@arrayC": [
-		[ 0, 10, 20, 30 ],
-        [ 1, 11, 21, 31 ],
-        [ 2, 12, 22, 32 ]
-      ],
-      "@@arrayB": [ 100, 99, 98, 97 ],
-      "@@arrayA": [ 0, 1, 4 ]
-    },
-    {
-      "msg": "Test 1: A = C, C = B",
-      "@@arrayC": [ 100, 99, 98, 97 ],
-      "@@arrayA": [
-		[ 0, 10, 20, 30 ],
-        [ 1, 11, 21, 31 ],
-        [ 2, 12, 22, 32 ]
-      ]
-    },
-    {
-      "msg": "Test 2: B += C",
-      "@@arrayC": [ 100, 99, 98, 97 ],
-      "@@arrayB": [ 200, 198,196, 194 ]
-    },
-    {
-      "msg": "Test 3: A = B + C",
-      "@@arrayA": [ 300, 297, 294, 291 ]
-    }
-  ]
-}
+include::appendix:example$minimal_net/accum_arrayaccum_op_run.gsql[]
+include::appendix:example$minimal_net/accum_arrayaccum_op_results.json[]
 ----
 --
 ====
@@ -1906,88 +1186,19 @@ GSQL > RUN QUERY ArrayAccumOp3(3)
 Query::
 +
 --
-.Example for Vertex-Attached ArrayAccum
 [source,gsql]
 ----
-CREATE QUERY arrayAccumLocal() FOR GRAPH socialNet api("v2") {
-	# Count each person's edges by type
-	# friend/liked/posted edges are type 0/1/2, respectively
-	ArrayAccum<SumAccum<INT>> @edgesByType[3];
-	Persons = {person.*};
-	
-	Persons = SELECT s
-		FROM Persons:s -(:e)- :t
-		ACCUM CASE e.type
-			WHEN "friend" THEN s.@edgesByType[0] += 1
-			WHEN "liked"  THEN s.@edgesByType[1] += 1
-			WHEN "posted" THEN s.@edgesByType[2] += 1
-			END
-		ORDER BY s.id;
-		
-	#PRINT Persons.@edgesByType; // api v1
-    PRINT Persons[Persons.@edgesByType]; // api v2
-}
+include::appendix:example$social_net/accum_arrayaccum_local.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query ArrayAccumLocal
 [source,gsql]
 ----
-GSQL > RUN QUERY arrayAccumLocal()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Persons": [
-    {
-      "v_id": "person1",
-      "attributes": {"Persons.@edgesByType": [ 2, 1, 1 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {"Persons.@edgesByType": [ 2, 2, 1 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {"Persons.@edgesByType": [ 2, 1, 1 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person4",
-      "attributes": {"Persons.@edgesByType": [ 3, 1, 1 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {"Persons.@edgesByType": [ 3, 1, 2 ]},
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY array_accum_local()
+include::appendix:example$social_net/accum_arrayaccum_local_results.json[]
 ----
 --
 ====
@@ -2067,175 +1278,19 @@ Functions that modify the `HeapAccum` (mutator functions) can be used only under
 Query::
 +
 --
-.HeapAccum Example
 [source,gsql]
 ----
-#HeapAccum Example
-CREATE QUERY heapAccumEx() FOR GRAPH minimalNet {
-  TYPEDEF tuple<STRING firstName, STRING lastName, INT score> testResults;
-
-  #Heap with max size of 4 sorted decending by score then ascending last name
-  HeapAccum<testResults>(4, score DESC, lastName ASC) @@topTestResults;
-
-  PRINT @@topTestResults.top();
-
-  @@topTestResults += testResults("Bruce", "Wayne", 80);
-  @@topTestResults += testResults("Peter", "Parker", 80);
-  @@topTestResults += testResults("Tony", "Stark", 100);
-  @@topTestResults += testResults("Bruce", "Banner", 95);
-  @@topTestResults += testResults("Jean", "Summers", 95);
-  @@topTestResults += testResults("Clark", "Kent", 80);
-
-  #Show element with the highest sorted position
-  PRINT @@topTestResults.top();
-  PRINT @@topTestResults.top().firstName, @@topTestResults.top().lastName, @@topTestResults.top().score;
-
-  PRINT @@topTestResults;
-
-  #Increase the size of the heap to add more elements
-  @@topTestResults.resize(5);
-
-  #Find the size of the current heap
-  PRINT @@topTestResults.size();
-
-  @@topTestResults += testResults("Bruce", "Wayne", 80);
-  @@topTestResults += testResults("Peter", "Parker", 80);
-
-  PRINT @@topTestResults;
-
-  #Resizing smaller WILL REMOVE excess elements from the HeapAccum
-  @@topTestResults.resize(3);
-  PRINT @@topTestResults;
-
-  #Increasing capacity will not restore dropped elements
-  @@topTestResults.resize(5);
-  PRINT @@topTestResults;
-
-  #Removes all elements from the HeapAccum
-  @@topTestResults.clear();
-  PRINT @@topTestResults.size();
-}
+include::appendix:example$minimal_net/accum_heapaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.heapAccumEx.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY heapAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@topTestResults.top()": {
-      "firstName": "",
-      "lastName": "",
-      "score": 0
-    }},
-    {"@@topTestResults.top()": {
-      "firstName": "Tony",
-      "lastName": "Stark",
-      "score": 100
-    }},
-    {
-      "@@topTestResults.top().firstName": "Tony",
-      "@@topTestResults.top().lastName": "Stark",
-      "@@topTestResults.top().score": 100
-    },
-    {"@@topTestResults": [
-      {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
-      },
-      {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
-      },
-      {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
-      },
-      {
-        "firstName": "Clark",
-        "lastName": "Kent",
-        "score": 80
-      }
-    ]},
-    {"@@topTestResults.size()": 4},
-    {"@@topTestResults": [
-      {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
-      },
-      {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
-      },
-      {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
-      },
-      {
-        "firstName": "Clark",
-        "lastName": "Kent",
-        "score": 80
-      },
-      {
-        "firstName": "Peter",
-        "lastName": "Parker",
-        "score": 80
-      }
-    ]},
-    {"@@topTestResults": [
-      {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
-      },
-      {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
-      },
-      {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
-      }
-    ]},
-    {"@@topTestResults": [
-      {
-        "firstName": "Tony",
-        "lastName": "Stark",
-        "score": 100
-      },
-      {
-        "firstName": "Bruce",
-        "lastName": "Banner",
-        "score": 95
-      },
-      {
-        "firstName": "Jean",
-        "lastName": "Summers",
-        "score": 95
-      }
-    ]},
-    {"@@topTestResults.size()": 0}
-  ]
-}
+GSQL > RUN QUERY heap_accum_ex()
+include::appendix:example$minimal_net/accum_heapaccum_results.json[]
 ----
 --
 ====
@@ -2259,13 +1314,12 @@ In GroupByAccum, the key types can be base type, tuple, or STRING COMPRESS. The 
 
 [source,gsql]
 ----
-
-Typedef tuple <id int, name string, age int> myTuple;
-Typedef HeapAccum <myTuple> (2, name desc, age desc, id asc) myHeap;
+TYPEDEF TUPLE <id INT, name STRING, age INT> My_Tuple;
+TYPEDEF HeapAccum <My_Tuple> (2, name desc, age desc, id asc) My_Heap;
 GroupByAccum<INT a, STRING b,
              MaxAccum<INT> maxa,
              ListAccum<ListAccum<INT>> lists,
-             myHeap h> @@group;
+             My_Heap h> @@group;
 ----
 
 To add new data to this GroupByAccum, the data should be formatted as *(key1, key2 -> value1, value2)* .
@@ -2318,179 +1372,17 @@ Query::
 .GroupByAccum Example
 [source,gsql]
 ----
-#GroupByAccum Example
-CREATE QUERY groupByAccumEx () FOR GRAPH socialNet {
-  ##declare HeapAccum type and tuple used in the HeapAccum
-  Typedef tuple <id int, name string, age int> myTuple;
-  Typedef HeapAccum <myTuple> (2, name desc, age desc, id asc) myHeap;
-  ## declaration, first two primitive type are group by keys; the rest accumulator type are aggregates
-  GroupByAccum<INT a, STRING b, MaxAccum<INT> maxa, ListAccum<ListAccum<INT>> lists> @@group;
-  GroupByAccum<STRING gender, MapAccum<VERTEX<person>, DATETIME> m> @@group2;
-  GroupByAccum<INT age, myHeap h> @@group4;
-  # nested GroupByAccum
-  GroupByAccum<INT a, MaxAccum<INT> maxa, GroupByAccum<INT a, MaxAccum<INT> maxa> heap> @@group3;
-  Start = { person.* };
-
-  ## usage of global GroupByAccum
-  @@group += (1, "a" -> 1, [1]);
-  @@group += (1, "a" -> 2, [2]);
-  @@group += (2, "b" -> 1, [4]);
-
-  @@group3 += (2 -> 1, (2 -> 0) );
-  @@group3 += (2 -> 1, (2 -> 5) );
-  @@group3 += (2 -> 5, (3 -> 3) );
-  PRINT @@group, @@group.get(1, "a"), @@group.get(1, "a").lists,  @@group.containsKey(1, "c"), @@group3;
-
-  ## HeapAccum inside GroupByAccum
-  @@group4 += (29->myTuple(1,"aaa", 18));
-  @@group4 += (29->myTuple(2,"bbb", 19));
-  @@group4 += (29->myTuple(3,"ccc", 20));
-  PRINT @@group4;
-
-  ## two kinds of foreach
-  FOREACH g IN @@group DO
-    PRINT g.a, g.b, g.maxa, g.lists;
-  END;
-  FOREACH (g1,g2,g3,g4) IN @@group DO
-    PRINT g1,g2,g3,g4;
-  END;
-
-  S = SELECT v
-      FROM Start:v - (liked:e) - post:t
-      ACCUM @@group2 += (v.gender -> (v -> e.actionTime));
-
-  PRINT @@group2, @@group2.get("Male").m, @@group2.get("Female").m;
-}
+include::appendix:example$social_net/accum_groupbyaccum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Result for Query groupByAccum
 [source,gsql]
 ----
-GSQL > RUN QUERY groupByAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@group.get(1,a).lists": [
-        [1],
-        [2]
-      ],
-      "@@group3": [{
-        "a": 2,
-        "heap": [
-          {
-            "a": 3,
-            "maxa": 3
-          },
-          {
-            "a": 2,
-            "maxa": 5
-          }
-        ],
-        "maxa": 5
-      }],
-      "@@group.containsKey(1,c)": false,
-      "@@group.get(1,a)": {
-        "lists": [
-          [1],
-          [2]
-        ],
-        "maxa": 2
-      },
-      "@@group": [
-        {
-          "a": 2,
-          "b": "b",
-          "lists": [[4]],
-          "maxa": 1
-        },
-        {
-          "a": 1,
-          "b": "a",
-          "lists": [
-            [1],
-            [2]
-          ],
-          "maxa": 2
-        }
-      ]
-    },
-    {
-      "g.b": "b",
-      "g.maxa": 1,
-      "g.lists": [[4]],
-      "g.a": 2
-    },
-    {
-      "g.b": "a",
-      "g.maxa": 2,
-      "g.lists": [
-        [1],
-        [2]
-      ],
-      "g.a": 1
-    },
-    {
-      "g1": 2,
-      "g2": "b",
-      "g3": 1,
-      "g4": [[4]]
-    },
-    {
-      "g1": 1,
-      "g2": "a",
-      "g3": 2,
-      "g4": [
-        [1],
-        [2]
-      ]
-    },
-    {
-      "@@group2.get(Male).m": {
-        "person3": 1263618953,
-        "person1": 1263209520,
-        "person8": 1263180365,
-        "person7": 1263295325,
-        "person6": 1263468185
-      },
-      "@@group2": [
-        {
-          "gender": "Male",
-          "m": {
-            "person3": 1263618953,
-            "person1": 1263209520,
-            "person8": 1263180365,
-            "person7": 1263295325,
-            "person6": 1263468185
-          }
-        },
-        {
-          "gender": "Female",
-          "m": {
-            "person4": 1263352565,
-            "person2": 2526519281,
-            "person5": 1263330725
-          }
-        }
-      ],
-      "@@group2.get(Female).m": {
-        "person4": 1263352565,
-        "person2": 2526519281,
-        "person5": 1263330725
-      }
-    }
-  ]
-}
+GSQL > RUN QUERY group_by_accum_ex()
+include::appendix:example$social_net/accum_groupbyaccum_results.json[]
 ----
 --
 ====
@@ -2500,9 +1392,9 @@ GSQL > RUN QUERY groupByAccumEx()
 
 Certain collection accumulators may be nested. That is, an accumulator may contain a collection of elements where the elements themselves are accumulators. For example:
 
-[source,text]
+[source,gsql]
 ----
-ListAccum<ListAccum<INT>> @@matrix; # a 2-dimensional jagged array of integers.  Each inner list has its own unique size.
+ListAccum<ListAccum<INT>> @@matrix; // a 2-dimensional jagged array of integers.  Each inner list has its own unique size.
 ----
 
 Only ListAccum, ArrayAccum, MapAccum, and GroupByAccum can contain other accumulators. However, not all combinations of collection accumulators are allowed. The following constraints apply:
@@ -2513,7 +1405,7 @@ Only ListAccum, ArrayAccum, MapAccum, and GroupByAccum can contain other accumul
 ----
 ListAccum<ListAccum<INT>>
 ListAccum<ListAccum<ListAccum<INT>>>
-ListAccum<SetAccum<INT>> # illegal
+ListAccum<SetAccum<INT>> // illegal
 ----
 
 . MapAccum: All accumulator types, except for HeapAccum, can be nested within MapAccum as the value type. For example,
@@ -2546,91 +1438,16 @@ Query::
 --
 [source,text]
 ----
-CREATE QUERY nestedAccumEx() FOR GRAPH minimalNet {
-  ListAccum<ListAccum<INT>> @@_2d_list;
-  ListAccum<ListAccum<ListAccum<INT>>> @@_3d_list;
-  ListAccum<INT> @@_1d_list;
-  SumAccum <INT> @@sum = 4;
-
-  @@_1d_list += 1;
-  @@_1d_list += 2;
-  // add 1D-list to 2D-list as element
-  @@_2d_list += @@_1d_list;
-
-  // add 1D-enum-list to 2D-list as element
-  @@_2d_list += [@@sum, 5, 6];
-  // combine 2D-enum-list and 2d-list
-  @@_2d_list += [[7, 8, 9], [10, 11], [12]];
-
-  // add an empty 1D-list
-  @@_1d_list.clear();
-  @@_2d_list += @@_1d_list;
-
-  // combine two 2D-list
-  @@_2d_list += @@_2d_list;
-
-  PRINT @@_2d_list;
-
-  // test 3D-list
-  @@_3d_list += @@_2d_list;
-  @@_3d_list += [[7, 8, 9], [10, 11], [12]];
-  PRINT @@_3d_list;
-}
+include::appendix:example$minimal_net/accum_nested_accum.gsql[]
 ----
 --
 Results::
 +
 --
-.nestedAccumEx.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY nestedAccumEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@_2d_list": [
-      [1,2],
-      [4,5,6],
-      [7,8,9],
-      [10,11],
-      [12],
-      [],
-      [1,2],
-      [4,5,6],
-      [7,8,9],
-      [10,11],
-      [12],
-      []
-    ]},
-    {"@@_3d_list": [
-      [
-        [1,2],
-        [4,5,6],
-        [7,8,9],
-        [10,11],
-        [12],
-        [],
-        [1,2],
-        [4,5,6],
-        [7,8,9],
-        [10,11],
-        [12],
-        []
-      ],
-      [
-        [7,8,9],
-        [10,11],
-        [12]
-      ]
-    ]}
-  ]
-}
+GSQL > RUN QUERY nested_accum_ex()
+include::appendix:example$minimal_net/accum_nested_accum_results.json[]
 ----
 --
 ====

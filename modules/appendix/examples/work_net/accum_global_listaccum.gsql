@@ -1,0 +1,18 @@
+CREATE QUERY list_accum_update_ex() FOR GRAPH Work_Net {
+
+    // Global List_accum
+    ListAccum<INT> @@int_list_accum;
+    ListAccum<STRING> @@string_list_accum;
+    ListAccum<BOOL> @@pass_fail;
+
+    @@int_list_accum += [0,2,4,6,8];
+    @@string_list_accum += ["apple","banana","carrot","daikon"];
+
+    // Global update at Query-Body Level
+    @@pass_fail += @@int_list_accum.update(1,-99);
+    @@pass_fail += @@int_list_accum.update(@@int_list_accum.size()-1,40);    // last element
+    @@pass_fail += @@string_list_accum.update(0,"zero"); // first element
+    @@pass_fail += @@string_list_accum.update(4,"four"); // FAIL: out-of-range
+
+    PRINT @@int_list_accum, @@string_list_accum, @@pass_fail;
+}

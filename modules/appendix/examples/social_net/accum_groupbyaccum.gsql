@@ -1,0 +1,42 @@
+CREATE QUERY group_by_accum_ex () FOR GRAPH Social_Net {
+    // declare HeapAccum type and tuple used in the HeapAccum
+    TYPEDEF TUPLE <id INT, name STRING, age INT> My_Tuple;
+    TYPEDEF HeapAccum <My_Tuple> (2, name DESC, age DESC, id asc) My_Heap;
+    // declaration, first two primitive type are group by keys; the rest accumulator type are aggregates
+    GroupByAccum<INT a, STRING b, MaxAccum<INT> maxa, ListAccum<ListAccum<INT>> lists> @@group;
+    GroupByAccum<STRING gender, MapAccum<VERTEX<Person>, DATETIME> m> @@group2;
+    GroupByAccum<INT age, My_Heap h> @@group4;
+    // nested GroupByAccum
+    GroupByAccum<INT a, MaxAccum<INT> maxa, GroupByAccum<INT a, MaxAccum<INT> maxa> heap> @@group3;
+    Start = { Person.* };
+
+    // usage of global GroupByAccum
+    @@group += (1, "a" -> 1, [1]);
+    @@group += (1, "a" -> 2, [2]);
+    @@group += (2, "b" -> 1, [4]);
+
+    @@group3 += (2 -> 1, (2 -> 0) );
+    @@group3 += (2 -> 1, (2 -> 5) );
+    @@group3 += (2 -> 5, (3 -> 3) );
+    PRINT @@group, @@group.get(1, "a"), @@group.get(1, "a").lists,  @@group.containsKey(1, "c"), @@group3;
+
+    // HeapAccum inside GroupByAccum
+    @@group4 += (29->My_Tuple(1,"aaa", 18));
+    @@group4 += (29->My_Tuple(2,"bbb", 19));
+    @@group4 += (29->My_Tuple(3,"ccc", 20));
+    PRINT @@group4;
+
+    // two kinds of foreach
+    FOREACH g IN @@group DO
+        PRINT g.a, g.b, g.maxa, g.lists;
+    END;
+    FOREACH (g1,g2,g3,g4) IN @@group DO
+        PRINT g1,g2,g3,g4;
+    END;
+
+    S = SELECT v
+      FROM Start:v - (Liked:e) - Post:t
+      ACCUM @@group2 += (v.gender -> (v -> e.action_time));
+
+    PRINT @@group2, @@group2.get("Male").m, @@group2.get("Female").m;
+}

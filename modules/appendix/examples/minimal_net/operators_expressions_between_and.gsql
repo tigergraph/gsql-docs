@@ -1,0 +1,8 @@
+CREATE QUERY math_operator_between() FOR GRAPH Minimal_Net {
+    INT x;
+    BOOL b;
+    x = 1;
+    b = (x BETWEEN 0 AND 100); PRINT b;  // True
+    b = (x BETWEEN 1 AND 2); PRINT b;    // True
+    b = (x BETWEEN 0 AND 1); PRINT b;    // True
+}

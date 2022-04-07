@@ -1,0 +1,12 @@
+CREATE QUERY base_type_variable() FOR GRAPH Social_Net {
+    MaxAccum<INT> @@max_date_glob;
+    DATETIME dt;
+
+    all_user = {Person.*};
+    all_user = SELECT src
+        FROM all_user:src - (Liked>:e) - Post
+        ACCUM
+            dt = e.action_time,           // dt isn't updated yet
+            @@max_date_glob += datetime_to_epoch(dt);
+    PRINT @@max_date_glob, dt;  // @@max_date_glob will be 0
+}

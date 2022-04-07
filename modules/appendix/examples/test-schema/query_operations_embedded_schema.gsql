@@ -1,0 +1,20 @@
+CREATE QUERY page_rank (FLOAT max_change=0.00, INT max_iter=25,
+    FLOAT damping=0.85)  // parameters
+    FOR GRAPH Gsql_Demo
+    {
+    MaxAccum<float> @@max_diff = 9999;
+    SumAccum<float> @rcvd_score = 0;
+    SumAccum<float> @score = 1;
+
+    Start = {Page.*};
+    WHILE @@maxDiff > max_change LIMIT max_iter DO
+        @@maxDiff = 0;
+        V = SELECT s
+            FROM Start:s -(Linkto:e)- Page:t       // hardcoded types
+            ACCUM t.@rcvd_score += s.@score/(s.outdegree("Linkto")) // Param
+            POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score, s.@rcvd_score = 0, @@max_diff += abs(s.@score - s.@score');
+    END;
+
+    V = SELECT s FROM Start:s
+      POST-ACCUM s.Score = s.@score;    // hardcoded attribute
+}

@@ -1,0 +1,7 @@
+CREATE QUERY delete_ex_2() FOR GRAPH Work_Net {
+    // Delete all "Works_For" edges where the person's location is "us"
+
+    S = {Person.*};
+    DELETE e FROM S:s -(Works_For:e)- Company:t
+        WHERE s.location_id == "us";
+}

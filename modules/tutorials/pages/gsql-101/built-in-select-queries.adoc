@@ -101,7 +101,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 [,gsql]
 ----
- #result
+ // results
  {
   "version": {
     "edition": "enterprise",
@@ -113,7 +113,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
   "results": [
     {
       "v_id": "Tom",
-      "v_type": "person",
+      "v_type": "Person",
       "attributes": {
         "name": "Tom",
         "age": 40,
@@ -154,39 +154,39 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 
 [,gsql]
 ----
-#result
+// results
 {
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
-  "error": false,
-  "message": "",
-  "results": [
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
     {
-      "e_type": "friendship",
-      "directed": false,
-      "from_id": "Tom",
-      "from_type": "person",
-      "to_id": "Dan",
-      "to_type": "person",
-      "attributes": {
+        "e_type": "friendship",
+        "directed": false,
+        "from_id": "Tom",
+        "from_type": "person",
+        "to_id": "Dan",
+        "to_type": "person",
+        "attributes": {
         "connect_day": "2017-06-03 00:00:00"
-      }
+        }
     },
     {
-      "e_type": "friendship",
-      "directed": false,
-      "from_id": "Tom",
-      "from_type": "person",
-      "to_id": "Jenny",
-      "to_type": "person",
-      "attributes": {
+        "e_type": "friendship",
+        "directed": false,
+        "from_id": "Tom",
+        "from_type": "person",
+        "to_id": "Jenny",
+        "to_type": "person",
+        "attributes": {
         "connect_day": "2015-01-01 00:00:00"
-      }
+        }
     }
-  ]
+    ]
 }
 ----
 

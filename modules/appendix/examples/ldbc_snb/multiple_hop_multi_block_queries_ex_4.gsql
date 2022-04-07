@@ -1,0 +1,17 @@
+USE GRAPH ldbc_snb
+
+// the same alias is used twice in a pattern
+INTERPRET QUERY () SYNTAX v2 {
+
+  SumAccum<int> @@cnt;
+
+  A  =  SELECT msg
+        FROM :s -(Likes>:e1)- :msg -(Has_Creator>)- :s
+        WHERE s.first_name LIKE "T%"
+        PER (msg)
+        ACCUM @@cnt +=1;
+
+
+  PRINT @@cnt;
+
+}

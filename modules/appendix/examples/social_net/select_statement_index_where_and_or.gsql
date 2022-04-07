@@ -1,0 +1,46 @@
+CREATE QUERY find_female_members() FOR GRAPH Social_Net
+{
+
+    // Finds female person in the social network. all of the following statements
+    // are equivalent (i.e., produce the same results)
+
+	all_vertices = {ANY}; # includes all posts and person
+	females = SELECT v FROM all_vertices:v
+        WHERE v.type == "Person" AND v.gender != "Male";
+
+	females = SELECT v FROM all_vertices:v
+        WHERE v.type == "Person" AND v.gender == "Female";
+
+	females = SELECT v FROM all_vertices:v
+        WHERE v.type == "Person" AND
+        NOT v.gender == "Male";
+
+	females = SELECT v FROM all_vertices:v
+        WHERE v.type != "Post" AND
+        NOT v.gender == "Male";
+
+  	/* does not compile. cannot use NOT operator in combination with type attribute
+	 females = SELECT v FROM all_vertices:v
+		  WHERE NOT v.type   != "Person" AND
+		  	    NOT v.gender == "Male";
+
+  	 does not compile. cannot use NOT operator in combination with type attribute
+     females = SELECT v FROM all_vertices:v
+        WHERE NOT v.type   == "Post" AND
+        NOT v.gender == "Male"; */
+
+	person_vertices = {Person.*};
+	females = SELECT v FROM person_vertices:v
+		   WHERE NOT v.gender == "Male";
+
+	females = SELECT v FROM person_vertices:v
+		   WHERE v.gender != "Male";
+
+	females = SELECT v FROM person_vertices:v
+		   WHERE v.gender != "Male" AND true;
+
+	females = SELECT v FROM person_vertices:v
+		   WHERE v.gender != "Male" OR false;
+
+	PRINT females;
+}

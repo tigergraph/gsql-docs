@@ -1,0 +1,14 @@
+USE GRAPH ldbc_snb
+
+// we do not put Forum before :f, even if we know it.
+CREATE QUERY q5 () SYNTAX v2 {
+
+  SumAccum<int> @@person_cnt;
+
+  V = SELECT s
+      FROM Person:s- (Likes>)-Post:p - (<Container_Of)-:f - (Has_Tag>) - :t
+      PER (s)
+      ACCUM @@person_cnt += 1;
+
+  PRINT @@person_cnt;
+}

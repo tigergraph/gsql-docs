@@ -1,0 +1,10 @@
+CREATE QUERY create_query_ex (STRING uid) FOR GRAPH Social_Net RETURNS (int) SYNTAX v2 {
+    // declaration statements
+    users = {Person.*};
+    // body statements
+    posts = SELECT p
+        FROM users:u-(Posted>)-:p
+        WHERE u.id == uid;
+    PRINT posts;
+    RETURN posts.size();
+}

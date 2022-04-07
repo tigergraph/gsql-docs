@@ -1,0 +1,23 @@
+CREATE QUERY page_rank_dyn (FLOAT max_change=0.00, INT max_iter=25,
+  FLOAT damping=0.85,
+  STRING vType, STRING eType, STRING attr)  //parameterized schema
+//no graph name
+{
+    MaxAccum<float> @@max_diff = 9999;
+    SumAccum<float> @rcvd_score = 0;
+    SumAccum<float> @score = 1;
+
+    Start = {vType};
+    WHILE @@max_diff > max_change LIMIT max_iter DO
+        @@max_diff = 0;
+        V = SELECT s
+          FROM Start:s -(eType:e)- vType:t // parameterized
+          ACCUM t.@rcvd_score += s.@score/(s.outdegree(eType)) // param
+          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
+              s.@rcvd_score = 0,
+              @@max_diff += abs(s.@score - s.@score');
+    END;
+
+    V = SELECT s FROM Start:s
+      POST-ACCUM s.setAttr(attr, s.@score); // parameterized
+}

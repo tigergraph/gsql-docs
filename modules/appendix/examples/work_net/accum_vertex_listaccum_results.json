@@ -1,0 +1,67 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"S1": [
+      {
+        "v_id": "person1",
+        "attributes": {
+          "S1.@int_list": [
+            1,
+            2,
+            -99
+          ],
+          "S1.skill_list": [
+            1,
+            2,
+            3
+          ],
+          "S1.interest_list": [
+            "management",
+            "financial"
+          ],
+          "S1.@string_list": [
+            "management",
+            "fizz"
+          ]
+        },
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person5",
+        "attributes": {
+          "S1.@int_list": [
+            8,
+            2,
+            -99
+          ],
+          "S1.skill_list": [
+            8,
+            2,
+            5
+          ],
+          "S1.interest_list": [
+            "sport",
+            "financial",
+            "engineering"
+          ],
+          "S1.@string_list": [
+            "sport",
+            "financial",
+            "fizz"
+          ]
+        },
+        "v_type": "Person"
+      }
+    ]},
+    {
+      "@@int_fails": [],
+      "@@str_fails": []
+    }
+  ]
+}

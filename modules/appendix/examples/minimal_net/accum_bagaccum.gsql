@@ -1,0 +1,28 @@
+CREATE QUERY bag_accum_ex() FOR GRAPH Minimal_Net {
+
+    //Unordered collection
+    BagAccum<INT>        @@int_bag_accum;
+    BagAccum<STRING> @@string_bag_accum;
+
+    @@int_bag_accum += 5;
+    @@int_bag_accum.clear();
+
+    @@int_bag_accum += 4;
+    @@int_bag_accum += 11;
+    @@int_bag_accum += 1;
+    @@int_bag_accum += 11;         //Bag accums can store duplicates
+    @@int_bag_accum += (1,2,3,4);
+    PRINT @@int_bag_accum;
+
+    PRINT @@int_bag_accum.size();
+    PRINT @@int_bag_accum.contains(4);
+
+    @@string_bag_accum += "Hello";
+    @@string_bag_accum += "Hello";
+    @@string_bag_accum += "There";
+    @@string_bag_accum += "World";
+    PRINT @@string_bag_accum.contains("Hello");
+    @@string_bag_accum.remove("Hello");        //Remove one matching element
+    @@string_bag_accum.removeAll("There"); //Remove all matching elements
+    PRINT @@string_bag_accum;
+}

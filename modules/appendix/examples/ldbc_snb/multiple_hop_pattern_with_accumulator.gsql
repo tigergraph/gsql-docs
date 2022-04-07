@@ -1,0 +1,14 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+  SumAccum<int> @likes_cnt;
+
+  favorite_authors =
+            SELECT t
+            FROM Person:s-(Likes>) -:msg - (Has_Creator>)-Person:t
+            WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+                      AND t.last_name LIKE "S%" AND year(msg.creation_date) == 2012
+            ACCUM t.@likes_cnt +=1;
+
+  PRINT favorite_authors[favorite_authors.first_name, favorite_authors.last_name, favorite_authors.@likes_cnt];
+}

@@ -1,0 +1,25 @@
+CREATE QUERY resident_employees() FOR GRAPH Work_Net {
+    // Show all persons who both work and live in the same country
+
+    ListAccum<STRING> @company;
+    OrAccum @works_and_lives;
+
+    start = {Person.*};
+
+    employees = SELECT s FROM start:s -(Works_For)- :c
+    // If a person works for a company in the same country where they live, add the company to the list
+        ACCUM CASE
+            WHEN (s.location_id == c.country) THEN
+                s.@company += c.id
+            END
+
+    // Check each vertex and see if a person works where they live
+        POST-ACCUM CASE
+            WHEN (s.@company.size() > 0) THEN
+                s.@works_and_lives += TRUE
+            ELSE
+                s.@works_and_lives += FALSE
+            END;
+
+    PRINT employees WHERE (employees.@works_and_lives == TRUE);
+}

@@ -1,0 +1,13 @@
+CREATE QUERY count_at_location(STRING loc) FOR GRAPH Work_Net {
+    SetAccum<EDGE> @@sel_edge;
+    Start = {Person.*};
+
+    SV = SELECT s FROM Start:s
+        WHERE s.location_id == loc;
+    PRINT SV.size() AS num_vertices;
+
+    SE = SELECT s FROM Start:s -(Works_For:e)- Company:t
+        WHERE s.location_id == loc
+        ACCUM @@sel_edge += e;
+        PRINT @@sel_edge.size() AS num_edges;
+}

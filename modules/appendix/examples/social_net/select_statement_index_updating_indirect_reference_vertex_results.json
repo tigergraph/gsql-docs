@@ -1,0 +1,69 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"persons": [
+    {
+      "v_id": "person7",
+      "attributes": {"persons.@fellows": ["person7"]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {"persons.@fellows": ["person5"]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person1",
+      "attributes": {"persons.@fellows": [
+        "person3",
+        "person2",
+        "person1"
+      ]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person4",
+      "attributes": {"persons.@fellows": [
+        "person4",
+        "person8"
+      ]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {"persons.@fellows": [
+        "person3",
+        "person2",
+        "person1"
+      ]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {"persons.@fellows": [
+        "person3",
+        "person2",
+        "person1"
+      ]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {"persons.@fellows": [
+        "person4",
+        "person8"
+      ]},
+      "v_type": "Person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {"persons.@fellows": ["person6"]},
+      "v_type": "Person"
+    }
+  ]}]
+}

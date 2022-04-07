@@ -1,0 +1,56 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"tag_class1": [
+    {
+      "v_id": "211",
+      "attributes": {
+        "name": "Person",
+        "id": 211,
+        "url": "http://dbpedia.org/ontology/Person"
+      },
+      "v_type": "Tag_Class"
+    },
+    {
+      "v_id": "239",
+      "attributes": {
+        "name": "Agent",
+        "id": 239,
+        "url": "http://dbpedia.org/ontology/Agent"
+      },
+      "v_type": "Tag_Class"
+    },
+    {
+      "v_id": "0",
+      "attributes": {
+        "name": "Thing",
+        "id": 0,
+        "url": "http://www.w3.org/2002/07/owl#Thing"
+      },
+      "v_type": "Tag_Class"
+    },
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "Tag_Class"
+    },
+    {
+      "v_id": "59",
+      "attributes": {
+        "name": "TennisPlayer",
+        "id": 59,
+        "url": "http://dbpedia.org/ontology/TennisPlayer"
+      },
+      "v_type": "Tag_Class"
+    }
+  ]}]
+}

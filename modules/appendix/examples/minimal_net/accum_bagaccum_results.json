@@ -1,0 +1,28 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"@@int_bag_accum": [
+      2,
+      3,
+      1,
+      1,
+      11,
+      11,
+      4,
+      4
+    ]},
+    {"@@int_bag_accum.size()": 8},
+    {"@@int_bag_accum.contains(4)": true},
+    {"@@string_bag_accum.contains(\"Hello\")": true},
+    {"@@string_bag_accum": [
+      "World",
+      "Hello"
+    ]}
+  ]
+}

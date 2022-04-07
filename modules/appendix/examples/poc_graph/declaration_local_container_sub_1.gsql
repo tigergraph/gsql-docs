@@ -1,0 +1,9 @@
+CREATE QUERY sub_query1 (VERTEX node) FOR GRAPH POC_Graph
+returns(ListAccum<int>)
+{
+    ListAccum<INT> @@res;
+    Start = { node };
+    Result = select t from Start:t
+    Accum @@res += 1;
+    return @@res;
+}

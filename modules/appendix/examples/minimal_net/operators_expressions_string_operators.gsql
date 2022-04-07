@@ -1,0 +1,7 @@
+CREATE QUERY concat_test() FOR GRAPH Minimal_Net{
+    STRING first_string, second_string, third_string;
+    first_string = "first string";
+    second_string = "second string";
+    third_string = first_string + " " + second_string;
+    PRINT third_string;   // "first string second string"
+}

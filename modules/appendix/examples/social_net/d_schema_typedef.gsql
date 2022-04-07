@@ -1,0 +1,17 @@
+// Define the heap accumulator at the catalog level
+TYPEDEF TUPLE<name string, friends int> My_Tuple
+TYPEDEF HeapAccum<My_Tuple>(3, friends DESC) My_Heap
+
+CREATE QUERY subquery1() FOR GRAPH Social_Net RETURNS (My_Heap){
+	My_Heap @@heap;
+	SumAccum<int> @friends;
+	Start = {Person.*};
+	Start = SELECT s from Start:s-(Friend:e)-:t
+	        ACCUM s.@friends += 1
+	        POST-ACCUM @@heap += My_Tuple(s.id,s.@friends);
+	RETURN @@heap;
+}
+
+CREATE QUERY Query_1() FOR GRAPH Social_Net {
+	PRINT Sub_Query_1();
+}

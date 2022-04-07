@@ -1,0 +1,10 @@
+CREATE QUERY update_ex2() FOR GRAPH Work_Net  {
+    S = {Person.*};
+
+    X = SELECT s
+        FROM S:s
+        WHERE S.location_id == "USA"
+        POST-ACCUM S.location_id = "us",
+            S.skill_list = [3,2,1];
+    PRINT S;
+}

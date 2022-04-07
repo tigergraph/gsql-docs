@@ -1,0 +1,7 @@
+CREATE QUERY foreach_range_step(INT a, INT b, INT c) FOR GRAPH Minimal_Net {
+    ListAccum<INT> @@t;
+    FOREACH i IN RANGE[a,b].step(c) DO
+        @@t += i;
+    END;
+    PRINT @@t;
+}

@@ -1,0 +1,590 @@
+[
+  {
+    "@@a": 10,
+    "@@b": -15
+  },
+  {
+    "max(@@value_list)": 80
+  },
+  {
+    "avg(@@value_list)": 17
+  },
+  {
+    "works_for_both": [
+      {
+        "attributes": {
+          "@company_count": 0,
+          "@company_names": [],
+          "@info": [],
+          "@number_of_relationships": 0,
+          "id": "person1",
+          "interest_list": [
+            "management",
+            "financial"
+          ],
+          "interest_set": [
+            "financial",
+            "management"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            1,
+            2,
+            3
+          ],
+          "skill_set": [
+            1,
+            2,
+            3
+          ]
+        },
+        "v_id": "person1",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 0,
+          "@company_names": [],
+          "@info": [],
+          "@number_of_relationships": 0,
+          "id": "person2",
+          "interest_list": [
+            "engineering"
+          ],
+          "interest_set": [
+            "engineering"
+          ],
+          "location_id": "chn",
+          "skill_list": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "skill_set": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        "v_id": "person2",
+        "v_type": "Person"
+      }
+    ]
+  },
+  {
+    "employees": [
+      {
+        "attributes": {
+          "@company_count": 2,
+          "@company_names": [
+            "company2",
+            "company3"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            },
+            {
+              "company_name": "company3",
+              "country_name": "jp"
+            }
+          ],
+          "@number_of_relationships": 4,
+          "id": "person7",
+          "interest_list": [
+            "art",
+            "sport"
+          ],
+          "interest_set": [
+            "sport",
+            "art"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            8,
+            6
+          ],
+          "skill_set": [
+            6,
+            8
+          ]
+        },
+        "v_id": "person7",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 2,
+          "@company_names": [
+            "company2",
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            },
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 4,
+          "id": "person1",
+          "interest_list": [
+            "management",
+            "financial"
+          ],
+          "interest_set": [
+            "financial",
+            "management"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            1,
+            2,
+            3
+          ],
+          "skill_set": [
+            1,
+            2,
+            3
+          ]
+        },
+        "v_id": "person1",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company2"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person5",
+          "interest_list": [
+            "sport",
+            "financial",
+            "engineering"
+          ],
+          "interest_set": [
+            "engineering",
+            "financial",
+            "sport"
+          ],
+          "location_id": "can",
+          "skill_list": [
+            8,
+            2,
+            5
+          ],
+          "skill_set": [
+            2,
+            5,
+            8
+          ]
+        },
+        "v_id": "person5",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 2,
+          "@company_names": [
+            "company2",
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            },
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 4,
+          "id": "person2",
+          "interest_list": [
+            "engineering"
+          ],
+          "interest_set": [
+            "engineering"
+          ],
+          "location_id": "chn",
+          "skill_list": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "skill_set": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        "v_id": "person2",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person3",
+          "interest_list": [
+            "teaching"
+          ],
+          "interest_set": [
+            "teaching"
+          ],
+          "location_id": "jp",
+          "skill_list": [
+            4,
+            1,
+            6
+          ],
+          "skill_set": [
+            1,
+            4,
+            6
+          ]
+        },
+        "v_id": "person3",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person8",
+          "interest_list": [
+            "management"
+          ],
+          "interest_set": [
+            "management"
+          ],
+          "location_id": "chn",
+          "skill_list": [
+            1,
+            5,
+            2
+          ],
+          "skill_set": [
+            1,
+            2,
+            5
+          ]
+        },
+        "v_id": "person8",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 2,
+          "@company_names": [
+            "company2",
+            "company3"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            },
+            {
+              "company_name": "company3",
+              "country_name": "jp"
+            }
+          ],
+          "@number_of_relationships": 4,
+          "id": "person9",
+          "interest_list": [
+            "financial",
+            "teaching"
+          ],
+          "interest_set": [
+            "teaching",
+            "financial"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            4,
+            7,
+            2
+          ],
+          "skill_set": [
+            2,
+            4,
+            7
+          ]
+        },
+        "v_id": "person9",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company2"
+          ],
+          "@info": [
+            {
+              "company_name": "company2",
+              "country_name": "chn"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person4",
+          "interest_list": [
+            "football"
+          ],
+          "interest_set": [
+            "football"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            4,
+            1,
+            10
+          ],
+          "skill_set": [
+            1,
+            4,
+            10
+          ]
+        },
+        "v_id": "person4",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 2,
+          "@company_names": [
+            "company3",
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company3",
+              "country_name": "jp"
+            },
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 4,
+          "id": "person10",
+          "interest_list": [
+            "football",
+            "sport"
+          ],
+          "interest_set": [
+            "sport",
+            "football"
+          ],
+          "location_id": "us",
+          "skill_list": [
+            3
+          ],
+          "skill_set": [
+            3
+          ]
+        },
+        "v_id": "person10",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company1"
+          ],
+          "@info": [
+            {
+              "company_name": "company1",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person6",
+          "interest_list": [
+            "music",
+            "art"
+          ],
+          "interest_set": [
+            "art",
+            "music"
+          ],
+          "location_id": "jp",
+          "skill_list": [
+            7,
+            10
+          ],
+          "skill_set": [
+            7,
+            10
+          ]
+        },
+        "v_id": "person6",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company4"
+          ],
+          "@info": [
+            {
+              "company_name": "company4",
+              "country_name": "us"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person12",
+          "interest_list": [
+            "music",
+            "engineering",
+            "teaching",
+            "teaching",
+            "teaching"
+          ],
+          "interest_set": [
+            "teaching",
+            "engineering",
+            "music"
+          ],
+          "location_id": "jp",
+          "skill_list": [
+            1,
+            5,
+            2,
+            2,
+            2
+          ],
+          "skill_set": [
+            1,
+            2,
+            5
+          ]
+        },
+        "v_id": "person12",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "@company_count": 1,
+          "@company_names": [
+            "company5"
+          ],
+          "@info": [
+            {
+              "company_name": "company5",
+              "country_name": "can"
+            }
+          ],
+          "@number_of_relationships": 1,
+          "id": "person11",
+          "interest_list": [
+            "sport",
+            "football"
+          ],
+          "interest_set": [
+            "football",
+            "sport"
+          ],
+          "location_id": "can",
+          "skill_list": [
+            10
+          ],
+          "skill_set": [
+            10
+          ]
+        },
+        "v_id": "person11",
+        "v_type": "Person"
+      }
+    ]
+  },
+  {
+    "@@total_relationship_count": 17
+  },
+  {
+    "@@company_employee_relationships": {
+      "person1": [
+        "company2",
+        "company1"
+      ],
+      "person10": [
+        "company3",
+        "company1"
+      ],
+      "person11": [
+        "company5"
+      ],
+      "person12": [
+        "company4"
+      ],
+      "person2": [
+        "company2",
+        "company1"
+      ],
+      "person3": [
+        "company1"
+      ],
+      "person4": [
+        "company2"
+      ],
+      "person5": [
+        "company2"
+      ],
+      "person6": [
+        "company1"
+      ],
+      "person7": [
+        "company2",
+        "company3"
+      ],
+      "person8": [
+        "company1"
+      ],
+      "person9": [
+        "company2",
+        "company3"
+      ]
+    }
+  },
+  {
+    "@@company_employee_relationships.size()": 12
+  }
+]

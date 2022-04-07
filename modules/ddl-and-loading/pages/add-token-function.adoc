@@ -72,7 +72,7 @@ Note that the input tokens are always in string (`char*`) format. If
 necessary, convert them to other types inside the function.
 
 
-==== Example
+=== Example
 
 The built-in token function `gsql_concat` is used in the following example.
 It takes multiple token parameters and returns a string.
@@ -90,7 +90,7 @@ extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], ui
 }
 ----
 
-==== User-defined Token Functions for `WHERE` Clause
+=== User-defined Token Functions for `WHERE` Clause
 
 User-defined token functions (described above) can also be used to
 construct the boolean conditional expression in the `WHERE` clause.

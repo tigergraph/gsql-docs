@@ -1,0 +1,12 @@
+// recommended: we put Forum as the type info.
+CREATE QUERY q6 () SYNTAX v2 {
+
+  SumAccum<int> @@person_cnt;
+
+  V = SELECT s
+      FROM Person:s- (Likes>)-Post:p - (<Container_Of)-Forum:f - (Has_Tag>) - :t
+      PER (s)
+      ACCUM @@person_cnt += 1;
+
+  PRINT @@person_cnt;
+}

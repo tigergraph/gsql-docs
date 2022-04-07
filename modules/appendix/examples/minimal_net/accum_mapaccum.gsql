@@ -1,0 +1,49 @@
+CREATE QUERY map_accum_ex() FOR GRAPH Minimal_Net {
+
+    // Map(Key, Value)
+    // Keys can be INT or STRING only
+    MapAccum<STRING, INT> @@int_map_accum;
+    MapAccum<INT, STRING> @@string_map_accum;
+    MapAccum<INT, MapAccum<STRING, STRING>> @@nested_map_accum;
+
+    @@int_map_accum += ("foo" -> 1);
+    @@int_map_accum.clear();
+
+    @@int_map_accum += ("foo" -> 3);
+    @@int_map_accum += ("bar" -> 2);
+    @@int_map_accum += ("baz" -> 2);
+    @@int_map_accum += ("baz" -> 1); //add 1 to existing value
+
+    PRINT @@int_map_accum.containsKey("baz");
+    PRINT @@int_map_accum.get("bar");
+    PRINT @@int_map_accum.get("root");
+
+    @@string_map_accum += (1 -> "apple");
+    @@string_map_accum += (2 -> "pear");
+    @@string_map_accum += (3 -> "banana");
+    @@string_map_accum += (4 -> "a");
+    @@string_map_accum += (4 -> "b"); //append "b" to existing value
+    @@string_map_accum += (4 -> "c"); //append "c" to existing value
+
+    PRINT @@int_map_accum;
+    PRINT @@string_map_accum;
+
+    //Checking and getting keys
+    if @@string_map_accum.containsKey(1) THEN
+        PRINT @@string_map_accum.get(1);
+    END;
+
+    //Map nesting
+    @@nested_map_accum += ( 1 -> ("foo"  -> "bar") );
+    @@nested_map_accum += ( 1 -> ("flip" -> "top") );
+    @@nested_map_accum += ( 2 -> ("fizz" -> "pop") );
+    @@nested_map_accum += ( 1 -> ("foo"  -> "s") );
+
+    PRINT @@nested_map_accum;
+
+    IF @@nested_map_accum.containsKey(1) THEN
+        IF @@nested_map_accum.get(1).containsKey("foo") THEN
+             PRINT @@nested_map_accum.get(1).get("foo");
+        END;
+    END;
+}

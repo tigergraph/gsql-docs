@@ -1,0 +1,8 @@
+CREATE QUERY friends_not_in_blocked_list (VERTEX<Person> seed,
+    SET<VERTEX<Person>> blocked_list) FOR GRAPH Social_Net {
+    start = {seed};
+    result = SELECT v
+        FROM start:s-(Friend:e)-Person:v
+        WHERE v NOT IN blocked_list;
+    PRINT result;
+}

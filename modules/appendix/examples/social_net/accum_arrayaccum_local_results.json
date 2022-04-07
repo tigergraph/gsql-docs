@@ -1,0 +1,51 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "edition": "developer",
+    "schema": 0,
+    "api": "v2"
+  },
+  "results": [{"Persons": [
+    {
+      "v_id": "person1",
+      "attributes": {"Persons.@edgesByType": [ 2, 1, 1 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person2",
+      "attributes": {"Persons.@edgesByType": [ 2, 2, 1 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person3",
+      "attributes": {"Persons.@edgesByType": [ 2, 1, 1 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person4",
+      "attributes": {"Persons.@edgesByType": [ 3, 1, 1 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person5",
+      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person6",
+      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person7",
+      "attributes": {"Persons.@edgesByType": [ 2, 1, 2 ]},
+      "v_type": "person"
+    },
+    {
+      "v_id": "person8",
+      "attributes": {"Persons.@edgesByType": [ 3, 1, 2 ]},
+      "v_type": "person"
+    }
+  ]}]
+}

@@ -1,0 +1,26 @@
+CREATE QUERY topic_likes() FOR GRAPH Social_Net {
+    SetAccum<STRING> @@person_osts;
+    SumAccum<INT> @post_likes;
+    MapAccum<STRING,INT> @@likes_by_topic;
+
+    start = {Person.*};
+
+    // Find all user posts and generate a set of post topics
+    // (set has no duplicates)
+    posts = SELECT g FROM start - (Posted>) - :g
+          ACCUM @@person_posts += g.subject;
+
+    // Use set of topics to increment how many times a specific
+    // post is liked by other users
+    liked_posts = SELECT f FROM start - (Liked>) - :f
+        ACCUM FOREACH x in @@person_posts DO
+        CASE WHEN (f.subject == x) THEN
+            f.@post_likes += 1
+            END
+        END
+    // Aggregate all liked totals by topic
+    POST-ACCUM @@likes_by_topic += (f.subject -> f.@post_likes);
+
+    // Display the number of likes per topic
+    PRINT @@likes_by_topic;
+}

@@ -16,7 +16,7 @@ condition := expr
            | expr comparisonOperator expr
            | expr [ NOT ] IN setBagExpr
            | expr IS [ NOT ] NULL
-           | expr BETWEEN expr AND expr
+            | expr BETWEEN expr AND expr
            | "(" condition ")"
            | NOT condition
            | condition (AND | OR) condition
@@ -147,29 +147,7 @@ Query::
 .Example 1. Math Operators + - * /
 [source,gsql]
 ----
-CREATE QUERY mathOperators() FOR GRAPH minimalNet api("v2")
-{
-    int x,y;
-    int z1,z2,z3,z4,z5;
-    float f1,f2,f3,f4;
-
-    x = 7;
-    y = 3;
-
-    z1 = x * y;    # z = 21
-    z2 = x - y;    # z = 4
-    z3 = x + y;    # z = 10
-    z4 = x / y;    # z = 2
-    z5 = x / 4.0;  # z = 1
-    f1 = x / y;    # v = 2
-    f2 = x / 4.0;  # v = 1.75
-    f3 = x % 3;    # v = 1
-    f4 = x % y;    # z = 1
-
-    PRINT x,y;
-    PRINT z1 AS xTIMESy, z2 AS xMINUSy, z3 AS xPLUSy, z4 AS xDIVy, z5 AS xDIV4f;
-    PRINT f1 AS xDIVy,   f2 AS xDIV4f,  f3 AS xMOD3,  f4 AS xMODy;
-}
+include::appendix:example$minimal_net/operators_expressions_math_operators.gsql[]
 ----
 --
 Results::
@@ -178,35 +156,8 @@ Results::
 .mathOperators.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY mathOperators()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "x": 7,
-      "y": 3
-    },
-    {
-      "xTIMESy": 21,
-      "xPLUSy": 10,
-      "xMINUSy": 4,
-      "xDIVy": 2,
-      "xDIV4f": 1
-    },
-    {
-      "xMODy": 1,
-      "xMOD3": 1,
-      "xDIVy": 2,
-      "xDIV4f": 1.75
-    }
-  ]
-}
+GSQL > RUN QUERY math_operators()
+include::appendix:example$minimal_net/operators_expressions_math_operators_results.json[]
 ----
 --
 ====
@@ -223,15 +174,7 @@ Bit operators (`<<` `>>` `&` `|`) operate on integers and return an integer.
 .Bit Operators
 [source,gsql]
 ----
-CREATE QUERY bitOperationTest() FOR GRAPH minimalNet{
-  PRINT 80 >> 2;     # 20
-  PRINT 80 << 2;     # 320
-  PRINT 2 + 80 >> 4; # 5
-  PRINT 2 | 3 ;      # 3
-  PRINT 2 & 3 ;      # 2
-  PRINT 2 | 3 + 2;   # 7
-  PRINT 2 & 3 - 2;   # 0
-}
+include::appendix:example$minimal_net/operators_expressions_bit_operators.gsql[]
 ----
 
 === String Operators
@@ -240,13 +183,7 @@ The `+` operator can be used for concatenating strings.
 
 [source,gsql]
 ----
-CREATE QUERY concatTest() FOR GRAPH minimalNet{
-  STRING firstString, secondString, thirdString;
-  firstString = "first string";
-  secondString = "second string";
-  thirdString = firstString + " " + secondString;
-  PRINT thirdString;   # "first string second string"
-}
+include::appendix:example$minimal_net/operators_expressions_string_operators.gsql[]
 ----
 
 === Tuple Fields
@@ -281,30 +218,21 @@ Strings are compared based on standard lexicographical ordering: +
 The comparison operators treat the STRING COMPRESS type as though it is STRING type.
 ====
 
-=== BETWEEN expr AND expr
+=== BETWEEN ... AND ...
 
 The expression `expr1 BETWEEN expr2 AND expr3` is `true` if the value expr1 is in the range from expr2 to expr3, including the endpoint values. Each expression must be numeric.
 
 `expr1 BETWEEN expr2 AND expr3` is equivalent to `expr1 <= expr3 AND expr1 >= expr2`.
 
-.BETWEEN AND example
-
+.`BETWEEN AND` example
 [source,gsql]
 ----
-CREATE QUERY mathOperatorBetween() FOR GRAPH minimalNet
-{
-    int x;
-    bool b;
-    x = 1;
-    b = (x BETWEEN 0 AND 100); PRINT b;  # True
-    b = (x BETWEEN 1 AND 2); PRINT b;    # True
-    b = (x BETWEEN 0 AND 1); PRINT b;    # True
-}
+include::appendix:example$minimal_net/operators_expressions_between_and.gsql[]
 ----
 
 === IS NULL, IS NOT NULL
 
-IS NULL and IS NOT NULL can be used for checking whether an optional parameter is given any value.
+`IS NULL` and `IS NOT NULL` can be used for checking whether an optional parameter is given any value.
 
 
 ==== Example
@@ -317,13 +245,7 @@ Query::
 .IS NULL example
 [source,gsql]
 ----
-CREATE QUERY parameterIsNULL (INT p) FOR GRAPH minimalNet {
-  IF p IS NULL THEN
-    PRINT "p is null";
-  ELSE
-    PRINT "p is not null";
-  END;
-}
+include::appendix:example$minimal_net/operators_expressions_is_null.gsql[]
 ----
 --
 Results::
@@ -332,28 +254,11 @@ Results::
 .parameterIsNULL.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY parameterIsNULL(_)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"p is null": "p is null"}]
-}
-GSQL > RUN QUERY parameterIsNULL(3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"p is not null": "p is not null"}]
-}
+GSQL > RUN QUERY parameter_is_null(_)
+include::appendix:example$minimal_net/operators_expressions_is_null_example_null.json[]
+
+GSQL > RUN QUERY parameter_is_null(3)
+include::appendix:example$minimal_net/operators_expressions_is_null_example_3.json[]
 ----
 --
 ====
@@ -431,13 +336,7 @@ Query Without Parameters::
 .Example query using LIKE operator
 [source,gsql]
 ----
-CREATE QUERY printAPosts(/* Parameters here */) FOR GRAPH socialNet {
-  /* Write query logic here */
-  posts = {post.*};
-	aPosts = SELECT v FROM posts:v		
-                WHERE v.subject LIKE "%a%";  // Returns all posts with the character "a" in the subject
-	PRINT aPosts;
-}
+include::appendix:example$social_net/operators_expressions_query_without_parameters.gsql[]
 ----
 --
 Query With Parameters::
@@ -446,15 +345,8 @@ Query With Parameters::
 .Example parameterized query
 [source,gsql]
 ----
-CREATE QUERY printPosts(STRING searchString) FOR GRAPH socialNet {
-  /* Write query logic here */
-  STRING searchParam;
-  searchParam = "%" + searchString + "%";
-  posts = {post.*};
-	aPosts = SELECT v FROM posts:v
-                WHERE v.subject LIKE searchParam;  // Returns all posts with the searchString in the subject
-	PRINT aPosts;
-}
+include::appendix:example$social_net/operators_expressions_query_with_parameters.gsql[]
+
 ----
 --
 Results::
@@ -462,49 +354,7 @@ Results::
 --
 [source,json]
 ----
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"aPosts": [
-    {
-      "v_id": "2",
-      "attributes": {
-        "postTime": "2011-02-03 01:02:42",
-        "subject": "query languages"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "8",
-      "attributes": {
-        "postTime": "2011-02-03 17:05:52",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "0",
-      "attributes": {
-        "postTime": "2010-01-12 11:22:05",
-        "subject": "Graphs"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "1",
-      "attributes": {
-        "postTime": "2011-03-03 23:02:00",
-        "subject": "tigergraph"
-      },
-      "v_type": "post"
-    }
-  ]}]
-}
+include::appendix:example$social_net/operators_expressions_query_without_parameters_results.json[]
 ----
 --
 ====
@@ -540,14 +390,7 @@ Query::
 .Accessing vertex variable attributes
 [source,gsql]
 ----
-CREATE QUERY coffeeRelatedPosts() FOR GRAPH socialNet
-{
-    allVertices = {ANY};
-    results = SELECT v FROM allVertices:s -(:e)- post:v WHERE v.subject == "coffee";
-    PRINT results;
-    results = SELECT v FROM allVertices:s -(:e)- :v WHERE v.type == "post" AND v.subject == "coffee";
-    PRINT results;
-}
+include::appendix:example$social_net/operators_expressions_access_vertex_variable_attributes.gsql[]
 ----
 --
 
@@ -557,33 +400,7 @@ Results::
 .Results for Query `coffeeRelatedPosts`
 [source,json]
 ----
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"results": [{
-      "v_id": "4",
-      "attributes": {
-        "postTime": "2011-02-07 05:02:51",
-        "subject": "coffee"
-      },
-      "v_type": "post"
-    }]},
-    {"results": [{
-      "v_id": "4",
-      "attributes": {
-        "postTime": "2011-02-07 05:02:51",
-        "subject": "coffee"
-      },
-      "v_type": "post"
-    }]}
-  ]
-}
+include::appendix:example$social_net/operators_expressions_access_vertex_variable_attributes_results.json[]
 ----
 --
 ====
@@ -602,16 +419,18 @@ The tick operator `'` can be used to read the value of an accumulator as it was 
 v = SELECT s
     FROM start:s - (e_type:e) -> :t
     ACCUM t.@received_score += s.@score/(s.outdegree(e_type))
-    POST-ACCUM s.@score = (1.0 - damping) + damping * s.@received_score,
-               s.@received_score = 0,
-               @@max_diff += abs(s.@score - s.@score');
+    POST-ACCUM
+        s.@score = (1.0 - damping) + damping * s.@received_score,
+        s.@received_score = 0,
+        @@max_diff += abs(s.@score - s.@score');
 ----
 
 In the last line, we compute `@@max_diff` as the absolute value of the difference between the post-ACCUM score (`s.@score`) and the pre-ACCUM score (`s.@score'`).
 
 == Set/Bag Expression and Operators
 
-SELECT blocks take an input vertex set and perform various selection and filtering operations to produce an output set. Therefore, _set/bag expressions_ and their operators are a useful and powerful part of the GSQL query language. A set/bag expression can use either SetAccum or BagAccum.
+SELECT blocks take an input vertex set and perform various selection and filtering operations to produce an output set.
+Therefore, _set/bag expressions_ and their operators are a useful and powerful part of the GSQL query language. A set/bag expression can use either SetAccum or BagAccum.
 
 .EBNF
 [source,ebnf]
@@ -645,66 +464,16 @@ Query::
 .Set/Bag Operator Examples
 [source,gsql]
 ----
-# Demonstrate Set & Bag operators
-CREATE QUERY setOperatorsEx() FOR GRAPH minimalNet   {
-  SetAccum<INT> @@setA, @@setB, @@AunionB, @@AintsctB, @@AminusB;
-  BagAccum<INT> @@bagD, @@bagE, @@DunionE, @@DintsctE, @@DminusE;
-  BagAccum<INT> @@DminusA, @@DunionA, @@AunionBbag;
-
-  BOOL x;
-
-  @@setA = (1,2,3,4);      PRINT @@setA;
-  @@setB = (2,4,6,8);      PRINT @@setB;
-
-  @@AunionB = @@setA UNION @@setB ;      PRINT @@AunionB;   // (1, 2, 3, 4, 6, 8)
-  @@AintsctB = @@setA INTERSECT @@setB;  PRINT @@AintsctB;   // (2, 4)
-  @@AminusB = @@setA MINUS @@setB ;      PRINT @@AminusB;   // C = (1, 3)
-
-  @@bagD = (1,2,2,3);      PRINT @@bagD;
-  @@bagE = (2,3,5,7);      PRINT @@bagE;
-
-  @@DunionE = @@bagD UNION @@bagE;     PRINT @@DunionE;   // (1, 2, 2, 2, 3, 3, 5, 7)
-  @@DintsctE = @@bagD INTERSECT @@bagE; PRINT @@DintsctE; // (2, 3)
-  @@DminusE = @@bagD MINUS @@bagE;     PRINT @@DminusE;   // (1, 2)
-  @@DminusA = @@bagD MINUS @@setA;     PRINT @@DminusA;   // (2)
-  @@DunionA = @@bagD UNION @@setA;     PRINT @@DunionA;   // (1, 1, 2, 2, 2, 3, 3, 4)
-                                                          // because bag UNION set is a bag
-  @@AunionBbag = @@setA UNION @@setB;  PRINT @@AunionBbag;  // (1, 2, 3, 4, 6, 8)
-                                                          // because set UNION set is a set
-}
+include::appendix:example$minimal_net/operators_expressions_set_bag_operator_examples.gsql[]
 ----
 --
 
 Results::
 +
 --
-.setOperatorsEx Query Results
 [source,gsql]
 ----
-GSQL > RUN QUERY setOperatorsEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [ {"@@setA": [ 4, 3, 2, 1 ]},
-    {"@@setB": [ 8, 6, 4, 2 ]},
-    {"@@AunionB": [ 4, 3, 2, 1, 8, 6 ]},
-    {"@@AintsctB": [ 4, 2 ]},
-    {"@@AminusB": [ 3, 1 ]},
-    {"@@bagD": [ 1, 2, 2, 3 ]},
-    {"@@bagE": [ 2, 7, 3, 5 ]},
-    {"@@DunionE": [ 1, 2, 2, 2, 3, 3, 7, 5 ]},
-    {"@@DintsctE": [ 2, 3 ]},
-    {"@@DminusE": [ 1, 2 ]},
-    {"@@DminusA": [2]},
-    {"@@DunionA": [ 1, 1, 2, 2, 2, 3, 3, 4 ]},
-    {"@@AunionBbag": [ 6, 8, 1, 2, 3, 4 ]}
-  ]
-}
+include::appendix:example$minimal_net/operators_expressions_set_bag_operator_examples.gsql[]
 ----
 --
 ====
@@ -742,40 +511,18 @@ Query::
 .Set Membership example
 [source,gsql]
 ----
-CREATE QUERY friendsNotInblockedlist (VERTEX<person> seed, SET<VERTEX<person>> blockedList) FOR GRAPH socialNet `{
-  Start = {seed};
-  Result = SELECT v
-      FROM Start:s-(friend:e)-person:v
-      WHERE v NOT IN blockedList;
-  PRINT Result;
-}
+include::appendix:example$social_net/operators_expressions_set_membership.gsql[]
 ----
 --
 
 Result::
 +
 --
-.Results for Query `friendsNotInblockedlist`
+.Results for Query `friends_not_in_blocked_list`
 [source,gsql]
 ----
-GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Result": [{
-    "v_id": "person8",
-    "attributes": {
-      "gender": "Male",
-      "id": "person8"
-    },
-    "v_type": "person"
-  }]}]
-}
+GSQL > RUN QUERY friends_not_in_blocked_list("person1", ["person2"])
+include::appendix:example$social_net/operators_expressions_set_membership_results.json[]
 ----
 --
 ====
@@ -793,7 +540,7 @@ A subquery must be created before the query that calls the subquery.A subquery m
 .Main Components of a Subquery
 [source,gsql]
 ----
-CREATE QUERY <query_name>() FOR GRAPH <graph_name> // Parameters are optional
+CREATE QUERY <query_name>() FOR GRAPH <Graph_Name> // Parameters are optional
 RETURNS (INT) /* A subquery has a RETURNS header specifying
                               its return type */
 {
@@ -833,9 +580,9 @@ Subquery::
 --
 [,gsql]
 ----
-CREATE QUERY subQuery(vertex x) RETURNS (ListAccum<tuple<int, string, double>>){
-    typedef tuple<int a, string b, double c> MyTuple;
-    ListAccum<MyTuple> @@res;
+CREATE QUERY sub_query(VERTEX x) RETURNS (ListAccum<TUPLE<INT, STRING, DOUBLE>>){
+    TYPEDEF tuple<INT a, STRING b, DOUBLE c> My_Tuple;
+    ListAccum<My_Tuple> @@res;
     RETURN @@res;
 }
 ----
@@ -845,14 +592,13 @@ Query::
 --
 [,gsql]
 ----
-CREATE QUERY mainQuery() {
-  TYPEDEF tuple<INT a, STRING b, DOUBLE c> myTuple1;
-  ListAccum<myTuple1> @@Acc1;
-  V = SELECT src FROM xxxx:src
-    // put the elemetns which returned from the subQuery
-    // to the end of the @@Acc1
-    ACCUM @@Acc1 += subQuery(src);
-  PRINT @@Acc1;
+CREATE QUERY main_query() {
+    TYPEDEF tuple<INT a, STRING b, DOUBLE c> My_Tuple1;
+    ListAccum<My_Tuple1> @@acc1;
+    V = SELECT src FROM xxxx:src
+        // Put the elements returned from the subQuery at the end of the @@Acc1
+        ACCUM @@Acc1 += sub_query(src);
+    PRINT @@acc1;
 }
 ----
 --
@@ -875,21 +621,7 @@ Subquery::
 --
 [source,gsql]
 ----
-CREATE QUERY subFindFriendsInDistance(SET<VERTEX> seeds, INT distance)
-FOR GRAPH friendNet RETURNS (SET<VERTEX>)
-{
-	IF distance <= 0 THEN   // Base case
-	// When distance is 0, return the seed vertices themselves
-	  RETURN seeds;
-	ELSE
-    seed_vs = seeds; // Initialize starting vertices
-    // Select 1-hop neighbors from the starting points
-	  next_vs = SELECT v FROM seed_vs -(friendship:e)- :v;
-		// Find the (distance-1)-hop neighbors of the 1-hop neighbors
-		// and return the union of the starting vertices and neighbors
-	  RETURN seeds UNION subFindFriendsInDistance(next_vs, distance - 1);
-  END;
-}
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries.gsql[]
 ----
 --
 Query::
@@ -897,12 +629,7 @@ Query::
 --
 [source, gsql]
 ----
-CREATE QUERY findFriendsInDistance(Vertex<person> p, INT distance) FOR GRAPH friendNet {
-
-	seed = {p};
-  //PRINT All Persons;
-	PRINT subFindFriendsInDistance(seed, distance) AS friends;
-}
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_main.gsql[]
 ----
 --
 
@@ -911,40 +638,21 @@ Result::
 --
 Test cases: Starting from `person1`, search to a distance of `1` and a distance of `2`.
 
-.`GSQL> RUN QUERY findFriendsInDistance("person1", 1)`
-[source,bash]
+[source,gsql]
 ----
-[
-  {
-    "friends": [
-      "person4",
-      "person3",
-      "person2",
-      "person1"
-    ]
-  }
-]
-GSQL> RUN QUERY findFriendsInDistance("person1", 2)
-[
-  {
-    "friends": [
-      "person4",
-      "person9",
-      "person3",
-      "person2",
-      "person6",
-      "person8",
-      "person1"
-    ]
-  }
-]
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_run_1.gsql[]
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_results_1.json[]
+
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_run_2.gsql[]
+include::appendix:example$friend_net/operators_expressions_recursive_subqueries_results_2.json[]
 ----
 --
 ====
 
 == Examples of Expressions
 
-Below is a list of examples of expressions. Note that ( argList ) is a set/bag expression, while [ argList ] is a list expression.
+Below is a list of examples of expressions.
+Note that `( argList )` is a set/bag expression, while `[ argList ]` is a list expression.
 
 [tabs]
 ====
@@ -954,94 +662,7 @@ Query::
 .Expression Examples
 [source,gsql]
 ----
-#Show various types of expressions
-CREATE QUERY expressionEx() FOR GRAPH workNet {
-  TYPEDEF tuple<STRING countryName, STRING companyName> companyInfo;
-
-  ListAccum<STRING> @companyNames;
-  SumAccum<INT> @companyCount;
-  SumAccum<INT> @numberOfRelationships;
-  ListAccum<companyInfo> @info;
-  MapAccum< STRING,ListAccum<STRING> > @@companyEmployeeRelationships;
-  SumAccum<INT> @@totalRelationshipCount;
-
-  ListAccum<INT> @@valueList;
-  SetAccum<INT> @@valueSet;
-
-  SumAccum<INT> @@a;
-  SumAccum<INT> @@b;
-
-  #expr := constant
-  @@a = 10;
-
-  #expr := ["@@"] name
-  @@b = @@a;
-
-  #expr := expr mathOperator expr
-  @@b = @@a + 5;
-
-  #expr := "(" expr ")"
-  @@b = (@@a + 5);
-
-  #expr := "-" expr
-  @@b = -(@@a + 5);
-
-  PRINT @@a, @@b;
-
-  #expr := "[" argList "]"   // a list
-  @@valueList = [1,2,3,4,5];
-  @@valueList += [24,80];
-
-  #expr := "(" argList ")"  // setBagExpr
-  @@valueSet += (1,2,3,4,5);
-
-  #expr := ( COUNT | ISEMPTY | MAX | MIN | AVG | SUM ) "(" setBagExpr ")"
-  PRINT MAX(@@valueList);
-  PRINT AVG(@@valueList);
-
-  seed = {ANY};
-
-  company1 = SELECT t FROM seed:s -(worksFor)- :t WHERE (s.id == "company1");
-  company2 = SELECT t FROM seed:s -(worksFor)- :t WHERE (s.id == "company2");
-
-  #expr := setBagExpr
-  worksForBoth = company1 INTERSECT company2;
-  PRINT worksForBoth;
-
-  #expr := name "." "type"
-  employees = SELECT s FROM seed:s WHERE (s.type == "person");
-
-  employees = SELECT s FROM employees:s -(worksFor)- :t
-
-    ACCUM
-      #expr := name "." ["@"] name
-      s.@companyNames += t.id,
-
-      #expr := name "."name "(" [argList] ")" [ "."FILTER "(" condition ")" ]
-      s.@numberOfRelationships += s.outdegree(),
-
-      #expr := name ["<" type ["," type"]* ">"] "(" [argList] ")"
-      s.@info += companyInfo(t.country, t.id)
-
-   POST-ACCUM
-     #expr := name "."localAccumName ("."name "(" [argList] ")")+ ["."name]
-     s.@companyCount += s.@companyNames.size(),
-
-    #expr := name "."localAccumName ["\'"]
-    @@totalRelationshipCount += s.@companyCount,
-
-  FOREACH comp IN s.@companyNames DO
-     #expr := "(" argList "->" argList ")"
-     @@companyEmployeeRelationships += (s.id -> comp)
-  END;
-
-  PRINT employees;
-  PRINT @@totalRelationshipCount;
-  PRINT @@companyEmployeeRelationships;
-
-  #expr := globalAccumName ("."name "(" [argList] ")")+ ["."name]
-  PRINT @@companyEmployeeRelationships.size();
-}
+include::appendix:example$work_net/operators_expressions_expression_example.gsql[]
 ----
 --
 
@@ -1052,318 +673,7 @@ Results::
 .expressionEx.json Results
 [source,json]
 ----
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@a": 10,
-      "@@b": -15
-    },
-    {"max(@@valueList)": 80},
-    {"avg(@@valueList)": 17},
-    {"worksForBoth": [
-      {
-        "v_id": "person2",
-        "attributes": {
-          "interestList": ["engineering"],
-          "@companyCount": 0,
-          "@numberOfRelationships": 0,
-          "skillSet": [ 6, 5, 3, 2 ],
-          "skillList": [ 2, 3, 5, 6 ],
-          "locationId": "chn",
-          "interestSet": ["engineering"],
-          "@info": [],
-          "id": "person2",
-          "@companyNames": []
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {
-          "interestList": [ "management", "financial" ],
-          "@companyCount": 0,
-          "@numberOfRelationships": 0,
-          "skillSet": [ 3, 2, 1 ],
-          "skillList": [ 1, 2, 3 ],
-          "locationId": "us",
-          "interestSet": [ "financial", "management" ],
-          "@info": [],
-          "id": "person1",
-          "@companyNames": []
-        },
-        "v_type": "person"
-      }
-    ]},
-    {"employees": [
-      {
-        "v_id": "person4",
-        "attributes": {
-          "interestList": ["football"],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 10, 1, 4 ],
-          "skillList": [ 4, 1, 10 ],
-          "locationId": "us",
-          "interestSet": ["football"],
-          "@info": [{ "companyName": "company2", "countryName": "chn" }],
-          "id": "person4",
-          "@companyNames": ["company2"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person12",
-        "attributes": {
-          "interestList": [
-            "music",
-            "engineering",
-            "teaching",
-            "teaching",
-            "teaching"
-          ],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 2, 5, 1 ],
-          "skillList": [ 1, 5, 2, 2, 2 ],
-          "locationId": "jp",
-          "interestSet": [ "teaching", "engineering", "music" ],
-          "@info": [{ "companyName": "company4", "countryName": "us" }],
-          "id": "person12",
-          "@companyNames": ["company4"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person3",
-        "attributes": {
-          "interestList": ["teaching"],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 6, 1, 4 ],
-          "skillList": [ 4, 1, 6 ],
-          "locationId": "jp",
-          "interestSet": ["teaching"],
-          "@info": [{ "companyName": "company1", "countryName": "us" }],
-          "id": "person3",
-          "@companyNames": ["company1"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person9",
-        "attributes": {
-          "interestList": [ "financial", "teaching" ],
-          "@companyCount": 2,
-          "@numberOfRelationships": 4,
-          "skillSet": [ 2, 7, 4 ],
-          "skillList": [ 4, 7, 2 ],
-          "locationId": "us",
-          "interestSet": [ "teaching", "financial" ],
-          "@info": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            }
-          ],
-          "id": "person9",
-          "@companyNames": [ "company3", "company2" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person11",
-        "attributes": {
-          "interestList": [ "sport", "football" ],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [10],
-          "skillList": [10],
-          "locationId": "can",
-          "interestSet": [ "football", "sport" ],
-          "@info": [{ "companyName": "company5", "countryName": "can" }],
-          "id": "person11",
-          "@companyNames": ["company5"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person10",
-        "attributes": {
-          "interestList": [ "football", "sport" ],
-          "@companyCount": 2,
-          "@numberOfRelationships": 4,
-          "skillSet": [3],
-          "skillList": [3],
-          "locationId": "us",
-          "interestSet": [ "sport", "football" ],
-          "@info": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "id": "person10",
-          "@companyNames": [ "company3", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {
-          "interestList": [ "art", "sport" ],
-          "@companyCount": 2,
-          "@numberOfRelationships": 4,
-          "skillSet": [ 6, 8 ],
-          "skillList": [ 8, 6 ],
-          "locationId": "us",
-          "interestSet": [ "sport", "art" ],
-          "@info": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            }
-          ],
-          "id": "person7",
-          "@companyNames": [ "company3", "company2" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {
-          "interestList": [ "management", "financial" ],
-          "@companyCount": 2,
-          "@numberOfRelationships": 4,
-          "skillSet": [ 3, 2, 1 ],
-          "skillList": [ 1, 2, 3 ],
-          "locationId": "us",
-          "interestSet": [ "financial", "management" ],
-          "@info": [
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "id": "person1",
-          "@companyNames": [ "company2", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person5",
-        "attributes": {
-          "interestList": [ "sport", "financial", "engineering" ],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 5, 2, 8 ],
-          "skillList": [ 8, 2, 5 ],
-          "locationId": "can",
-          "interestSet": [ "engineering", "financial", "sport" ],
-          "@info": [{ "companyName": "company2", "countryName": "chn" }],
-          "id": "person5",
-          "@companyNames": ["company2"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person6",
-        "attributes": {
-          "interestList": [ "music", "art" ],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 10, 7 ],
-          "skillList": [ 7, 10 ],
-          "locationId": "jp",
-          "interestSet": [ "art", "music" ],
-          "@info": [{ "companyName": "company1", "countryName": "us" }],
-          "id": "person6",
-          "@companyNames": ["company1"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person2",
-        "attributes": {
-          "interestList": ["engineering"],
-          "@companyCount": 2,
-          "@numberOfRelationships": 4,
-          "skillSet": [ 6, 5, 3, 2 ],
-          "skillList": [ 2, 3, 5, 6 ],
-          "locationId": "chn",
-          "interestSet": ["engineering"],
-          "@info": [
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "id": "person2",
-          "@companyNames": [ "company2", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person8",
-        "attributes": {
-          "interestList": ["management"],
-          "@companyCount": 1,
-          "@numberOfRelationships": 1,
-          "skillSet": [ 2, 5, 1 ],
-          "skillList": [ 1, 5, 2 ],
-          "locationId": "chn",
-          "interestSet": ["management"],
-          "@info": [{ "companyName": "company1", "countryName": "us" }],
-          "id": "person8",
-          "@companyNames": ["company1"]
-        },
-        "v_type": "person"
-      }
-    ]},
-    {"@@totalRelationshipCount": 17},
-    {"@@companyEmployeeRelationships": {
-      "person4": ["company2"],
-      "person3": ["company1"],
-      "person2": [ "company2", "company1" ],
-      "person1": [ "company2", "company1" ],
-      "person9": [ "company3", "company2" ],
-      "person12": ["company4"],
-      "person8": ["company1"],
-      "person7": [ "company3", "company2" ],
-      "person6": ["company1"],
-      "person10": [ "company3", "company1" ],
-      "person5": ["company2"],
-      "person11": ["company5"]
-    }},
-    {"@@companyEmployeeRelationships.size()": 12}
-  ]
-}
+include::appendix:example$work_net/operators_expressions_expression_example_results.json[]
 ----
 --
 ====
@@ -1380,309 +690,17 @@ Query::
 .Expression Statement Examples
 [source,gsql]
 ----
-#Show various types of expression statements
-CREATE QUERY expressionStmntEx() FOR GRAPH workNet {
-  TYPEDEF tuple<STRING countryName, STRING companyName> companyInfo;
-
-  ListAccum<companyInfo> @employerInfo;
-  SumAccum<INT> @@a;
-  ListAccum<STRING> @employers;
-  SumAccum<INT> @employerCount;
-  SetAccum<STRING> @@countrySet;
-
-  int x;
-
-  #exprStmnt := name "=" expr
-  x = 10;
-
-  #gAccumAssignStmt := globalAccumName ("+=" | "=") expr
-  @@a = 10;
-
-  PRINT x, @@a;
-
-  start = {person.*};
-
-  employees = SELECT s FROM start:s -(worksFor)- :t
-  	          ACCUM #exprStmnt := name "."localAccumName ("+="| "=") expr
-                    s.@employers += t.id,
-       		        #exprStmnt := name ["<" type ["," type"]* ">"] "(" [argList] ")"
-		            s.@employerInfo += companyInfo(t.country, t.id),
-                    #gAccumAccumStmt := globalAccumName "+=" expr
-		            @@countrySet += t.country
-	                #exprStmnt := name "."localAccumName ["."name "(" [argList] ")"]
-	          POST-ACCUM s.@employerCount += s.@employers.size();
-
-  #exprStmnt := globalAccumName ["."name "(" [argList] ")"]+
-  PRINT @@countrySet.size();
-  PRINT employees;
-}
+include::appendix:example$work_net/operators_expressions_expression_statement.gsql[]
 ----
 --
 
 Results::
 +
 --
-.GSQL > RUN QUERY expressionStmntEx()
-[source,json]
+[source,gsql]
 ----
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@a": 10,
-      "x": 10
-    },
-    {"@@countrySet.size()": 4},
-    {"employees": [
-      {
-        "v_id": "person4",
-        "attributes": {
-          "interestList": ["football"],
-          "skillSet": [ 10, 1, 4 ],
-          "skillList": [ 4, 1, 10 ],
-          "locationId": "us",
-          "@employerInfo": [{
-            "companyName": "company2",
-            "countryName": "chn"
-          }],
-          "interestSet": ["football"],
-          "@employerCount": 1,
-          "id": "person4",
-          "@employers": ["company2"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person11",
-        "attributes": {
-          "interestList": [ "sport", "football" ],
-          "skillSet": [10],
-          "skillList": [10],
-          "locationId": "can",
-          "@employerInfo": [{
-            "companyName": "company5",
-            "countryName": "can"
-          }],
-          "interestSet": [ "football", "sport" ],
-          "@employerCount": 1,
-          "id": "person11",
-          "@employers": ["company5"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person10",
-        "attributes": {
-          "interestList": [ "football", "sport" ],
-          "skillSet": [3],
-          "skillList": [3],
-          "locationId": "us",
-          "@employerInfo": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "interestSet": [ "sport", "football" ],
-          "@employerCount": 2,
-          "id": "person10",
-          "@employers": [ "company3", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {
-          "interestList": [ "art", "sport" ],
-          "skillSet": [ 6, 8 ],
-          "skillList": [ 8, 6 ],
-          "locationId": "us",
-          "@employerInfo": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            }
-          ],
-          "interestSet": [ "sport", "art" ],
-          "@employerCount": 2,
-          "id": "person7",
-          "@employers": [ "company3", "company2" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {
-          "interestList": [ "management", "financial" ],
-          "skillSet": [ 3, 2, 1 ],
-          "skillList": [ 1, 2, 3 ],
-          "locationId": "us",
-          "@employerInfo": [
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "interestSet": [ "financial", "management" ],
-          "@employerCount": 2,
-          "id": "person1",
-          "@employers": [ "company2", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person6",
-        "attributes": {
-          "interestList": [ "music", "art" ],
-          "skillSet": [ 10, 7 ],
-          "skillList": [ 7, 10 ],
-          "locationId": "jp",
-          "@employerInfo": [{ "companyName": "company1", "countryName": "us" }],
-          "interestSet": [ "art", "music" ],
-          "@employerCount": 1,
-          "id": "person6",
-          "@employers": ["company1"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person2",
-        "attributes": {
-          "interestList": ["engineering"],
-          "skillSet": [ 6, 5, 3, 2 ],
-          "skillList": [ 2, 3, 5, 6 ],
-          "locationId": "chn",
-          "@employerInfo": [
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            },
-            {
-              "companyName": "company1",
-              "countryName": "us"
-            }
-          ],
-          "interestSet": ["engineering"],
-          "@employerCount": 2,
-          "id": "person2",
-          "@employers": [ "company2", "company1" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person5",
-        "attributes": {
-          "interestList": [ "sport", "financial", "engineering" ],
-          "skillSet": [ 5, 2, 8 ],
-          "skillList": [ 8, 2, 5 ],
-          "locationId": "can",
-          "@employerInfo": [{
-            "companyName": "company2",
-            "countryName": "chn"
-          }],
-          "interestSet": [ "engineering", "financial", "sport" ],
-          "@employerCount": 1,
-          "id": "person5",
-          "@employers": ["company2"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person12",
-        "attributes": {
-          "interestList": [
-            "music",
-            "engineering",
-            "teaching",
-            "teaching",
-            "teaching"
-          ],
-          "skillSet": [ 2, 5, 1 ],
-          "skillList": [ 1, 5, 2, 2, 2 ],
-          "locationId": "jp",
-          "@employerInfo": [{ "companyName": "company4", "countryName": "us" }],
-          "interestSet": [ "teaching", "engineering", "music" ],
-          "@employerCount": 1,
-          "id": "person12",
-          "@employers": ["company4"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person3",
-        "attributes": {
-          "interestList": ["teaching"],
-          "skillSet": [ 6, 1, 4 ],
-          "skillList": [ 4, 1, 6 ],
-          "locationId": "jp",
-          "@employerInfo": [{ "companyName": "company1", "countryName": "us" }],
-          "interestSet": ["teaching"],
-          "@employerCount": 1,
-          "id": "person3",
-          "@employers": ["company1"]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person9",
-        "attributes": {
-          "interestList": [ "financial", "teaching" ],
-          "skillSet": [ 2, 7, 4 ],
-          "skillList": [ 4, 7, 2 ],
-          "locationId": "us",
-          "@employerInfo": [
-            {
-              "companyName": "company3",
-              "countryName": "jp"
-            },
-            {
-              "companyName": "company2",
-              "countryName": "chn"
-            }
-          ],
-          "interestSet": [ "teaching", "financial" ],
-          "@employerCount": 2,
-          "id": "person9",
-          "@employers": [ "company3", "company2" ]
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person8",
-        "attributes": {
-          "interestList": ["management"],
-          "skillSet": [ 2, 5, 1 ],
-          "skillList": [ 1, 5, 2 ],
-          "locationId": "chn",
-          "@employerInfo": [{ "companyName": "company1", "countryName": "us" }],
-          "interestSet": ["management"],
-          "@employerCount": 1,
-          "id": "person8",
-          "@employers": ["company1"]
-        },
-        "v_type": "person"
-      }
-    ]}
-  ]
-}
+GSQL > RUN QUERY expression_stmnt_ex()
+include::appendix:example$work_net/operators_expressions_expression_statement_results.json[]
 ----
 --
 ====

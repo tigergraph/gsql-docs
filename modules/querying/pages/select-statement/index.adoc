@@ -113,12 +113,13 @@ Vertex type::
 [.wrap,gsql]
 ----
 Result = SELECT src
-    FROM Person:src -(<LIKES_REVERSE)- (Comment|Post):tgt <1>
-    WHERE src.firstName == "Viktor" AND src.lastName == "Akhiezer"
-    ACCUM CASE WHEN tgt.type == "Comment" THEN
-        src.@commentCnt += 1
+    FROM Person:src -(<Likes_REVERSE)- (Comment|Post):tgt <1>
+    WHERE src.first_name == "Viktor" AND src.last_name == "Akhiezer"
+    ACCUM CASE
+        WHEN tgt.type == "Comment" THEN
+            src.@comment_cnt += 1
         WHEN tgt.type == "Post" THEN
-            src.@postCnt += 1
+            src.@post_cnt += 1
         END;
 ----
 <1> `Person` is a vertex type.
@@ -134,8 +135,8 @@ If you choose to omit the type, you must give the step vertex set an alias.
 [.wrap,gsql]
 ----
 Result = SELECT tgt
-    FROM :s -(<LIKES)- Person:tgt
-    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+    FROM :s -(<Likes)- Person:tgt
+    WHERE tgt.first_name == "Viktor" AND tgt.last_name == "Akhiezer"
 ----
 --
 Vertex set::
@@ -144,14 +145,7 @@ Vertex set::
 A source vertex set can also be represented by a vertex set variable.
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
-{
-    SumAccum<INT> @@numFriends = 0;
-    seedSet = { seed };
-    friends = SELECT v FROM seedSet:s -((friend | coworker):e)- :v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends;
-}
+include::appendix:example$friend_net/select_statement_index_vertex_set.gsql[]
 ----
 --
 ====
@@ -191,10 +185,11 @@ Vertex type::
 [.wrap,gsql]
 ----
 Result = SELECT tgt
-    FROM Person:tgt -(<LIKES_REVERSE)- (Comment|Post):src <1>
+    FROM Person:tgt -(<Likes_REVERSE)- (Comment|Post):src <1>
     WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
-    ACCUM CASE WHEN src.type == "Comment" THEN
-        tgt.@commentCnt += 1
+    ACCUM CASE
+        WHEN src.type == "Comment" THEN
+            tgt.@commentCnt += 1
         WHEN src.type == "Post" THEN
             tgt.@postCnt += 1
         END;
@@ -212,8 +207,8 @@ If you choose to omit the type, you must give the step vertex set an alias.
 [.wrap,gsql]
 ----
 Result = SELECT s
-    FROM Person:s -(LIKES>)- :tgt
-    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+    FROM Person:s -(Likes>)- :tgt
+    WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
 ----
 --
 Vertex set::
@@ -222,14 +217,7 @@ Vertex set::
 A step vertex set can also be represented by a vertex set variable.
 [.wrap,gsql]
 ----
-CREATE QUERY countFriendsOf2(vertex<person> seed) FOR GRAPH friendNet
-{
-    SumAccum<INT> @@numFriends = 0;
-    seedSet = { seed };
-    friends = SELECT v FROM :s -((friend | coworker):e)- seedSet:v
-      ACCUM @@numFriends +=1;
-    PRINT @@numFriends;
-}
+include::appendix:example$friend_net/select_statement_index_step_vertex_set.gsql[]
 ----
 --
 Global accumulator::
@@ -240,15 +228,7 @@ The accumulator must be of type `SetAccum`, `BagAccum` or `ListAccum`.
 
 [.wrap,gsql]
 ----
-CREATE QUERY count_friends_of_2(STRING target_type) FOR GRAPH Friend_Net
-{
-    SumAccum<INT> @@num_friends = 0;
-    SetAccum<STRING> @@target_set;
-    @@target_set += target_type;
-    friends = SELECT s FROM :s -((friend | coworker):e)- @@target_set:v
-      ACCUM @@num_friends +=1;
-    PRINT @@num_friends;
-}
+include::appendix:example$friend_net/select_statement_index_step_vertex_global_accumulator.gsql[]
 ----
 --
 ====
@@ -416,8 +396,8 @@ The second `SELECT` statement selects a set of edges.It can use the vertex alias
 .Vertex variables
 [source,gsql]
 ----
-results = SELECT v FROM allVertices:v;
-results = SELECT t FROM allVertices:s -()- :t;
+results = SELECT v FROM all_vertices:v;
+results = SELECT t FROM all_vertices:s -()- :t;
 ----
 
 The following example shows an edge-based `SELECT` statement, declaring aliases for all three parts of the edge.
@@ -427,7 +407,7 @@ In the `ACCUM` clause, the `e` and `t` aliases are assigned to local vertex and 
 [source,gsql]
 ----
 results = SELECT v
-    FROM allVertices:s -(:e)- :t
+    FROM all_vertices:s -(:e)- :t
     ACCUM VERTEX v = t, EDGE eg = e;
 ----
 
@@ -447,7 +427,6 @@ The `SAMPLE` clause is an optional clause that selects a uniform random sample f
 If you want to sample from a set of vertices directly, not from edges or from neighboring (target) vertices, then the following technique is simpler and faster:
 
 .Select k random vertices from a vertex set S
-
 [source,gsql]
 ----
 random = SELECT s
@@ -485,8 +464,8 @@ Currently, the `WHEN` condition that can be used with a `SAMPLE` clause is limit
 
 Given that the sampling is random, some details of each of the example queries may change each time they are run.
 
-The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the computerNet graph (see Appendix D).
-In computerNet, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.
+The following query displays two modes of sampling: an absolute number of edges from a source vertex and a percentage of edges from a source vertex. We use the Computer_Net graph (see Appendix D).
+In Computer_Net, there are 31 vertices and 43 edges, but only 7 vertices are source vertices. Moreover, c1, c12, and c23 are hub nodes, with at least 10 outgoing edges each.
 For the absolute count case, we set the size to 1 edge per source vertex, which is equivalent to a random walk. We expect exactly 7 edges to be selected.
 For the percentage sampling case, we sample 33% of the edges for vertices which have 3 or more outgoing edges. We expect about 15 edges, but the number may vary.
 
@@ -495,31 +474,10 @@ For the percentage sampling case, we sample 33% of the edges for vertices which 
 Query::
 +
 --
-.sampleEx3: SAMPLE based on edges per source vertex
+.SAMPLE based on edges per source vertex
 [source,gsql]
 ----
-CREATE QUERY sampleEx3() FOR GRAPH computerNet
-{
-    MapAccum<STRING,ListAccum<STRING>> @@absEdges; // record each selected edge as (src->tgt)
-    SumAccum<INT> @@totalAbs;
-    MapAccum<STRING,ListAccum<STRING>> @@pctEdges; // record each selected edge as (src->tgt)
-    SumAccum<INT> @@totalPct;
-
-    start = {computer.*};
-
-    # Sample one outgoing edge per source vertex = Random Walk
-    absSample = SELECT v FROM start:s -(:e)- :v
-             SAMPLE 1 EDGE WHEN s.outdegree() >= 1    # sample 1 target vertex from each source vertex
-             ACCUM @@absEdges += (s.id -> v.id),
-                   @@totalAbs += 1;
-    PRINT @@totalAbs, @@absEdges;
-
-    pctSample = SELECT v FROM start:s -(:e)- :v
-             SAMPLE 33% EDGE WHEN s.outdegree() >= 3  # select ~1/3 of edges when outdegree >= 3
-             ACCUM @@pctEdges += (s.id -> v.id),
-                   @@totalPct += 1;
-    PRINT @@totalPct, @@pctEdges;
-}
+include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex.gsql[]
 ----
 --
 
@@ -529,66 +487,18 @@ Results::
 .sampleEx3.json
 [source,gsql]
 ----
-GSQL > RUN QUERY sampleEx3()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@totalAbs": 7,
-      "@@absEdges": {
-        "c4": ["c23"],
-        "c11": ["c12"],
-        "c10": ["c11"],
-        "c12": ["c14"],
-        "c23": ["c26"],
-        "c14": ["c24"],
-        "c1": ["c10"]
-      }
-    },
-    {
-      "@@totalPct": 13,
-      "@@pctEdges": {
-        "c4": ["c23"],
-        "c11": ["c12"],
-        "c10": ["c11"],
-        "c12": [
-          "c14",
-          "c15",
-          "c19"
-        ],
-        "c23": [
-          "c29",
-          "c25"
-        ],
-        "c14": [
-          "c24",
-          "c23"
-        ],
-        "c1": [
-          "c3",
-          "c8",
-          "c2"
-        ]
-      }
-    }
-  ]
-}
+include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex_run.gsql[]
+include::appendix:example$computer_net/select_statement_index_sample_edges_per_source_vertex_results.json[]
 ----
 --
 ====
 
 
 Below is an example of using `SELECT` to only traverse one edge for each source vertex.
-The vertex-attached accumulators `@timesTraversedNoSample` and `@timesTraversedWithSample` are used to keep track of the number of times an edge is traversed to reach the target vertex.
-Without using sampling, this occurs once for each edge; thus `@timesTraversedNoSample` has the same number as the in-degree of the vertex.
+The vertex-attached accumulators `@times_traversed_no_sample` and `@times_traversed_with_sample` are used to keep track of the number of times an edge is traversed to reach the target vertex.
+Without using sampling, this occurs once for each edge; thus `@times_traversed_no_sample` has the same number as the in-degree of the vertex.
 With sampling edges, the number of edges is restricted.
-This is reflected in the `@timesTraversedWithSample` accumulator.
+This is reflected in the `@times_traversed_with_sample` accumulator.
 Notice the difference in the result set.
 Because only one edge per source vertex is traversed when the `SAMPLE` clause is used, not all target vertices are reached.
 The vertex `company3` has 3 incident edges, but in one instance of the query execution, it is never reached.
@@ -602,30 +512,8 @@ Query::
 .Example of `SAMPLE` using an absolute number of edges
 [source,gsql]
 ----
-CREATE QUERY sampleEx1() FOR GRAPH workNet
-{
-	SumAccum<INT> @timesTraversedNoSample;
-	SumAccum<INT> @timesTraversedWithSample;
-	workers = {person.*};
+include::appendix:example$work_net/select_statement_index_absolute_number_edges.gsql[]
 
-	# the 'beforeSample' result set encapsulates the normal functionality of
-	# a SELECT statement, where 'timesTraversedNoSample' vertex accumulator is increased for
-	# each edge incident to the vertex.
-	beforeSample = SELECT v FROM workers:t -(:e)- :v
-		       ACCUM v.@timesTraversedNoSample += 1;
-
-	# The 'afterSample' result set is formed by those vertices which can be
-	# reached when for each source vertex, only one edge is used for traversal.
-	# This is demonstrated by the values of 'timesTraversedWithSample' vertex accumulator, which
-	# is increased for each edge incident to the vertex which is used in the
-	# sample.
-	afterSample = SELECT v FROM workers:t -(:e)- :v
-		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		# only use 1 edge from the source vertex
-		      ACCUM v.@timesTraversedWithSample += 1;
-
-	PRINT beforeSample;
-	PRINT afterSample;
-}
 ----
 --
 
@@ -635,122 +523,8 @@ Results::
 .sampleEx1.json
 [source,gsql]
 ----
-GSQL > RUN QUERY sampleEx1()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"beforeSample": [
-      {
-        "v_id": "company4",
-        "attributes": {
-          "country": "us",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company4"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company5",
-        "attributes": {
-          "country": "can",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company5"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company3",
-        "attributes": {
-          "country": "jp",
-          "@timesTraversedNoSample": 3,
-          "@timesTraversedWithSample": 3,
-          "id": "company3"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company2",
-        "attributes": {
-          "country": "chn",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 4,
-          "id": "company2"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company1",
-        "attributes": {
-          "country": "us",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 3,
-          "id": "company1"
-        },
-        "v_type": "company"
-      }
-    ]},
-    {"afterSample": [
-      {
-        "v_id": "company4",
-        "attributes": {
-          "country": "us",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company4"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company5",
-        "attributes": {
-          "country": "can",
-          "@timesTraversedNoSample": 1,
-          "@timesTraversedWithSample": 1,
-          "id": "company5"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company3",
-        "attributes": {
-          "country": "jp",
-          "@timesTraversedNoSample": 3,
-          "@timesTraversedWithSample": 3,
-          "id": "company3"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company2",
-        "attributes": {
-          "country": "chn",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 4,
-          "id": "company2"
-        },
-        "v_type": "company"
-      },
-      {
-        "v_id": "company1",
-        "attributes": {
-          "country": "us",
-          "@timesTraversedNoSample": 6,
-          "@timesTraversedWithSample": 3,
-          "id": "company1"
-        },
-        "v_type": "company"
-      }
-    ]}
-  ]
-}
+GSQL > RUN QUERY sample_ex_1()
+include::appendix:example$work_net/select_statement_index_absolute_number_edges_results.json[]
 ----
 --
 ====
@@ -759,7 +533,7 @@ GSQL > RUN QUERY sampleEx1()
 [WARNING]
 ====
 Since the `PRINT` statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators `@timesTraversedNoSample` and `@timesTraversedWithSample`.
-There is one difference: `company3` is not included in afterSample because none of the sample-selected edges reached company3.
+There is one difference: `company3` is not included in after_sample because none of the sample-selected edges reached company3.
 ====
 
 == `WHERE` Clause
@@ -787,8 +561,8 @@ In the following example, the selection conditions are completely specified in t
 .`WHERE` used as a filter
 [source,gsql]
 ----
-resultSet1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
-resultSet2 = SELECT v FROM S:v-(:e)-:t
+result_set1 = SELECT v FROM S:v-((E1|E2|E3):e)-(V1|V2):t;
+result_set2 = SELECT v FROM S:v-(:e)-:t
     WHERE t.type IN ("V1", "V2") AND t IN v.neighbors("E1|E2|E3")
 ----
 
@@ -804,72 +578,18 @@ Query::
 .Basic `SELECT WHERE`
 [source,gsql]
 ----
-CREATE QUERY printCatPosts() FOR GRAPH socialNet {
-	catPosts = SELECT v FROM post:v		# select only those post vertices
-        WHERE v.subject == "cats";  # which have a subset of 'cats'
-	PRINT catPosts;
-}
+include::appendix:example$social_net/select_statement_index_where.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query printCatPosts
+.Results for Query print_cat_posts
 [source,gsql]
 ----
-GSQL > RUN QUERY printCatPosts()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"catPosts": [
-    {
-      "v_id": "10",
-      "attributes": {
-        "postTime": "2011-02-04 03:02:31",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "9",
-      "attributes": {
-        "postTime": "2011-02-05 23:12:42",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "3",
-      "attributes": {
-        "postTime": "2011-02-05 01:02:44",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "11",
-      "attributes": {
-        "postTime": "2011-02-03 01:02:21",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "8",
-      "attributes": {
-        "postTime": "2011-02-03 17:05:52",
-        "subject": "cats"
-      },
-      "v_type": "post"
-    }
-  ]}]
-}
+GSQL > RUN QUERY print_cat_posts()
+include::appendix:example$social_net/select_statement_index_where_results.json[]
 ----
 --
 ====
@@ -882,57 +602,18 @@ Query::
 .SELECT WHERE using IN operator
 [source,gsql]
 ----
-CREATE QUERY findGraphFocusedPosts() FOR GRAPH socialNet
-{
-	results = SELECT v FROM post:v					# select only post vertices
-		WHERE v.subject IN ("Graph", "tigergraph");	# which have a subject of either 'Graph' or 'tigergraph'
-	PRINT results;
-}
+include::appendix:example$social_net/select_statement_index_where_using_in.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query findGraphFocusedPosts
+.Results for Query find_graph_focused_posts
 [source,gsql]
 ----
-GSQL > RUN QUERY findGraphFocusedPosts()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"results": [
-    {
-      "v_id": "5",
-      "attributes": {
-        "postTime": "2011-02-06 01:02:02",
-        "subject": "tigergraph"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "1",
-      "attributes": {
-        "postTime": "2011-03-03 23:02:00",
-        "subject": "tigergraph"
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "6",
-      "attributes": {
-        "postTime": "2011-02-05 02:02:05",
-        "subject": "tigergraph"
-      },
-      "v_type": "post"
-    }
-  ]}]
-}
+GSQL > RUN QUERY find_graph_focused_posts()
+include::appendix:example$social_net/select_statement_index_where_using_in_results.json[]
 ----
 --
 ====
@@ -954,100 +635,21 @@ The following example shows the equivalence of using `WHERE` as a type filter as
 Query::
 +
 --
-.SELECT WHERE using AND/OR
+.`SELECT` statement with  `WHERE` clause using `AND`/`OR`
 [source,gsql]
 ----
-# finds female person in the social network. all of the following statements
-# are equivalent (i.e., produce the same results)
-CREATE QUERY findFemaleMembers() FOR GRAPH socialNet
-{
-	allVertices = {ANY}; # includes all posts and person
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type   == "person" AND
-		  	    v.gender != "Male";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type   == "person" AND
-		  	    v.gender == "Female";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type       == "person" AND
-		  	    NOT v.gender == "Male";
-
-	females = SELECT v FROM allVertices:v
-		  WHERE v.type       != "post" AND
-		  	    NOT v.gender == "Male";
-
-  	# does not compile. cannot use NOT operator in combination with type attribute
-	#females = SELECT v FROM allVertices:v
-	#	  WHERE NOT v.type   != "person" AND
-	#	  	    NOT v.gender == "Male";
-
-  	# does not compile. cannot use NOT operator in combination with type attribute
-	#females = SELECT v FROM allVertices:v
-	#	  WHERE NOT v.type   == "post" AND
-	#	  	    NOT v.gender == "Male";
-
-	personVertices = {person.*};
-	females = SELECT v FROM personVertices:v
-		   WHERE NOT v.gender == "Male";
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male";
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male" AND true;
-
-	females = SELECT v FROM personVertices:v
-		   WHERE v.gender != "Male" OR false;
-
-	PRINT females;
-}
+include::appendix:example$social_net/select_statement_index_where_and_or.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query findFemaleMembers
+.Results for Query find_female_members
 [source,gsql]
 ----
-GSQL > RUN QUERY findFemaleMembers()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"females": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "gender": "Female",
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "gender": "Female",
-        "id": "person2"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY find_female_members()
+include::appendix:example$social_net/select_statement_index_where_and_or_results.json[]
 ----
 --
 ====
@@ -1063,162 +665,18 @@ Query::
 .`WHERE` using edge attributes
 [source.wrap,gsql]
 ----
-# find all workers who are full time at some company
-CREATE QUERY fullTimeWorkers() FOR GRAPH workNet
-{
-	start = {person.*};
-	fullTimeWorkers = SELECT v FROM start:v -(worksFor:e)- company:t
-			WHERE e.fullTime;	# fullTime is a boolean attribute on the edge
-
-	PRINT fullTimeWorkers;
-}
+include::appendix:example$work_net/select_statement_index_where_using_edge_attributes.gsql[]
 ----
 --
 
 Results::
 +
 --
-.`fullTimeWorkers` Results
+.`full_time_workers` Results
 [source.wrap,gsql]
 ----
-GSQL > RUN QUERY fullTimeWorkers()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"fullTimeWorkers": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "interestList": ["football"],
-        "skillSet": [ 10, 1, 4 ],
-        "skillList": [ 4, 1, 10 ],
-        "locationId": "us",
-        "interestSet": ["football"],
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person11",
-      "attributes": {
-        "interestList": [ "sport", "football" ],
-        "skillSet": [10],
-        "skillList": [10],
-        "locationId": "can",
-        "interestSet": [ "football", "sport" ],
-        "id": "person11"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "id": "person10"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "interestList": [ "music", "art" ],
-        "skillSet": [ 10, 7 ],
-        "skillList": [ 7, 10 ],
-        "locationId": "jp",
-        "interestSet": [ "art", "music" ],
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "locationId": "chn",
-        "interestSet": ["engineering"],
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "interestList": ["management"],
-        "skillSet": [ 2, 5, 1 ],
-        "skillList": [ 1, 5, 2 ],
-        "locationId": "chn",
-        "interestSet": ["management"],
-        "id": "person8"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person12",
-      "attributes": {
-        "interestList": [
-          "music",
-          "engineering",
-          "teaching",
-          "teaching",
-          "teaching"
-        ],
-        "skillSet": [ 2, 5, 1 ],
-        "skillList": [ 1, 5, 2, 2, 2 ],
-        "locationId": "jp",
-        "interestSet": [ "teaching", "engineering", "music" ],
-        "id": "person12"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "interestList": ["teaching"],
-        "skillSet": [ 6, 1, 4 ],
-        "skillList": [ 4, 1, 6 ],
-        "locationId": "jp",
-        "interestSet": ["teaching"],
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person9",
-      "attributes": {
-        "interestList": [ "financial", "teaching" ],
-        "skillSet": [ 2, 7, 4 ],
-        "skillList": [ 4, 7, 2 ],
-        "locationId": "us",
-        "interestSet": [ "teaching", "financial" ],
-        "id": "person9"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY full_time_workers()
+include::appendix:example$work_net/select_statement_index_where_using_edge_attributes_results.json[]
 ----
 --
 ====
@@ -1231,20 +689,12 @@ If multiple edge types are specified in edge-induced selection, the `WHERE` clau
 .Multiple Edge Type `WHERE` clause
 [source.wrap,gsql]
 ----
-CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet {
-  allUser = {m1};
-  FilteredUser = SELECT s
-      FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
-      # WHERE e.actionTime > epoch_to_datetime(1) AND t.gender == "Male";
-      WHERE ( e.type == "liked" AND e.actionTime > epoch_to_datetime(1) ) OR
-            ( e.type == "friend" AND t.gender == "Male" )
-            ;
-  PRINT FilteredUser;
-}
+include::appendix:example$social_net/select_statement_index_where_multiple_edge_type.gsql[]
 ----
 
-The above query is compilable. However, if we use line 5 as the `WHERE` clause instead, the query is not compilable.
-The edge-type conflict checking detects an error, because it uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
+The above query is compilable.
+However, if we use line 5 as the `WHERE` clause instead, the query is not compilable.
+The edge-type conflict checking detects an error, because it uses attributes from both `Liked` edges and `Friend` edges without separating them out by OR.
 ====
 
 
@@ -1333,16 +783,16 @@ For example, consider the following clauses:
 
 [source,gsql]
 ----
-FROM Person:A -(KNOWS.KNOWS)- Person:C
+FROM Person:A -(Knows.Knows)- Person:C
 WHERE C.email = "Andy@www.com"
-ACCUM C.@patternCount += 1
+ACCUM C.@pattern_count += 1
 ----
 
 This finds the friends of the friends of `Andy@www.com`.
 Suppose Andy knows 3 persons (Larry, Moe, and Curly) who know Wendy.
-The accumulator `C.@patternCount` will be incremented 3 times for C = Wendy.
-This is similar to a SQL `+SELECT C, COUNT(*) ... GROUP BY C+` query.
-There is no alias for the vertex in the middle of `KNOWS.KNOWS` so the identities of Larry, Moe, and Curly cannot be reported.
+The accumulator `C.@pattern_count` will be incremented 3 times for C = Wendy.
+This is similar to a SQL `SELECT C, COUNT(*) ... GROUP BY C` query.
+There is no alias for the vertex in the middle of `Knows.Knows` so the identities of Larry, Moe, and Curly cannot be reported.
 ====
 
 === Edge/Vertex Type Inference and Conflict
@@ -1354,23 +804,13 @@ For example:
 .Multiple Edge Type `ACCUM` statement check
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx(vertex<person> m1) FOR GRAPH socialNet {
-  ListAccum<STRING> @@testList1, @@testList2, @@testList3;
-  allUser = {m1};
-  allUser = SELECT s
-    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
-    ACCUM @@testList1 += to_string(datetime_to_epoch(e.actionTime)),
-      @@testList2 += t.gender,
-      @@testList3 += to_string(datetime_to_epoch(e.actionTime)) + t.gender <1>
-               ;
-  PRINT @@testList1, @@testList2, @@testList3;
-}
+include::appendix:example$social_net/select_statement_index_multiple_edge_type_accum_error.gsql[]
 ----
 <1> This statement causes a compilation error.
 
-In the above example, line 6 is only executed on `liked` edges, because `actionTime` is the attribute of `liked` edge only.
-Similarly, line 7 is only executed on `friend` edges, because `gender` is the attribute of `person` only, and only `friend` edge uses `person` as target vertex.
-However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., `liked` edges doesn't have `t.gender`, `friend` edges doesn't have `e.actionTime`.
+In the above example, line 6 is only executed on `Liked` edges, because `action_time` is the attribute of `liked` edge only.
+Similarly, line 7 is only executed on `Friend` edges, because `gender` is the attribute of `person` only, and only `Friend` edge uses `person` as target vertex.
+However, line 8 causes a compilation error, because it uses multiple edges where some edges cannot be supported in a part of the statement, i.e., `liked` edges doesn't have `t.gender`, `Friend` edges doesn't have `e.action_time`.
 
 [WARNING]
 ====
@@ -1381,25 +821,11 @@ For example,
 .Multiple Edge Type `ACCUM` statement check 2
 [source,gsql]
 ----
-CREATE QUERY multipleEdgeTypeCheckEx2(vertex<person> m1) FOR GRAPH socialNet {
-  ListAccum<STRING> @@testList1;
-  allUser = {m1};
-  allUser = SELECT s
-    FROM allUser:s - ((posted|liked|friend):e) - (post|person):t
-    ACCUM CASE
-        WHEN e.type == "liked" THEN    # for liked edges
-            @@testList1 += to_string(datetime_to_epoch(e.actionTime))
-        WHEN e.type == "friend" THEN   # for friend edges
-            @@testList1 += t.gender
-        ELSE      # For the remained edge type, which is posted edges
-            @@testList1 += to_string(datetime_to_epoch(t.postTime))
-                  END;
-  PRINT @@testList1;
-}
+include::appendix:example$social_net/select_statement_index_multiple_edge_type_accum_compilable.gsql[]
 ----
 
 The above query is compilable.
-However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `liked` edges doesn't support `t.gender` and `friend` edges doesn't support e.actionTime.
+However, if we switch line 8 and line 10, the edge-type conflict checking generates errors because `Liked` edges doesn't support `t.gender` and `Friend` edges doesn't support e.action_time.
 ====
 
 [discrete]
@@ -1415,75 +841,18 @@ Query::
 .Vertex ACCUM Example
 [source,gsql]
 ----
-# For each person, make a list of all their post subjects
-CREATE QUERY userPosts() FOR GRAPH socialNet {
-  ListAccum<STRING> @personPosts;
-  start = {person.*};
-
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g.subject;
-
-  PRINT userPostings;
-}
+include::appendix:example$social_net/select_statement_index_vertex_accum_example.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query userPosts
+.Results for Query user_posts
 [source,gsql]
 ----
-GSQL > RUN QUERY userPosts()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"userPostings": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "@personPosts": ["cats"],
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["query languages"],
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": [ "cats", "tigergraph" ],
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["Graphs"],
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-/*** other vertices omitted ***/
-  ]}]
-}
+GSQL > RUN QUERY user_posts()
+include::appendix:example$social_net/select_statement_index_vertex_accum_example_results.json[]
 ----
 --
 ====
@@ -1498,97 +867,18 @@ Query::
 .`ACCUM<VERTEX>` and `ACCUM<EDGE>` Example
 [source,gsql]
 ----
-# Show each user's post and liked post time
-CREATE QUERY userPosts2() FOR GRAPH socialNet {
-  ListAccum<VERTEX> @personPosts;
-  ListAccum<EDGE> @personLikedInfo;
-  start = {person.*};
-
-  # Find all user post topics and append them to the vertex list accum
-  userPostings = SELECT s FROM start:s -(posted)- :g
-                 ACCUM s.@personPosts += g;
-
-  userPostings = SELECT s from start:s -(liked:e)- :g
-                 ACCUM s.@personLikedInfo += e;
-
-  PRINT start;
-}
+include::appendix:example$social_net/select_statement_index_accum_vertex_accum_edge.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results from Query userPosts2
+.Results from Query user_posts2
 [source,gsql]
 ----
-GSQL > RUN QUERY userPosts2()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"start": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "@personPosts": ["3"],
-        "id": "person4",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person4",
-          "to_id": "4",
-          "attributes": {"actionTime": "2010-01-13 03:16:05"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": [ "9", "6" ],
-        "id": "person7",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person7",
-          "to_id": "10",
-          "attributes": {"actionTime": "2010-01-12 11:22:05"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@personPosts": ["0"],
-        "id": "person1",
-        "@personLikedInfo": [{
-          "from_type": "person",
-          "to_type": "post",
-          "directed": true,
-          "from_id": "person1",
-          "to_id": "0",
-          "attributes": {"actionTime": "2010-01-11 11:32:00"},
-          "e_type": "liked"
-        }]
-      },
-      "v_type": "person"
-    },
-/*** other vertices omitted ***/
-  ]}]
-}
+GSQL > RUN QUERY user_posts2()
+include::appendix:example$social_net/select_statement_index_accum_vertex_accum_edge_results.json[]
 ----
 --
 ====
@@ -1603,43 +893,18 @@ Query::
 .Global ACCUM Example
 [source,gsql]
 ----
-# Show number of total posts by topic
-CREATE QUERY userPostsByTopic() FOR GRAPH socialNet {
-  MapAccum<STRING, INT> @@postTopicCounts;
-  start = {person.*};
-
-  # Append subject and update the appearance count in the global map accum
-  posts = SELECT g FROM start -(posted)- :g
-		  ACCUM @@postTopicCounts += (g.subject -> 1);
-
-  PRINT @@postTopicCounts;
-}
+include::appendix:example$social_net/select_statement_index_global_accum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query userPostsByTopic
+.Results for Query user_posts_by_topic
 [source,gsql]
 ----
-GSQL > RUN QUERY userPostsByTopic()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@postTopicCounts": {
-    "cats": 5,
-    "coffee": 1,
-    "query languages": 1,
-    "Graphs": 2,
-    "tigergraph": 3
-  }}]
-}
+GSQL > RUN QUERY user_posts_by_topic()
+include::appendix:example$social_net/select_statement_index_global_accum_results.json[]
 ----
 --
 ====
@@ -1702,22 +967,7 @@ For example, below we have three `POST-ACCUM` clauses.
 
 [source,gsql]
 ----
-INTERPRET QUERY () {
-
-  SumAccum<int> @cnt1;
-  SumAccum<int> @cnt2;
-
-  R   =  SELECT s
-    FROM Person:s-(LIKES>) -:msg - (HAS_CREATOR>)-Person:t
-    WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
-      AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
-    ACCUM s.@cnt1 +=1 //execute this per match of the FROM pattern.
-    POST-ACCUM s.@cnt2 += s.@cnt1 <1>
-    POST-ACCUM t.@cnt2 +=1; <2>
-    POST-ACCUM (t) @@globalTCount += 1; <3>
-
-  PRINT R [R.firstName, R.lastName, R.@cnt1, R.@cnt2];
-}
+include::appendix:example$ldbc_snb/select_statement_index_three_post_accum_clauses.gsql[]
 ----
 <1> The first one iterates through `s`, and for each `s`, we do `s.@cnt2 += s.@cnt1`.
 <2> The second `POST-ACCUM` iterates through `t`.
@@ -1761,31 +1011,7 @@ Query::
 .Vertex `POST-ACCUM` Example
 [source,gsql]
 ----
-#Show all person who both work and live in the same country
-CREATE QUERY residentEmployees() FOR GRAPH workNet {
-
-  ListAccum<STRING> @company;
-  OrAccum @worksAndLives;
-
-  start = {person.*};
-
-  employees = SELECT s FROM start:s -(worksFor)- :c
-    // If a person works for a company in the same country where they live, add the company to the list
-    ACCUM CASE
-        WHEN (s.locationId == c.country) THEN
-            s.@company += c.id
-        END
-
-    #Check each vertex and see if a person works where they live
-    POST-ACCUM CASE
-        WHEN (s.@company.size() > 0) THEN
-            s.@worksAndLives += True
-        ELSE
-            s.@worksAndLives += False
-    END;
-
-  PRINT employees WHERE (employees.@worksAndLives == True);
-}
+include::appendix:example$work_net/select_statement_index_vertex_post_accum.gsql[]
 ----
 --
 
@@ -1795,77 +1021,8 @@ Results::
 .residentEmployees Result
 [source,gsql]
 ----
-GSQL > RUN QUERY residentEmployees()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"employees": [
-    {
-      "v_id": "person11",
-      "attributes": {
-        "interestList": [
-          "sport",
-          "football"
-        ],
-        "skillSet": [10],
-        "skillList": [10],
-        "@worksAndLives": true,
-        "locationId": "can",
-        "interestSet": [ "football", "sport" ],
-        "id": "person11",
-        "@company": ["company5"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "id": "person10",
-        "@company": ["company1"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "@worksAndLives": true,
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
-        "id": "person1",
-        "@company": ["company1"]
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "@worksAndLives": true,
-        "locationId": "chn",
-        "interestSet": ["engineering"],
-        "id": "person2",
-        "@company": ["company2"]
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY resident_employees()
+include::appendix:example$work_net/select_statement_index_vertex_post_accum_results.json[]
 ----
 --
 ====
@@ -1880,43 +1037,18 @@ Query::
 .Global POST-ACCUM Example
 [source,gsql]
 ----
-#Count the number of person of	a given	gender
-CREATE QUERY personGender(STRING gender) FOR GRAPH socialNet {
-
-  SumAccum<INT> @@genderCount;
-
-  start = {ANY};
-
-  # Select all person vertices and check the gender attribute
-  friends = SELECT v FROM start:v
-    WHERE v.type == "person"
-    POST-ACCUM (v) CASE
-        WHEN (v.gender == gender) THEN
-            @@genderCount += 1
-    END;
-
-  PRINT @@genderCount;
-}
+include::appendix:example$social_net/select_statement_index_global_post_accum.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query personGender
+.Results for Query person_gender
 [source,gsql]
 ----
-GSQL > RUN QUERY personGender("Female")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@genderCount": 3}]
-}
+GSQL > RUN QUERY person_gender("Female")
+include::appendix:example$social_net/select_statement_index_global_post_accum_results.json[]
 ----
 --
 ====
@@ -1934,15 +1066,16 @@ This could take several forms:
  ** A scalar accumulator, e.g., `MaxAccum< VERTEX > @maxV`;
  ** A collection accumulator: e.g., `ListAccum< VERTEX > @listV`;
  ** An accumulator containing tuple(s), where the tuple type contains a `VERTEX` field.
-* If a vertex `V` is selected, then not only can `V`'s accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the ACCUM clause.
-* Before these indirectly referenced vertices can be used, they need to be *activated* . There are two ways to activate an indirect vertex:
+* If a vertex `V` is selected, then not only can `V`'s accumulators be updated, but the vertices stored in its vertex-holding accumulators can also be updated, in the `ACCUM` clause.
+* Before these indirectly referenced vertices can be used, they need to be *activated*.
+There are two ways to activate an indirect vertex:
  ** A vertex from a vertex-holding accumulator is first assigned to a local vertex variable.  The vertex can now be updated through the local vertex variable.
 
 [source,gsql]
 ----
 ACCUM
-  VERTEX<person> mx = tgt.@maxV,   # assign to local variable
-  mx.@curId += src.id      # access via local variable
+  vertex<Person> mx = tgt.@max_v,   # assign to local variable
+  mx.@cur_id += src.id      # access via local variable
 ----
 
 * A FOREACH loop can iterate on a vertex-holding collection accumulator. The vertices can now be updated through the loop variable.
@@ -1950,8 +1083,8 @@ ACCUM
 [source,gsql]
 ----
 ACCUM
-  FOREACH vtx IN src.@setIds DO   # iterate on collection accumulator
-      vtx.@curId += tgt.id        # access via loop variable
+  FOREACH vtx IN src.@set_ids DO   # iterate on collection accumulator
+      vtx.@cur_id += tgt.id        # access via loop variable
   END
 ----
 
@@ -1977,94 +1110,18 @@ Query::
 .Updating an Indirectly-Referenced Vertex
 [source,gsql]
 ----
-CREATE QUERY vUpdateIndirectAccum() FOR GRAPH socialNet {
-
-  SetAccum<VERTEX<person>> @posters;
-  SetAccum<VERTEX<person>> @fellows;
-
-   Persons = {person.*};
-   # To each post, attach a list of persons who liked the post
-   likedPosts = SELECT p
-       FROM Persons:src -(liked:e)- post:p
-       ACCUM
-       	p.@posters += src;
-
-    # To each person who liked a post, attach a list of everyone
-    # who also liked one of this person's liked posts.
-	likedPosts = SELECT src
-		FROM likedPosts:src
-		ACCUM
-		  FOREACH v IN src.@posters DO
-		    v.@fellows += src.@posters
-		  END
-        ORDER BY src.subject;
-		
-	PRINT Persons[Persons.@fellows];
-}
+include::appendix:example$social_net/select_statement_index_updating_indirect_reference_vertex.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results from Query vUpdateIndirectAccums
+.Results from Query v_update_indirect_accums
 [source,gsql]
 ----
-GSQL > RUN QUERY vUpdateIndirectAccess()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Persons": [
-    {
-      "v_id": "person4",
-      "attributes": {"Persons.@fellows": [
-        "person8",
-        "person4"
-      ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {"Persons.@fellows": ["person7"]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {"Persons.@fellows": ["person5"]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {"Persons.@fellows": ["person6"]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {"Persons.@fellows": [ "person2", "person1", "person3" ]},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {"Persons.@fellows": [ "person8", "person4" ]},
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY v_update_indirect_accums()
+include::appendix:example$social_net/select_statement_index_updating_indirect_reference_vertex_results.json[]
 ----
 --
 ====
@@ -2105,89 +1162,27 @@ The following query finds all persons meeting a given activity threshold, based 
 
 [source,gsql]
 ----
-CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
-{
-        SumAccum<int> @activityAmount;
-        start = {person.*};
-        result = SELECT v FROM start:v -(:e)- post:tgt
-                          ACCUM v.@activityAmount +=1
-	                      HAVING v.@activityAmount >= activityThreshold;
-        PRINT result;
-}
+include::appendix:example$social_net/select_statement_index_having.gsql[]
 ----
 --
 
 Results::
 +
 --
-If the activityThreshold parameter is set to 3, the query returns 5 vertices:
+If the `activity_threshold` parameter is set to 3, the query returns 5 vertices:
 
 .Example 1 Results
 [source,gsql]
 ----
-GSQL > RUN QUERY activeMembers(3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result": [
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 3,
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "gender": "Female",
-        "@activityAmount": 3,
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 3,
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "gender": "Female",
-        "@activityAmount": 3,
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 3,
-        "id": "person8"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY active_members(3)
+include::appendix:example$social_net/select_statement_index_having.gsql[]
 ----
 --
 ====
 
 
-If the `activityThreshold` parameter is set to 2, the query would return 8 vertices. With `activityThreshold = 4`, the query would return no vertices.
+If the threshold is set to 2, the query would return 8 vertices.
+If the threshold is set to 4, the query would return no vertices.
 
 The following example demonstrates the equivalence of a `SELECT` statement in which the condition for the `HAVING` clause is always true.
 
@@ -2201,115 +1196,18 @@ The following query finds all person meeting a given activity threshold, based o
 .Example 2. HAVING with literal condition
 [source,gsql]
 ----
-
-CREATE QUERY printMemberActivity() FOR GRAPH socialNet
-{
-    SumAccum<int> @activityAmount;
-    start = {person.*};
-
-    // --- equivalent statements -----
-    result = SELECT v FROM start:v -(posted>:e)- post:tgt
-      ACCUM v.@activityAmount +=1
-      HAVING true;
-
-    result = SELECT v FROM start:v -(posted>:e)- post:tgt
-      ACCUM v.@activityAmount +=1;
-
-    PRINT result;
-}
+include::appendix:example$social_net/select_statement_index_having_literal.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results from Query printMemberActivity
+.Results from Query print_member_activity
 [source,gsql]
 ----
-GSQL > RUN QUERY printMemberActivity()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "gender": "Female",
-        "@activityAmount": 4,
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 4,
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 6,
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 4,
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "gender": "Female",
-        "@activityAmount": 6,
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 6,
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "gender": "Female",
-        "@activityAmount": 6,
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "gender": "Male",
-        "@activityAmount": 6,
-        "id": "person8"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+GSQL > RUN QUERY print_member_activity()
+include::appendix:example$social_net/select_statement_index_having_literal_results.json[]
 ----
 --
 ====
@@ -2324,138 +1222,26 @@ Both constrain the result set based on a condition that vertices must meet.
 Query::
 +
 --
-.Example 3. HAVING vs. WHERE
-[source.wrap,gsql]
+The query below computes the total post activity for each male person.
+Because the gender of the vertex does not change, evaluating whether the person vertex is male before the `ACCUM` clause with `WHERE` or after the `ACCUM` clause with `HAVING` does not change the result.
+However, if the condition in the `HAVING` clause could change within the `ACCUM` clause, these statements would produce different results.
+
+.Example 3. `HAVING` vs. `WHERE`
+[source,gsql]
 ----
-/* Compute the total post activity for each male person.
-    Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result. However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */
-
-CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
-{
-    SumAccum<INT> @activityAmount;
-    start = {person.*};
-
-    // The following statements produce equivalent results
-    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
-      WHERE v.gender == "Male"
-      ACCUM v.@activityAmount +=1;
-
-    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
-      ACCUM v.@activityAmount +=1
-      HAVING v.gender == "Male";
-
-    PRINT result1;
-    PRINT result2;
-}
+include::appendix:example$social_net/select_statement_index_having_vs_where.gsql[]
 ----
---
+--qio0
 
 Results::
 +
 --
-.Results from Query ActiveMaleMembers
+.Results from Query active_male_members
 [source,gsql]
 ----
-[
-  {
-    "result1": [
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person7"
-        },
-        "v_id": "person7",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 4,
-          "gender": "Male",
-          "id": "person3"
-        },
-        "v_id": "person3",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person8"
-        },
-        "v_id": "person8",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person6"
-        },
-        "v_id": "person6",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 4,
-          "gender": "Male",
-          "id": "person1"
-        },
-        "v_id": "person1",
-        "v_type": "person"
-      }
-    ]
-  },
-  {
-    "result2": [
-      {
-        "attributes": {
-          "@activityAmount": 4,
-          "gender": "Male",
-          "id": "person1"
-        },
-        "v_id": "person1",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 4,
-          "gender": "Male",
-          "id": "person3"
-        },
-        "v_id": "person3",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person6"
-        },
-        "v_id": "person6",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person7"
-        },
-        "v_id": "person7",
-        "v_type": "person"
-      },
-      {
-        "attributes": {
-          "@activityAmount": 6,
-          "gender": "Male",
-          "id": "person8"
-        },
-        "v_id": "person8",
-        "v_type": "person"
-      }
-    ]
-  }
-]}
+GSQL > RUN QUERY active_male_members()
+include::appendix:example$social_net/select_statement_index_having_vs_where_results.json[]
+
 ----
 --
 ====
@@ -2468,18 +1254,17 @@ The following example has a compilation error because the result set is taken fr
 Query::
 +
 --
-.Example 4. HAVING the wrong vertex set
+This query does not compile because the having condition is testing the wrong vertex set
+
+.Example 4. `HAVING` the wrong vertex set
 [source,gsql]
 ----
-# find all person having a post subject about cats
-# This query is illegal because the having condition is testing the wrong vertex set
-CREATE QUERY printMemberAboutCats() FOR GRAPH socialNet
+CREATE QUERY print_member_about_cats() FOR GRAPH Social_Net
 {
-        start = {person.*};
-
-        result = SELECT v FROM start:v -(:e)- post:tgt
-                          HAVING tgt.subject == "cats";
-        PRINT result;
+    start = {Person.*};
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        HAVING tgt.subject == "cats";
+    PRINT result;
 }
 ----
 --
@@ -2526,154 +1311,21 @@ The returned vertex set is first ordered by the number of friends of the vertex,
 Query::
 +
 --
-.topPopular.gsql: ORDER BY Descending
+This query finds the most popular people, sorting first based on the number of friends and then in case of a tie by the number of coworkers
+
+.Sort results in descending order
 [source,gsql]
 ----
-# find the most popular people, sorting first based on the number as friends
-# and then in case of a tie by the number of coworkers
-CREATE QUERY topPopular() FOR GRAPH friendNet
-{
-	SumAccum<INT> @numFriends;
-	SumAccum<INT> @numCoworkers;
-	start = {person.*};
-
-	result = SELECT v FROM start -((friend|coworker):e)- person:v
-	       	 ACCUM CASE WHEN e.type == "friend" THEN v.@numFriends += 1
-		       	    WHEN e.type == "coworker" THEN v.@numCoworkers += 1
-		       END
-		 ORDER BY v.@numFriends DESC, v.@numCoworkers DESC;
-
-	PRINT result;
-}
+include::appendix:example$friend_net/select_statement_index_order_by_descending.gsql[]
 ----
 --
-
 Results::
 +
 --
-.topPopular.json
 [source,gsql]
 ----
-GSQL > RUN QUERY topPopular()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result": [
-    {
-      "v_id": "person9",
-      "attributes": {
-        "@numCoworkers": 3,
-        "@numFriends": 5,
-        "id": "person9"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "@numCoworkers": 1,
-        "@numFriends": 4,
-        "id": "person8"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person12",
-      "attributes": {
-        "@numCoworkers": 1,
-        "@numFriends": 4,
-        "id": "person12"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "@numCoworkers": 4,
-        "@numFriends": 3,
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "@numCoworkers": 3,
-        "@numFriends": 3,
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person4",
-      "attributes": {
-        "@numCoworkers": 5,
-        "@numFriends": 2,
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "@numCoworkers": 3,
-        "@numFriends": 2,
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "@numCoworkers": 3,
-        "@numFriends": 2,
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "@numCoworkers": 1,
-        "@numFriends": 2,
-        "id": "person10"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "@numCoworkers": 6,
-        "@numFriends": 1,
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "@numCoworkers": 5,
-        "@numFriends": 1,
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person11",
-      "attributes": {
-        "@numCoworkers": 1,
-        "@numFriends": 1,
-        "id": "person11"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+include::appendix:example$friend_net/select_statement_index_order_by_descending_run.gsql[]
+include::appendix:example$friend_net/select_statement_index_order_by_descending_results.json[]
 ----
 --
 ====
@@ -2746,58 +1398,20 @@ Query::
 .limitEx1.gsql: LIMIT by some number
 [source,gsql]
 ----
-CREATE QUERY limitEx1(INT k) FOR GRAPH friendNet
-{
-        start = {person.*};
-
-        result1 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT k;
-
-		PRINT result1[result1.id]; // api v2
-}
+include::appendix:example$friend_net/select_statement_index_limt_by.gsql[]
 ----
 --
 
 Results::
 +
 --
-.limit1Ex.json Results
+.limit_ex_1.json Results
 
 [source,gsql]
 ----
-GSQL > RUN QUERY limitEx1(4)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result1": [
-    {
-      "v_id": "person1",
-      "attributes": {"result1.id": "person1"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {"result1.id": "person10"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person11",
-      "attributes": {"result1.id": "person11"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person12",
-      "attributes": {"result1.id": "person12"},
-      "v_type": "person"
-    }
-  ]}]
-}
+include::appendix:example$friend_net/select_statement_index_limit_by_run.gsql[]
+include::appendix:example$friend_net/select_statement_index_limit_by_results.json[]
+
 ----
 --
 ====
@@ -2810,18 +1424,10 @@ The following example shows how to use the `LIMIT` clause with an offset.
 Query::
 +
 --
-.limit2Ex.gsql: `LIMIT` with lower-bound and size
+.`LIMIT` with lower-bound and size
 [source,gsql]
 ----
-CREATE QUERY limitEx2(INT j, INT k) FOR GRAPH friendNet
-{
-        start = {person.*};
-        result2 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT j, k;
-
-        PRINT result2[result2.id]; // api v2
-}
+include::appendix:example$friend_net/select_statement_index_limit_lower_bound_and_size.gsql[]
 ----
 --
 
@@ -2831,33 +1437,8 @@ Results::
 .limit2Ex.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY limitEx2(2,3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result2": [
-    {
-      "v_id": "person11",
-      "attributes": {"result2.id": "person11"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person12",
-      "attributes": {"result2.id": "person12"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {"result2.id": "person2"},
-      "v_type": "person"
-    }
-  ]}]
-}
+include::appendix:example$friend_net/select_statement_index_limit_lower_bound_and_size_run.gsql[]
+include::appendix:example$friend_net/select_statement_index_limit_lower_bound_and_size_results.json[]
 ----
 --
 ====
@@ -2872,75 +1453,21 @@ In a large data set, `limitTest(5,20)` might return 20 vertices, but since we do
 Query::
 +
 --
-.limit3Ex.gsql: `LIMIT` with `OFFSET`
+.limit_ex_3.gsql: `LIMIT` with `OFFSET`
 [source,gsql]
 ----
-CREATE QUERY limitEx3(INT j, INT k) FOR GRAPH friendNet
-{
-        start = {person.*};
-
-        result3 = SELECT v FROM start:v
-                ORDER BY v.id
-                LIMIT k OFFSET j;
-
-        PRINT result3[result3.id]; // api v2
-}
+include::appendix:example$friend_net/select_statement_index_limit_with_offset.gsql[]
 ----
 --
 
 Results::
 +
 --
-.limit3Ex.json Results
+.limit_ex_3.json Results
 [source,gsql]
 ----
-GSQL > RUN QUERY limitEx3(5,20)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"result3": [
-    {
-      "v_id": "person3",
-      "attributes": {"result3.id": "person3"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person4",
-      "attributes": {"result3.id": "person4"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {"result3.id": "person5"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {"result3.id": "person6"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {"result3.id": "person7"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {"result3.id": "person8"},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person9",
-      "attributes": {"result3.id": "person9"},
-      "v_type": "person"
-    }
-  ]}]
-}
+include::appendix:example$friend_net/select_statement_index_limit_with_offset_run.gsql[]
+include::appendix:example$friend_net/select_statement_index_limit_with_offset_results.json[]
 ----
 --
 ====

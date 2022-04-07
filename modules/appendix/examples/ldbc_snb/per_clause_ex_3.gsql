@@ -1,0 +1,14 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+
+    MapAccum<string, SumAccum<int>> @@post_per_country;
+
+    R =   SELECT p
+        FROM   Country:c -(<Is_Part_Of.<Is_Located_In.Likes>)- Post:p
+        WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
+        PER    (c, p)
+        ACCUM  @@post_per_country += (c.name -> 1);
+
+    PRINT @@post_per_country;
+}

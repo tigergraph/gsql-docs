@@ -1,0 +1,51 @@
+CREATE QUERY list_accum_ex() FOR GRAPH Minimal_Net {
+
+    ListAccum<INT> @@int_list_accum;
+    ListAccum<STRING> @@string_list_accum;
+    ListAccum<STRING> @@string_multiply_list_accum;
+    ListAccum<STRING> @@string_addition_accum;
+    ListAccum<STRING> @@letter_list_accum;
+    ListAccum<ListAccum<STRING>> @@nested_list_accum;
+
+    @@int_list_accum = [1,3,5];
+    @@int_list_accum += [7,9];
+    @@int_list_accum += 11;
+    @@int_list_accum += 13;
+    @@int_list_accum += 15;
+
+    PRINT @@int_list_accum;
+    PRINT @@int_list_accum.get(0), @@int_list_accum.get(1);
+    PRINT @@int_list_accum.get(8); // Out of bound: default value of int: 0
+
+    // Other built-in functions
+    PRINT @@int_list_accum.size();
+    PRINT @@int_list_accum.contains(2);
+    PRINT @@int_list_accum.contains(3);
+
+    @@string_list_accum += "Hello";
+    @@string_list_accum += "World";
+
+    PRINT @@string_list_accum; // ["Hello","World"]
+
+    @@letter_list_accum += "a";
+    @@letter_list_accum += "b";
+
+    // ListA + ListB produces a new list equivalent to ListB appended to ListA.
+    // Ex: [a,b,c] + [d,e,f] => [a,b,c,d,e,f]
+    @@string_addition_accum = @@string_list_accum + @@letter_list_accum;
+
+    PRINT @@string_addition_accum;
+
+    // Multiplication produces a list of all list-to-list element combinations (STRING TYPE ONLY)
+    // Ex: [a,b] * [c,d] = [ac, ad, bc, bd]
+    @@string_multiply_list_accum = @@string_list_accum * @@letter_list_accum;
+
+    PRINT @@string_multiply_list_accum;
+
+    // Two dimensional list (3 dimensions is possible as well)
+    @@nested_list_accum += [["foo", "bar"], ["Big", "Bang", "Theory"], ["String", "Theory"]];
+
+    PRINT @@nested_list_accum;
+    PRINT @@nested_list_accum.get(0);
+    PRINT @@nested_list_accum.get(0).get(1);
+}

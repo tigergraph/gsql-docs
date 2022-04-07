@@ -1,0 +1,18 @@
+CREATE QUERY array_accum_local() FOR GRAPH Social_Net API("v2") {
+	// Count each person's edges by type
+	// friend/liked/posted edges are type 0/1/2, respectively
+	ArrayAccum<SumAccum<INT>> @edges_by_type[3];
+	persons = {Person.*};
+
+	persons = SELECT s
+		FROM persons:s -(:e)- :t
+		ACCUM CASE e.type
+			WHEN "Friend" THEN s.@edges_by_type[0] += 1
+			WHEN "Liked"  THEN s.@edges_by_type[1] += 1
+			WHEN "Posted" THEN s.@edges_by_type[2] += 1
+			END
+		ORDER BY s.id;
+
+	//PRINT persons.@edges_by_type; // api v1
+    PRINT persons[persons.@edges_by_type]; // api v2
+}

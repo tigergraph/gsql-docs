@@ -1,0 +1,15 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  SumAccum<int> @@cnt;
+
+  F  =  SELECT f
+        FROM Person:s - (Likes>:e1) - :msg - (Has_Creator>) - Person:t,
+             Forum:f - (Container_Of>:e2) - :msg
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+              AND t.last_name LIKE "S%"
+              AND e1.creation_date >DATETIME_ADD(msg.creation_date, INTERVAL 100 DAY);
+
+  PRINT F;
+}

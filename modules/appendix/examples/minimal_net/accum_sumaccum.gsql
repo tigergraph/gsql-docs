@@ -1,0 +1,24 @@
+CREATE QUERY sum_accum_ex() FOR GRAPH Minimal_Net {
+
+    SumAccum<INT>    @@int_accum;
+    SumAccum<FLOAT>  @@float_accum;
+    SumAccum<DOUBLE> @@double_accum;
+    SumAccum<STRING> @@string_accum;
+
+    @@int_accum  = 1;
+    @@int_accum += 1;
+
+    @@float_accum = @@int_accum;
+    @@float_accum = @@float_accum / 3;
+
+    @@double_accum  = @@float_accum * 8;
+    @@double_accum += -1;
+
+    @@string_accum  = "Hello ";
+    @@string_accum += "World";
+
+    PRINT @@int_accum;
+    PRINT @@float_accum;
+    PRINT @@double_accum;
+    PRINT @@string_accum;
+}

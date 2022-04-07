@@ -1,0 +1,38 @@
+CREATE QUERY print_example_v2(VERTEX<Person> v) FOR GRAPH Social_Net {
+
+    SetAccum<VERTEX> @@set_of_vertices;
+    SetAccum<EDGE> @posted_set;
+    MapAccum<VERTEX,ListAccum<VERTEX>> @@test_map;
+    FLOAT paper_width = 8.5;
+    INT paper_height = 11;
+    STRING Alpha = "ABC";
+
+    Seed = Person.*;
+    A = SELECT s
+          FROM Seed:s
+          WHERE s.gender == "Female"
+          ACCUM @@set_of_vertices += s;
+
+    B = SELECT t
+        FROM Seed:s - (Posted>:e) - Post:t
+        ACCUM s.@posted_set += e,
+            @@test_map += (s -> t);
+
+    // Numeric, String, and Boolean expressions, with renamed keys:
+    PRINT paper_height*paper_width AS paper_size, Alpha+"XYZ" AS Letters,
+    A.size() > 10 AS a_size_more_than_10;
+    // Note how an expression is named if "AS" is not used:
+    PRINT A.size() > 10;
+
+    // Vertex variables.  Only the vertex id is included (no attributes):
+    PRINT v, @@set_of_vertices;
+
+    // Map of Person -> Posts posted by that person:
+    PRINT @@test_map;
+
+    // Vertex Set Variable. Each vertex has a vertex-attached accumulator, which happens to be a set of edges (SetAccum<EDGE>), so edge format is shown also:
+    PRINT A AS v_set_var_women;
+
+    // Vertex Set Expression. The same set of vertices as above, but with only one attribute plus one computed attribute:
+    PRINT A[A.gender, A.@posted_set.size()] AS v_set_expr;
+}

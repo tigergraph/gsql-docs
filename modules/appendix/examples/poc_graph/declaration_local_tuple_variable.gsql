@@ -1,0 +1,18 @@
+CREATE QUERY test_udf() FOR GRAPH POC_Graph {
+     TYPEDEF TUPLE<INT i, STRING s> Main_Tuple;
+     SetAccum<Main_Tuple> @@set_acc;
+     SetAccum<Main_Tuple> @@set_acc2;
+
+    L0 = { Person.* };
+    L1 = SELECT p
+        FROM L0:p
+        WHERE p.name == "Charlie"
+        ACCUM
+            Main_Tuple a = Main_Tuple(1, "well"), <1>
+            @@set_acc += a,
+            TUPLE<INT, STRING> b = Main_Tuple(2, "good"), <2>
+            @@set_acc2 += b;
+
+  PRINT @@set_acc;
+  PRINT @@set_acc2;
+}

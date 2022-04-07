@@ -1,0 +1,14 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+
+ SumAccum<int> @postCnt;
+
+ R =   SELECT c
+       FROM   Country:c -(<Is_Part_Of.<Is_Located_In.Likes>)- Post:p
+       WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
+       PER    (c, p) //per (country, post), add 1 to c.@postCnt
+       ACCUM  c.@postCnt += 1;
+
+ PRINT R;
+}

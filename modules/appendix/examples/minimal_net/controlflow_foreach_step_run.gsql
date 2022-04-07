@@ -1,0 +1,1 @@
+RUN QUERY foreach_range_step(100,0,-9)

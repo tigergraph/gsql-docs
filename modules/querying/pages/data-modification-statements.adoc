@@ -1,21 +1,21 @@
 = Data Modification Statements
+:description: Reference for data modification statements in GSQL.
 
 The GSQL language provides full support for vertex and edge insertion, deletion, and attribute update.
 
 Each query is considered one transaction.
-Therefore, modifications to the graph data do not take effect until the entire query is completed (committed).
+Therefore, *modifications to the graph data do not take effect until the entire query is completed (committed)*.
 Accordingly, any modification statement does not affect any other statements inside the same query.
 
+[#_query_body_delete_statement]
 == Query-body `DELETE` Statement
 
-The query-body `DELETE` statement deletes a given set of edges or vertices. This statement can only be used as a query-body statement.
+The query-body `DELETE` statement deletes a given set of edges or vertices.This statement can only be used as a query-body statement.
 Deletion at the DML-sub level is served by the <<_dml_sub_delete_statement,DML-sub `DELETE` statement>>.
 
-[CAUTION]
-====
 The GSQL `DELETE` operation is a cascading deletion.
 If a vertex is deleted, then all edges which connect to it are automatically deleted as well.
-====
+
 
 [discrete]
 === Syntax
@@ -30,64 +30,44 @@ The `FROM` clause in the `DELETE` statement follows the same rules as those in t
 However, the `FROM` clause in the `DELETE` statement only supports 1-hop, instead of multiple hops in the `SELECT` statement.
 
 The `WHERE` clause can filter the items in the path pattern.
-Below are two examples, one for deleting vertices and one for deleting edges.
+
 
 [discrete]
 === Examples
 
-.DELETE statement example
+Below are two examples, one for deleting vertices and one for deleting edges.
+
+.Deleting vertices
 [source,gsql]
 ----
-# Delete all "person" vertices with location equal to "us"
-CREATE QUERY deleteEx() FOR GRAPH workNet {
-  S = {person.*};
-  DELETE s FROM S:s
-    WHERE s.locationId == "us";
-}
+include::appendix:example$work_net/data_modification_delete_v.gsql[]
 ----
 
 
-
-.DELETE statement example 2
+.Deleting edges
 [source,gsql]
 ----
-# Delete all "worksFor" edges where the person's location is "us"
-CREATE QUERY deleteEx2() FOR GRAPH workNet {
-  S = {person.*};
-  DELETE e FROM S:s -(worksFor:e)- company:t
-    WHERE s.locationId == "us";
-}
+include::appendix:example$work_net/data_modification_delete_e.gsql[]
 ----
 
 
 
 The following query can be used to observe the effect of the delete statements.
-This query counts the person vertices who work in the US and the `worksFor` edges for persons in the US.
-When the initial `workNet` test data loaded, there are 5 persons and 9 worksFor edges for locationId = "us".
-If query `deleteEx2` is run, the `worksAtUS` query will then find the 5 persons but 0 worksFor edges.
-Next, if the deleteEx query is run, the worksAtUS query will then find 0 persons and 0 worksFor edges.
+This query counts the person vertices who work in the US and the `Works_For` edges for persons in the US.
+When the initial `Work_Net` test data loaded, there are 5 persons and 9 Works_For edges for locationId = "us".
+
+If query `delete_ex2` is run, there are 5 persons but 0 `Works_For` edges.
+Next, if the deleteEx query is run, the `works_at_US` query then finds 0 persons and 0 `Works_For` edges.
 
 .Query to check the results of deleteEx and deleteEx2
 [source,gsql]
 ----
-CREATE QUERY countAtLocation(STRING loc) FOR GRAPH workNet {
-  SetAccum<EDGE> @@selEdge;
-  Start = {person.*};
-
-  SV = SELECT s FROM Start:s
-    WHERE s.locationId == loc;
-  PRINT SV.size() AS numVertices;
-
-  SE = SELECT s FROM Start:s -(worksFor:e)- company:t
-    WHERE s.locationId == loc
-    ACCUM @@selEdge += e;
-  PRINT @@selEdge.size() AS numEdges;
-}
+include::appendix:example$work_net/data_modification_check_deletion.gsql[]
 ----
 
 
 
-For example, the following sequence of `countAtLocation`, `deleteEx2`, and `deleteEx` queries
+Below are the results of the queries in sequence:
 
 [tabs]
 ====
@@ -97,11 +77,11 @@ Query::
 .deleteEx.run
 [source,gsql]
 ----
-RUN QUERY countAtLocation("us")
-RUN QUERY deleteEx2()
-RUN QUERY countAtLocation("us")
+RUN QUERY count_at_location("us")
+RUN QUERY delete_ex2()
+RUN QUERY count_at_location("us")
 RUN QUERY deleteEx()
-RUN QUERY countAtLocation("us")
+RUN QUERY count_at_location("us")
 ----
 --
 Results::
@@ -110,7 +90,7 @@ Results::
 .Results from DeleteEx Example
 [source,javascript]
 ----
-# Before any deletions
+// Before any deletions
 {
   "error": false,
   "message": "",
@@ -124,7 +104,7 @@ Results::
     {"numEdges": 9}
   ]
 }
-# Delete edges
+// Delete edges
 {
   "error": false,
   "message": "",
@@ -135,7 +115,7 @@ Results::
   },
   "results": []
 }
-# After deleting edges
+// After deleting edges
 {
   "error": false,
   "message": "",
@@ -149,7 +129,7 @@ Results::
     {"numEdges": 0}
   ]
 }
-# Delete vertices
+// Delete vertices
 {
   "error": false,
   "message": "",
@@ -160,7 +140,7 @@ Results::
   },
   "results": []
 }
-# After deleting vertices
+// After deleting vertices
 {
   "error": false,
   "message": "",
@@ -209,46 +189,47 @@ dmlSubDeleteStmt := DELETE "(" alias ")"
 [discrete]
 === Examples
 
-The following example uses and modifies the graph data for `socialNet`.
+The following example uses and modifies the graph data for `Social_Net`.
 
 .`DELETE` within `ACCUM` vs. `POST-ACCUM`
 [source,gsql]
 ----
-# Remove any post vertices posted by the given user
-CREATE QUERY deletePosts(vertex<person> seed) FOR GRAPH socialNet {
-	start = {seed};
+CREATE QUERY delete_posts(VERTEX<Person> seed) FOR GRAPH Social_Net {
+	// Remove any post vertices posted by the given user
 
-	# Best practice is to delete a vertex in a POST-ACCUM, which only
-	# occurs once for each vertex v, guaranteeing that a vertex is not
-	# deleted more than once
-	postAccumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
-	       	 POST-ACCUM DELETE (v);
-	
-	# Possible, but not recommended as the DML-sub DELETE statement occurs
-	# once for each edge of the vertex v
-	accumDeletedPosts = SELECT v FROM start -(posted>:e)- post:v
-	       	 ACCUM DELETE (v);
-}
-
-# Need a separate query to display the results, because deletions don't take effect during the query.
-CREATE QUERY selectUserPosts(vertex<person> seed) FOR GRAPH socialNet {
     start = {seed};
 
-    userPosts = SELECT v FROM start -(posted>:e)- post:v;
-    PRINT userPosts;
+	/* Best practice is to delete a vertex in a POST-ACCUM, which only
+	 occurs once for each vertex v, guaranteeing that a vertex is not
+	 deleted more than once */
+	post_accum_deleted_posts = SELECT v FROM start -(Posted>:e)- Post:v
+        POST-ACCUM DELETE (v);
+	
+	/* Possible, but not recommended as the DML-sub DELETE statement occurs
+	 once for each edge of the vertex v */
+	accum_deleted_posts = SELECT v FROM start -(Posted>:e)- Post:v
+        ACCUM DELETE (v);
+}
+
+// Need a separate query to display the results, because deletions don't take effect during the query.
+CREATE QUERY select_user_posts(VERTEX<Person> seed) FOR GRAPH Social_Net {
+    start = {seed};
+
+    user_posts = SELECT v FROM start -(Posted>:e)- Post:v;
+    PRINT user_posts;
 }
 ----
 
 
 
-For example, the following sequence of `selectUserPosts` and `deletePosts` queries
+For example, the following sequence of `select_user_posts` and `delete_posts` queries
 
 .deletePosts.run
 [source,gsql]
 ----
-RUN QUERY selectUserPosts("person3")
-RUN QUERY deletePosts("person3")
-RUN QUERY selectUserPosts("person3")
+RUN QUERY select_user_posts("person3")
+RUN QUERY delete_posts("person3")
+RUN QUERY select_user_posts("person3")
 ----
 
 
@@ -256,10 +237,9 @@ RUN QUERY selectUserPosts("person3")
 will produce the following result:
 
 .Results from DeletePosts Example
-
 [source,gsql]
 ----
-# Before the deletion
+// Before the deletion
 {
   "error": false,
   "message": "",
@@ -277,7 +257,7 @@ will produce the following result:
     "v_type": "post"
   }]}]
 }
-# Deletion; no output results requested at this point
+// Deletion; no output results requested at this point
 {
   "error": false,
   "message": "",
@@ -288,7 +268,7 @@ will produce the following result:
   },
   "results": []
 }
-# After the deletion
+// After the deletion
 {
   "error": false,
   "message": "",
@@ -312,7 +292,6 @@ The `INSERT INTO` statement can be used as a query-body-level statement or a DML
 Like any other data modification in a query, the insertion does not take effect until the entire query is completed.
 
 .EBNF
-
 [source,ebnf]
 ----
 insertStmt := insertVertexStmt | insertEdgeStmt
@@ -367,61 +346,39 @@ VALUES (value_for_from_vertex, value_for_to_vertex, <1>
 +
 
 For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type.
-The optional __name__ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
+The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
 === Query-Body INSERT
 
-The query `insertEx` illustrates query-body level `INSERT` statements: insert new `company` vertices and `worksFor` edges into the `workNet` graph.
+The following query illustrates query-body level `INSERT` statements: insert new `Company` vertices and `Works_For` edges into the `Works_Net` graph.
 
 .INSERT statement
-
 [source,gsql]
 ----
-CREATE QUERY insertEx(STRING name, STRING name2, STRING name3, STRING comp) FOR GRAPH workNet {
-  # Vertex insertion
-    # Adds 2 'company' vertices. One is located in the USA, and a sister company in Japan.
-    # company:
-    # company(PRIMARY_ID clientId STRING, id STRING, country STRING)
-    INSERT INTO company VALUES ( comp, comp, "us" );
-    INSERT INTO company (PRIMARY_ID, country) VALUES ( comp + "_jp", "jp" );
-
-  # Edge insertion
-    # Adds a 'worksFor' edge from person 'name' to the company 'comp', filling in default
-    # values for startYear (0), startMonth (0), and fullTime (false).
-    # worksFor:
-    # worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
-    INSERT INTO worksFor VALUES (name person, comp company, _, _, _);
-
-    # Adds a 'worksFor' edge from person 'name2' to the company 'comp', filling in default
-    # values for startMonth (0), but specifying values for startYear and fullTime.
-    INSERT INTO worksFor (FROM, TO, startYear, fullTime) VALUES (name2 person, comp company, 2017, true);
-
-    # Adds a 'worksFor' edge from person 'name3' to the company 'comp', filling in default
-    # values for startMonth (0), and fullTime (false) but specifying a value for startYear (2017).
-    INSERT INTO worksFor (FROM, TO, startYear) VALUES (name3 person, comp company, 2000 + 17);
-}
+include::appendix:example$work_net/data_modification_querybody_insert.gsql[]
 ----
 
 
+The following query can be used to check the effect of the previous query.
+Prior to running `insertEx`, running `whoWorksForCompany("gsql")` will find 0 `companies` called `"gsql"` and 0 `Works_For` edges for company `"gsql"`.
 
-The query `whoWorksForCompany` can be used to check the effect of query `insertEx`. Prior to running `insertEx`, running `whoWorksForCompany("gsql")` will find 0 `companies` called `"gsql"` and 0 `worksFor` edges for company `"gsql"`.  If we then run the query `insertEx("tic", "tac", "toe", "gsql")`, then `insertEx("gsql")` will find a company called `"gsql"` and another one called `"gsql_jp"`.  Moreover, it will find 3 edges, tic, tac, and toe, with different values for the `startMonth`, `startYear`, and fullTime parameters.
+If we then run the query `insertEx("tic", "tac", "toe", "gsql")`, then `insertEx("gsql")` will find a company called `"gsql"` and another one called `"gsql_jp"`.  Moreover, it will find 3 edges, tic, tac, and toe, with different values for the `startMonth`, `startYear`, and fullTime parameters.
 
 .Query to check the results of insertEx
-
 [source,gsql]
 ----
-CREATE QUERY whoWorksForCompany(STRING comp) FOR GRAPH workNet {
-  SetAccum<EDGE> @@setEdge;
+CREATE QUERY who_works_for_company(STRING comp) FOR GRAPH Works_Net {
+    SetAccum<EDGE> @@set_edge;
 
-  Comps = {company.*};
-  PRINT Comps[Comps.id];   # output api v2
+    Comps = {Company.*};
+    PRINT Comps[Comps.id];   // output api v2
 
-  Pers = {person.*};
-  S = SELECT s
-    FROM Pers:s -(worksFor:e)- :t
-    WHERE t.id == comp
-    ACCUM @@setEdge += e;
-  PRINT @@setEdge;
+    Pers = {Person.*};
+    S = SELECT s
+        FROM Pers:s -(Works_For:e)- :t
+        WHERE t.id == comp
+        ACCUM @@set_edge += e;
+    PRINT @@set_edge;
 }
 ----
 
@@ -432,47 +389,38 @@ CREATE QUERY whoWorksForCompany(STRING comp) FOR GRAPH workNet {
 The following example shows a DML-sub level INSERT. Because the statement applies to all companies, several vertices will be inserted.
 
 .DML-sub INSERT statement
-
 [source,gsql]
 ----
-# Add a child company of a given company name. The new child company is in japan
-CREATE QUERY addNewChildCompany(STRING name) FOR GRAPH workNet {
-  allCompanies = {company.*};
-  X = SELECT s
-      FROM allCompanies:s
-      WHERE s.id == name
-      ACCUM  INSERT INTO company VALUES ( name + "_jp", name + "_jp", "jp" );
-}
+include::appendix:example$work_net/data_modification_dmlsub_insert.gsql[]
 
-# Add separate query to list the companies, before and after the insertion
-CREATE QUERY listCompanyNames(STRING countryFilter) FOR GRAPH workNet {
-  allCompanies = {company.*};
+// Adds separate query to list the companies, before and after the insertion
+CREATE QUERY list_company_names(STRING country_filter) FOR GRAPH Works_Net {
+  all_companies = {Company.*};
   C = SELECT s
-      FROM allCompanies:s
-      WHERE s.country == countryFilter;
+      FROM all_companies:s
+      WHERE s.country == country_filter;
 
-  PRINT C.size() AS numCompanies;
+  PRINT C.size() AS num_companies;
   PRINT C;
 }
 ----
 
+==== Example
 
-
-Example: Add a child company in Japan to the US-based company `company3`.  List all the Japan-based companies before and after the insertion.
+The following queries add a child company in Japan to the US-based company `company3`.
+List all the Japan-based companies before and after the insertion.
 
 .addNewChildCompany.run
-
 [source,gsql]
 ----
-RUN QUERY listCompanyNames("jp")
-RUN QUERY addNewChildCompany("company4")
-RUN QUERY listCompanyNames("jp")
+RUN QUERY list_company_names("jp")
+RUN QUERY add_new_child_company("company4")
+RUN QUERY list_company_names("jp")
 ----
 
 
 
 .Results from addNewChildCompany Example
-
 [source,gsql]
 ----
 # Before insertion
@@ -568,18 +516,7 @@ The optional `WHERE` clause supports boolean conditions to filter the items in t
 .`UPDATE` statement example
 [source.wrap,gsql]
 ----
-# Change all "person" vertices with location equal to "us" to "USA"
-CREATE QUERY updateEx() FOR GRAPH workNet  {
-  S = {person.*};
-
-  UPDATE s FROM S:s
-  SET s.locationId = "USA",  # simple base type attribute
-      s.skillList = [1,2,3]  # collection-type attribute
-  WHERE s.locationId == "us";
-
-  # The update cannot become effective within this query, so PRINT S still show "us".
-  PRINT S;
-}
+include::appendix:example$work_net/data_modification_update.gsql[]
 ----
 
 
@@ -594,56 +531,27 @@ Updating a vertex's attribute value in an `ACCUM` clause is not allowed, because
 If the vertex attribute value update depends on an edge attribute value, use the vertex-attached accumulators to save the value and update the vertex attribute's value in the `POST-ACCUM` clause.
 ====
 
-The query below uses a `SELECT` statement instead of an `UPDATE` statement and performs the same update as the query above. Query `updateEx2` reverses the `locationId` change made by `updateEx` .
+The query below uses a `SELECT` statement instead of an `UPDATE` statement and performs the same update as the query above.
 
-.UPDATE statement example 2
 [source,gsql]
 ----
-# The second example is equivalent to the above updateEx
-CREATE QUERY updateEx2() FOR GRAPH workNet  {
-  S = {person.*};
-
-  X = SELECT s
-      FROM S:s
-      WHERE s.locationId == "USA"
-      POST-ACCUM s.locationId = "us",
-                 s.skillList = [3,2,1];
-  PRINT S;
-}
+include::appendix:example$work_net/data_modification_select_update.gsql[]
 ----
 
 
 
-Below is an example of an edge update with two attribute changes, including an incremental change:
 
-.`UPDATE` statement example 3
-[source,gsql]
-----
-CREATE QUERY updateEx3() FOR GRAPH workNet{
-  S = {person.*};
-
-  # update edge and target vertices' attribute
-  UPDATE e FROM S:s - (worksFor:e) - :t
-  SET e.startYear = e.startYear + 1, // Incremental change
-      e.fullTime = false
-  WHERE s.locationId == "us";
-
-  PRINT S;
-}
-----
-
-
-
-== Other Update Methods
+== Assignment statements
 
 In addition to `UPDATE` statements and `SELECT` statements, a simple assignment statement at the query-body level can be used to update the attribute value of a single vertex or edge, if the vertex or edge has been assigned to a variable or parameter.
 
 .Update by assignment
 [source,gsql]
 ----
-# change the given person's new location
-CREATE QUERY updateByAssignment(VERTEX<person> v, STRING newLocation) FOR GRAPH workNet{
-  v.locationId = newLocation;
+// Change the given person's location
+CREATE QUERY update_by_assignment(VERTEX<Person> v, STRING new_location)
+    FOR GRAPH Work_Net {
+  v.location_id = new_location;
 }
 ----
 

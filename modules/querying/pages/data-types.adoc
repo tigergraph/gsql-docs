@@ -400,19 +400,19 @@ The vertex type `person` contains two complex attributes:
 * `secretInfo` of type `SECRET_INFO`, which a user-defined tuple
 * `portfolio` of type `MAP<STRING, DOUBLE>`
 
-[#investmentNet-schema]
-.`investmentNet` Schema
-[source,gsql]
+[#Investment_Net-schema]
+.`Investment_Net` Schema
+[source.wrap,gsql]
 ----
-TYPEDEF TUPLE <age UINT (4), mothersName STRING(20) > SECRET_INFO
+TYPEDEF TUPLE <age UINT (4), mothers_name STRING(20) > SECRET_INFO
 
-CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, portfolio MAP<STRING, DOUBLE>, secret_info SECRET_INFO)
 
-CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
+CREATE VERTEX Stock_Order(PRIMARY_ID order_id STRING, ticker STRING, order_size UINT, price FLOAT)
 
-CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
+CREATE UNDIRECTED EDGE make_order(FROM Person, TO Stock_Order, order_time DATETIME)
 
-CREATE GRAPH investmentNet (*)
+CREATE GRAPH Investment_Net (*)
 ----
 
 The query below reads both the `SECRET_INFO` tuple and the portfolio MAP.
@@ -428,32 +428,10 @@ Query::
 --
 [source,gsql]
 ----
-CREATE QUERY tupleEx(VERTEX<person> p) FOR GRAPH investmentNet{
-
-  TYPEDEF TUPLE <STRING ticker, FLOAT price, DATETIME orderTime> ORDER_RECORD;<1>
-
-  SetAccum<SECRET_INFO> @@info; <2>
-  ListAccum<ORDER_RECORD> @@orderRecords;
-  MapAccum<STRING, DOUBLE> @@portf;
-
-  INIT = {p};
-
-  # Get person p's secret_info and portfolio
-  X = SELECT v FROM INIT:v
-      ACCUM @@portf += v.portfolio, @@info += v.secretInfo;
-
-  # Search person p's orders to record ticker, price, and order time.
-  # Note that the tuple gathers info from both edges and vertices.
-  orders = SELECT t
-      FROM INIT:s -(makeOrder:e)-stockOrder:t
-      ACCUM @@orderRecords += ORDER_RECORD(t.ticker, t.price, e.orderTime);
-
-  PRINT @@portf, @@info;
-  PRINT @@orderRecords;
-}
+include::appendix:example$investment_net/datatypes_udt.gsql[]
 ----
-<1> This statement defines a new tuple `ORDER_RECORD` at the top of the query.
-<2> `SECRET_INFO` has already been defined in <<investmentNet-schema>>.
+<1> This statement defines a new tuple `Order_Record` at the top of the query.
+<2> `Secret_Info` has already been defined in <<Investment_Net-schema>>.
 --
 
 Result::
@@ -461,46 +439,8 @@ Result::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY tupleEx("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@info": [{
-        "mothersName": "JAMES",
-        "age": 25
-      }],
-      "@@portf": {
-        "AAPL": 3142.24,
-        "MS": 5000,
-        "G": 6112.23
-      }
-    },
-    {"@@orderRecords": [
-      {
-        "ticker": "AAPL",
-        "orderTime": "2017-03-03 18:42:28",
-        "price": 34.42
-      },
-      {
-        "ticker": "B",
-        "orderTime": "2017-03-03 18:42:30",
-        "price": 202.32001
-      },
-      {
-        "ticker": "A",
-        "orderTime": "2017-03-03 18:42:29",
-        "price": 50.55
-      }
-    ]}
-  ]
-}
+GSQL > RUN QUERY tuple_ex("person1")
+include::appendix:example$investment_net/datatypes_udt_results.json[]
 ----
 --
 ====
@@ -547,33 +487,7 @@ Query::
 --
 [source,gsql]
 ----
-CREATE QUERY stringCompressEx(VERTEX<person> m1) FOR GRAPH workNet {
-  ListAccum<STRING COMPRESS> @@strCompressList, @@strCompressList2;
-  SetAccum<STRING COMPRESS> @@strCompressSet, @@strCompressSet2;
-  ListAccum<STRING> @@strList, @@strList2;
-  SetAccum<STRING> @@strSet, @@strSet2;
-
-  S = {m1};
-
-  S = SELECT s
-      FROM S:s
-      ACCUM @@strSet += s.interestSet,
-            @@strList += s.interestList,
-            @@strCompressSet += s.interestSet,   # use the dictionary from person.interestSet
-            @@strCompressList += s.interestList; # use the dictionary from person.interestList
-
-  @@strCompressList2 += @@strCompressList;  # @@strCompressList2 gets the dictionary from @@strCompressList, which is from person.interestList
-  @@strCompressList2 += "xyz";   # "xyz" is not in the dictionary, so store the actual string value
-
-  @@strCompressSet2 += @@strCompressSet;
-  @@strCompressSet2 += @@strSet;
-
-  @@strList2 += @@strCompressList;  # string compress integer values are decoded to strings
-  @@strSet2 += @@strCompressSet;
-
-  PRINT @@strSet, @@strList, @@strCompressSet, @@strCompressList;
-  PRINT @@strSet2, @@strList2, @@strCompressSet2, @@strCompressList2;
-}
+include::appendix:example$work_net/datatypes_stringcompress.gsql[]
 ----
 --
 
@@ -582,55 +496,8 @@ Results::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY stringCompressEx("person12")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@strCompressList": [
-        "music",
-        "engineering",
-        "teaching",
-        "teaching",
-        "teaching"
-      ],
-      "@@strSet": [ "teaching", "engineering", "music" ],
-      "@@strCompressSet": [ "music", "engineering", "teaching" ],
-      "@@strList": [
-        "music",
-        "engineering",
-        "teaching",
-        "teaching",
-        "teaching"
-      ]
-    },
-    {
-      "@@strSet2": [ "music", "engineering", "teaching" ],
-      "@@strCompressList2": [
-        "music",
-        "engineering",
-        "teaching",
-        "teaching",
-        "teaching",
-        "xyz"
-      ],
-      "@@strList2": [
-        "music",
-        "engineering",
-        "teaching",
-        "teaching",
-        "teaching"
-      ],
-      "@@strCompressSet2": [ "teaching", "engineering", "music" ]
-    }
-  ]
-}
+GSQL > RUN QUERY string_compress_ex("person12")
+include::appendix:example$work_net/datatypes_stringcompress_results.json[]
 ----
 --
 ====

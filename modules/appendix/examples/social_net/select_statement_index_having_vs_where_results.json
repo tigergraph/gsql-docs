@@ -1,0 +1,65 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"result1": [
+      {
+        "v_id": "person7",
+        "attributes": {"result1.@activity_amount": 6},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person1",
+        "attributes": {"result1.@activity_amount": 4},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person3",
+        "attributes": {"result1.@activity_amount": 4},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person8",
+        "attributes": {"result1.@activity_amount": 6},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person6",
+        "attributes": {"result1.@activity_amount": 6},
+        "v_type": "Person"
+      }
+    ]},
+    {"result2": [
+      {
+        "v_id": "person7",
+        "attributes": {"result2.@activity_amount": 6},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person1",
+        "attributes": {"result2.@activity_amount": 4},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person3",
+        "attributes": {"result2.@activity_amount": 4},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person8",
+        "attributes": {"result2.@activity_amount": 6},
+        "v_type": "Person"
+      },
+      {
+        "v_id": "person6",
+        "attributes": {"result2.@activity_amount": 6},
+        "v_type": "Person"
+      }
+    ]}
+  ]
+}

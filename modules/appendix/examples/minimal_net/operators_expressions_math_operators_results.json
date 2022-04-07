@@ -1,0 +1,28 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x_div_4f": 1,
+      "x_times_y": 21,
+      "x_div_y": 2,
+      "x_minus_y": 4,
+      "x_plus_y": 10
+    },
+    {
+      "x_mod_3": 1,
+      "x_div_4f": 1.75,
+      "x_mod_y": 1,
+      "x_div_y": 2
+    }
+  ]
+}

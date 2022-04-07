@@ -1,0 +1,9 @@
+CREATE QUERY limit_ex_3 (INT j, INT k) FOR GRAPH Friend_Net {
+    start = {Person.*};
+
+    result3 = SELECT v FROM start:v
+      ORDER BY v.id
+      LIMIT k OFFSET j;
+
+    PRINT result3[result3.id]; // api v2
+}

@@ -1,0 +1,18 @@
+CREATE QUERY reachable_within_two(VERTEX<Person> seed) FOR GRAPH Work_Net
+{
+    OrAccum @visited;
+    reachable_vertices = {};
+    visited_vertices (ANY) = {seed};
+
+    // loop terminates when all neighbors within 2-hops of the seed vertex are visited
+    WHILE visited_vertices.size() !=0 LIMIT 2 DO
+        //  s is all neighbors of visited_vertices which have not been visited
+        visited_vertices = SELECT s
+            FROM visited_vertices-(:e)-:s
+            WHERE s.@visited == false
+            POST-ACCUM
+                s.@visited = true;
+        reachable_vertices = reachable_vertices UNION visited_vertices;
+    END;
+    PRINT reachable_vertices;
+}

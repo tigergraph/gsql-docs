@@ -1,0 +1,15 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"@@int_accum": 2},
+    {"@@float_accum": 0.66667},
+    {"@@double_accum": 4.33333},
+    {"@@string_accum": "Hello World"}
+  ]
+}

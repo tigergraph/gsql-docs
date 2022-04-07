@@ -1,0 +1,65 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"@@int_list_accum": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15
+    ]},
+    {
+      "@@int_list_accum.get(1)": 3,
+      "@@int_list_accum.get(0)": 1
+    },
+    {"@@int_list_accum.get(8)": 0},
+    {"@@int_list_accum.size()": 8},
+    {"@@int_list_accum.contains(2)": false},
+    {"@@int_list_accum.contains(3)": true},
+    {"@@string_list_accum": [
+      "Hello",
+      "World"
+    ]},
+    {"@@string_addition_accum": [
+      "Hello",
+      "World",
+      "a",
+      "b"
+    ]},
+    {"@@string_multiply_list_accum": [
+      "Helloa",
+      "Worlda",
+      "Hellob",
+      "Worldb"
+    ]},
+    {"@@nested_list_accum": [
+      [
+        "foo",
+        "bar"
+      ],
+      [
+        "Big",
+        "Bang",
+        "Theory"
+      ],
+      [
+        "String",
+        "Theory"
+      ]
+    ]},
+    {"@@nested_list_accum.get(0)": [
+      "foo",
+      "bar"
+    ]},
+    {"@@nested_list_accum.get(0).get(1)": "bar"}
+  ]
+}

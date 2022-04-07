@@ -1,0 +1,25 @@
+USE GRAPH ldbc_snb
+
+// A and B are used to constrain the third pattern.
+INTERPRET QUERY () SYNTAX v2 {
+
+  SumAccum<int> @@cnt;
+
+  A  =  SELECT t
+        FROM :s -(Likes>:e1)- Post:msg -(Has_Creator>)- :t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" ;
+
+
+  B  =  SELECT t
+        FROM :s -(Likes>:e1)- Comment:msg -(Has_Creator>)- :t
+        WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer" ;
+
+  Univ = SELECT u
+         FROM A:p -(Study_At>) -:u - (<Study_At)- B:s
+         WHERE s != p
+         Per (u)
+         POST-ACCUM @@cnt+=1;
+
+  PRINT @@cnt;
+
+}

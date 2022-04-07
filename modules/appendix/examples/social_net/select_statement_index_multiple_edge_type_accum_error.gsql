@@ -1,0 +1,11 @@
+CREATE QUERY multiple_edge_type_check_ex (VERTEX<Person> m1) FOR GRAPH Social_Net {
+    ListAccum<STRING> @@test_list_1, @@test_list_2, @@test_list_3;
+    all_user = {m1};
+    all_user = SELECT s
+    FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
+    ACCUM @@test_list_1 += to_string(datetime_to_epoch(e.action_time)),
+      @@test_list_2 += t.gender,
+      @@test_list_3 += to_string(datetime_to_epoch(e.action_time)) + t.gender // <1>
+               ;
+  PRINT @@test_list_1, @@test_list_2, @@test_list_3;
+}

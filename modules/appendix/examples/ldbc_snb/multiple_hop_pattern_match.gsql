@@ -1,0 +1,11 @@
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  Tag_Class1 =
+       SELECT t
+       FROM Tag_Class:s-(Is_Subclass_Of>.Is_Subclass_Of>.Is_Subclass_Of>)-Tag_Class:t
+       WHERE s.name == "TennisPlayer";
+
+  PRINT Tag_Class1;
+}

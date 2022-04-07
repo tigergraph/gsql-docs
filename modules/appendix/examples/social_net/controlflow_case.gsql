@@ -1,0 +1,15 @@
+CREATE QUERY count_gender_of_friends(VERTEX<Person> seed) FOR GRAPH Social_Net{
+    SumAccum<INT> @@males = 0;
+    SumAccum<INT> @@females = 0;
+    SumAccum<INT> @@unknown = 0;
+    starting_vertex = {seed};
+
+    people = SELECT v FROM starting_vertex -(Friend:e)-:v
+        ACCUM
+            CASE v.gender
+                WHEN "Male" THEN @@males += 1
+                WHEN "Female" THEN @@females +=1
+            ELSE @@unknown += 1
+        END;
+	PRINT @@males, @@females, @@unknown;
+}

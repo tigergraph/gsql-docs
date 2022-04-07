@@ -44,14 +44,14 @@ Overall, the functionality can be summarized as "execute the first block of stat
 .IF semantics
 [source,gsql]
 ----
-# if then
+// if then
 IF x == 5 THEN y = 10; END;      # y is assigned to 10 only if x is 5.
 
-# if then else
+// if then else
 IF x == 5 THEN y = 10;       # y is 10 only if x is 5.
 ELSE y = 20; END;            # y is 20 only if x is NOT 5.
 
-#if with ELSE IF
+// if with ELSE IF
 IF x == 5 THEN y = 10;       # y is 10 only if x is 5.
 ELSE IF x == 7 THEN y = 5;   # y is 5  only if x is 7.
 ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
@@ -64,60 +64,21 @@ ELSE y = 20; END;            # y is 20 only if x is NOT 5 and NOT 7.
 Query::
 +
 --
-.Example 1. countFriendsOf2.gsql : Simple IF-ELSE at query-body level
+This query counts the number of friends a person has, and optionally include coworkers in that count
+
+.Simple IF-ELSE at query-body level
 [source,gsql]
 ----
-# count the number of friends a person has, and optionally include coworkers in that count
-CREATE QUERY countFriendsOf2(vertex<person> seed, BOOL includeCoworkers) FOR GRAPH friendNet
-{
-       SumAccum<INT> @@numFriends = 0;
-       start = {seed};
-
-       IF includeCoworkers THEN
-          friends = SELECT v FROM start -((friend | coworker):e)- :v
-                ACCUM @@numFriends +=1;
-       ELSE
-          friends = SELECT v FROM start -(friend:e)- :v
-                ACCUM @@numFriends +=1;
-       END;
-       PRINT @@numFriends, includeCoworkers;
-}
+include::appendix:example$friend_net/controlflow_ifelse_querybody.gsql[]
 ----
 --
 Results::
 +
 --
-.Example 1 Results
 [source,gsql]
 ----
-GSQL > RUN QUERY countFriendsOf2("person2", true)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "@@numFriends": 5,
-    "includeCoworkers": true
-  }]
-}
-GSQL > RUN QUERY countFriendsOf2("person2", false)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "@@numFriends": 2,
-    "includeCoworkers": false
-  }]
-}
+include::appendix:example$friend_net/controlflow_ifelse_querybody_run.gsql[]
+include::appendix:example$friend_net/controlflow_ifelse_querybody_results.json[]
 ----
 --
 ====
@@ -127,220 +88,25 @@ GSQL > RUN QUERY countFriendsOf2("person2", false)
 Query::
 +
 --
-.Example 2. `IF-ELSE` at query-body level
+This query uses a more advanced activity calculation, taking into account number of posts and number of likes that a user made.
+
 [source,gsql]
 ----
-# determine if a user is active in terms of social networking (i.e., posts frequently)
-CREATE QUERY calculateActivity(vertex<person> seed) FOR GRAPH socialNet
-{
-    SumAccum<INT> @@numberPosts = 0;
-    start = {seed};
-    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
-           ACCUM @@numberPosts += 1;
-
-    IF  @@numberPosts < 2 THEN
-       PRINT "Not very active";
-    ELSE IF @@numberPosts < 3 THEN
-       PRINT "Semi-active";
-    ELSE
-       PRINT "Very active";
-    END;
-}
+include::appendix:example$social_net/controlflow_nested_ifelse.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Example 2 Results for Query calculateActivity
-
 [source,gsql]
 ----
-GSQL > RUN QUERY calculateActivity("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Not very active": "Not very active"}]
-}
-GSQL > RUN QUERY calculateActivity("person5")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Semi-active": "Semi-active"}]
-}
+include::appendix:example$social_net/controlflow_nested_ifelse_run.gsql[]
+include::appendix:example$social_net/controlflow_nested_ifelse_results.json[]
 ----
 --
 ====
 
-[tabs]
-====
-Query::
-+
---
-.Example 3. Nested IF at query-body level
-[source,gsql]
-----
-# use a more advanced activity calculation, taking into account number of posts
-# and number of likes that a user made
-CREATE QUERY calculateInDepthActivity(vertex<person> seed) FOR GRAPH socialNet
-{
-    SumAccum<INT> @@numberPosts = 0;
-    SumAccum<INT> @@numberLikes = 0;
-    start = {seed};
-    result = SELECT postVertex FROM start -(posted>:e)- :postVertex
-           ACCUM @@numberPosts += 1;
-    result = SELECT likedPost FROM start -(liked>:e)- :likedPost
-           ACCUM @@numberLikes += 1;
-
-    IF @@numberPosts < 2 THEN
-        IF @@numberLikes < 1 THEN
-            PRINT "Not very active";
-        ELSE
-            PRINT "Semi-active";
-        END;
-    ELSE IF @@numberPosts < 3 THEN
-        IF @@numberLikes < 2 THEN
-            PRINT "Semi-active";
-        ELSE
-            PRINT "Active";
-        END;
-    ELSE
-        PRINT "Very active";
-    END;
-}
-----
---
-
-Results::
-+
---
-.Example 3 Results for Query calculateInDepthActivity
-[source,gsql]
-----
-GSQL > RUN QUERY calculateInDepthActivity("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"Semi-active": "Semi-active"}]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 4. Nested IF at DML-sub level
-[source,gsql]
-----
-# give each user post an accumulated rating based on the subject and how many likes it has
-# This query is equivalent to the query ratePosts shown above
-CREATE QUERY ratePosts2() FOR GRAPH socialNet {
-    SumAccum<INT> @rating = 0;
-    allPeople = {person.*};
-
-    results = SELECT v FROM allPeople -(:e)- post:v
-        ACCUM IF e.type == "posted" THEN
-                IF v.subject == "cats" THEN
-                  v.@rating += -1     # -1 if post is about cats
-                ELSE IF v.subject == "Graphs" THEN
-                  v.@rating += 2      # +2 if post is about graphs
-                ELSE IF v.subject == "tigergraph" THEN
-                  v.@rating += 10     # +10 if post is about tigergraph
-                END
-              ELSE IF e.type == "liked" THEN
-                v.@rating += 3                            # +3 each time post was liked
-            END
-        ORDER BY v.@rating DESC
-        LIMIT 5;
-    PRINT results;
-}
-----
---
-
-Results::
-+
---
-.Example 4 Results for Query ratePosts2
-[source,gsql]
-----
-GSQL > RUN QUERY ratePosts2()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"results": [
-    {
-      "v_id": "6",
-      "attributes": {
-        "postTime": "2011-02-05 02:02:05",
-        "subject": "tigergraph",
-        "@rating": 13
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "0",
-      "attributes": {
-        "postTime": "2010-01-12 11:22:05",
-        "subject": "Graphs",
-        "@rating": 11
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "1",
-      "attributes": {
-        "postTime": "2011-03-03 23:02:00",
-        "subject": "tigergraph",
-        "@rating": 10
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "5",
-      "attributes": {
-        "postTime": "2011-02-06 01:02:02",
-        "subject": "tigergraph",
-        "@rating": 10
-      },
-      "v_type": "post"
-    },
-    {
-      "v_id": "4",
-      "attributes": {
-        "postTime": "2011-02-07 05:02:51",
-        "subject": "coffee",
-        "@rating": 6
-      },
-      "v_type": "post"
-    }
-  ]}]
-}
-----
---
-====
 
 
 == `CASE` Statement
@@ -375,241 +141,65 @@ The first `WHEN-THEN` clause to have an expression value equal to the `CASE` exp
 ----
 STRING drink = "Juice";
 
-# CASE statement: if-else version
+// CASE statement: if-else version
 CASE
   WHEN drink == "Juice" THEN @@calories += 50
   WHEN drink == "Soda"  THEN @@calories += 120
   ...
-  ELSE @@calories = 0       # Optional else-clause
+  ELSE @@calories = 0       // Optional else-clause
 END
-# Since drink = "Juice", 50 will be added to calories
+// Since drink = "Juice", 50 will be added to calories
 
-# CASE statement: switch version
+// CASE statement: switch version
 CASE drink
   WHEN "Juice" THEN @@calories += 50
   WHEN "Soda"  THEN @@calories += 120
   ...
-  ELSE  @@calories = 0    # Optional else-clause
+  ELSE  @@calories = 0    // Optional else-clause
 END
-# Since drink = "Juice", 50 will be added to calories
+// Since drink = "Juice", 50 will be added to calories
 ----
 
 
 === Examples
 
+
 [tabs]
 ====
 Query::
 +
 --
-.Example 1. CASE as IF-ELSE
+This query tallies male and female friends of the starting vertex.
+
 [source,gsql]
 ----
-# Display the total number of times connected users posted about a certain subject
-CREATE QUERY userNetworkPosts (vertex<person> seedUser, STRING subjectName) FOR GRAPH socialNet {
-    SumAccum<INT> @@topicSum = 0;
-    OrAccum @visited;
-    reachableVertices = {};            # empty vertex set
-    visitedVertices (ANY) = {seedUser};  # set that can contain ANY type of vertex
-
-    WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
-        visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-            FROM visitedVertices-(:e)-:s
-            WHERE s.@visited == false
-            ACCUM s.@visited = true,
-                CASE
-                    WHEN s.type == "post" and s.subject == subjectName THEN @@topicSum += 1
-                END;
-    END;
-    PRINT @@topicSum;
-}
+include::appendix:example$social_net/controlflow_case.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Example 1 Results for Query userNetworkPosts
+.Example 2 Results for Query count_gender_of_friends
 [source,gsql]
 ----
-GSQL > RUN QUERY userNetworkPosts("person1", "Graphs")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@topicSum": 3}]
-}
+include::appendix:example$social_net/controlflow_case_run.gsql[]
+include::appendix:example$social_net/controlflow_case_results.json[]
 ----
 --
 ====
+
 
 [tabs]
 ====
 Query::
 +
 --
-.Example 2. CASE as switch
+This query gives each user post a rating based on the subject and how many likes it has.
+
 [source,gsql]
 ----
-# tally male and female friends of the starting vertex
-CREATE QUERY countGenderOfFriends(vertex<person> seed) FOR GRAPH socialNet {
-       SumAccum<INT> @@males = 0;
-       SumAccum<INT> @@females = 0;
-       SumAccum<INT> @@unknown = 0;
-       startingVertex = {seed};
-
-       people = SELECT v FROM startingVertex -(friend:e)-:v
-       	        ACCUM CASE v.gender
-	      	      WHEN "Male" THEN @@males += 1
-		   		  WHEN "Female" THEN @@females +=1
-		    	  ELSE @@unknown += 1
-		   	    END;
-	PRINT @@males, @@females, @@unknown;
-}
-----
---
-
-Results::
-+
---
-.Example 2 Results for Query countGenderOfFriends
-[source,gsql]
-----
-GSQL > RUN QUERY countGenderOfFriends("person4")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{
-    "@@males": 2,
-    "@@unknown": 0,
-    "@@females": 1
-  }]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 3. Multiple CASE statements
-[source,gsql]
-----
-# give each social network user a social impact score which accumulates
-# based on how many friends and posts they have
-CREATE QUERY scoreSocialImpact() FOR GRAPH socialNet api("v2") {
-       SumAccum<INT> @socialImpact = 0;
-       allPeople = {person.*};
-       people = SELECT v FROM allPeople:v
-              ACCUM CASE WHEN v.outdegree("friend") > 1 THEN v.@socialImpact +=1 END, # +1 point for having > 1 friend
-                    CASE WHEN v.outdegree("friend") > 2 THEN v.@socialImpact +=1 END, # +1 point for having > 2 friends
-                    CASE WHEN v.outdegree("posted") > 1 THEN v.@socialImpact +=1 END, # +1 point for having > 1 posts
-                    CASE WHEN v.outdegree("posted") > 3 THEN v.@socialImpact +=2 END; # +2 points for having > 2 posts
-       #PRINT people.@socialImpact;       // api v1
-       PRINT people[people.@socialImpact]; // api v2
-}
-----
---
-
-Results::
-+
---
-.Example 3 Results for Query scoreSocialImpact
-[source,gsql]
-----
-GSQL > RUN QUERY scoreSocialImpact()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"people": [
-    {
-      "v_id": "person4",
-      "attributes": {"people.@socialImpact": 2},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {"people.@socialImpact": 1},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {"people.@socialImpact": 2},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {"people.@socialImpact": 1},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {"people.@socialImpact": 2},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {"people.@socialImpact": 2},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {"people.@socialImpact": 1},
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {"people.@socialImpact": 3},
-      "v_type": "person"
-    }
-  ]}]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 4. Nested CASE statements
-[source,gsql]
-----
-# give each user post a rating based on the subject and how many likes it has
-CREATE QUERY ratePosts() FOR GRAPH socialNet api("v2") {
-  SumAccum<INT> @rating = 0;
-  allPeople = {person.*};
-
-  results = SELECT v FROM allPeople -(:e)- post:v
-    ACCUM CASE e.type
-      WHEN "posted" THEN
-        CASE
-          WHEN v.subject == "cats" THEN v.@rating += -1    # -1 if post about cats
-          WHEN v.subject == "Graphs" THEN v.@rating += 2   # +2 if post about graphs
-          WHEN v.subject == "tigergraph" THEN v.@rating += 10 # +10 if post about tigergraph
-          END
-      WHEN "liked" THEN v.@rating += 3                 # +3 each time post was liked
-      END;
-  #PRINT results.@rating; // api v1
-  PRINT results[results.@rating]; // api v2
-}
+include::appendix:example$social_net/controlflow_nested_case.gsql[]
 ----
 --
 
@@ -619,78 +209,8 @@ Results::
 .Example 4 Results for Query ratePosts
 [source,gsql]
 ----
-GSQL > RUN QUERY ratePosts()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"results": [
-    {
-      "v_id": "0",
-      "attributes": {"results.@rating": 11},
-      "v_type": "post"
-    },
-    {
-      "v_id": "10",
-      "attributes": {"results.@rating": 2},
-      "v_type": "post"
-    },
-    {
-      "v_id": "2",
-      "attributes": {"results.@rating": 0},
-      "v_type": "post"
-    },
-    {
-      "v_id": "4",
-      "attributes": {"results.@rating": 6},
-      "v_type": "post"
-    },
-    {
-      "v_id": "9",
-      "attributes": {"results.@rating": -1},
-      "v_type": "post"
-    },
-    {
-      "v_id": "3",
-      "attributes": {"results.@rating": 2},
-      "v_type": "post"
-    },
-    {
-      "v_id": "5",
-      "attributes": {"results.@rating": 10},
-      "v_type": "post"
-    },
-    {
-      "v_id": "7",
-      "attributes": {"results.@rating": 2},
-      "v_type": "post"
-    },
-    {
-      "v_id": "1",
-      "attributes": {"results.@rating": 10},
-      "v_type": "post"
-    },
-    {
-      "v_id": "11",
-      "attributes": {"results.@rating": -1},
-      "v_type": "post"
-    },
-    {
-      "v_id": "8",
-      "attributes": {"results.@rating": 2},
-      "v_type": "post"
-    },
-    {
-      "v_id": "6",
-      "attributes": {"results.@rating": 13},
-      "v_type": "post"
-    }
-  ]}]
-}
+GSQL > RUN QUERY rate_posts()
+include::appendix:example$social_net/controlflow_nested_case_results.json[]
 ----
 --
 ====
@@ -721,25 +241,26 @@ The example below demonstrates how the `LIMIT` behaves.
 If a limit value is not specified, it is possible for a WHILE loop to iterate infinitely. It is the responsibility of the query author to design the condition logic so that it is guaranteed to eventually be true (or to set a limit).
 ====
 
+The following three `WHILE` statements behave the same.
+Each terminates when `v.size == 0` or after 5 iterations of the loop.
+
 .WHILE LIMIT semantics
 [source,gsql]
 ----
-# These three WHILE statements behave the same.  Each terminates when
-# (v.size == 0) or after 5 iterations of the loop.
 WHILE v.size() !=0 LIMIT 5 DO
-    # Some statements		
+    // Statements
 END;
 
 INT iter = 0;
 WHILE (v.size() !=0) AND (iter < 5) DO
-	# Some statements
+    // Statements
     iter = iter + 1;		
 END;
 
 INT iter = 0;
 WHILE v.size() !=0 DO
     IF iter == 5 THEN  BREAK;  END;
-    # Some statements	
+    // Statements
 	iter = iter + 1;	
 END;
 ----
@@ -753,203 +274,23 @@ Below are a number of examples that demonstrate the use of `WHILE` statements.
 Query::
 +
 --
+The following query finds all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
+
 .Example 1. Simple WHILE loop
 [source,gsql]
 ----
-# find all vertices which are reachable from a starting seed vertex (i.e., breadth-first search)
-CREATE QUERY reachable(vertex<person> seed) FOR GRAPH workNet
-{
-    OrAccum @visited;
-    reachableVertices = {};        # empty vertex set
-    visitedVertices (ANY) = {seed};  # set that can contain ANY type of vertex
-
-    WHILE visitedVertices.size() !=0 DO        # loop terminates when all neighbors are visited
-        visitedVertices = SELECT s              # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)-:s
-                WHERE s.@visited == false
-                POST-ACCUM s.@visited = true;
-        reachableVertices = reachableVertices UNION visitedVertices;
-    END;
-    PRINT reachableVertices;
-}
+include::appendix:example$work_net/controlflow_while.gsql[]
 ----
 --
 
 Results::
 +
 --
-.reachable Results
+
 [source,gsql]
 ----
-GSQL > RUN QUERY reachable("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"reachableVertices": [
-    {
-      "v_id": "person3",
-      "attributes": {
-        "interestList": ["teaching"],
-        "skillSet": [ 6, 1, 4 ],
-        "skillList": [ 4, 1, 6 ],
-        "locationId": "jp",
-        "interestSet": ["teaching"],
-        "@visited": true,
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person9",
-      "attributes": {
-        "interestList": [ "financial", "teaching" ],
-        "skillSet": [ 2, 7, 4 ],
-        "skillList": [ 4, 7, 2 ],
-        "locationId": "us",
-        "interestSet": [ "teaching", "financial" ],
-        "@visited": true,
-        "id": "person9"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person4",
-      "attributes": {
-        "interestList": ["football"],
-        "skillSet": [ 10, 1, 4 ],
-        "skillList": [ 4, 1, 10 ],
-        "locationId": "us",
-        "interestSet": ["football"],
-        "@visited": true,
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "interestList": [ "art", "sport" ],
-        "skillSet": [ 6, 8 ],
-        "skillList": [ 8, 6 ],
-        "locationId": "us",
-        "interestSet": [ "sport", "art" ],
-        "@visited": true,
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
-        "@visited": true,
-        "id": "person1"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "interestList": [ "sport", "financial", "engineering" ],
-        "skillSet": [ 5, 2, 8 ],
-        "skillList": [ 8, 2, 5 ],
-        "locationId": "can",
-        "interestSet": [ "engineering", "financial", "sport" ],
-        "@visited": true,
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "interestList": [ "music", "art" ],
-        "skillSet": [ 10, 7 ],
-        "skillList": [ 7, 10 ],
-        "locationId": "jp",
-        "interestSet": [ "art", "music" ],
-        "@visited": true,
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "locationId": "chn",
-        "interestSet": ["engineering"],
-        "@visited": true,
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "interestList": ["management"],
-        "skillSet": [ 2, 5, 1 ],
-        "skillList": [ 1, 5, 2 ],
-        "locationId": "chn",
-        "interestSet": ["management"],
-        "@visited": true,
-        "id": "person8"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "company3",
-      "attributes": {
-        "country": "jp",
-        "@visited": true,
-        "id": "company3"
-      },
-      "v_type": "company"
-    },
-    {
-      "v_id": "company2",
-      "attributes": {
-        "country": "chn",
-        "@visited": true,
-        "id": "company2"
-      },
-      "v_type": "company"
-    },
-    {
-      "v_id": "company1",
-      "attributes": {
-        "country": "us",
-        "@visited": true,
-        "id": "company1"
-      },
-      "v_type": "company"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "@visited": true,
-        "id": "person10"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+RUN QUERY reachable("person1")
+include::appendix:example$work_net/controlflow_while_results.json[]
 ----
 --
 ====
@@ -959,194 +300,22 @@ GSQL > RUN QUERY reachable("person1")
 Query::
 +
 --
-.Example 2. WHILE loop using a LIMIT
+This query finds all vertices reachable within two hops from a starting seed vertex (i.e., breadth-first search)
+
 [source,gsql]
 ----
-# find all vertices reachable within two hops from a starting seed vertex (i.e., breadth-first search)
-CREATE QUERY reachableWithinTwo(vertex<person> seed) FOR GRAPH workNet
-{
-    OrAccum @visited;
-    reachableVertices = {};        # empty vertex set
-    visitedVertices (ANY) = {seed};  # set that can contain ANY type of vertex
-
-    WHILE visitedVertices.size() !=0 LIMIT 2 DO # loop terminates when all neighbors within 2-hops of the seed vertex are visited
-        visitedVertices = SELECT s               # s is all neighbors of visitedVertices which have not been visited
-                FROM visitedVertices-(:e)-:s
-                WHERE s.@visited == false
-                POST-ACCUM s.@visited = true;
-        reachableVertices = reachableVertices UNION visitedVertices;
-    END;
-    PRINT reachableVertices;
-}
+include::appendix:example$work_net/controlflow_while_2.gsql[]
 ----
 --
 
 Results::
 +
 --
-.reachableWithinTwo Results
+
 [source,gsql]
 ----
-GSQL > RUN QUERY reachableWithinTwo("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"reachableVertices": [
-    {
-      "v_id": "person4",
-      "attributes": {
-        "interestList": ["football"],
-        "skillSet": [ 10, 1, 4 ],
-        "skillList": [ 4, 1, 10 ],
-        "locationId": "us",
-        "interestSet": ["football"],
-        "@visited": true,
-        "id": "person4"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person3",
-      "attributes": {
-        "interestList": ["teaching"],
-        "skillSet": [ 6, 1, 4 ],
-        "skillList": [ 4, 1, 6 ],
-        "locationId": "jp",
-        "interestSet": ["teaching"],
-        "@visited": true,
-        "id": "person3"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person9",
-      "attributes": {
-        "interestList": [ "financial", "teaching" ],
-        "skillSet": [ 2, 7, 4 ],
-        "skillList": [ 4, 7, 2 ],
-        "locationId": "us",
-        "interestSet": [ "teaching", "financial" ],
-        "@visited": true,
-        "id": "person9"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person5",
-      "attributes": {
-        "interestList": [ "sport", "financial", "engineering" ],
-        "skillSet": [ 5, 2, 8 ],
-        "skillList": [ 8, 2, 5 ],
-        "locationId": "can",
-        "interestSet": [ "engineering", "financial", "sport" ],
-        "@visited": true,
-        "id": "person5"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person6",
-      "attributes": {
-        "interestList": [ "music", "art" ],
-        "skillSet": [ 10, 7 ],
-        "skillList": [ 7, 10 ],
-        "locationId": "jp",
-        "interestSet": [ "art", "music" ],
-        "@visited": true,
-        "id": "person6"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person10",
-      "attributes": {
-        "interestList": [ "football", "sport" ],
-        "skillSet": [3],
-        "skillList": [3],
-        "locationId": "us",
-        "interestSet": [ "sport", "football" ],
-        "@visited": true,
-        "id": "person10"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person8",
-      "attributes": {
-        "interestList": ["management"],
-        "skillSet": [ 2, 5, 1 ],
-        "skillList": [ 1, 5, 2 ],
-        "locationId": "chn",
-        "interestSet": ["management"],
-        "@visited": true,
-        "id": "person8"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "company1",
-      "attributes": {
-        "country": "us",
-        "@visited": true,
-        "id": "company1"
-      },
-      "v_type": "company"
-    },
-    {
-      "v_id": "person2",
-      "attributes": {
-        "interestList": ["engineering"],
-        "skillSet": [ 6, 5, 3, 2 ],
-        "skillList": [ 2, 3, 5, 6 ],
-        "locationId": "chn",
-        "interestSet": ["engineering"],
-        "@visited": true,
-        "id": "person2"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "company2",
-      "attributes": {
-        "country": "chn",
-        "@visited": true,
-        "id": "company2"
-      },
-      "v_type": "company"
-    },
-    {
-      "v_id": "person7",
-      "attributes": {
-        "interestList": [ "art", "sport" ],
-        "skillSet": [ 6, 8 ],
-        "skillList": [ 8, 6 ],
-        "locationId": "us",
-        "interestSet": [ "sport", "art" ],
-        "@visited": true,
-        "id": "person7"
-      },
-      "v_type": "person"
-    },
-    {
-      "v_id": "person1",
-      "attributes": {
-        "interestList": [ "management", "financial" ],
-        "skillSet": [ 3, 2, 1 ],
-        "skillList": [ 1, 2, 3 ],
-        "locationId": "us",
-        "interestSet": [ "financial", "management" ],
-        "@visited": true,
-        "id": "person1"
-      },
-      "v_type": "person"
-    }
-  ]}]
-}
+include::appendix:example$work_net/controlflow_while_2_run.gsql[]
+include::appendix:example$work_net/controlflow_while_2_results.json[]
 ----
 --
 ====
@@ -1217,22 +386,7 @@ Query::
 .Nested `FOREACH IN RANGE` with MapAccum
 [source,gsql]
 ----
-CREATE QUERY foreachRangeEx() FOR GRAPH socialNet {
-  ListAccum<INT> @@t;
-  Start = {person.*};
-  FOREACH i IN RANGE[0, 2] DO
-    @@t += i;
-    L = SELECT Start
-        FROM Start
-        WHERE Start.id == "person1"
-        ACCUM
-          FOREACH j IN RANGE[0, i] DO
-            @@t += j
-          END
-        ;
-  END;
-  PRINT @@t;
-}
+include::appendix:example$social_net/controlflow_foreach_range.gsql[]
 ----
 --
 
@@ -1242,17 +396,8 @@ Results::
 .Results for Query foreachRangeEx
 [source,gsql]
 ----
-GSQL > RUN QUERY foreachRangeEx()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@t": [ 0, 0, 1, 0, 1, 2, 0, 1, 2 ]}]
-}
+GSQL > RUN QUERY foreach_range_ex()
+include::appendix:example$social_net/controlflow_foreach_range_results.json[]
 ----
 --
 ====
@@ -1262,16 +407,11 @@ GSQL > RUN QUERY foreachRangeEx()
 Query::
 +
 --
-.FOREACH IN RANGE with step
+The following `FOREACH` statement uses a specified step value for iterating through the range.
+
 [source,gsql]
 ----
-CREATE QUERY foreachRangeStep(INT a, INT b, INT c) FOR GRAPH minimalNet {
-  ListAccum<INT> @@t;
-  FOREACH i IN RANGE[a,b].step(c) DO
-    @@t += i;
-  END;
-  PRINT @@t;
-}
+include::appendix:example$minimal_net/controlflow_foreach_step.gsql[]
 ----
 The step value can be positive for an ascending range or negative for a descending range.
 If the step has the wrong polarity, then the loop has zero iterations; that is, the exit condition is already satisfied.
@@ -1280,45 +420,11 @@ If the step has the wrong polarity, then the loop has zero iterations; that is, 
 Results::
 +
 --
-.foreachRangeStep.json Results
 
 [source,gsql]
 ----
-GSQL > RUN QUERY foreachRangeStep(100,0,-9)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@t": [
-    100,
-    91,
-    82,
-    73,
-    64,
-    55,
-    46,
-    37,
-    28,
-    19,
-    10,
-    1
-  ]}]
-}
-GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@t": []}]
-}
+include::appendix:example$minimal_net/controlflow_foreach_step_run.gsql[]
+include::appendix:example$minimal_net/controlflow_foreach_step_results.json[]
 ----
 --
 ====
@@ -1331,58 +437,21 @@ GSQL > RUN QUERY foreachRangeStep(-100,100,-9)
 Query::
 +
 --
-.Example 1 - FOREACH with ListAccum
+This query counts the number of companies whose country matches the provided string.
+
 [source,gsql]
 ----
-# Count the number of companies whose country matches the provided string
-CREATE QUERY companyCount(STRING countryName) FOR GRAPH workNet {
-  ListAccum<STRING> @@companyList;
-  INT countryCount;
-  start = {ANY};                        # start will have a set of all vertex types
-
-  s = SELECT v FROM start:v             # get all vertices
-      WHERE v.type == "company"         # that have a type of "company"
-      ACCUM @@companyList += v.country; # append the country attribute from all company vertices to the ListAccum
-
-  # Iterate the ListAccum and compare each element to the countryName parameter
-  FOREACH item in @@companyList DO
-    IF item == countryName THEN
-       countryCount = countryCount + 1;
-    END;
-  END;
-  PRINT countryCount;
-}
+include::appendix:example$work_net/controlflow_querybody_foreach.gsql[]
 ----
 --
 
 Results::
 +
 --
-.companyCount Results
 [source,gsql]
 ----
-GSQL > RUN QUERY companyCount("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"countryCount": 2}]
-}
-GSQL > RUN QUERY companyCount("can")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"countryCount": 1}]
-}
+include::appendix:example$work_net/controlflow_querybody_foreach_run.gsql[]
+include::appendix:example$work_net/controlflow_querybody_foreach_results.json[]
 ----
 --
 ====
@@ -1392,236 +461,22 @@ GSQL > RUN QUERY companyCount("can")
 Query::
 +
 --
-.Example 2 - FOREACH with a seed set
+This query counts the number of employees from a given country and list their IDs.
+
 [source,gsql]
 ----
-#Find all company employees who live in a given country
-CREATE QUERY employeesByCompany(STRING country) FOR GRAPH workNet {
-  ListAccum<VERTEX<company>> @@companyList;
-  start = {ANY};
-
-  # Build a list of all company vertices
-  #  (these are vertex IDs only)
-  s = SELECT v FROM start:v
-      WHERE v.type == "company"
-      ACCUM @@companyList += v;
-
-  # Use the vertex IDs as Seeds for vertex sets
-  FOREACH item IN @@companyList DO
-    companyItem = {item};
-    employees = SELECT t FROM companyItem -(worksFor)- :t
-                WHERE (t.locationId == country);
-    PRINT employees;
-  END;
-}
+include::appendix:example$work_net/controlflow_querybody_foreach_2.gsql[]
 ----
 --
 
 Results::
 +
 --
-.employeesByCompany Results
-[source,gsql]
-----
-GSQL > RUN QUERY employeesByCompany("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [ {"employees": []},
-    {"employees": []},
-    {"employees": [
-      {
-        "v_id": "person9",
-        "attributes": {
-          "interestList": [
-            "financial",
-            "teaching"
-          ],
-          "skillSet": [ 2, 7, 4 ],
-          "skillList": [ 4, 7, 2 ],
-          "locationId": "us",
-          "interestSet": [ "teaching", "financial" ],
-          "id": "person9"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person10",
-        "attributes": {
-          "interestList": [ "football", "sport" ],
-          "skillSet": [3],
-          "skillList": [3],
-          "locationId": "us",
-          "interestSet": [ "sport", "football" ],
-          "id": "person10"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {
-          "interestList": [ "art", "sport" ],
-          "skillSet": [ 6, 8 ],
-          "skillList": [ 8, 6 ],
-          "locationId": "us",
-          "interestSet": [ "sport", "art" ],
-          "id": "person7"
-        },
-        "v_type": "person"
-      }
-    ]},
-    {"employees": [
-      {
-        "v_id": "person4",
-        "attributes": {
-          "interestList": ["football"],
-          "skillSet": [ 10, 1, 4 ],
-          "skillList": [ 4, 1, 10 ],
-          "locationId": "us",
-          "interestSet": ["football"],
-          "id": "person4"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person9",
-        "attributes": {
-          "interestList": [ "financial", "teaching" ],
-          "skillSet": [ 2, 7, 4 ],
-          "skillList": [ 4, 7, 2 ],
-          "locationId": "us",
-          "interestSet": [ "teaching", "financial" ],
-          "id": "person9"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person7",
-        "attributes": {
-          "interestList": [ "art", "sport" ],
-          "skillSet": [ 6, 8 ],
-          "skillList": [ 8, 6 ],
-          "locationId": "us",
-          "interestSet": [ "sport", "art" ],
-          "id": "person7"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {
-          "interestList": [ "management", "financial" ],
-          "skillSet": [ 3, 2, 1 ],
-          "skillList": [ 1, 2, 3 ],
-          "locationId": "us",
-          "interestSet": [ "financial", "management" ],
-          "id": "person1"
-        },
-        "v_type": "person"
-      }
-    ]},
-    {"employees": [
-      {
-        "v_id": "person10",
-        "attributes": {
-          "interestList": [
-            "football",
-            "sport"
-          ],
-          "skillSet": [3],
-          "skillList": [3],
-          "locationId": "us",
-          "interestSet": [ "sport", "football" ],
-          "id": "person10"
-        },
-        "v_type": "person"
-      },
-      {
-        "v_id": "person1",
-        "attributes": {
-          "interestList": [ "management", "financial" ],
-          "skillSet": [ 3, 2, 1 ],
-          "skillList": [ 1, 2, 3 ],
-          "locationId": "us",
-          "interestSet": [ "financial", "management" ],
-          "id": "person1"
-        },
-        "v_type": "person"
-      }
-    ]}
-  ]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 3 - Nested FOREACH with MapAccum
-[source,gsql]
-----
-# Count the number of employees from a given country and list their ids
-CREATE QUERY employeeByCountry(STRING countryName) FOR GRAPH workNet {
-  MapAccum <STRING, ListAccum<STRING>> @@employees;
-
-  # start will have a set of all person type vertices
-  start = {person.*};
-
-  # Build a map using person locationId as a key and a list of strings to hold multiple person ids
-  s = SELECT v FROM start:v
-      ACCUM @@employees += (v.locationId -> v.id);
-
-  # Iterate the map using (key,value) pairs
-  FOREACH (key,val) in @@employees DO
-    IF key == countryName THEN
-      PRINT val.size();
-
-      # Nested foreach to iterate over the list of person ids
-      FOREACH employee in val DO
-        PRINT employee;
-      END;
-
-      # MapAccum keys are unique so we can BREAK out of the loop
-      BREAK;
-    END;
-  END;
-}
-----
---
-
-Results::
-+
---
-.employeeByCountry Results
 
 [source,gsql]
 ----
-GSQL > RUN QUERY employeeByCountry("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"val.size()": 5},
-    {"employee": "person4"},
-    {"employee": "person10"},
-    {"employee": "person7"},
-    {"employee": "person1"},
-    {"employee": "person9"}
-  ]
-}
+include::appendix:example$work_net/controlflow_querybody_foreach_2_run.gsql[]
+include::appendix:example$work_net/controlflow_querybody_foreach_2_results.json[]
 ----
 --
 ====
@@ -1634,63 +489,22 @@ GSQL > RUN QUERY employeeByCountry("us")
 Query::
 +
 --
-.`ACCUM FOREACH`
+This query shows post topics liked by users and show total likes per topic.
+
 [source,gsql]
 ----
-# Show post topics liked by users and show total likes per topic
-CREATE QUERY topicLikes() FOR GRAPH socialNet {
- SetAccum<STRING> @@personPosts;
- SumAccum<INT> @postLikes;
- MapAccum<STRING,INT> @@likesByTopic;
-
-
-  start = {person.*};
-
-  # Find all user posts and generate a set of post topics
-  # (set has no duplicates)
-  posts = SELECT g FROM start - (posted>) - :g
-          ACCUM @@personPosts += g.subject;
-
-  # Use set of topics to increment how many times a specfic
-  #  post is liked by other users
-  likedPosts = SELECT f FROM start - (liked>) - :f
-               ACCUM FOREACH x in @@personPosts DO
-                         CASE WHEN (f.subject == x) THEN
-                           f.@postLikes += 1
-                         END
-                     END
-               # Aggregate all liked totals by topic
-               POST-ACCUM @@likesByTopic += (f.subject -> f.@postLikes);
-
-  # Display the number of likes per topic
-  PRINT @@likesByTopic;
-}
+include::appendix:example$social_net/controlflow_dmlsub_foreach.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results for Query topicLikes
 
 [source,gsql]
 ----
-GSQL > RUN QUERY topicLikes()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@likesByTopic": {
-    "cats": 3,
-    "coffee": 2,
-    "Graphs": 3,
-    "tigergraph": 1
-  }}]
-}
+GSQL > RUN QUERY topic_likes()
+include::appendix:example$social_net/controlflow_dmlsub_foreach_results.json[]
 ----
 --
 ====
@@ -1700,58 +514,22 @@ GSQL > RUN QUERY topicLikes()
 Query::
 +
 --
-.Example 1 - POST-ACCUM FOREACH
+This query shows a summary of the number of friends all persons have by gender.
+
 [source,gsql]
 ----
-#Show a summary of the number of friends all persons have by gender
-CREATE QUERY friendGender() FOR GRAPH socialNet {
-  ListAccum<STRING> @friendGender;
-  SumAccum<INT> @@maleGenderCount;
-  SumAccum<INT> @@femaleGenderCount;
-
-  start = {person.*};
-
-  # Record a list showing each friend's gender
-  socialMembers = SELECT s from start:s -(friend)- :g
-              ACCUM s.@friendGender += (g.gender)
-
-              # Loop over each list of genders and total them
-              POST-ACCUM FOREACH x in s.@friendGender DO
-	                       CASE WHEN (x == "Male") THEN
-	                         @@maleGenderCount += 1
-	                       ELSE
-	                         @@femaleGenderCount += 1
-	                       END
-                         END;
-
-  PRINT @@maleGenderCount;
-  PRINT @@femaleGenderCount;
-}
+include::appendix:example$social_net/controlflow_dmlsub_foreach_2.gsql[]
 ----
 --
-
 
 Results::
 +
 --
-.Results for Query friendGender
 
 [source,gsql]
 ----
-GSQL > RUN QUERY friendGender()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"@@maleGenderCount": 11},
-    {"@@femaleGenderCount": 7}
-  ]
-}
+GSQL > RUN QUERY friend_gender()
+include::appendix:example$social_net/controlflow_dmlsub_foreach_2_results.json[]
 ----
 --
 ====
@@ -1771,89 +549,46 @@ Below are a number of examples that demonstrate the use of `BREAK` and `CONTINUE
 .Continue and Break Semantics
 [source,gsql]
 ----
-# While loop with continue statement
-INT i = 0;
-INT nCount = 0;
-WHILE i < 10 DO
-  i = i + 1;
-  IF (i % 2 == 0) { CONTINUE; }
-  nCount = nCount + 1;
-END;
-# i is 10, nCount is 5 (skips the increment for every even i).
+// While loop with continue statement
+    INT i = 0;
+    INT nCount = 0;
+    WHILE i < 10 DO
+        i = i + 1;
+        IF (i % 2 == 0) { CONTINUE; }
+        nCount = nCount + 1;
+    END;
+    // i is 10, nCount is 5 (skips the increment for every even i).
 
-# While loop with a break statement
-i = 0;
-WHILE i < 10 DO
-  IF (i == 5) { BREAK; }  # When i is 5 the loop is exited
-  i = i + 1;
-END;
-# i is now 5
+    // While loop with a break statement
+    i = 0;
+    WHILE i < 10 DO
+        IF (i == 5) { BREAK; }  # When i is 5 the loop is exited
+        i = i + 1;
+    END;
+// i is now 5
 ----
-
 
 [tabs]
 ====
 Query::
 +
 --
-.Example 1. Break
+This query finds posts of a given person, and post of friends of that person, friends of friends, etc. until a post about cats is found.
+The number of friend-hops to reach is the 'degree' of cats.
+
 [source,gsql]
 ----
-# find posts of a given person, and post of friends of that person, friends of friends, etc
-# until a post about cats is found. The number of friend-hops to reach is the 'degree' of cats
-CREATE QUERY findDegreeOfCats(vertex<person> seed) FOR GRAPH socialNet
-{
-    SumAccum<INT> @@degree = 0;
-    OrAccum @@foundCatPost = false;
-    OrAccum @visited = false;
-
-    friends (ANY) = {seed};
-    WHILE @@foundCatPost != true AND friends.size() > 0 DO
-          posts = SELECT v FROM friends-(posted>:e)-:v
-                  ACCUM CASE WHEN v.subject == "cats" THEN @@foundCatPost += true END;
-
-          IF @@foundCatPost THEN
-            BREAK;
-          END;
-
-          friends = SELECT v FROM friends-(friend:e)-:v
-                  WHERE v.@visited == false
-                  ACCUM v.@visited = true;
-          @@degree += 1;
-    END;
-    PRINT @@degree;
-}
+include::appendix:example$social_net/controlflow_break.gsql[]
 ----
 --
 
 Results::
 +
 --
-.Results of Query findDegreeOfCats
 [source,gsql]
 ----
-GSQL > RUN QUERY findDegreeOfCats("person2")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@degree": 2}]
-}
-GSQL > RUN QUERY findDegreeOfCats("person4")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@degree": 0}]
-}
+include::appendix:example$social_net/controlflow_break_run.gsql[]
+include::appendix:example$social_net/controlflow_break_results.json[]
 ----
 --
 ====
@@ -1863,39 +598,12 @@ GSQL > RUN QUERY findDegreeOfCats("person4")
 Query::
 +
 --
-.Example 2. findEnoughFriends.gsql: While loop using continue statement
+This query finds all 3-hop friends of a starting vertex.
+Count coworkers as friends if there are not enough friends
+
 [source,gsql]
 ----
-# find all 3-hop friends of a starting vertex. count coworkers as friends
-# if there are not enough friends
-CREATE QUERY findEnoughFriends(vertex<person> seed) FOR GRAPH friendNet
-{
-    SumAccum<INT> @@distance = 0;   # keep track of the distance from the seed
-    OrAccum @visited = false;
-    visitedVertices = {seed};
-    WHILE true LIMIT 3 DO
-        @@distance += 1;
-        # traverse from visitedVertices to its friends
-        friends = SELECT v
-            FROM visitedVertices -(friend:e)- :v
-            WHERE v.@visited == false
-            POST-ACCUM v.@visited = true;
-        PRINT @@distance, friends;
-
-        # if number of friends at this level is sufficient, finish this iteration
-        IF visitedVertices.size() >= 2 THEN
-            visitedVertices = friends;
-            CONTINUE;
-        END;
-        # if fewer than 4 friends, add in coworkers
-        coworkers = SELECT v
-            FROM visitedVertices -(coworker:e)- :v
-            WHERE v.@visited == false
-            POST-ACCUM v.@visited = true;
-        visitedVertices = friends UNION coworkers;
-        PRINT @@distance, coworkers;
-    END;
-}
+include::appendix:example$friend_net/controlflow_continue.gsql[]
 ----
 --
 
@@ -1905,321 +613,8 @@ Results::
 .findEnoughFriends.json Example 2 Results
 [source,gsql]
 ----
-GSQL > RUN QUERY findEnoughFriends("person1")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {
-      "@@distance": 1,
-      "friends": [
-        {
-          "v_id": "person4",
-          "attributes": {
-            "@visited": true,
-            "id": "person4"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person2",
-          "attributes": {
-            "@visited": true,
-            "id": "person2"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person3",
-          "attributes": {
-            "@visited": true,
-            "id": "person3"
-          },
-          "v_type": "person"
-        }
-      ]
-    },
-    {
-      "coworkers": [
-        {
-          "v_id": "person5",
-          "attributes": {
-            "@visited": true,
-            "id": "person5"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person6",
-          "attributes": {
-            "@visited": true,
-            "id": "person6"
-          },
-          "v_type": "person"
-        }
-      ],
-      "@@distance": 1
-    },
-    {
-      "@@distance": 2,
-      "friends": [
-        {
-          "v_id": "person9",
-          "attributes": {
-            "@visited": true,
-            "id": "person9"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person1",
-          "attributes": {
-            "@visited": true,
-            "id": "person1"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person8",
-          "attributes": {
-            "@visited": true,
-            "id": "person8"
-          },
-          "v_type": "person"
-        }
-      ]
-    },
-    {
-      "@@distance": 3,
-      "friends": [
-        {
-          "v_id": "person12",
-          "attributes": {
-            "@visited": true,
-            "id": "person12"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person10",
-          "attributes": {
-            "@visited": true,
-            "id": "person10"
-          },
-          "v_type": "person"
-        },
-        {
-          "v_id": "person7",
-          "attributes": {
-            "@visited": true,
-            "id": "person7"
-          },
-          "v_type": "person"
-        }
-      ]
-    }
-  ]
-}
+include::appendix:example$friend_net/controlflow_continue_run.gsql[]
+include::appendix:example$friend_net/controlflow_continue_results.json[]
 ----
 --
 ====
-
-[tabs]
-====
-Query::
-+
---
-.Example 3. While loop using break statement
-[source,gsql]
-----
-# find at least the top-k companies closest to a given seed vertex, if they exist
-CREATE QUERY topkCompanies(vertex<person> seed, INT k) FOR GRAPH workNet
-{
-    SetAccum<vertex<company>> @@companyList;
-    OrAccum @visited = false;
-    visitedVertices (ANY) = {seed};
-    WHILE true DO
-        visitedVertices = SELECT v                  # traverse from x to its unvisited neighbors
-                FROM visitedVertices -(:e)- :v
-                WHERE v.@visited == false
-                ACCUM CASE
-                    WHEN (v.type == "company") THEN # count the number of company vertices encountered
-                        @@companyList += v
-                    END
-                POST-ACCUM v.@visited += true;      # mark vertices as visited
-
-        # exit loop when at least k companies have been counted
-        IF @@companyList.size() >= k OR visitedVertices.size() == 0 THEN
-           BREAK;
-        END;
-    END;
-    PRINT @@companyList;
-}
-----
---
-
-Results::
-+
---
-.Example 3. topkCompanies Results
-[source,gsql]
-----
-GSQL > RUN QUERY topkCompanies("person1", 2)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@companyList": [
-    "company2",
-    "company1"
-  ]}]
-}
-GSQL > RUN QUERY topkCompanies("person2", 3)
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [{"@@companyList": [
-    "company3",
-    "company2",
-    "company1"
-  ]}]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 4 - Usage of CONTINUE in FOREACH
-[source,gsql]
-----
-#List out all companies from a given country
-CREATE QUERY companyByCountry(STRING countryName) FOR GRAPH workNet {
-  MapAccum <STRING, ListAccum<STRING>> @@companies;
-  start = {company.*};                   # start will have a set of all company type vertices
-
-  #Build a map using company country as a key and a list of strings to hold multiple company ids
-  s = SELECT v FROM start:v
-      ACCUM @@companies += (v.country -> v.id);
-
-  #Iterate the map using (key,value) pairs
-  FOREACH (key,val) IN @@companies DO
-    IF key != countryName THEN
-      CONTINUE;
-    END;
-
-    PRINT val.size();
-
-    #Nested foreach to iterate over the list of company ids
-    FOREACH comp IN val DO
-      PRINT comp;
-    END;
-  END;
-}
-----
---
-
-Results::
-+
---
-.companyByCountry Results
-[source,gsql]
-----
-GSQL > RUN QUERY companyByCountry("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"val.size()": 2},
-    {"comp": "company1"},
-    {"comp": "company4"}
-  ]
-}
-----
---
-====
-
-[tabs]
-====
-Query::
-+
---
-.Example 5 - Usage of BREAK in FOREACH
-[source,gsql]
-----
-#List all the persons located in the specified country
-CREATE QUERY employmentByCountry(STRING countryName) FOR GRAPH workNet {
-  MapAccum < STRING, ListAccum<STRING> > @@employees;
-  start = {person.*};                   # start will have a set of all person type vertices
-
-  #Build a map using person locationId as a key and a list of strings to hold multiple person ids
-  s = SELECT v FROM start:v
-      ACCUM @@employees += (v.locationId -> v.id);
-
-  #Iterate the map using (key,value) pairs
-  FOREACH (key,val) IN @@employees DO
-    IF key == countryName THEN
-      PRINT val.size();
-
-      #Nested foreach to iterate over the list of person ids
-      FOREACH employee IN val DO
-        PRINT employee;
-      END;
-
-      BREAK;
-    END;
-  END;
-}
-----
---
-
-Results::
-+
---
-.employmentByCountry Result
-[source,gsql]
-----
-GSQL > RUN QUERY employmentByCountry("us")
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "edition": "developer",
-    "schema": 0,
-    "api": "v2"
-  },
-  "results": [
-    {"val.size()": 5},
-    {"employee": "person1"},
-    {"employee": "person4"},
-    {"employee": "person7"},
-    {"employee": "person9"},
-    {"employee": "person10"}
-  ]
-}
-----
---
-====
-

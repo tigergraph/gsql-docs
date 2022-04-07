@@ -1,0 +1,38 @@
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"friends": [
+    {
+      "v_id": "4398046517846",
+      "attributes": {
+        "friends.first_name": "Abdul-Malik",
+        "friends.birthday": "1980-04-24 00:00:00",
+        "friends.last_name": "Glosca"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "10995116279461",
+      "attributes": {
+        "friends.first_name": "Gregorio",
+        "friends.birthday": "1980-05-13 00:00:00",
+        "friends.last_name": "Cajes"
+      },
+      "v_type": "Person"
+    },
+    {
+      "v_id": "6597069776731",
+      "attributes": {
+        "friends.first_name": "Sven",
+        "friends.birthday": "1981-02-25 00:00:00",
+        "friends.last_name": "Carlsson"
+      },
+      "v_type": "Person"
+    }
+  ]}]
+}

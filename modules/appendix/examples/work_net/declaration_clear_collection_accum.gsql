@@ -1,0 +1,24 @@
+CREATE DISTRIBUTED QUERY reset_accum() FOR GRAPH Work_Net SYNTAX v2 {
+    ListAccum<STRING> @stuff;
+    ListAccum<STRING> @@all_stuff;
+
+    Comp = SELECT c
+        FROM    Person:p -(Works_For:w)- Company:c
+        ACCUM   c.@stuff += p.id,
+            @@all_stuff += p.id,
+            c.@stuff += p.location_id,
+            @@all_stuff += p.location_id,
+            FOREACH interest IN p.interest_list DO
+                c.@stuff += interest,
+                @@all_stuff += interest
+            END;
+    // Display accum size: should be full
+    PRINT Comp[Comp.@stuff.size()] AS stuff_count;
+    PRINT @@all_stuff.size() AS all_stuff_count;
+
+    reset_collection_accum(@stuff);
+    reset_collection_accum(@@all_stuff);
+    // display accum size: should be empty
+    PRINT Comp[Comp.@stuff.size()] AS stuff_clear;
+    PRINT @@all_stuff.size() AS all_stuff_clear;
+}

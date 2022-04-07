@@ -20,14 +20,15 @@ However, just examine it for now. You will save this query to a file and run it 
 .GSQL command
 [source,gsql]
 ----
+B
 USE GRAPH social
 
 SET syntax_version="v2"
 
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello (VERTEX<Person> p) {
   Start = {p};
   Result = SELECT tgt
-           FROM Start:s -(friendship:e)- person:tgt;
+           FROM Start:s -(Friendship:e)- Person:tgt;
   PRINT Result;
 }
 ----

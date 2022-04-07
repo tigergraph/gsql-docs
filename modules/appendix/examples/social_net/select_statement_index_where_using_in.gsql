@@ -1,0 +1,5 @@
+CREATE QUERY find_graph_focused_posts() FOR GRAPH Social_Net {
+	results = SELECT v FROM Post:v					// select only post vertices
+		WHERE v.subject IN ("Graph", "tigergraph"); // which have a subject of either 'Graph' or 'tigergraph'
+	PRINT results;
+}

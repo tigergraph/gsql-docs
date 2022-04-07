@@ -63,7 +63,7 @@ See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details
  .. `INSTALL QUERY`: compile the query
  .. `RUN QUERY`: execute the query with input values
 
-There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix-query/interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
+There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
 == `CREATE QUERY`
 
@@ -146,19 +146,9 @@ See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[
 === Examples
 
 .Example of a `CREATE QUERY` statement
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY createQueryEx (STRING uid) FOR GRAPH socialNet RETURNS (int)
-  SYNTAX v2 {
-  # declaration statements
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts;
-  RETURN posts.size();
-}
+include::appendix:example$social_net/query_operations_example_create_query.gsql[]
 ----
 
 === Default query parameter values
@@ -177,19 +167,9 @@ You can specify default values for parameters of primitive types when creating a
 To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
 
 .Example of a `CREATE QUERY` command with a default parameter value
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE QUERY createQueryEx (STRING uid = "Tom") FOR GRAPH socialNet RETURNS (int)
-  SYNTAX v2 {
-  # declaration statements
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts;
-  RETURN posts.size();
-}
+include::appendix:example$social_net/query_operations_example_create_query_defaults.gsql[]
 ----
 
 
@@ -225,60 +205,15 @@ Embedded schema::
 --
 [source,gsql]
 ----
-CREATE QUERY pageRank (FLOAT maxChange=0.00, INT maxIter=25,
-  FLOAT damping=0.85)  //parameters
-  FOR GRAPH gsql_demo
-{
-  MaxAccum<float> @@maxDiff = 9999;
-  SumAccum<float> @rcvd_score = 0;
-  SumAccum<float> @score = 1;
-
-  Start = {Page.*};
-  WHILE @@maxDiff > maxChange LIMIT maxIter DO
-      @@maxDiff = 0;
-      V = SELECT s
-          FROM Start:s -(Linkto:e)- Page:t       //hardcoded types
-          ACCUM t.@rcvd_score += s.@score/(s.outdegree("Linkto")) //Param
-          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
-                      s.@rcvd_score = 0,
-                      @@maxDiff += abs(s.@score - s.@score');
-  END;
-
-  V = SELECT s FROM Start:s
-      POST-ACCUM s.Score = s.@score;    //hardcoded attribute
-}
-RUN QUERY pageRank(_,_,_)
+include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
 ----
 --
-Dynamic Querying::
+Dynamic querying::
 +
 --
 [source,gsql]
 ----
-CREATE QUERY pageRankDyn (FLOAT maxChange=0.00, INT maxIter=25,
-  FLOAT damping=0.85,
-  STRING vType, STRING eType, STRING attr)  //parameterized schema
-//no graph name
-{
-  MaxAccum<float> @@maxDiff = 9999;
-  SumAccum<float> @rcvd_score = 0;
-  SumAccum<float> @score = 1;
-
-  Start = {vType};
-  WHILE @@maxDiff > maxChange LIMIT maxIter DO
-      @@maxDiff = 0;
-      V = SELECT s
-          FROM Start:s -(eType:e)- vType:t //parameterized
-          ACCUM t.@rcvd_score += s.@score/(s.outdegree(eType)) //param
-          POST-ACCUM s.@score = (1.0-damping) + damping * s.@rcvd_score,
-                      s.@rcvd_score = 0,
-                      @@maxDiff += abs(s.@score - s.@score');
-  END;
-
-  V = SELECT s FROM Start:s
-      POST-ACCUM s.setAttr(attr, s.@score); //parameterized
-}
-RUN QUERY pageRankDyn(_,_,_,"Page", "Link", "Score")
+include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
 ----
 --
 ====
@@ -291,11 +226,18 @@ A _statement_ is a standalone instruction that expresses an action to be carried
 DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
 
 A GSQL query has two levels of statements.
-The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
+The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.
+This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
+If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
 
-The lower-level statement type is called _DML-sub-level statement_ or _*DML-sub statement*_ for short.This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.There is no comma or semicolon after the last DML-sub-statement in a block.For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
+The lower-level statement type is called _DML-sub-level statement_ or _DML-sub statement_ for short.
+This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.
+There is no comma or semicolon after the last DML-sub-statement in a block.
+For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.
+If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
 
-There is some overlap in the types.For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
+There is some overlap in the types.
+For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
 
 [source,ebnf]
 ----
@@ -351,29 +293,28 @@ Guidelines for understanding statement type hierarchy:
 * The statements within a DML statement are DML-sub statements (comma-separated list).
 * The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
 
-.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
+// Each statement's operation type is either ControlFlow, DML, or other.
+// Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
 
+.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
 [source,gsql]
 ----
-# Each statement's operation type is either ControlFlow, DML, or other.
-# Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
-
-CREATE QUERY stmtTypes (parameterList) FOR GRAPH g [
+CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
 	other queryBodyStmt1;
-	ControlFlow queryBodyStmt2   # ControlFlow inside top level.
-		other queryBodyStmt2.1;      # subStmts in ControlFlow are queryBody unless inside DML.
-		ControlFlow queryBodyStmt2.2 # ControlFlow inside ControlFlow inside top level
+	ControlFlow queryBodyStmt2   // ControlFlow inside top level.
+		other queryBodyStmt2.1;      // subStmts in ControlFlow are queryBody unless inside DML.
+		ControlFlow queryBodyStmt2.2 // ControlFlow inside ControlFlow inside top level
 			other queryBodyStmt2.2.1;
 			other queryBodyStmt2.2.2;
 		END;
-		DML queryBodyStmt2.3     # DML inside ControlFlow inside top-level
-			other DMLSubStmt2.3.1,   # switch to DMLSubStmt
+		DML queryBodyStmt2.3     // DML inside ControlFlow inside top-level
+			other DMLSubStmt2.3.1,   // switch to DMLSubStmt
 			other DMLSubStmt2.3.2
 		;
 	END;
-	DML queryBodyStmt3           # DML inside top level.
-		other DMLSubStmt3.1,      # All subStmts in DML must be DMLSubStmt type
-		ControlFlow DMLSubStmt3.2 # ControlFlow inside DML inside top level
+	DML queryBodyStmt3           // DML inside top level.
+		other DMLSubStmt3.1,      // All subStmts in DML must be DMLSubStmt type
+		ControlFlow DMLSubStmt3.2 // ControlFlow inside DML inside top level
 			other DMLSubStmt3.2.1,
 			other DMLSubStmt3.2.2
 		,
@@ -383,8 +324,6 @@ CREATE QUERY stmtTypes (parameterList) FOR GRAPH g [
 	;
 	other queryBodyStmt4;
 ----
-
-
 
 Here is a descriptive list of query-body statements:
 
@@ -487,7 +426,7 @@ Here is a descriptive list of DML-sub-statements:
 
 | lAccumAccumStmt
 | Local Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"
+| See "Declaration and Assignment Statements"/
 
 | attrAccumStmt
 | Attribute Accumulation Statement
@@ -536,7 +475,7 @@ Here is a descriptive list of DML-sub-statements:
 This is in contrast to the 2-step flow to <<_install_query,install a query>> first and then <<_run_query,run the query>>.
 
 `INTERPRET QUERY` runs a query immediately but may take longer to finish than running an installed query.
-`INTERPRET QUERY` also has xref:appendix-query/interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
+`INTERPRET QUERY` also has xref:appendix:interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
 
 There are two GSQL syntax options for Interpreted GSQL:
 
@@ -551,8 +490,8 @@ There are two GSQL syntax options for Interpreted GSQL:
 [source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
-               [FOR GRAPH graphName]
-               [SYNTAX syntaxName]
+               [FOR GRAPH graph_name]
+               [SYNTAX syntax_name]
                "{" queryBody "}"
 ----
 
@@ -567,16 +506,7 @@ Compare the example below to the example in the `Create Query` section:
 .Example of Immediate Mode for INTERPRET QUERY
 [source,gsql]
 ----
-INTERPRET QUERY () FOR GRAPH socialNet {
-  # declaration statements
-  STRING uid = "Jane.Doe";
-  users = {person.*};
-  # body statements
-  posts = SELECT p
-    FROM users:u-(posted>)-:p
-    WHERE u.id == uid;
-  PRINT posts, posts.size();
-}
+include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 ----
 
 
@@ -591,8 +521,8 @@ runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueLis
 
 This syntax is like `RUN` query, except
 
-. The keyword `RUN` is replaced with `INTERPRET`.
-. Some options may not be supported.
+* The keyword `RUN` is replaced with `INTERPRET`.
+* Some options may not be supported.
 
 .Example of Interpret-Only Mode for INTERPRET QUERY
 
@@ -610,7 +540,7 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
 ----
 
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
 
@@ -708,19 +638,14 @@ For example, if we have the following query definition:
 
 [source,gsql]
 ----
-CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
-  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
-{
-  PRINT age, name, birthday;
-}
+include::appendix:example$social_net/query_operations_parameter_list.gsql[]
 ----
 
 To run the query with default values for the parameter `name,` use `_` in the place of the second parameter value:
 
 [source,console]
 ----
-GSQL > RUN QUERY greetPerson (21, _, "2020-02-02 20:02:20")
-# Below is the query output
+GSQL > RUN QUERY greet_person (21, _, "2020-02-02 20:02:20")
 {
   "error": false,
   "message": "",
@@ -741,8 +666,7 @@ To use the default values for both the second and the third parameters, you can 
 
 [source,console]
 ----
-GSQL > RUN QUERY greetPerson(21)
-# Below is the query output
+GSQL > RUN QUERY greet_person(21)
 {
   "error": false,
   "message": "",
@@ -767,18 +691,14 @@ For example, if we have the following query:
 
 [source,gsql]
 ----
-CREATE QUERY greetPerson(INT age = 3, STRING name = "John",
-  DATETIME birthday = to_datetime("2019-02-19 19:19:19"))
-{
-  PRINT age, name, birthday;
-}
+include::appendix:example$social_net/query_operations_parameter_json.gsql[]
 ----
 
 Supplying the parameters with a JSON object will look like the following. The parameter `birthday` is not named in the parameter JSON object and therefore takes the default value:
 
 [source,gsql]
 ----
-RUN QUERY greetPerson( {"name": "Emma", "age": 21} )
+RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 ----
 
 === Complex type parameter passing
@@ -883,7 +803,7 @@ You will receive a JSON response immediately containing a query ID (`request_id`
 
 To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` header and set its value to true. If the query takes parameters, put them in the query string:
 
-[source,console]
+[source.wrap,console]
 ----
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
@@ -894,7 +814,9 @@ To check the status and results of the queries executed in Detached Mode, use th
 
 The standard output of GSQL queries is in industry-standard JSON format. A JSON *object* is an unordered set of *key-value pairs*, enclosed in curly braces. Among the acceptable data types for a JSON *value* are *array* and *object*. A JSON *array* is an ordered list of *values*, enclosed in square brackets. Since values can be objects or arrays, JSON supports hierarchical, nested structures. Strings are enclosed in double quotation marks. We also use the term *field* to refer to a key (or a key-value pair) of a given object.
 
-At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code"). If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query. If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
+At the top level of the JSON structure are four required fields ("version", "error", "message", and "results") and one dependent field ("code").
+If a query is successful, the value of "error" will be "false", the "message" value will be empty, and the "results" value will be the intended output of the query.
+If an error or exception occurred during query execution, the "error" value will be "true", the "message" value will be a string message describing the error condition, and the "results" field will be empty. Also, the "code" field will contain an error code.
 
 Beginning with version 2 (v2) of the output specification, an additional top-level field is required: `"version"`. The `"version"` value is an object with the following fields:
 
@@ -970,9 +892,9 @@ The following GSQL statement can be used to set the JSON output API configuratio
 SET json_api = <version_string>
 ----
 
-This statement sets a persistent system parameter. Each version of the TigerGraph platform is pre-configured to what was the latest output API that at the time of release. For example, platform version 1.1 is configured so that each query will produce v2 output by default.
+NOTE: The only supported JSON API is "v2".
 
-As of TigerGraph v3.0, the only supported JSON API is "v2".
+This statement sets a persistent system parameter. Each version of the TigerGraph platform is pre-configured to what was the latest output API that at the time of release.
 
 == SHOW QUERY
 
@@ -995,10 +917,12 @@ dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 To drop a query, run `DROP QUERY query_name` __. The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
 
 To drop all queries, either of the following commands can be used: +
-`DROP QUERY ALL
-DROP QUERY *`
 
-[NOTE]
-====
-The scope of ALL depends on the user's current scope. If the user has set a working graph, then DROP ALL removes all the jobs for that graph. If a superuser has set their scope to be global, then DROP ALL removes all jobs across all graph spaces.
-====
+* `DROP QUERY ALL`
+* `DROP QUERY *`
+
+
+The scope of the command depends on the user's current scope.
+If the user has set a working graph, then `DROP ALL` removes all the queries for that graph.
+If a user has set their scope to be global, then `DROP ALL` removes all queries across all graph spaces.
+

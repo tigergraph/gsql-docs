@@ -1,5 +1,5 @@
 = GSQL Style Guide
-:description: TigerGraph's Style guide for writing GSQL. 
+:description: TigerGraph's Style guide for writing GSQL.
 
 
 This page details TigerGraph’s style guide for writing GSQL. The purpose of the style guide is to make code easy to read and achieve lower cost of maintenance.
@@ -89,10 +89,10 @@ Use spaces instead of tabs, because tab size can vary.
 |Recommended |
 [.wrap,gsql]
 ----
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello(VERTEX<Person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(friendship:e)- person:tgt;
+        FROM Start:s -(Friendship:e)- Person:tgt;
         PRINT Result;
 }
 ----
@@ -102,10 +102,10 @@ CREATE QUERY hello(VERTEX<person> p) {
 |
 [.wrap,gsql]
 ----
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello(VERTEX<Person> p) {
 Start = {p};
 Result = SELECT tgt
-         FROM Start:s -(friendship:e)- person:tgt;
+         FROM Start:s -(Friendship:e)- Person:tgt;
 PRINT Result;
 }
 ----
@@ -121,10 +121,10 @@ If a line is more than 80 characters, it should be split into multiple lines. Th
 |Recommended |
 [,gsql]
 ----
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello(VERTEX<Person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(friendship:e)- person:tgt; //This is a long comment
+        FROM Start:s -(Friendship:e)- Person:tgt; //This is a long comment
         PRINT Result; // And it is split into multiple lines.
 }
 ----
@@ -134,10 +134,10 @@ CREATE QUERY hello(VERTEX<person> p) {
 |
 [,gsql]
 ----
-CREATE QUERY hello(VERTEX<person> p) {
+CREATE QUERY hello(VERTEX<Person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(friendship:e)- person:tgt; // This is a really long comment that spans over a hundred characters. It really should be split into multiple lines instead of crowing one line
+        FROM Start:s -(Friendship:e)- Person:tgt; // This is a really long comment that spans over a hundred characters. It really should be split into multiple lines instead of crowing one line
     PRINT Result;
 }
 ----
@@ -159,11 +159,11 @@ include::appendix:example$social_net/select_statement_index_having.gsql[]
 |
 [,gsql]
 ----
-CREATE QUERY active_members(int activity_threshold) FOR GRAPH Social_Net
+CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
 {
-    SumAccum<int> @activity_amount;
-    start = {person.*};
-    result = SELECT v FROM start:v -(_>:e)- post:tgt
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+    result = SELECT v FROM start:v -(_>:e)- Post:tgt
       ACCUM v.@activity_amount +=1
         HAVING v.@activity_amount >= activity_threshold;
     PRINT result;
@@ -190,14 +190,14 @@ However, if the condition in the HAVING clause could change within the ACCUM cla
 CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
     SumAccum<INT> @activity_amount;
-    start = {person.*};
+    start = {Person.*};
 
     // The following statements produce equivalent results
-    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
+    result1 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         WHERE v.gender == "Male"
         ACCUM v.@activity_amount +=1;
 
-    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
+    result2 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         ACCUM v.@activity_amount +=1
         HAVING v.gender == "Male";
 
@@ -219,14 +219,14 @@ CREATE QUERY active_male_members() FOR GRAPH Social_Net
     // However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results.
 
     SumAccum<INT> @activity_amount;
-    start = {person.*};
+    start = {Person.*};
 
     # The following statements produce equivalent results
-    result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
+    result1 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         WHERE v.gender == "Male"
         ACCUM v.@activity_amount +=1;
 
-    result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
+    result2 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         ACCUM v.@activity_amount +=1
         HAVING v.gender == "Male";
 

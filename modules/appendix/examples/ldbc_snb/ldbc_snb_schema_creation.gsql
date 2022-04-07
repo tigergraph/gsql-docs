@@ -27,7 +27,7 @@ CREATE VERTEX Tag_Class (PRIMARY_ID id UINT, name STRING, url STRING) WITH prima
 CREATE DIRECTED EDGE Container_Of (FROM Forum, TO Post) WITH REVERSE_EDGE="CONTAINER_OF_Reverse"
 CREATE DIRECTED EDGE Has_Creator (FROM Comment|Post, TO Person) WITH REVERSE_EDGE="Has_Creator_Reverse"
 CREATE DIRECTED EDGE Has_Interest (FROM Person, TO Tag) WITH REVERSE_EDGE="Has_Interest_Reverse"
-CREATE DIRECTED EDGE Has_Member (FROM Forum, TO Person, joinDate DATETIME) WITH REVERSE_EDGE="Has_Member_Reverse"
+CREATE DIRECTED EDGE Has_Member (FROM Forum, TO Person, join_date DATETIME) WITH REVERSE_EDGE="Has_Member_Reverse"
 CREATE DIRECTED EDGE Has_Moderator (FROM Forum, TO Person) WITH REVERSE_EDGE="Has_Moderator_Reverse"
 CREATE DIRECTED EDGE Has_Tag (FROM Comment|Post|Forum, TO Tag) WITH REVERSE_EDGE="Has_Tag_Reverse"
 CREATE DIRECTED EDGE Has_Type (FROM Tag, TO Tag_Class) WITH REVERSE_EDGE="Has_Type_Reverse"

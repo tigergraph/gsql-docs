@@ -1,10 +1,8 @@
 = GSQL Style Guide
-:description:
-:num_rule: footnote:[If you want to use `num` to refer to a quantity, always put it at the beginning. For example, use `num_students` to refer to the number of students instead of `students_num`].
-:
+:description: TigerGraph's Style guide for writing GSQL. 
 
 
-This page details TigerGraph’s style guide for writing GSQL. The purpose of the styleguide is to make code easy to read and achieve lower cost of maintenance.
+This page details TigerGraph’s style guide for writing GSQL. The purpose of the style guide is to make code easy to read and achieve lower cost of maintenance.
 
 == General
 * Always write keywords and reserved words in all caps. You can find a list of keywords and reserved words in Query Language Reserved Words and DDL Keywords & Reserved Words.
@@ -35,7 +33,7 @@ a|* `batch_number`
 |* Use snake case
 * Start with the aggregation type such as sum unless there is an excellent semantic alternative
 |
-``@num_fraudsters``{num_rule}
+``@num_fraudsters``footnote:[If you want to use `num` to refer to a quantity, always put it at the beginning. For example, use `num_students` to refer to the number of students instead of `students_num`]
 
 |Collection accumulator
 |* Use snake case
@@ -121,6 +119,7 @@ If a line is more than 80 characters, it should be split into multiple lines. Th
 [cols="1h,5a"]
 |===
 |Recommended |
+[,gsql]
 ----
 CREATE QUERY hello(VERTEX<person> p) {
     Start = {p};
@@ -133,6 +132,7 @@ CREATE QUERY hello(VERTEX<person> p) {
 |Not recommended
 
 |
+[,gsql]
 ----
 CREATE QUERY hello(VERTEX<person> p) {
     Start = {p};
@@ -149,29 +149,23 @@ In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `P
 [cols="1h,5a"]
 |===
 |Recommended |
+[,gsql]
 ----
-CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
-{
-    SumAccum<int> @activityAmount;
-    start = {person.*};
-    result = SELECT v FROM start:v -(_>:e)- post:tgt
-      ACCUM v.@activityAmount +=1
-        HAVING v.@activityAmount >= activityThreshold;
-    PRINT result;
-}
+include::appendix:example$social_net/select_statement_index_having.gsql[]
 ----
 
 |Not recommended
 
 |
+[,gsql]
 ----
-CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
+CREATE QUERY active_members(int activity_threshold) FOR GRAPH Social_Net
 {
-    SumAccum<int> @activityAmount;
+    SumAccum<int> @activity_amount;
     start = {person.*};
     result = SELECT v FROM start:v -(_>:e)- post:tgt
-      ACCUM v.@activityAmount +=1
-        HAVING v.@activityAmount >= activityThreshold;
+      ACCUM v.@activity_amount +=1
+        HAVING v.@activity_amount >= activity_threshold;
     PRINT result;
 }
 ----
@@ -193,18 +187,18 @@ CREATE QUERY activeMembers(int activityThreshold) FOR GRAPH socialNet
     Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
 However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */
 
-CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
-    SumAccum<INT> @activityAmount;
+    SumAccum<INT> @activity_amount;
     start = {person.*};
 
     // The following statements produce equivalent results
     result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
         WHERE v.gender == "Male"
-        ACCUM v.@activityAmount +=1;
+        ACCUM v.@activity_amount +=1;
 
     result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
-        ACCUM v.@activityAmount +=1
+        ACCUM v.@activity_amount +=1
         HAVING v.gender == "Male";
 
     PRINT result1;
@@ -217,25 +211,23 @@ CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
 |
 [.wrap,gsql]
 ----
-
-
-CREATE QUERY activeMaleMembers() FOR GRAPH socialNet
+CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
 
     // Compute the total post activity for each male person.
     // Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
     // However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results.
 
-    SumAccum<INT> @activityAmount;
+    SumAccum<INT> @activity_amount;
     start = {person.*};
 
     # The following statements produce equivalent results
     result1 = SELECT v FROM start:v -(posted>:e)- post:tgt
         WHERE v.gender == "Male"
-        ACCUM v.@activityAmount +=1;
+        ACCUM v.@activity_amount +=1;
 
     result2 = SELECT v FROM start:v -(posted>:e)- post:tgt
-        ACCUM v.@activityAmount +=1
+        ACCUM v.@activity_amount +=1
         HAVING v.gender == "Male";
 
     PRINT result1;

@@ -5,7 +5,7 @@
 This page details TigerGraph’s style guide for writing GSQL. The purpose of the style guide is to make code easy to read and achieve lower cost of maintenance.
 
 == General
-* Always write keywords and reserved words in all caps. You can find a list of keywords and reserved words in Query Language Reserved Words and DDL Keywords & Reserved Words.
+* Always write keywords and reserved words in all caps. You can find a list of keywords and reserved words in xref:query-language-reserved-words.adoc[] and xref:keywords-and-reserved-words.adoc[].
 * If you are storing GSQL statements in a separate file, use the file extension `.gsql`.
 
 == Naming

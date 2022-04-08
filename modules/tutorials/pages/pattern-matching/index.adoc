@@ -1,0 +1,45 @@
+= Pattern Matching Tutorial
+:description: A guide to GSQL's multi-hop SELECT statements which make it convenient to express pattern-matching queries.
+:page-aliases: pattern-matching/README.adoc, pattern-matching/readme.adoc
+
+This tutorial shows you how to write and run pattern matching queries.
+
+This tutorial assumes you have finished xref:tutorials:gsql-101/index.adoc[GSQL 101], and are familiar with the basics of defining a schema, loading data, and how to write basic queries.
+
+== What is a graph pattern?
+
+A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps.
+A pattern can be a linear trace, or a non-linear trace (tree, circle etc.).
+For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type.
+A pattern could be a trace on this simple schema,
+
+[source,text]
+----
+Person - (Friendship) - Person - (Friendship) - Person
+----
+
+or, use *2 to denote the two consecutive Friendship edges,
+
+[source,text]
+----
+Person - (Friendship*2) - Person
+----
+
+== What is pattern matching?
+
+Pattern matching is the process of finding subgraphs in a data graph that conform to a given query pattern.
+
+Pattern matching provides a simple, declarative way to write queries to search for multi-hop pattern.
+You can write multi-hop patterns in one query block (`SELECT-FROM-WHERE`) instead of several individual blocks.
+
+The pattern can be fixed length or variable length (using Kleene stars for repeated hops), which significantly shortens the GSQL query length.
+
+Follow the sequence below to learn how to write pattern matching queries in GSQL.
+
+* xref:tutorials:pattern-matching/prepare-environment.adoc[]
+* xref:tutorials:pattern-matching/one-hop-patterns.adoc[]
+* xref:tutorials:pattern-matching/repeating-a-pattern.adoc[]
+* xref:tutorials:pattern-matching/multiple-hop-and-accumulation.adoc[]
+* xref:tutorials:pattern-matching/example.adoc[]
+* xref:tutorials:pattern-matching/adv/index.adoc[]
+* xref:tutorials:pattern-matching/summary.adoc[]

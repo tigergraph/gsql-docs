@@ -4,7 +4,7 @@
 
 GSQL is a Turing complete Graph Database query language. Comparing to other graph query languages, the biggest advantages is its support of accumulators -- global or vertex local.
 
-In addition to provide the classic xref:tutorials:pattern-matching/README.adoc[pattern match] syntax, which is easy to master, GSQL supports powerful run-time vertex attributes (a.k.a local accumulators) and  global state variables (a.k.a global accumulators).
+In addition to provide the classic xref:tutorials:pattern-matching/index.adoc[pattern match] syntax, which is easy to master, GSQL supports powerful run-time vertex attributes (a.k.a local accumulators) and  global state variables (a.k.a global accumulators).
 
 This short tutorial aims to shorten the learning curve of accumulator. Supposedly, after reading this article, everyone can master the essence of accumulator by heart, and start solving real-life graph problems with this handy language feature.
 

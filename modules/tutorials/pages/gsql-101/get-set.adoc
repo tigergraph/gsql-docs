@@ -1,10 +1,8 @@
-= Get Set
-
-== Introduction
+= Get Set - GSQL 101
 
 In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries.
 
-Before you start, you need to have installed the TigerGraph system locally or in a Docker container, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+Before you start, you need to have installed the TigerGraph system locally or in a Docker container, verified that it is working, and cleared out any previous data.
 
 Although TigerGraph does have a cloud-based system in TigerGraph Cloud, it doesn't have a GSQL interface and so can't be used for this tutorial.
 
@@ -19,7 +17,7 @@ The figure below is a visual representation of a graph containing seven vertices
 
 image::friendship-social-graph.png[Friendship Social Graph]
 
-A graph schema is the model which describes the *types* of vertices (nodes) and edges (connections) which can appear in your graph.  The graph above has one type of vertex (person) and one type of edge (friendship).
+A graph schema is the model which describes the *types* of vertices (nodes) and edges (connections) which can appear in your graph.  The graph above has one type of vertex (Person) and one type of edge (Friendship).
 
 A schema diagram looks like a small graph, except each node represents one *type* of vertex, and each link represents one *type* of edge.
 
@@ -82,13 +80,12 @@ $ gsql
 GSQL >
 ----
 +
-
-
 . If the GSQL shell does not launch, try resetting the system with `gadmin start all`.
 If you need further help, please see xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
 
-If this is your first time using GSQL, the TigerGraph data store is probably empty.
-However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
+If this is your first time using GSQL, the TigerGraph data store is empty.
+However, if you or someone else has already been working on the system, there may already be a database.
+You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
 
 .GSQL shell - an empty database catalog
 [,text]
@@ -113,10 +110,9 @@ Use the command `DROP ALL` to delete all the database data, its schema, and all 
 This command takes about a minute to run.
 
 .GSQL shell - DROP ALL
-
 [,text]
 ----
-GSQL > drop all
+GSQL > DROP ALL
 
 Dropping all, about 1 minute ...
 Abort all active loading jobs
@@ -127,16 +123,15 @@ Graph store /usr/local/tigergraph/gstore/0/ has been cleared!
 Everything is dropped.
 ----
 
+When you are done, you can exit the GSQL shell with the command `quit`.
 
 
-[CAUTION]
-====
-*Restarting TigerGraph*
+
+== Restarting TigerGraph
 
 If you need to restart TigerGraph for any reason, use the following command sequence:
 
 .Linux Shell - Restarting TigerGraph services
-
 [,bash]
 ----
 # Switch to the user account set up during installation
@@ -149,27 +144,20 @@ $ gadmin restart -y
 ----
 
 
-====
+== Running GSQL commands from Linux
 
-[NOTE]
-====
-*Running GSQL commands from Linux*
-
-You can also run GSQL commands from a Linux shell. To run a single command, just use "gsql" followed by the command line enclosed in single quotes. (The quotes aren't necessary if there is no parsing ambiguity; it's safer to just use them.)  For example,
+You can also run GSQL commands from a Linux shell.
+To run a single command, run `gsql` followed by the GSQL command enclosed in single quotes.
+The quotes aren't necessary if there is no parsing ambiguity; it's safer to just use them.  For example,
 
 .Linux shell - GSQL commands from a Linux shell
 
 [,bash]
 ----
 # "-g graphname" is need for a given graph
-gsql -g social 'ls'
+gsql -g Social 'ls'
 gsql 'drop all'
 gsql 'ls'
 ----
 
-
-
 You can also execute a series of commands which you have stored in a file, by simply invoking "gsql" following by the name of the file.
-====
-
-When you are done, you can exit the GSQL shell with the command `quit`.

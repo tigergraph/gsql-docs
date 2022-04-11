@@ -1,7 +1,10 @@
 = Develop Parameterized Queries
 :description: Develop, install, and run parameterized GSQL queries
 
-We just saw how easy and quick it is to run simple built-in queries. However you'll undoubtedly want to create more customized or complex queries.  GSQL puts maximum power in your hands through parameterized vertex set queries. Parameterized queries let you traverse the graph from one vertex set to an adjacent set of vertices, again and again, performing computations along the way, with built-in parallel execution and handy aggregation operations. You can even have one query call another query.  But we'll start simple.
+We just saw how easy and quick it is to run simple built-in queries. 
+However, you'll undoubtedly want to create more customized or complex queries.  GSQL puts maximum power in your hands through parameterized vertex set queries. 
+
+Parameterized queries let you traverse the graph from one vertex set to an adjacent set of vertices, again and again, performing computations along the way, with built-in parallel execution and handy aggregation operations. You can even have one query call another query.  But we'll start simple.
 
 A GSQL parameterized query has three steps.
 
@@ -20,8 +23,7 @@ However, just examine it for now. You will save this query to a file and run it 
 .GSQL command
 [source,gsql]
 ----
-B
-USE GRAPH social
+USE GRAPH Social
 
 SET syntax_version="v2"
 
@@ -39,9 +41,9 @@ This query features one SELECT statement.  The SELECT statements here are much m
 
 Next, the SELECT statement describes a 1-hop traversal according to the pattern described in the FROM clause:
 
-`+Start:s -(friendship:e)- person:tgt+`
+`+Start:s -(Friendship:e)- Person:tgt+`
 
-The pattern means we select all edges beginning from the given source set (Start), which have the given undirected edge type (friendship) and which end at the given vertex type (person). Note that we can define vertex and edge set aliases using ":alias": "s" is the alias for the source vertex, "e" is the edge alias, and "tgt" is the target vertex alias.
+The pattern means we select all edges beginning from the given source set (Start), which have the given undirected edge type (Friendship) and which end at the given vertex type (Person). Note that we can define vertex and edge set aliases using ":alias": "s" is the alias for the source vertex, "e" is the edge alias, and "tgt" is the target vertex alias.
 
 Refer back to the initial clause and the assignment ("[.code]``Result = SELECT tgt``"). Here we see the target set's  alias tgt.  This means that the SELECT statement should return the target vertex set (as filtered and processed by the full set of clauses in the SELECT query block) and assign that output set to the variable called Result.
 
@@ -61,28 +63,28 @@ Run the "ls" command to see that the query is now in the catalog.
 [source,gsql]
 ----
 GSQL > @hello.gsql
-Using graph 'social'
+Using graph 'Social'
 Successfully created queries: [hello].
 GSQL > ls
----- Graph social
+---- Graph Social
 Vertex Types:
-  - VERTEX person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+  - VERTEX Person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 Edge Types:
-  - UNDIRECTED EDGE friendship(from person, to person, connect_day DATETIME)
+  - UNDIRECTED EDGE Friendship(from Person, to Person, connect_day DATETIME)
 
 Graphs:
-  - Graph social(person:v, friendship:e)
+  - Graph Social(Person:v, Friendship:e)
 Jobs:
-  - CREATE LOADING JOB load_social FOR GRAPH social {
+  - CREATE LOADING JOB load_Social FOR GRAPH Social {
       DEFINE FILENAME file2 = "/home/tigergraph/friendship.csv";
       DEFINE FILENAME file1 = "/home/tigergraph/person.csv";
 
-      LOAD file1 TO VERTEX person VALUES($"name", $"name", $"age", $"gender", $"state") USING SEPARATOR=",", HEADER="true", EOL="\n";
-      LOAD file2 TO EDGE friendship VALUES($0, $1, $2) USING SEPARATOR=",", HEADER="true", EOL="\n";
+      LOAD file1 TO VERTEX Person VALUES($"name", $"name", $"age", $"gender", $"state") USING SEPARATOR=",", HEADER="true", EOL="\n";
+      LOAD file2 TO EDGE Friendship VALUES($0, $1, $2) USING SEPARATOR=",", HEADER="true", EOL="\n";
     }
 
 Queries:
-  - hello(vertex<person> p)
+  - hello(vertex<Person> p)
 
 SessionParameters:
   - syntax_version: v2
@@ -95,7 +97,6 @@ SessionParameters:
 However, the query is not installed yet. In the GSQL shell, type the following command to install the newly-added query "hello".
 
 .GSQL command
-
 [source,gsql]
 ----
 INSTALL QUERY hello
@@ -116,7 +117,6 @@ Node 'm1' is prepared as compile server.
 ----
 
 
-
 It takes about 1 minute for the database to install this new query. Be patient!
 For queries on large datasets, this small investment pays off many times over in faster query execution, particularly if you will run the query many times, with different parameters.
 The installation will generate machine instructions and a REST endpoint.
@@ -133,13 +133,10 @@ To run a query in GSQL, use `RUN QUERY` followed by the query name and a set of 
 RUN QUERY hello("Tom")
 ----
 
-
-
 The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan and Jenny.
 
 .GSQL shell
-
-[source,coffeescript]
+[source,console]
 ----
 GSQL > RUN QUERY hello("Tom")
 {
@@ -159,7 +156,7 @@ GSQL > RUN QUERY hello("Tom")
         "state": "ny",
         "age": 34
       },
-      "v_type": "person"
+      "v_type": "Person"
     },
     {
       "v_id": "Jenny",
@@ -169,7 +166,7 @@ GSQL > RUN QUERY hello("Tom")
         "state": "tx",
         "age": 25
       },
-      "v_type": "person"
+      "v_type": "Person"
     }
   ]}]
 }
@@ -179,18 +176,16 @@ GSQL > RUN QUERY hello("Tom")
 
 == Run a query as a REST endpoint
 
-Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an http call. In Linux, the `curl` command is the most popular way to submit an http request.
+Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an HTTP call. In Linux, the `curl` command is the most popular way to submit an HTTP request.
 
-The JSON result will be returned to the Linux shell's standard output. Our parameterized query thus becomes an http service!
+The JSON result will be returned to the Linux shell's standard output.
+Our parameterized query thus becomes an HTTP service.
 
 .Linux shell
-
 [source,bash]
 ----
 curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 ----
-
-
 
 Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.
 
@@ -200,80 +195,122 @@ Congratulations! At this point, you have gone through the whole process of defin
 
 Installing a query will give the fastest query speed, but the user needs to wait for the installation overhead.
 
-The Interpreted Mode for GSQL, introduced in TigerGraph 2.4, let us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL. Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
+The Interpreted Mode for GSQL lets us skip the `INSTALL` step, and even run a query as soon as we create it, to offer a more interactive experience.
+These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 
-== A more advanced query
+== Query with accumulators
 
-Now, let's do a more advanced query.
+Now, let's write a more advanced query.
 This time, we are going to learn to use the powerful built-in accumulators, which serve as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.
-Runtime means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
 
-.GSQL command file - hello2.gsql
+"Runtime" means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
+
+Let's write a query to find all the persons which are exactly 2 hops away from the parameterized input Person.
+Just for fun, let's also compute the average age of those 2-hop neighbors.
+
+=== Method
+To get all person vertices that are two hops away from the starting vertex, we can use the following logic:
+
+. Traverse and visit vertices that are one stop away from the starting vertex, and mark every vertex visited including the starting vertex.
+This gives us the neighbors that are 1 hop away from the starting vertex.
+. From the 1-hop neighbors, find vertices that are 1-hop away, excluding all vertices that we have already visited in the previous step.
+This gives us all vertices that are exactly two hops away from the original vertex.
+
+=== Query
+
+We will use a `SELECT` statement to perform the first hop from the starting vertex.
+In order to keep track of vertices that have been visited, we declare a vertex-attached accumulator of the type `OrAccum`, also called a _boolean accumulator_.
+In addition, we also need to declare an `AvgAccum` to to calculate the average age of the final vertex set.
+
+To declare a vertex-attached accumulator, prefix an identifier name with a single `@` symbol.
+
+After the first hop, we use another `SELECT` statement to perform a second hop, and filter out all vertices that we have visited previously.
+This gives us the neighbors that are exactly two hops away, and we can use the `AvgAccum` to calculate the average age of the 2-hop neighbors.
 
 [source,gsql]
 ----
-USE GRAPH social
+CREATE QUERY hello2 (VERTEX<Person> p) {
+    OrAccum  @visited = FALSE;
+    AvgAccum @@avg_age;
+    start = {p};
 
-CREATE QUERY hello2 (VERTEX<person> p) {
-  OrAccum  @visited = false;
-  AvgAccum @@avgAge;
-  Start = {p};
+    first_neighbors = SELECT tgt
+        FROM start:s -(Friendship:e)- Person:tgt
+        ACCUM tgt.@visited += TRUE, s.@visited += TRUE; <1> <2>
 
-  FirstNeighbors = SELECT tgt
-                   FROM Start:s -(friendship:e)- person:tgt
-                   ACCUM tgt.@visited += true, s.@visited += true;
+    second_neighbors = SELECT tgt <3>
+        FROM first_neighbors -(:e)- :tgt <4>
+        WHERE tgt.@visited == FALSE <5>
+        POST-ACCUM @@avg_age += tgt.age; <6>
 
-  SecondNeighbors = SELECT tgt
-                    FROM FirstNeighbors -(:e)- :tgt
-                    WHERE tgt.@visited == false
-                    POST_ACCUM @@avgAge += tgt.age;
+    PRINT second_neighbors;
+    PRINT @@avg_age;
+}
+----
+<1> After defining the Start set, we then have our first one 1-hop traversal.
+The `SELECT` and `FROM` clauses are the same as in our first example, but there is an additional `ACCUM` clause.
+<2> The statements in the `ACCUM` clause are executed once for each edge matching the `FROM` clause.
+The `+=` operator within an `ACCUM` clause means that for each edge matching the `FROM` clause pattern, we accumulate the right-hand-side expression (`true`) to the left-hand-accumulator (`tgt.@visited` as well as `s.@visited`).
+<3> The second `SELECT` block will do one hop further, starting from the `first_neighbors` vertex set variable, and reaching the 2-hop neighbors.
+<4> Types are omitted in this `FROM` clause, which is interpreted to be all types.
+<5> The `WHERE` clause filters out the vertices which have been marked as visited before (the 1-hop neighbors and the starting vertex _p_ ).
+<6> `POST_ACCUM` traverses the vertex sets instead of the edge sets, guaranteeing that we do not double-count any vertices.
+Here, we accumulate the ages of the 2-hop neighbors to get their average.
 
-  PRINT SecondNeighbors;
-  PRINT @@avgAge;
+
+Note that a source vertex or target vertex may be visited multiple times in the first `SELECT` statement.
+Referring to Figure 1, if we start at vertex Tom, there are two edges incidental to Tom, so the `ACCUM` clause in the first `SELECT` statement will visit Tom twice.
+Since the accumulator type is `OrAccum`, the cumulative effect of the two traversals is the following:
+
+`Tom.@visited = (initial value: false) OR (true) OR (true)`
+
+We can see it does not matter which of the two edges was processed first.
+The net effect is that as long as a vertex is visited at least once, it will end up with `@visited = true`.
+
+
+=== Run query from a GSQL script
+
+This time, we put all following GSQL commands into one file hello2.gsql:
+
+.GSQL command file - hello2.gsql
+[source,gsql]
+----
+USE GRAPH Social
+CREATE QUERY hello2 (VERTEX<Person> p) {
+    OrAccum  @visited = FALSE;
+    AvgAccum @@avg_age;
+    start = {p};
+
+    first_neighbors = SELECT tgt
+        FROM start:s -(Friendship:e)- Person:tgt
+        ACCUM tgt.@visited += TRUE, s.@visited += TRUE; <1> <2>
+
+    second_neighbors = SELECT tgt <3>
+        FROM first_neighbors -(:e)- :tgt <4>
+        WHERE tgt.@visited == FALSE <5>
+        POST-ACCUM @@avg_age += tgt.age;
+
+    PRINT second_neighbors;
+    PRINT @@avg_age;
 }
 INSTALL QUERY hello2
 RUN QUERY hello2("Tom")
 ----
 
+We can execute this full set of commands _without_ entering the GSQL shell.
+Please copy and paste the above GSQL commands into a Linux file named `/home/tigergraph/hello2.gsql`.
 
-In this query we will find all the persons which are exactly 2 hops away from the parameterized input person. Just for fun, let's also compute the average age of those 2-hop neighbors.
-
-In the standard approach for this kind of graph traversal algorithm, you use a boolean variable to mark the first time that the algorithm "visits" a vertex, so that it knows not to count it again. To fit this need, we'll define a local accumulator of the type OrAccum. To declare a local accumulator, we prefix an identifier name with a single "@" symbol. Each accumulator type has a default initial value; the default value for boolean accumulators is false. Optionally, you can specify an initial value.
-
-We also want to compute one average, so we will define a global AvgAccum. The identifier for a global accumulator begins with two "@"s.
-
-After defining the Start set, we then have our first one 1-hop traversal. The SELECT and FROM clauses are the same as in our first example, but there is an additional ACCUM clause. The += operator within an ACCUM clause means that for each edge matching the FROM clause pattern, we accumulate the right-hand-side expression (true) to the left-hand-accumulator (tgt.@visited as well as s.@visited). Note that a source vertex or target vertex may be visited multiple times. Referring to Figure 1, if we start at vertex Tom, there are two edges incidents to Tom, so the ACCUM clause in the first SELECT statement will visit Tom twice. Since the accumulator type is OrAccum, the cumulative effect of the two traversals is the following:
-
-Tom.@visited <== (initial value: false) OR (true) OR (true)
-
-Note that it does not matter which of the two edges was processed first, so this operation is suitable for multithreaded parallel processing. The net effect is that as long as a vertex is visited at least once, it will end up with @visited = true. The result of this first SELECT statement is assigned to the variable FirstNeighbors.
-
-The second SELECT block will do one hop further, starting from the FirstNeighbors vertex set variable, and reaching the 2-hop neighbors. Note that this time, we have omitted the edge type friendship and the target vertex type person from the FROM clause, but we retained the aliases.  If no type is mentioned for an alias, then it is interpreted as ALL types. Since our graph has only one vertex type and one edge type, it is logically the same as if we had specified the types.  The WHERE clause filters out the vertices which have been marked as visited before (the 1-hop neighbors and the starting vertex _p_ ). This SELECT statement uses POST_ACCUM instead of ACCUM.  The reason is that POST_ACCUM traverses the vertex sets instead of the edge sets, guaranteeing that we do not double-count any vertices.  Here, we accumulate the ages of the 2-hop neighbors to get their average.
-
-Finally, the SecondNeighbors of p are printed out.
-
-This time, we put all of the following GSQL commands into one file hello2.gsql:
-
-* USE GRAPH social
-* The query definition
-* Installing the query
-* Running the query
-
-We can execute this full set of commands _without_ entering the GSQL shell. Please copy and paste the above GSQL commands into a Linux file named /home/tigergraph/hello2.gsql.
-
-In a Linux shell, under /home/tigergraph, type the following:
+In a Linux shell, under `/home/tigergraph`, type the following to create, install, and execute the query:
 
 .Linux shell
-
 [,bash]
 ----
 gsql hello2.gsql
 ----
 
 
-
-[discrete]
-==== GSQL query summary:
+== GSQL query summary:
 
 * Queries are installed in the catalog and can have one or more input parameters, enabling reuse of queries.
 * A GSQL query consists of a series of SELECT query blocks, each generating a named vertex set.

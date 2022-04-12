@@ -1,26 +1,19 @@
-= Summary
+= Pattern Matching Tutorial Summary
 
-We have covered a lot of territory in GSQL 102:
+We have covered a lot of territory in this tutorial:
 
-* Showed how to invoke GSQL Pattern Matching syntax
-* Explained how Pattern Matching extends the classic FROM clause grammar:
+* Pattern matching syntax:
  ** Each hop can be a choice of multiple, individually directed edge types
  ** The Kleene star (asterisk) and a min...max range enable each hop to be repeated.
  ** GSQL automatically finds the shortest paths that satisfy a variable length path.
  ** A virtual match table has a column for each vertex or edge alias in a multi-hop path, and a row for each graph path that satisfies the pattern.
- ** The ACCUM clause iterates on each row in the match table.
- ** A POST-ACCUM clause iterates on one vertex alias; a query can have multiple POST-ACCUM clauses.
-* Described the improvements to Pattern Matching in TigerGraph 3.0:
- ** The source (leftmost) vertex set can be specified with the same flexibility as the other vertex sets: a vertex type, an alteration of types, or omitted. Explicit seed sets are no longer needed.
- ** Restrictions on which vertex aliases may be used in the ACCUM clause have been lifted.
- ** Described three major advanced options:
-  *** The PER <vertex alias> clause enables users to fine tune the ACCUM iteration.
-  *** Data modification (insert, update, delete) are now supported.
-  *** Conjunctive Pattern Matching lets users express a complex pattern as a set of path patterns which must all be satisfied.
-* Provided best practices for writing queries, especially pattern matching queries:
+ ** The `ACCUM` clause iterates on each row in the match table.
+ ** The `POST-ACCUM` clause iterates on one vertex alias; a query can have multiple `POST-ACCUM` clauses.
+* Best practices for writing pattern matching queries:
  ** Put the smaller vertex set on the left end.
  ** Specify all vertex and edge types explicitly.
- ** Use the PER clause to reduce the match table size
-* Provided numerous examples and the full set of LDBC Social Network benchmark queries.
+ ** Use the `PER` clause to reduce the match table size.
 
-With a little practice, you will be writing GSQL pattern matching queries to efficiently solve real-world problems. You can  post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarify any doubts.
+With a little practice, you will be writing GSQL pattern matching queries to efficiently solve real-world problems.
+You can  post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum].
+Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarify any doubts.

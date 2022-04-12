@@ -116,32 +116,29 @@ PRINT Result;
 Lines should be short enough so that they display without scrolling and can be printed without anything being cut off.
 If a line is more than 80 characters, it should be split into multiple lines. The additional lines should be indented, but by 2 spaces only, to show that they are a continuation of the previous line.
 
-[cols="1h,5a"]
-|===
-|Recommended |
+==== Recommended
 [,gsql]
 ----
 CREATE QUERY hello(VERTEX<Person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(Friendship:e)- Person:tgt; //This is a long comment
-        PRINT Result; // And it is split into multiple lines.
+        FROM Start:s -(Friendship:e)- Person:tgt; /* This is a long
+          comment and it is split into multiple lines. */
+        PRINT Result;
 }
 ----
 
-|Not recommended
+==== Not recommended
 
-|
 [,gsql]
 ----
 CREATE QUERY hello(VERTEX<Person> p) {
     Start = {p};
     Result = SELECT tgt
-        FROM Start:s -(Friendship:e)- Person:tgt; // This is a really long comment that spans over a hundred characters. It really should be split into multiple lines instead of crowing one line
+        FROM Start:s -(Friendship:e)- Person:tgt; // This is a long comment that spans over a hundred characters. It really should be split into multiple lines instead of crowding one line
     PRINT Result;
 }
 ----
-|===
 
 === Keyword justification
 In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `POST-ACCUM`, `HAVING`, `GROUP BY`, `ORDER BY`, and `LIMIT`.
@@ -151,8 +148,17 @@ In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `P
 |Recommended |
 [,gsql]
 ----
-include::appendix:example$social_net/select_statement_index_having.gsql[]
+CREATE QUERY active_members (INT activity_threshold) FOR GRAPH Social_Net {
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+    result = SELECT v FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1
+        HAVING v.@activity_amount >= activity_threshold; <1>
+    PRINT result;
+}
 ----
+<1> `ACCUM` and `HAVING` are lined up in the `SELECT` block.
+
 
 |Not recommended
 
@@ -165,10 +171,12 @@ CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
     start = {Person.*};
     result = SELECT v FROM start:v -(_>:e)- Post:tgt
       ACCUM v.@activity_amount +=1
-        HAVING v.@activity_amount >= activity_threshold;
+        HAVING v.@activity_amount >= activity_threshold; <1>
     PRINT result;
 }
 ----
+<1> `ACCUM` and `HAVING` are not lined up in this example.
+This is not recommended.
 |===
 
 
@@ -183,16 +191,16 @@ CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
 |Recommended |
 [.wrap,gsql]
 ----
-/* Compute the total post activity for each male person.
-    Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
-However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */
-
 CREATE QUERY active_male_members() FOR GRAPH Social_Net
 {
+    /* Compute the total post activity for each male person.
+    Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
+However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. */ <1>
+
     SumAccum<INT> @activity_amount;
     start = {Person.*};
 
-    // The following statements produce equivalent results
+    // The following statements produce equivalent results <2>
     result1 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         WHERE v.gender == "Male"
         ACCUM v.@activity_amount +=1;
@@ -205,6 +213,8 @@ CREATE QUERY active_male_members() FOR GRAPH Social_Net
     PRINT result2;
 }
 ----
+<1> Multi-line comments are put in `/* */`.
+<2> Single-line comments are put after `//`.
 
 |Not recommended
 
@@ -216,12 +226,12 @@ CREATE QUERY active_male_members() FOR GRAPH Social_Net
 
     // Compute the total post activity for each male person.
     // Because the gender of the vertex does not change, evaluating whether the person vertex is male before (WHERE) the ACCUM clause or after (HAVING) the ACCUM clause does not change the result.
-    // However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results.
+    // However, if the condition in the HAVING clause could change within the ACCUM clause, these statements would produce different results. <1>
 
     SumAccum<INT> @activity_amount;
     start = {Person.*};
 
-    # The following statements produce equivalent results
+    # The following statements produce equivalent results <2>
     result1 = SELECT v FROM start:v -(Posted>:e)- Post:tgt
         WHERE v.gender == "Male"
         ACCUM v.@activity_amount +=1;
@@ -234,6 +244,10 @@ CREATE QUERY active_male_members() FOR GRAPH Social_Net
     PRINT result2;
 }
 ----
+<1> Multi-line comments are put in multiple double forward slashes `//`.
+This is not recommended.
+<2> Single-line comments are put after the hashtag symbol `#`.
+This is not recommended and will not be supported by the upcoming https://www.gqlstandards.org/[GQL standard].
 |===
 
 

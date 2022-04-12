@@ -1,0 +1,10 @@
+= Advanced Features
+:page-aliases: pattern-matching/adv/readme.adoc, pattern-matching/adv/README.adoc
+
+This section includes some advanced features related to pattern matching.
+It includes using the `PER` clause to fine control the `ACCUM` execution, data modification language (DML) support in pattern matching, and the conjunctive pattern match syntax which allows multiple patterns in one `FROM` clause.
+We dedicate a subsection for each topic.
+
+* xref:pattern-matching/adv/per-clause.adoc[]
+* xref:pattern-matching/adv/dml.adoc[]
+* xref:pattern-matching/adv/conjunctive-pattern-matching.adoc[]

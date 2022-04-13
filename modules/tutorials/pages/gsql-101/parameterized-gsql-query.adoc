@@ -207,6 +207,7 @@ The Interpreted Mode for GSQL lets us skip the `INSTALL` step, and even run a qu
 These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
 Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 
+
 == Query with accumulators
 
 Now, let's write a more advanced query.

@@ -96,7 +96,7 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 .GSQL shell
 [.wrap,gsql]
 ----
-GSQL > CREATE GRAPH Social (Person, Fiendship)
+GSQL > CREATE GRAPH social (Person, Friendship)
 Stopping GPE GSE RESTPP
 Successfully stopped GPE GSE RESTPP in 16.554 seconds
 Starting GPE GSE RESTPP

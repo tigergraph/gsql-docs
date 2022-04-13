@@ -959,7 +959,7 @@ Results::
 [source,gsql]
 ----
 GSQL > RUN QUERY bag_accum_ex()
-include::appendix:example$minimal_net/accum_bagaccum.gsql[]
+include::appendix:example$minimal_net/accum_bagaccum_results.json[]
 ----
 --
 ====

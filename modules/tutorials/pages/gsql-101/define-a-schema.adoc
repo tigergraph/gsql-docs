@@ -91,7 +91,7 @@ CREATE GRAPH Social (Person, Friendship)
 ----
 
 
-GSQL will confirm the creation of the first graph after several seconds, during which it pushes the catalog information to all services, such as the Graph Storage Engine(GSE), Graph Processing Engine (GPE) and TigerGraph's REST server - RESTPP.
+GSQL will confirm the creation of the first graph after several seconds, during which it pushes the catalog information to all services, such as the Graph Storage Engine (GSE), Graph Processing Engine (GPE) and TigerGraph's REST server - RESTPP.
 
 .GSQL shell
 [.wrap,gsql]

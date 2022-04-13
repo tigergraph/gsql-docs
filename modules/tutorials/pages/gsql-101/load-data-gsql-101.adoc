@@ -43,7 +43,7 @@ The field labels can be either by name or by position.
 By-name labelling requires a header line in the source file.
 By-position labelling uses integers to indicate source column position 0, 1,...
 In the example above, the first `LOAD` statement refers to the source file columns by name, whereas the second `LOAD` statement refers to the source file columns by position. Note the following details:
-** The column "name" in `file1` gets mapped to two fields, both the `PRIMARY_ID` and the "name" attribute of the per`son vertex.
+** The column "name" in `file1` gets mapped to two fields, both the `PRIMARY_ID` and the "name" attribute of the `Person` vertex.
 ** In `file1`, gender comes before age.  In the `Person` vertex, gender comes after age. When loading, state your attributes in the order needed by the target object (in this case, the `Person` vertex).
 ** Each `LOAD` statement has a `USING` clause.  Here it tells GSQL that both files contain a header (whether we choose to use the names or not, GSQL still needs to know whether to consider the first line as data or not).
 It also says the column separator is a comma. GSQL can handle any single-character separator, not just commas.

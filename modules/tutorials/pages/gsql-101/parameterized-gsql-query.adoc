@@ -28,38 +28,46 @@ USE GRAPH Social
 SET syntax_version="v2"
 
 CREATE QUERY hello (VERTEX<Person> p) {
-  Start = {p};
-  Result = SELECT tgt
-           FROM Start:s -(Friendship:e)- Person:tgt;
-  PRINT Result;
+  start = {p};
+  result = SELECT tgt
+           FROM start:s -(Friendship:e)- Person:tgt;
+  PRINT result;
 }
 ----
 
 
 
-This query features one SELECT statement.  The SELECT statements here are much more powerful than the ones in built-in queries. Here you can do the following:The query starts by seeding a vertex set "Start" with the person vertex identified by parameter _p_ passed in from the query call. The curly braces tell GSQL to construct a set containing the enclosed items.
+This query features one `SELECT` statement.
+The query starts by seeding a vertex set `start` with the person vertex identified by parameter _p_ passed in from the query call.
+The curly braces tell GSQL to construct a set containing the enclosed items.
 
-Next, the SELECT statement describes a 1-hop traversal according to the pattern described in the FROM clause:
+Next, the `SELECT` statement describes a 1-hop traversal according to the pattern described in the `FROM` clause:
 
-`+Start:s -(Friendship:e)- Person:tgt+`
+`start:s -(Friendship:e)- Person:tgt`
 
-The pattern means we select all edges beginning from the given source set (Start), which have the given undirected edge type (Friendship) and which end at the given vertex type (Person). Note that we can define vertex and edge set aliases using ":alias": "s" is the alias for the source vertex, "e" is the edge alias, and "tgt" is the target vertex alias.
+The pattern means we select all edges beginning from the given source set (`start`), which have the given undirected edge type (`Friendship`) and which end at the given vertex type (`Person`).
+The `FROM` clause defines vertex and edge set aliases using `:<alias>`:
 
-Refer back to the initial clause and the assignment ("[.code]``Result = SELECT tgt``"). Here we see the target set's  alias tgt.  This means that the SELECT statement should return the target vertex set (as filtered and processed by the full set of clauses in the SELECT query block) and assign that output set to the variable called Result.
+* `s` is the alias for the source vertex,
+* `e` is the edge alias
+* `tgt` is the target vertex alias.
 
-Last, we print out the Result vertex set, in JSON format.
+Refer back to the initial clause and the assignment (`result = SELECT tgt`).
+Here we see the target set's alias `tgt`.
+This means that the `SELECT` statement returns the target vertex set (as filtered and processed by the full set of clauses in the `SELECT` query block) and assign that output set to the variable called `result`.
+
+Last, we print out the `result` vertex set, in JSON format.
 
 == Create a query
 
 Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the `@filename` syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using `@hello.qsql`.
 
 [NOTE]
-IF you are not in the `/home/tigergraph` folder when you start GSQL, you can use the absolute path to invoke a `.gsql` file. e.g., `@/home/tigergraph/hello.gsql`
+If you are not in the `/home/tigergraph` folder when you start GSQL, you can use the absolute path to invoke a `.gsql` file. e.g., `@/home/tigergraph/hello.gsql`
 
-Run the "ls" command to see that the query is now in the catalog.
+Run the `ls` command to see that the query is now in the catalog.
 
 .GSQL shell
-
 [source,gsql]
 ----
 GSQL > @hello.gsql
@@ -204,18 +212,19 @@ Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] f
 Now, let's write a more advanced query.
 This time, we are going to learn to use the powerful built-in accumulators, which serve as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.
 
-"Runtime" means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during an implicitly parallel processing of the query.
+"Runtime" means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during the implicitly parallel processing of the query.
 
-Let's write a query to find all the persons which are exactly 2 hops away from the parameterized input Person.
+Say we need to write a query to find all the persons which are exactly 2 hops away from the parameterized input Person.
 Just for fun, let's also compute the average age of those 2-hop neighbors.
 
 === Method
-To get all person vertices that are two hops away from the starting vertex, we can use the following logic:
+To get all `Person` vertices that are two hops away from the starting vertex, we can use the following logic:
 
-. Traverse and visit vertices that are one stop away from the starting vertex, and mark every vertex visited including the starting vertex.
+. From the starting vertex, visit vertices that are one stop away from the starting vertex, and mark every vertex we visit as visited, including the starting vertex.
 This gives us the neighbors that are 1 hop away from the starting vertex.
-. From the 1-hop neighbors, find vertices that are 1-hop away, excluding all vertices that we have already visited in the previous step.
+. Now that we have the 1-hop neighbors, we can find vertices that are 1-hop away from those neighbors, excluding all vertices that we have already visited in the previous step.
 This gives us all vertices that are exactly two hops away from the original vertex.
+As we visit the 2-hop neighbors, we can also calculate their average age.
 
 === Query
 
@@ -224,6 +233,7 @@ In order to keep track of vertices that have been visited, we declare a vertex-a
 In addition, we also need to declare an `AvgAccum` to to calculate the average age of the final vertex set.
 
 To declare a vertex-attached accumulator, prefix an identifier name with a single `@` symbol.
+After you declare the accumulator, they are attached to vertices in the query, and you can access its value in an `ACCUM` or `POST-ACCUM` clause of the `SELECT` statement by using the dot``.`` operator following a vertex alias as if they are an attribute of the vertices.
 
 After the first hop, we use another `SELECT` statement to perform a second hop, and filter out all vertices that we have visited previously.
 This gives us the neighbors that are exactly two hops away, and we can use the `AvgAccum` to calculate the average age of the 2-hop neighbors.
@@ -310,7 +320,7 @@ gsql hello2.gsql
 ----
 
 
-== GSQL query summary:
+== GSQL query summary
 
 * Queries are installed in the catalog and can have one or more input parameters, enabling reuse of queries.
 * A GSQL query consists of a series of SELECT query blocks, each generating a named vertex set.

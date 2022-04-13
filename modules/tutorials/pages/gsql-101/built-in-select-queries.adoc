@@ -169,7 +169,7 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
         }
     },
     {
-        "e_type": "friendship",
+        "e_type": "Friendship",
         "directed": false,
         "from_id": "Tom",
         "from_type": "Person",

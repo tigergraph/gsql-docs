@@ -4,22 +4,21 @@ You now have a graph with data!  You can run some queries using the built-in RES
 
 == Get vertex/edge statistics
 
-Here we call two functions, `stat_vertex_number` and `stat_edge_number` to return the cardinality of each vertex and edge type.
+Here we call two functions, `stat_vertex_number` and `stat_edge_number` to return the number of vertices and edges of each vertex and edge type.
 
 [NOTE]
 ====
 REST endpoints return results in JSON format.
 However, JSON data can't be read easily from JSON files by using bash script like other normal files.
-The *jq* tool is used to solve this problem.
+The `jq` tool is used to solve this problem.
 
-We recommend you install jq and redirect the REST call result to jq before it is output. +
+We recommend you install jq and redirect the REST call result to jq before it is output.
 ====
 
 .Linux Shell
-
 [.wrap,bash]
 ----
-#get vertex cardinality
+# get vertex cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
@@ -38,7 +37,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
   "message": "",
   "results": [
     {
-      "v_type": "person",
+      "v_type": "Person",
       "count": 7
     }
   ]
@@ -49,15 +48,12 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 [.wrap,bash]
 ----
-#get edge cardinality
+# get edge cardinality
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
 ----
 
-
-
-[,gsql]
+[,javascript]
 ----
-#results
 {
   "version": {
     "edition": "enterprise",
@@ -68,7 +64,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
   "message": "",
   "results": [
     {
-      "e_type": "friendship",
+      "e_type": "Friendship",
       "count": 7
     }
   ]
@@ -80,7 +76,6 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 If you want to look up the details about a vertex with its primary ID, you can use the following REST call.
 
 .Linux Shell
-
 [.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
@@ -91,7 +86,6 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 *Example*. Find a person vertex whose `primary_id` is "Tom".
 
 .Linux Shell
-
 [.wrap,bash]
 ----
  curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom" | jq .
@@ -99,9 +93,8 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 
 
-[,gsql]
+[,javascript]
 ----
- // results
  {
   "version": {
     "edition": "enterprise",
@@ -165,23 +158,23 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
     "message": "",
     "results": [
     {
-        "e_type": "friendship",
+        "e_type": "Friendship",
         "directed": false,
         "from_id": "Tom",
-        "from_type": "person",
+        "from_type": "Person",
         "to_id": "Dan",
-        "to_type": "person",
+        "to_type": "Person",
         "attributes": {
         "connect_day": "2017-06-03 00:00:00"
         }
     },
     {
-        "e_type": "friendship",
+        "e_type": "Friendship",
         "directed": false,
         "from_id": "Tom",
-        "from_type": "person",
+        "from_type": "Person",
         "to_id": "Jenny",
-        "to_type": "person",
+        "to_type": "Person",
         "attributes": {
         "connect_day": "2015-01-01 00:00:00"
         }

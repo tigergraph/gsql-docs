@@ -26,8 +26,8 @@ LOAD [ filepath_string|filevar|TEMP_TABLE table_name ]
 
 === Destination clause
 
-A _destination clause_ describes how the tokens from a data source should be used to construct one of three types of data objects: a vertex, an edge, or a row in a temporary table (`TEMP_TABLE`).
-The destination clause formats for the three types are very similar, but we show them separately for clarity:
+A _destination clause_ describes how the tokens from a data source should be used to construct one of three types of data objects: a vertex, an edge, or a row in a <<_temp_table_and_flatten_functions, temporary table>> (`TEMP_TABLE`).
+This section describes destination clauses for loading to vertices and edges.
 
 .Vertex Destination Clause
 [source,gsql]
@@ -55,24 +55,13 @@ For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for i
 * For edge clauses, the `source_id_expr` and `target_id_expr` can each optionally be followed by a `source_type_expr` and `target_type_expr`, respectively. The `source_type_expr` and `target_type_expr` must evaluate to one of the allowed endpoint vertex types for the given edge type.
 By specifying the vertex type, this tells the loader what id types to expect. This may be important when the edge type is defined to accept more than one type of source/target vertex.
 
-.`TEMP_TABLE` Destination Clause
-[source,ebnf]
-----
-TO TEMP_TABLE table_name (id_name [, attr_name]*)
-    VALUES (id_expr [, attr_expr]*)
-    [WHERE conditions] [OPTION (options)]
-----
-
-
-The `TO TEMP_TABLE` clause defines a new, temporary data structure. Its unique characteristics will be described in a separate subsection. For now, we focus on `TO VERTEX` and `TO EDGE`.
 
 [CAUTION]
 ====
-*For fast loading of edge data, referential integrity checking is disabled by default.* +
-For an edge to be valid, it must refer to endpoint vertices that exist.
-To support fast, out-of-order loading, *if one or both of the endpoint vertices do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.*
-If the vertex data is loaded later, it will be automatically merged with the dummy vertices.
-The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST=true` option.
+To support fast, out-of-order loading, *if one or both of the endpoint vertices of an edge do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.*
+If the vertex data is loaded later, it will be automatically merged with the automatically created vertices.
+
+The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST` option to `true`.
 ====
 
 === Examples
@@ -87,10 +76,33 @@ CREATE DIRECTED EDGE Visit (FROM Person, TO Person
                           | FROM Person, TO Company, year INT)
 ----
 
+==== Vertex loading
+The `Person` vertex type has a primary ID `pid` and an attribute `birthdate`.
+If we have the following CSV file with two columns:
+
+[,csv]
+----
+Name,DOB
+Sam,1994-05-01
+Chris,1985-12-25
+Pat,1996-11-13
+Joe,1975-11-02
+Taylor,1988-04-25
+----
+
+If we want to use a person's name as their primary ID, and load the DOB column into their `birthdate` attribute, we can use the following `LOAD` statement:
+
+[,gsql]
+----
+LOAD file1 TO VERTEX Person VALUES ($"Name", $"DOB") USING HEADER = "TRUE"
+----
+
+==== Edge loading
+
 A `Visit` edge can connect two `Person` vertices or a `Person` to a `Company`.
 A `Person` has a string ID, while a Company has an `INT` ID.
 Then suppose the `Visit` edge source data comes from a single CSV file, containing both variants of edges.
-Note that the 2nd column ($1) contains either `Person` or `Company`, and that the 3rd column ($2) contains either a string or an integer.
+Note that the 2nd column (`$1`) contains either `Person` or `Company`, and that the 3rd column (`$2`) contains either a string or an integer.
 
 [source,csv]
 ----
@@ -100,19 +112,19 @@ Chris,Company,9401,2016
 Pat,Person,Taylor,2020
 ----
 
-Using the optional _`target_type_expr`_ field, we can load both variants of the `Visit` edge with a single clause.
+Using the optional `target_type_expr` field, we can load both variants of the `Visit` edge with a single clause.
 
 [source,gsql]
 ----
-LOAD file1 TO EDGE Visit VALUES ($0, $2 $1, $3) USING separator=",";
+LOAD file2 TO EDGE Visit VALUES ($0, $2 $1, $3) USING SEPARATOR=",";
 ----
 
-[NOTE]
+[WARNING]
 ====
 Known issue: you must include a `USING clause` when loading data into edge types with different `FROM-TO` vertex pairs, even if all options are default.
 ====
 
-=== *WHERE Clause*
+=== WHERE clause
 
 The `WHERE` clause is an optional clause.
 The `WHERE` clause's condition is a boolean expression.
@@ -128,7 +140,9 @@ Arithmetic Operators:: `+`, `-`, `*`, `/`, `{caret}`. Numeric operators can be u
 
 [WARNING]
 ====
-Because computers necessarily can only store approximations for most `DOUBLE` and `FLOAT` type values, it is not recommended to test these data types for exact equality or inequality. Instead, one should allow for an acceptable amount of error. The following example checks if `$0 = 5`, with an error of 0.00001 permitted:
+Because computers can only store approximations for most `DOUBLE` and `FLOAT` type values, testing these data types for exact equality or inequality is not recommended.
+Instead, one should allow for an acceptable amount of error.
+The following example checks if `$0` is equal to `5`, with an error of 0.00001 permitted:
 
 [source,gsql]
 ----
@@ -186,24 +200,25 @@ The GSQL loading language provides several built-in functions for the `WHERE` cl
 
 | gsql_token_equal( _string1, string2_ )
 | bool
-| Returns true if _string1_ is exactly the same (case sensitive) as _string2_ . Returns false otherwise.
+| Returns true if _string1_ is exactly the same (case-sensitive) as _string2_ . Returns false otherwise.
 
 | gsql_token_ignore_case_equal( _string1, string2_ )
 | bool
-| Returns true if _string1_ is exactly the same (case insensitive) as _string2_ . Returns false otherwise.
+| Returns true if _string1_ is exactly the same (case-insensitive) as _string2_.
+Returns false otherwise.
 
 | gsql_is_true( _main_string_ )
 | bool
-| Returns true if _main_string_ is either "t" or "true" (case insensitive). Returns false otherwise.
+| Returns true if _main_string_ is either "t" or "true" (case-insensitive). Returns false otherwise.
 
 | gsql_is_false( _main_string_ )
 | bool
-| Returns true if _main_string_ is either "f" or "false" (case insensitive). Returns false otherwise.
+| Returns true if _main_string_ is either "f" or "false" (case-insensitive). Returns false otherwise.
 |===
 
 [WARNING]
 ====
-The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used exchangeably.
+The token functions in the WHERE clause and those token functions used for attribute expression are different. They cannot be used interchangeably.
 ====
 
 
@@ -216,13 +231,15 @@ The `TAGS` clause specifies the tags to be applied to the vertices loaded by the
 TAGS "(" tag_name (, tag_name)* ")" BY [ OR | OVERWRITE ]
 ----
 
-If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause. Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
+If a `LOAD` statement has a `TAGS` clause, it will tag the vertices with the tags specified in the `TAGS` clause.
+Before vertices can be loaded and tagged with a `LOAD` statement, the vertex type must first be xref:modifying-a-graph-schema.adoc#_alter_vertex_edge[marked as taggable], and xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_tag[the tags must be defined].
 
 Users have two options when it comes to how to merge tags if the target vertices exist in the graph:
 
-* `BY OR` : Add the new tags to the existing set of tags.
+* `BY OR`: Add the new tags to the existing set of tags.
 * `BY OVERWRITE`: Overwrite existing tags with the new tags.
 
+[#_using_clause]
 === `USING` clause
 
 A `USING` clause contains one or more optional parameter value pairs:
@@ -250,7 +267,7 @@ Any single ASCII character.
 
 Default: comma `,`
 
-* `\t`for tab`
+* `\t for tab`
 * `\xy` for ASCII decimal code `xy`
 
 |`EOL`
@@ -285,9 +302,10 @@ The header assigns names to the columns.
 The `LOAD` statement must refer to an actual file with a valid header.
 
 a|
-`true`, `false`
+`"true"`, `"false"`.
+Both values are strings and must be enclosed in double quotes.
 
-Default is `false`
+Default is `"false"`
 
 |`USER_DEFINED_HEADER`
 |Specifies the name of the header variable, when a
@@ -335,14 +353,15 @@ a|
 Default is "false"
 |===
 
+[#_loading_json_data]
 === Loading JSON Data
 
 When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects instead of tabular data.
-A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures. A colon separates each key from its value, and a comma separates items in a collection.
+A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures.A colon separates each key from its value, and a comma separates items in a collection.
 
-The JSON loader requires that each input line has exactly one JSON object. Instead of using column values as tokens, the JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair.
+The JSON loader requires that each input line has exactly one JSON object.Instead of using column values as tokens, the JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair.
 In a GSQL loading job, a JSON field is identified by a dollar sign $ followed by the colon-separated sequence of nested key names to reach the value from the top level.
-For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifier `$"abc":"def"` is used to access `"this_value"`. The double quotes are mandatory.
+For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifier `$"abc":"def"` is used to access `"this_value"`.The double quotes are mandatory.
 
 An example is shown below:
 

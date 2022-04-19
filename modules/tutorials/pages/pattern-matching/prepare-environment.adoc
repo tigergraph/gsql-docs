@@ -1,5 +1,5 @@
 = Prepare your environment - Pattern Matching tutorial
-:page-aliases:pattern-matching/get-set.adoc, pattern-matching/define-the-schema.adoc,pattern-matching/load-data.adoc
+:page-aliases:tutorials:pattern-matching/get-set.adoc, tutorials:pattern-matching/define-the-schema.adoc, tutorials:pattern-matching/load-data.adoc
 
 This section of the pattern matching tutorial walks you through creating the graph and loading graph data, so you have the right setup to move forward with the tutorial.
 
@@ -89,7 +89,7 @@ Below is a sample output of the loading job.
 [source,bash]
 ----
 tigergraph/gsql_102$ ./load_data.sh
-[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobid" to track the loading progress again]
+[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobbed" to track the loading progress again]
 [Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB jobid"]
 Starting the following job, i.e.
   JobName: load_ldbc_snb, jobid: ldbc_snb.load_ldbc_snb.file.m1.1558053156447

@@ -61,7 +61,7 @@ By specifying the vertex type, this tells the loader what id types to expect. Th
 To support fast, out-of-order loading, *if one or both of the endpoint vertices of an edge do not yet exist, the loader will create vertices with the necessary IDs and default attribute values.*
 If the vertex data is loaded later, it will be automatically merged with the automatically created vertices.
 
-The user can disable this feature and perform regular referential integrity checking by using the `VERTEX_MUST_EXIST=true` option.
+The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST` option to `true`.
 ====
 
 === Examples
@@ -142,7 +142,7 @@ Arithmetic Operators:: `+`, `-`, `*`, `/`, `{caret}`. Numeric operators can be u
 ====
 Because computers can only store approximations for most `DOUBLE` and `FLOAT` type values, testing these data types for exact equality or inequality is not recommended.
 Instead, one should allow for an acceptable amount of error.
-The following example checks if `$0 = 5`, with an error of 0.00001 permitted:
+The following example checks if `$0` is equal to `5`, with an error of 0.00001 permitted:
 
 [source,gsql]
 ----

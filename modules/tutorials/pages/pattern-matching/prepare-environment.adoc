@@ -14,9 +14,9 @@ It models the activities and relationships of social forum participants.
 For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment.
 
 A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company.
-A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by TagClass.
+A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by Tag_Class.
 The relationships between entities are modeled as directed edges, except Person KNOWS Person is modeled as an undirected edge.
-For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, hasMember and hasModerator.
+For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, Has_Member and Has_Moderator.
 
 
 == Prerequisites
@@ -56,10 +56,11 @@ Inside are two sub-folders:
 The raw data is in the `social_network` folder.
 
 == Run script to create schema and loading jobs
-Download xref:attachment$setup.gsql[`setup_schema.gsql`] which combines the schema script and loading job script.
+Download xref:attachment$setup.gsql[`setup_schema.gsql`], which is a script that describes the schema and prepares the loading job.
 
-Specify the environment variable *LDBC_SNB_DATA_DIR* to point to your raw file folder un-tarred in the previous section.
-In our example below, the raw data is in */home/tigergraph/ldbc_snb_data/social_network,* so we use the export shell command to specify its location. Then, start your TigerGraph services if needed. Finally, run the *setup_schema.gsql* script to create your LDBC Social Network graph.
+Use the `export` command to specify the environment variable *LDBC_SNB_DATA_DIR* to point to your raw file folder un-tarred in the previous section.
+In our example below, the raw data is in */home/tigergraph/ldbc_snb_data/social_network*.
+Then, start your TigerGraph services if needed. Finally, run the *setup_schema.gsql* script to create your LDBC Social Network graph.
 
 
 [source,bash]
@@ -76,14 +77,13 @@ gsql setup_schema.gsql
 
 == Run loading job
 
-Download the xref:attachment$load_data.sh[loading job script] and invoke it on the command line.
+Download the xref:attachment$load_data.sh[loading job script] and invoke it on the command line to run the loading job with the files specified in the previous loading job script.
 
 [source,console]
 ----
 bash ./load_data.sh
 ----
 
-Below is a sample output of the loading job.
 
 .Sample Loading Progress Output
 [source,bash]

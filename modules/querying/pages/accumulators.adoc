@@ -3,7 +3,7 @@
 :stem: latexmath
 
 Accumulators are special types of variables that accumulate information about the graph during its traversal and exploration.
-Because they are a unique and important feature of the GSQL query language, we devote a separate section for their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.
+Because they are a unique and important feature of the GSQL query language, we devote a separate section to their introduction, but additional detail on their usage will be covered in other sections, the xref:select-statement/sql-like-select-statement.adoc[`SELECT` Statement section] in particular.
 
 This section covers the following subset of the EBNF language definitions:
 
@@ -49,7 +49,7 @@ postAccumClause := "POST-ACCUM" DMLSubStmtList
 
 There are a number of different types of accumulators, each providing specific accumulation functions.  Accumulators are declared to have one of two types of association: _global_ or _vertex-attached_.
 
-More technically, accumulators are mutable mutex variables shared among all the graph computation threads exploring the graph within a given query.
+More technically, accumulators are mutable mutex (mutual exclusion) variables shared among all the graph computation threads exploring the graph within a given query.
 To improve performance, the graph processing engine employs multithreaded processing.
 Modification of accumulators is coordinated at run-time so the accumulation operator works correctly (i.e., mutually exclusively) across all threads.
 
@@ -79,7 +79,7 @@ globalAccumName := "@@"accumName;
 == Vertex-attached Accumulators
 
 Vertex-attached accumulators are mutable state variables that are attached to each vertex in the graph for the duration of the query's lifetime.
-They act as run-time attributes of a vertex. They are shared, mutual exclusively, among all query processes.
+They act as run-time attributes of a vertex. They are shared, mutually exclusively, among all query processes.
 
 Vertex-attached accumulators can be set to a value with the `=` operator.
 Additionally, the operator `+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
@@ -122,7 +122,7 @@ The accumulation operation for global accumulators in an `ACCUM` clause executes
 * if the `FROM` clause uses an edge-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each edge in the selected edge set.
 * If the `FROM` clause uses a vertex-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each vertex in the selected vertex set.
 
-Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see Section "Variable Types" for more details) in an `ACCUM` clause.
+Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see the xref:declaration-and-assignment-statements.adoc#_declaration_statements[Declaration Statements] section for more details) in an `ACCUM` clause.
 
 Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `Works_For` edge traversed since it is shared among processes. Conversely, `Relationship_Count` appears to have only been incremented once.
 
@@ -204,7 +204,7 @@ The accumulators fall into two major groups :
  ** HeapAccum
  ** GroupByAccum
 
-The details of each accumulator type are summarized in the table below.  The Accumulation Operation column explains how the accumulator `exampleAccum` is updated when the statement `exampleAccum += newVal` is executed.
+The details of each accumulator type are summarized in this table.  The Accumulation Operation column explains how the accumulator `exampleAccum` is updated when the statement `exampleAccum += newVal` is executed.
 Following the table are example queries for each accumulator type.
 
 .Accumulator Types and Their Accumulation Behavior
@@ -360,11 +360,11 @@ include::appendix:example$minimal_net/accum_minaccum_results.json[]
 
 
 String minimum and maximum values are based on their UTF-8 codes, which is a multilingual superset of the ASCII codes.
-Within ASCII, a < z, uppercase is less than lowercase, and digits are less than alphabetic characters.
+Within ASCII, `a` is less than `z`, uppercase is less than lowercase, and digits are less than alphabetic characters.
 
-MinAccum and MaxAccum operating on VERTEX type have a special comparison.
+`MinAccum` and `MaxAccum` operating on `VERTEX` types have a special comparison.
 They do not compare vertex ids, but TigerGraph internal ids, which might not be in the same order as the external ids.
-Comparing internal ids is much faster, so MinAccum/MaxAccum<VERTEX> provides an efficient way to compare and select vertices.
+Comparing internal ids is much faster, so `MinAccum/MaxAccum<VERTEX>` provides an efficient way to compare and select vertices.
 This is helpful for some graph algorithms that require the vertices to be numbered and sortable.
 For example, the following query returns one post from each person. The returned vertex is not necessarily the vertex with the alphabetically largest id.
 
@@ -403,7 +403,7 @@ TYPEDEF TUPLE <FLOAT weight> Edge_Weight
 MinAccum<EDGE_WEIGHT> @@acc_test;
 ----
 
-Then the `weight` field of the tuple can be accessed directly from the `MinAccum` through the doc operator(`.`):
+Then the `weight` field of the tuple can be accessed directly from the `MinAccum` through the dot operator(`.`):
 
 [source,cpp]
 ----
@@ -420,7 +420,8 @@ The output is the mean value; the sum and the count values are not accessible to
 The data type of an AvgAccum variable is not declared; all AvgAccum accumulators accept inputs of type `INT`, `UINT`, `FLOAT`, and `DOUBLE`.
 The output is always `DOUBLE` type.
 
-The `+= arg` operation updates the AvgAccum variable's state to be the mean of all the previous arguments along with the current argument; The `= arg` operation clears all the previously accumulated state and sets the new state to be `arg` with a count of one.
+The `+= arg` operation updates the AvgAccum variable's state to be the mean of all the previous arguments along with the current argument.
+The `= arg` operation clears the previously accumulated state and sets the new state to be `arg` with a count of one.
 
 ==== Example
 [tabs]
@@ -450,11 +451,11 @@ include::appendix:example$minimal_net/accum_avgaccum_results.json[]
 === AndAccum / OrAccum
 
 The AndAccum and OrAccum types calculate and store the cumulative result of a series of boolean operations.
-The output of an AndAccum or an OrAccum is a single boolean value (True or False). AndAccum and OrAccum variables operate on boolean values only.
+The output of an AndAccum or an OrAccum is a single boolean value (`TRUE` or `FALSE`). AndAccum and OrAccum variables operate on boolean values only.
 The data type does not need to be declared.
 
 For AndAccum, `+= arg` updates the state to be the logical `AND` between the current boolean state and `arg`.
-OrAccum behaves the same, with the exception that it stores the result of a logical OR operation.
+OrAccum behaves the same, with the exception that it stores the result of a logical `OR` operation.
 
 ==== Example
 [tabs]
@@ -492,13 +493,13 @@ You can specify the length of both types by appending the desired length in angl
 Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
 "Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.
 Hence, an integer is equivalent to a sequence of boolean values.
-Computing the Bitwise `AND` of two numbers A and B means to compute the bit sequence C where the stem:[j_{th}] bit of C, denoted stem:[C_j], is equal to stem:[A_j] `AND` stem:[B_j].
+Computing the Bitwise `AND` of two numbers A and B means computing the bit sequence C where the stem:[j_{th}] bit of C, denoted stem:[C_j], is equal to stem:[A_j] `AND` stem:[B_j].
 
 ==== Declaration
 
 A bitwise accumulator has different declaration syntax depending on its length:
 
-* When a bitwise accumulator length less than or equal to 64 bit, it's assigned using one integer.
+* When a bitwise accumulator length is less than or equal to 64 bit, it's assigned using one integer.
 The integer is converted to a 64-bit sequence of 1s and 0s.
 Overflow on the left is ignored.
 * When a bitwise accumulator length is longer than 64 bit, it's assigned using an array of two integers.
@@ -534,7 +535,7 @@ Most computer systems represent negative integers using "2's complement" format,
 ====
 
 ==== Functions
-Below is a list of methods of BitwiseAndAccum and BitwiseOrAccum.
+This is a list of methods of BitwiseAndAccum and BitwiseOrAccum.
 If a method returns an `BitwiseAndAccum` or `BitwiseOrAccum`, it returns the same type as the instance that calls the method.
 
 .Bitwise accumulator functions
@@ -579,7 +580,7 @@ The value of the bit.
 |None.
 |Mutator
 |Flips the bit at the specified index.
-If the bit is 0, change it to 1 and vice versa.
+If the bit is 0, changes it to 1 and vice versa.
 
 
 |`.flip( fromIndex [, toIndex ] )`
@@ -659,7 +660,7 @@ ListAccum also supports the following class functions.
 Functions that modify the ListAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
@@ -780,11 +781,14 @@ include::appendix:example$work_net/accum_vertex_listaccum_results.json[]
 [#_setaccum]
 === SetAccum
 
-The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.A SetAccum instance can contain values of one type.The element type can be any base type, tuple, or `STRING COMPRESS`.
+The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.
+A SetAccum instance can contain values of one type.
+The element type can be any base type, tuple, or `STRING COMPRESS`.
 
-For SetAccum, the `+= arg` operation adds a non-duplicate element or set of elements to the set.If an element is already represented in the set, then the SetAccum state does not change.
+For SetAccum, the `+= arg` operation adds a non-duplicate element or set of elements to the set.
+If an element is already represented in the set, then the SetAccum state does not change.
 
-SetAccum also can be used with the three canonical set operators: `UNION`, `INTERSECT`, and `MINUS` (see Section "Set/Bag Expression and Operators" for more details).
+SetAccum also can be used with the three canonical set operators: `UNION`, `INTERSECT`, and `MINUS` (see the xref:operators-and-expressions.adoc#_setbag_expression_and_operators[Set/Bag Expression and Operators] section for more details).
 
 SetAccum also supports the following class functions.
 
@@ -893,13 +897,17 @@ GSQL > RUN QUERY set_accum_ex()
 [#_bagaccum]
 === BagAccum
 
-The BagAccum type maintains a collection of elements with duplicated elements allowed.The output of a BagAccum is a list of elements in arbitrary order.A BagAccum instance can contain values of one type.The element type can be any base type, tuple, or STRING COMPRESS.
+The BagAccum type maintains a collection of elements with duplicated elements allowed.
+The output of a BagAccum is a list of elements in arbitrary order.
+A BagAccum instance can contain values of one type.
+The element type can be any base type, tuple, or `STRING COMPRESS`.
 
 For BagAccum, the `+= arg` operation adds an element or bag of elements to the bag.
 
 BagAccum also supports the `+` operator:
 
-* `@bag1 + @bag2` creates a new BagAccum, which contains the elements of @bag1 and the elements of @bag2. The two BagAccums must have identical data types.
+* `@bag1 + @bag2` creates a new BagAccum, which contains the elements of `@bag1` and the elements of `@bag2`. 
+The two BagAccums must have identical data types.
 
 BagAccum also supports the following class functions.
 
@@ -908,7 +916,7 @@ BagAccum also supports the following class functions.
 Functions which modify the BagAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
@@ -968,14 +976,17 @@ include::appendix:example$minimal_net/accum_bagaccum_results.json[]
 [#_mapaccum]
 === MapAccum
 
-The MapAccum type maintains a collection of (key -> value) pairs.The output of a MapAccum is a set of key and value pairs in which the keys are unique.
+The MapAccum type maintains a collection of (key -> value) pairs.
+The output of a MapAccum is a set of key and value pairs in which the keys are unique.
 
-The key type of a MapAccum can be all base types or tuples.If the key type is `VERTEX`, then only the vertex's id is stored and displayed.
+The key type of a MapAccum can be all base types or tuples.
+If the key type is `VERTEX`, then only the vertex's id is stored and displayed.
 
 The value type of a MapAccum can be all base types, tuples, or any type of accumulator, except for HeapAccum.
 
 For MapAccum, the `+= (key->val)` operation adds a key-value element to the collection if *key* is not yet used in the MapAccum.
-If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val* . (Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
+If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val*. 
+(Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
 
 MapAccum also supports the `+` operator:
 
@@ -989,7 +1000,7 @@ MapAccum also supports the following class functions.
 Functions that modify the MapAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
@@ -1117,7 +1128,7 @@ ArrayAccum also supports the following class functions.
 Functions that modify the ArrayAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
@@ -1240,7 +1251,7 @@ HeapAccum also supports the following class functions.
 Functions that modify the `HeapAccum` (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===
@@ -1298,7 +1309,7 @@ include::appendix:example$minimal_net/accum_heapaccum_results.json[]
 
 === GroupByAccum
 
-The GroupByAccum is a compound accumulator, an accumulator of accumulators. At the top level, it is a MapAccum where both the key and the value can have multiple fields. Moreover, each of the value fields is an accumulator type.
+The GroupByAccum is a compound accumulator, an accumulator of accumulators. At the top level, it is a MapAccum where both the key and the value can have multiple fields, each of them an accumulator type.
 
 .GroupByAccum syntax
 [source,ebnf]
@@ -1308,7 +1319,8 @@ GroupByAccum<type [, type]* , accumType [, accumType]* >
 
 
 
-In the EBNF above, the *type* terms form the key set, and the *accumType* terms form the map's value. Since they are accumulators, they perform a grouping. Like a MapAccum, if we try to store a (key->value) whose key has already been used, then the new value will accumulate to the data which is already stored.  In this case, each field of the multiple-field value has its own accumulation function. One way to think about GroupByAccum is that each unique key is a group ID.
+In the EBNF above, the *type* terms form the key set, and the *accumType* terms form the map's value. Since they are accumulators, they perform a grouping. Like a MapAccum, if we try to store a (key->value) whose key has already been used, then the new value will accumulate to the data which is already stored.
+In this case, each field of the multiple-field value has its own accumulation function. One way to think about GroupByAccum is that each unique key is a group ID.
 
 In GroupByAccum, the key types can be base type, tuple, or STRING COMPRESS. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
 
@@ -1331,7 +1343,7 @@ GroupByAccum also supports the following class functions.
 Functions that modify the GroupByAccum (mutator functions) can be used only under the following conditions:
 
 * Mutator functions of global accumulators may only be used at the query-body level.
-* Mutator functions of vertex-attached accumulators may only be used in a POST-ACCUM clause.
+* Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
 ====
 
 |===

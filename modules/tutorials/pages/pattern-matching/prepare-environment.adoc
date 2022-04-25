@@ -56,7 +56,7 @@ Inside are two sub-folders:
 The raw data is in the `social_network` folder.
 
 == Run script to create schema and loading jobs
-Download xref:attachment$setup.gsql[`setup_schema.gsql`], which is a script that describes the schema and prepares the loading job.
+Download xref:attachment$setup.gsql[`setup_schema.gsql`], which is a script that defines the schema and creates the loading job.
 
 Use the `export` command to specify the environment variable *LDBC_SNB_DATA_DIR* to point to your raw file folder un-tarred in the previous section.
 In our example below, the raw data is in */home/tigergraph/ldbc_snb_data/social_network*.

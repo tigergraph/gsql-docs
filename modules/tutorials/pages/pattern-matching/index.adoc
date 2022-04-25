@@ -10,6 +10,7 @@ This tutorial assumes you have finished xref:tutorials:gsql-101/index.adoc[GSQL 
 
 A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps.
 A pattern can be a linear trace, or a non-linear trace (tree, circle etc.).
+
 For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type.
 A pattern could be a trace on this simple schema,
 

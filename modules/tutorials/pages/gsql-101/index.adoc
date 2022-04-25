@@ -2,39 +2,53 @@
 :description: A beginner tutorial to get started with GSQL.
 :page-aliases: tutorials:gsql-101/readme.adoc, tutorials:gsql-101/README.adoc, tutorials:gsql-101/get-set.adoc
 
-In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries.
+In this tutorial, we will introduce core concepts in creating and querying graph databases.
+We will show you how to create a graph schema, load data, write simple parameterized queries, and run your queries.
 
 == Prerequisites
 
 * A running TigerGraph installation or Docker container.
 
 NOTE: If you want to use a xref:cloud:solutions:README.adoc[TigerGraph Cloud solution] for this tutorial, it needs to be a paid solution so that you have xref:cloud:access-solution:gsql-web-shell.adoc[GSQL access].
-Every free TigerGraph Cloud account has $25 free credits you can use to provision a paid solution.
+Every free TigerGraph Cloud account has $25 in free credits you can use to provision a paid solution.
 
+This tutorial includes commands that are designed to run in the Linux shell and in the GSQL command-line interface.
+Some sequences of commands are lengthy and have been included as downloadable scripts, either bundled with the Docker container or as standalone files.
+
+If you choose to use the provided scripts, we recommend carefully examining each line of the script to understand its function.
 
 == What is a graph?
 
-A graph is a collection of data entities and the connections between them.  That is, it's a network of data entities.
+A graph is a network of data entities and the connections between them.
 
-Many people call a data entity a *node* ; at TigerGraph we call it a *vertex*.
-The plural is *vertices*. We call a connection an *edge*.
+Many people call a data entity a *node*; at TigerGraph we call it a *vertex*.
+A connection between two vertices is an *edge*.
 
-Both vertices and edges can have properties or attributes.
-The figure below is a visual representation of a graph containing seven vertices (shown as circles) and seven edges (the lines).
+Every graph has a *schema*, or a model describing the types of vertices and edges that appear in a graph.
 
-image::friendship-social-graph.png[Friendship Social Graph]
-
-A graph schema is the model which describes the *types* of vertices (nodes) and edges (connections) which can appear in your graph.  The graph above has one type of vertex (Person) and one type of edge (Friendship).
-
-A schema diagram looks like a small graph, except each node represents one *type* of vertex, and each link represents one *type* of edge.
+Consider a graph showing a group of friends and when each of them met.
+The graph schema would have a single type of vertex, a *Person*, and a single type of edge, the *Friendship*.
 
 image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
 
-The friendship loop shows that a friendship is between a person and another person.
+In this schema image, the Friendship edge connects a Person vertex to a Person vertex.
+This is not saying that a person is friends with themselves. Rather, it answers the question, "What type of entity is connected by friendship?"
+
+The attributes appear under the type of vertex or edge.
+Here, a Person vertex has the attributes of ID, gender, age and state, while the Friendship edge has the attribute of connect_day.
+
+Now we see a visual representation of the entire graph.
+It contains seven *Person* vertices, representing seven people in the friend group.
+Not all of the people are friends with all of the others.
+The Friendship edges reveal which people in the group are friends.
+
+image::friendship-social-graph.png[Friendship Social Graph]
+
+A graph schema is always smaller and simpler than the full graph diagram because the schema shows only the categories of data in the graph, not all data points.
 
 === Data set
 
-For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph.
+For this tutorial, we will create and query the simple friendship social graph shown in the previous section.
 The data for this graph consists of two files in csv (comma-separated values) format.
 
 To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk.
@@ -69,7 +83,6 @@ Nancy,Jack,2017-03-02
 Dan,Kevin,2015-12-30
 ----
 
-
 === Prepare your TigerGraph environment
 
 First, let's make sure that you can access GSQL.
@@ -90,7 +103,7 @@ GSQL >
 If this is your first time using GSQL, the TigerGraph data store is empty.
 However, if you or someone else has already been working on the system, there may already be a database.
 You can check by listing out the database catalog with the `ls` command.
-This is what should look like if it is empty:
+This is what it should look like if it is empty:
 
 .GSQL shell - an empty database catalog
 [,console]

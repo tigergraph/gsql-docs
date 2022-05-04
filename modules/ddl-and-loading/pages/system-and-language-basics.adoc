@@ -3,10 +3,19 @@
 
 == *Language Basics*
 
-* *Identifiers*. Identifiers are user-defined names. An identifier consists of letters, digits, and the underscore.  Identifiers may not begin with a digit.  Identifiers are case sensitive.
-* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case sensitive. Reserved words are set aside for use by the language, either now or in the future. Reserved words may not be reused as user-defined identifiers.  In most cases, a keyword is also a reserved word.  For example, VERTEX is a keyword.  It is also a reserved word, so VERTEX may not be used as an identifier.
-* *Statements*. Each line corresponds to one statement (except in multi-line mode). Usually, there is no punctuation at the end of a top-level statement. Some statements, such as CREATE LOADING JOB, are block statements which enclose a set of statements within themselves. Some punctuation may be needed to separate the statements within a block.
-* *Comments*  Within a command file, comments are text that is ignored by the language interpreter.  Single line comments begin with either # or //. A comment may be on the same line with interpreted code . Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.  Multi-line comment blocks begin with /* and end with */
+* *Identifiers*. Identifiers are user-defined names.
+An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.  Identifiers cannot begin with a digit.
+* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case sensitive. Reserved words are set aside for use by the language, either now or in the future.
+Reserved words may not be reused as user-defined identifiers.
+In most cases, a keyword is also a reserved word.
+For example, `VERTEX` is a keyword.
+It is also a reserved word, so `VERTEX` may not be used as an identifier.
+* *Statements*. Each line corresponds to one statement (except in multi-line mode). Usually, there is no punctuation at the end of a top-level statement. Some statements, such as `CREATE LOADING JOB`, are block statements which enclose a set of statements within themselves. Some punctuation may be needed to separate the statements within a block.
+* *Comments*  Within a command file, comments are text that is ignored by the language interpreter.
+Single-line comments begin with either `#` or `//`.
+A comment may be on the same line as interpreted code.
+Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.
+Multi-line comment blocks begin with `/*` and end with `*/`.
 
 == *Running GSQL*
 
@@ -29,9 +38,7 @@ Password for victor : ***
 GSQL >
 ----
 
-
-
-If a username is not given, then GSQL will assume that you are attempting to log in as the default tigergraph user:
+If a username is not given, then GSQL will assume that you are attempting to log in as the default `tigergraph` user, and will prompt for the default password of `tigergraph`:
 
 .Login example without username
 [source,gsql]
@@ -50,7 +57,7 @@ To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
 === GSQL Client Session Timeout
 
 For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity.
-Set the `GSQL_CLIENT_IDLE_TIMEOUT_SEC` bash environment `variable=<num_sec>`.
+Set the `GSQL_CLIENT_IDLE_TIMEOUT_SEC` bash environment variable to be the desired number of seconds before timeout.
 Then every time you start a GSQL session, the idle timeout will be applied.
 To disable the timeout, omit `<num_sec>`.  The default setting is no timeout.
 
@@ -59,50 +66,56 @@ To disable the timeout, omit `<num_sec>`.  The default setting is no timeout.
 ----
 tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=10
 tigergraph@123:~$ gsql
-Welcome to TigerGraph Developer Edition, free for non-production, research, or educational use.
-GSQL-Dev > Session timeout after 10 seconds idle.
+Welcome to TigerGraph.
+GSQL > Session timeout after 10 seconds idle.
 tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=
 tigergraph@123:~$ gsql
-Welcome to TigerGraph Developer Edition, free for non-production, research, or educational use.
+Welcome to TigerGraph.
+GSQL >
 ----
 
 === Multiple Shell Sessions
 
-Multiple shell sessions of GSQL may be run at the same time.  This feature can be used to have multiple clients (human or machine) using the system to perform concurrent operations. A basic locking scheme is used to maintain isolation and consistency.
+Multiple shell sessions of GSQL may be run at the same time.
+This feature can be used to have multiple clients (human or machine) using the system to perform concurrent operations.
+A basic locking scheme is used to maintain isolation and consistency.
 
 === Multi-line Mode - BEGIN, END, ABORT
 
 In interactive mode, the default behavior is to treat each line as one statement; the GSQL interpreter will activate as soon as the End-Of-Line character is entered.
 
-Multi-line mode allows the user to enter several lines of text without triggering immediate execution.  This is useful when a statement is very long and the user would like to split it into multiple lines. It is also useful when defining a JOB, because jobs typically contain multiple statements.
+Multi-line mode allows the user to enter several lines of text without triggering immediate execution.
+This is useful when a statement is very long and the user would like to split it into multiple lines.
+It is also useful when defining a job, because jobs typically contain multiple statements.
 
-To enter multi-line mode, use the command BEGIN.  The end-of-line character is now disabled from triggering execution.  The shell remains in multi-line mode until the command END is entered.  The END command also triggers the execution of the multi-line block.  In the example below, BEGIN and END are used to allow the SELECT statement to be split into several lines:
+To enter multi-line mode, use the command `BEGIN`.  The end-of-line character is now disabled from triggering execution.
+The shell remains in multi-line mode until the command `END` is entered, which will trigger the execution of the multi-line block.
+In the example below, `BEGIN` and `END` are used to allow the `SELECT` statement to be split into several lines:
 
 .Example: BEGIN and END defining a multi-line block
 
 [source,gsql]
 ----
 BEGIN
-SELECT member_id, last_name, first_name,  date_joined, status
+SELECT member_id, last_name, first_name, date_joined, status
     FROM Member
     WHERE age >= 21
     ORDER BY last_name, first_name
 END
 ----
 
-
-
-Alternately, the ABORT command exits multi-line mode and discards the multi-line block.
+Alternately, the `ABORT` command exits multi-line mode and discards the multi-line block.
 
 === *Command Files and Inline Commands*
 
-A command file is a text file containing a series of GSQL statements.  Blank lines and comments are ignored. By convention, GSQL command files end with the suffix . *`gsql`* , but this is not a requirement. Command files are automatically treated as multi-line mode, so BEGIN and END statements are not needed. Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
+A command file is a text file containing a series of GSQL statements.  Blank lines and comments are ignored. By convention, GSQL command files end with the suffix `.gsql` , but this is not a requirement.
+Command files are always run in multi-line mode, so `BEGIN` and `END` statements are not needed. Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
 
-GSQL> *@file.gsql*
+`GSQL> @file.gsql`
 
 or from the operating system (i.e., a Linux shell) by giving the filename as the argument after gsql:
 
-os$ *gsql file.gsql*
+`os$ gsql file.gsql`
 
 Similarly, a single GSQL command can be run by enclosing the command string in quotation marks and placing it at the end of the GSQL statement.  Either single or double quotation marks.  It is recommended to use single quotation marks to enclose the entire command and double quotation marks to enclose any strings within the command.
 
@@ -115,32 +128,32 @@ gsql [-u username] [-g graphname] ['command_string' | command_file]
 
 
 
-In the example below, the file name_query.gsql contains the multi-line CREATE QUERY block to define the query namesSimilar.
+In the example below, the file name_query.gsql contains the multi-line `CREATE QUERY` block to define the query `names_similar`.
 
 .Example using command files and inline commands
 
 [source,gsql]
 ----
 os$ gsql pagerank_query.gsql
-os$ gsql 'INSTALL QUERY namesSimilar'
-os$ gsql 'RUN QUERY namesSimilar (0,"michael","jackson",100)'
+os$ gsql 'INSTALL QUERY names_similar'
+os$ gsql 'RUN QUERY names_similar (0,"michael","jackson",100)'
 ----
 
 
 
 === *Help and Information*
 
-The *`help`* command displays a summary of the available GSQL commands:
+The `help` command displays a summary of the available GSQL commands:
 
-GSQL> HELP [BASIC|QUERY]
+`GSQL> HELP [BASIC|QUERY]`
 
 Note that the HELP command has options for showing more details about certain categories of commands.
 
-The *`ls`* command displays the _catalog_ : all the vertex types, edge types, graphs, queries, jobs, and session parameters which have been defined by the user.
+The `ls` command displays the _catalog_: all the vertex types, edge types, graphs, queries, jobs, and session parameters which have been defined by the user.
 
 === --reset option
 
-The --reset option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.  The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
+The `--reset` option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.  The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
 
 [source,gsql]
 ----
@@ -155,56 +168,65 @@ The catalog was reset and the graph store was cleared.
 
 === Summary
 
-The table below summaries the basic system commands introduced so far.
+The tables below summarize the basic commands introduced so far.
+
+==== GSQL commands
 
 |===
 | Command | Description
 
-| HELP[BASIC\|QUERY]
+| `HELP[BASIC\|QUERY]`
 | Display the help menu for all or a subset of the commands
 
-| LS
+| `LS`
 | Display the catalog, which records all the vertex types, edge types, graphs, queries, jobs, and session parameters that have been defined for the current active graph. See notes below concerning graph- and role-dependent visibility of the catalog.
 
-| BEGIN
+| `BEGIN`
 | Enter multi-line edit mode (only for console mode within the shell)
 
-| END
+| `END`
 | Finish multi-line edit mode and execute the multi-line block.
 
-| ABORT
+| `ABORT`
 | Abort multi-line edit mode and discard the multi-line block.
 
-| @file.gsql
+| `@file.gsql`
 | Run the gsql statements in the command file `file.gsql` from within the GSQL shell.
+|===
 
-| `os$ gsql file.gsql`
+==== System shell commands
+
+|===
+| Command | Description
+
+
+| `gsql file.gsql`
 | Run the gsql statements in the command file `file.gsql` from an operating system shell.
 
-| `os$ gsql 'command_string'`
+| `gsql 'command_string'`
 | Run a single gsql statement from the operating system shell.
 
-| `os$ gsql --reset`
+| `gsql --reset`
 | Clear the graph store and erase the dictionary.
 |===
 
 [NOTE]
 ====
-Notes on the LS command
+Notes on the `LS` command
 
-Starting with v1.2, the output of the LS command is sensitive to the user and the active graph:
+Starting with v1.2, the output of the `LS` command is sensitive to the user and the active graph:
 
-. If the user has not set an active graph or specified "USE GLOBAL":
- .. If the user is a superuser, then LS displays global vertices, global edges, and all graph schemas.
- .. If the user is not a superuser, then LS displays nothing (null).
-. If the user has set an active graph, then LS displays the schema, jobs, queries, and other definitions for that particular graph.
+. If the user has not set an active graph or specified `USE GLOBAL`:
+ .. If the user is a superuser, then `LS` displays global vertices, global edges, and all graph schemas.
+ .. If the user is not a superuser, then `LS` displays nothing (null).
+. If the user has set an active graph, then `LS` displays the schema, jobs, queries, and other definitions for that particular graph.
 ====
 
 == *Session Parameters*
 
 Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.When running a command file, the session lasts during the execution of the command file.
 
-Use the SET command to set the value of a session parameter:
+Use the `SET` command to set the value of a session parameter:
 
 [source,gsql]
 ----
@@ -217,21 +239,23 @@ SET session_parameter = value
 |`sys.data_root` |The value should be a string, representing the absolute
 or relative path to the folder where data files are stored. After the
 parameter has been set, a loading statement can reference this parameter
-with $sys.data_root.
+with `$sys.data_root`.
 
 |`gsql_src_dir` |The value should be a string, representing the absolute
 or relative path to the root folder for the GSQL system installation.
 After the parameter has been set, a loading statement can reference this
 parameter with `$gsql_src_dir`.
 
-|`exit_on_error` |When this parameter is true (default), if a semantic error occurs while running a GSQL command file, the GSQL shell will terminate.
+|`exit_on_error` a|When this parameter is `true` (default), if a semantic error occurs while running a GSQL command file, the GSQL shell will terminate.
 
-Accepted parameter values: true, false (case-insensitive). If
-the parameter is set to false, then a command file which is
-syntactically correct will continue running, even if certain runtime errors in individual commands occur.
+Accepted parameter values: `true`, `false` (case-insensitive). If
+the parameter is set to `false`, then a command file which is
+syntactically correct will continue running, even if certain runtime errors in these commands occur:
 
-Specifically, this affects these
-commands: `CREATE QUERY`, `INSTALL QUERY`, `RUN JOB`
+* `CREATE QUERY`
+* `INSTALL QUERY`
+* `RUN JOB`
+
 Semantic errors include a reference to a nonexistent entity or an improper reuse of an entity.
 
 This session parameter does not affect GSQL interactive mode; GSQL interactive mode does not exit on any error.
@@ -334,9 +358,9 @@ Each attribute of a vertex or edge has an assigned data type.The following types
 
 [WARNING]
 ====
-For FLOAT and DOUBLE values, the GSQL Loader supports exponential notation as shown (e.g., 1.25 E-7).
+For `FLOAT` and `DOUBLE` values, the GSQL Loader supports exponential notation as shown (e.g., 1.25 E-7).
 
-The GSQL Query Language currently only reads values without exponents. It may display output values with exponential notation, however.
+The GSQL Query Language only reads values without exponents. It may display output values with exponential notation, however.
 ====
 
 [WARNING]
@@ -351,7 +375,7 @@ Some numeric expressions may return a non-numeric string result, such as "inf" f
 |Description
 |`STRING COMPRESS`(⚠*suitable only in limited circumstances*) |Empty
 string |.* |UTF-8 |String with a finite set of categorical values. More
-compact storage of STRING, *if there is a limited number of different
+compact storage of `STRING`, *if there is a limited number of different
 values and the value is rarely accessed. Otherwise, it may use more
 memory.*
 
@@ -375,7 +399,7 @@ Additionally, GSQL also supports the following complex data types:
 
 [WARNING]
 ====
-Due to multithreaded GSQL loading, the initial order of elements loaded into a LIST might be different than the order in which they appeared in the input data.
+Due to multithreaded GSQL loading, the initial order of elements loaded into a list might be different from their order in the input data.
 ====
 
 * `SET`: A set is an *unordered* collection of *unique* elements of the same type.
@@ -396,8 +420,8 @@ A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields 
 
 [source,gsql]
 ----
-TYPEDEF TUPLE "<" fieldName fieldType ["(" fieldSize ")"]
-                  ( "," fieldName fieldType ["(" fieldSize ")"] )* ">" tupleName
+TYPEDEF TUPLE "<" field_name field_type ["(" field_size ")"]
+                  ( "," field_name field_type ["(" field_size ")"] )* ">" Tuple_Name
 ----
 
 
@@ -440,13 +464,14 @@ TYPEDEF TUPLE "<" fieldName fieldType ["(" fieldSize ")"]
 | Any string under N characters
 |===
 
-A UDT must be defined before being used as a field in a vertex type or edge type. To define a UDT, use the `TYPEDEF TUPLE` statement. Below is an example of a `TYPEDEF TUPLE` statement:
+A UDT must be defined before being used as a field in a vertex type or edge type.
+To define a UDT, use the `TYPEDEF TUPLE` statement. Here is an example of a `TYPEDEF TUPLE` statement:
 
-.Example: UDT Definition 
+.UDT Definition
 
 [source,gsql]
 ----
-TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
+TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> My_Tuple
 ----
 
-In the above example, `myTuple` is the name of the UDT. It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.
+In the above example, `My_Tuple` is the name of the UDT. It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.

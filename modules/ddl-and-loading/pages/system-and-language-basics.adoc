@@ -1,7 +1,7 @@
 = System & Language Basics
 :pp: {plus}{plus}
 
-== *Language Basics*
+== Language basics
 
 * *Identifiers*. Identifiers are user-defined names.
 An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.  Identifiers cannot begin with a digit.
@@ -17,7 +17,7 @@ A comment may be on the same line as interpreted code.
 Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.
 Multi-line comment blocks begin with `/*` and end with `*/`.
 
-== *Running GSQL*
+== Running GSQL
 
 To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A user name, password, and a graph name may also be provided on the command line.
 
@@ -54,7 +54,7 @@ To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
 
 `GSQL> EXIT`  or `GSQL> QUIT`
 
-=== GSQL Client Session Timeout
+=== GSQL client session timeout
 
 For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity.
 Set the `GSQL_CLIENT_IDLE_TIMEOUT_SEC` bash environment variable to be the desired number of seconds before timeout.
@@ -74,13 +74,13 @@ Welcome to TigerGraph.
 GSQL >
 ----
 
-=== Multiple Shell Sessions
+=== Multiple shell sessions
 
 Multiple shell sessions of GSQL may be run at the same time.
 This feature can be used to have multiple clients (human or machine) using the system to perform concurrent operations.
 A basic locking scheme is used to maintain isolation and consistency.
 
-=== Multi-line Mode - BEGIN, END, ABORT
+=== Multi-line mode - BEGIN, END, ABORT
 
 In interactive mode, the default behavior is to treat each line as one statement; the GSQL interpreter will activate as soon as the End-Of-Line character is entered.
 
@@ -106,7 +106,7 @@ END
 
 Alternately, the `ABORT` command exits multi-line mode and discards the multi-line block.
 
-=== *Command Files and Inline Commands*
+=== Command files and inline commands
 
 A command file is a text file containing a series of GSQL statements.  Blank lines and comments are ignored. By convention, GSQL command files end with the suffix `.gsql` , but this is not a requirement.
 Command files are always run in multi-line mode, so `BEGIN` and `END` statements are not needed. Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
@@ -141,7 +141,7 @@ os$ gsql 'RUN QUERY names_similar (0,"michael","jackson",100)'
 
 
 
-=== *Help and Information*
+=== Help and information
 
 The `help` command displays a summary of the available GSQL commands:
 
@@ -222,7 +222,7 @@ Starting with v1.2, the output of the `LS` command is sensitive to the user and 
 . If the user has set an active graph, then `LS` displays the schema, jobs, queries, and other definitions for that particular graph.
 ====
 
-== *Session Parameters*
+== Session parameters
 
 Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.When running a command file, the session lasts during the execution of the command file.
 
@@ -310,11 +310,12 @@ The graph g2 is created.
 
 
 [#_attribute_data_types]
-== *Attribute Data Types*
+== Attribute data types
 
-Each attribute of a vertex or edge has an assigned data type.The following types are currently supported.
+Each attribute of a vertex or edge has an assigned data type.
+The following types are currently supported.
 
-=== Primitive Types
+=== Primitive pypes
 
 |===
 | Name | Default value | Valid input format (regex) | Range and precision | Description
@@ -368,7 +369,7 @@ The GSQL Query Language only reads values without exponents. It may display outp
 Some numeric expressions may return a non-numeric string result, such as "inf" for Infinity or "NaN" for Not a Number.
 ====
 
-=== Advanced Types
+=== Advanced types
 [width="100%",cols="30%,5%,19%,19%,27%",options="header",]
 |===
 |Name |Default value |Supported data format |Range and Precision
@@ -390,7 +391,7 @@ bytes
 
 Additionally, GSQL also supports the following complex data types:
 
-=== Collection Types
+=== Collection types
 
 * `LIST`: A list is an *ordered* collection of elements of the same type.
  ** Default value: an empty list `[]`

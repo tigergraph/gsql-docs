@@ -422,6 +422,9 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 
 The `SAMPLE` clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the `FROM` argument.
 
+WARNING: Known issue: The `SAMPLE` clause is not supported in syntax V2 in {page-component-version}.
+To use `SAMPLE` clauses, write your query in xref:select-statement/select-statement-v1.adoc#_sample_clause[syntax V1].
+
 [NOTE]
 ====
 If you want to sample from a set of vertices directly, not from edges or from neighboring (target) vertices, then the following technique is simpler and faster:

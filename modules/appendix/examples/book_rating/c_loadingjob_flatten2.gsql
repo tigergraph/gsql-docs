@@ -1,12 +1,12 @@
-CREATE LOADING JOB load_books_flatten_1 FOR GRAPH Book_Rating {
-  DEFINE FILENAME f;
-  LOAD f
-      TO VERTEX Book VALUES ($0, $1, _),
-      TO TEMP_TABLE t1 (bookcode,genre) VALUES ($0, flatten ($2,",",1))
-      USING QUOTE="double", SEPARATOR="|";
+CREATE LOADING JOB load_books_flatten_2 FOR GRAPH Book_Rating {
+    DEFINE FILENAME f;
+    LOAD f
+        TO VERTEX Book VALUES ($0, $1, _),
+        TO TEMP_TABLE t2(bookcode,genre_id,genre_name) VALUES ($0, flatten($2,",",":",2))
+        USING QUOTE="double", SEPARATOR="|";
 
-  LOAD TEMP_TABLE t1
-      TO VERTEX Genre VALUES ($"genre", $"genre"),
-      TO EDGE Book_Genre VALUES ($"bookcode", $"genre");
+    LOAD TEMP_TABLE t2
+        TO VERTEX Genre VALUES($"genre_id", $"genre_name"),
+        TO EDGE Book_Genre VALUES($"bookcode", $"genre_id");
 }
-RUN LOADING JOB load_books_flatten_1 USING f="../data/book1.dat"
+RUN LOADING JOB load_books_flatten_2 USING f="book2.dat"

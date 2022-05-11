@@ -14,6 +14,11 @@ There are two ways to modify these files to add user-defined functions to GSQL:
 
 * Store the files in a GitHub repository, and configure GSQL to read from the repository.
 * Use `GET` and `PUT` commands to download, modify, and store the files locally.
+** The `GET` command requires the xref:tigergraph-server:user-access:access-control-model.adoc#_privileges[`WRITE_FILE` privilege].
+** The `PUT` command requires the `READ_FILE` privilege.
+
+WARNING: It is strongly recommended that you enable GSQL user authentication by changing the password of the default user `tigergraph` to protect your UDF files.
+If you don't enable user authentication, anyone with GSQL shell access can log in as the default user with `superuser` privileges and modify your files.
 
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
 

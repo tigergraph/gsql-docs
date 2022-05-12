@@ -5,7 +5,16 @@ In GSQL, users can supplement the language by defining their own query user-defi
 
 This page introduces the process to define a query UDF. Once defined, the new functions are added into GSQL automatically the next time GSQL is executed.
 
-Query UDFs are user-editable in the form of an `.hpp` file locally on your machine. These get uploaded and interpreted by the server through a GSQL command. Creating, editing, or removing Query UDFs is done by downloading them from the server, editing the file, and reuploading.
+Query UDFs are user-editable in the form of an `.hpp` file locally on your machine.
+ Creating, editing, or removing Query UDFs is done by downloading them from the server, editing the file, and re-uploading through `GET` and `PUT` commands.
+
+Uploading and downloading the UDF file (`ExprFunctions.hpp`) requires the following xref:tigergraph-server:user-access:roles-and-privileges.adoc#_privileges[privileges]:
+
+** The `GET` command requires the `READ_FILE` privilege.
+** The `PUT` command requires the `WRITE_FILE` privilege.
+
+WARNING: It is strongly recommended that you enable GSQL user authentication by changing the password of the default user `tigergraph` to protect your UDF files.
+If you don't enable user authentication, anyone with GSQL shell access can log in as the default user with `superuser` privileges and modify your files.
 
 == Define a query UDF
 

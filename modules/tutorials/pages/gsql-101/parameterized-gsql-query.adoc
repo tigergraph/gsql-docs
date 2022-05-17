@@ -231,7 +231,7 @@ As we visit the 2-hop neighbors, we can also calculate their average age.
 
 We will use a `SELECT` statement to perform the first hop from the starting vertex.
 In order to keep track of vertices that have been visited, we declare a vertex-attached accumulator of the type `OrAccum`, also called a _boolean accumulator_.
-In addition, we also need to declare an `AvgAccum` to to calculate the average age of the final vertex set.
+In addition, we also need to declare an `AvgAccum` to calculate the average age of the final vertex set.
 
 To declare a vertex-attached accumulator, prefix an identifier name with a single `@` symbol.
 After you declare the accumulator, they are attached to vertices in the query, and you can access its value in an `ACCUM` or `POST-ACCUM` clause of the `SELECT` statement by using the dot``.`` operator following a vertex alias as if they are an attribute of the vertices.

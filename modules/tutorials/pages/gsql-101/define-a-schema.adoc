@@ -14,7 +14,7 @@ A few commands will be from a Linux shell.
 
 Use ``CREATE VERTEX `` to define a vertex type named `Person`.
 Here, `PRIMARY_ID` is required: each person must have a unique identifier.
-The rest is the optional list of attributes which characterize each person vertex, in the format `attribute_name  data_type, attribute_name  data_type, ...`
+The rest is the optional list of attr ibutes which characterize each person vertex, in the format `attribute_name  data_type, attribute_name  data_type, ...`
 
 .GSQL command
 [,gsql]
@@ -96,7 +96,7 @@ GSQL will confirm the creation of the first graph after several seconds, during 
 .GSQL shell
 [.wrap,gsql]
 ----
-GSQL > CREATE GRAPH social (Person, Friendship)
+GSQL > CREATE GRAPH Social (Person, Friendship)
 Stopping GPE GSE RESTPP
 Successfully stopped GPE GSE RESTPP in 16.554 seconds
 Starting GPE GSE RESTPP

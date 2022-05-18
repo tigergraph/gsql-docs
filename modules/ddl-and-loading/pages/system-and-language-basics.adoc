@@ -374,18 +374,18 @@ Some numeric expressions may return a non-numeric string result, such as "inf" f
 |===
 |Name |Default value |Supported data format |Range and Precision
 |Description
-|`STRING COMPRESS`(⚠*suitable only in limited circumstances*) |Empty
+|`STRING COMPRESS`(Deprecated) |Empty
 string |.* |UTF-8 |String with a finite set of categorical values. More
 compact storage of `STRING`, *if there is a limited number of different
 values and the value is rarely accessed. Otherwise, it may use more
 memory.*
 
-|`DATETIME` |UTC time 0 |See Section ” Loading DATETIME Attribute ”
+|`DATETIME` |UTC time 0 |See xref:ddl-and-loading:creating-a-loading-job.adoc#_loading_a_datetime_attribute[Loading `DATETIME` Attribute]
 |1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC) as the
 number of seconds elapsed since the start of Jan 1, 1970. Time zones are
 not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
 
-|`FIXED_BINARY(\'\'*n* \'\')` |N/A | |N/A |Stream of n binary-encoded
+|`FIXED_BINARY(*n*)` |N/A | |N/A |Stream of n binary-encoded
 bytes
 |===
 

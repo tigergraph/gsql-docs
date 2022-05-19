@@ -41,12 +41,17 @@ Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
 
 === Edge type wildcards
 
-Use the underscore `\_` or the keyword `ANY` as a wildcard meaning "any edge type."
+Use the underscore `\_` or the keyword `ANY` to denote any undirected edge type.
 Arrowheads are used to indicate direction, e.g.,  `>` or `<`.
-An "any edge type" wildcard without the arrowheads will be treated as undirected.
-The empty parentheses `()` means any edge, directed or undirected.
+Empty parentheses `()` means any edge, directed or undirected.
 
 If a type or wildcard is not given, it includes both directed and undirected edges in the results.
+
+.Example including directed and undirected edges
+[source,gsql]
+----
+Person:p -(:e)- Message:m
+----
 
 === Vertex type wildcards
 Use `_`, `ANY` or omit the vertex type to indicate any vertex type.

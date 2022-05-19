@@ -58,7 +58,11 @@ To learn more about permission and privileges, see xref:tigergraph-server:user-a
 
 == `CREATE VERTEX`
 
-The `CREATE VERTEX` statement defines a new global vertex type, with a name and an attribute list.
+The `CREATE VERTEX` statement defines a new global vertex type with a name and an attribute list.
+
+Data loaded to a global vertex type in one graph will be shared across all graphs that use that vertex type.
+See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for instructions on creating local vertices.
+
 At a high level of abstraction, the format is
 
 [source,text]
@@ -220,10 +224,12 @@ image::image (13).png[Figure 3 - Outdegree stats illustration]
 
 == `CREATE EDGE`
 
-`CREATE EDGE` defines a new global edge type.
+`CREATE EDGE` defines a new global edge type. Data loaded to a global edge type in one graph will be shared across all graphs that use that edge type.
+See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for instructions on creating local edges.
+
 There are two forms of the `CREATE EDGE` statement, one for directed edges and one for undirected edges.
 Each edge type must specify that it connects FROM one vertex type TO another vertex type.
-Additional pairs of FROM,To vertex types may be added.
+Additional pairs of `FROM` and `TO` vertex types may be added.
 Then additional attributes may be added.
 Each attribute follows the same requirements as described in the Attribute List subsection for the `CREATE VERTEX` section.
 

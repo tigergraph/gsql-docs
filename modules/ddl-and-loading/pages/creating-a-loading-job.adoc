@@ -12,7 +12,9 @@ A line should contain only data values and separators, without extra whitespace.
 From a tabular view, each line of data is a row, and each row consists of a series of column values.
 
 Loading data is a two-step process.
-First, a loading job is defined.Next, the job is executed with a `RUN LOADING JOB` statement.These two statements, and the components of the loading job, are detailed below.
+First, a loading job is defined.
+Next, the job is executed with a `RUN LOADING JOB` statement.
+These two statements, and the components of the loading job, are detailed below.
 
 The structure of a loading job will be presented hierarchically, top-down:
 
@@ -69,6 +71,15 @@ CREATE LOADING JOB job_name FOR GRAPH Graph_Name {
 ----
 <1> A loading job may contain either `LOAD` or `DELETE` statements but not both.
 A loading job that includes both will be rejected when the `CREATE` statement is executed.
+
+=== Loading data to global vertices and edges
+
+The `CREATE` command creates global vertices and edges.
+Global vertex and edge type data is shared across all graphs, no matter which graph it is loaded to.
+In other words, if `v1` and `e2` are of `GLOBAL` type, the data loaded in this loading job will be accessible in other graphs that use `v1` and `e2` vertices and edges.
+
+To create a `LOCAL` vertex or edge, run a schema change job after a graph has already been created and use the `ADD` command to add a vertex or edge to a single graph.
+See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for more information.
 
 === Example
 

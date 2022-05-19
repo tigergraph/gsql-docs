@@ -359,8 +359,10 @@ Default is "false"
 When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects instead of tabular data.
 A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures.A colon separates each key from its value, and a comma separates items in a collection.
 
-The JSON loader requires that each input line has exactly one JSON object.Instead of using column values as tokens, the JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair.
-In a GSQL loading job, a JSON field is identified by a dollar sign $ followed by the colon-separated sequence of nested key names to reach the value from the top level.
+*The JSON loader requires that each input line has exactly one JSON object (see https://jsonlines.org/[JSON lines].*
+
+The JSON loader uses JSON values as tokens, that is, the second part of each JSON key/value pair.
+In a GSQL loading job, a JSON field is identified by a dollar sign `$` followed by the colon-separated sequence of nested key names to reach the value from the top level.
 For example, given the JSON object `{"abc":{"def": "this_value"}}`, the identifier `$"abc":"def"` is used to access `"this_value"`.The double quotes are mandatory.
 
 An example is shown below:
@@ -371,7 +373,7 @@ Loading job::
 +
 --
 .JSON loading using EOL
-[source,gsql]
+[source.wrap,gsql]
 ----
 CREATE VERTEX encoding (PRIMARY_ID id STRING, length FLOAT default 10)
 CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
@@ -387,7 +389,7 @@ RUN LOADING JOB json_load
 .json file::
 +
 --
-.encoding.json
+.encoding.jsonl
 [source,javascript]
 ----
 {"encoding": "UTF-7","plug-ins":["c"],"indent" : { "length" : 30, "use_space": true }}
@@ -397,9 +399,9 @@ RUN LOADING JOB json_load
 --
 ====
 
-xref:attachment$encoding.json[Download `encoding.json`]
+xref:attachment$encoding.json[Download `encoding.jsonl`]
 
-In the above data encoding.json, the order of fields are not fixed and some fields are missing.
+In the aforementioned file, the order of fields are not fixed and some fields are missing.
 The JSON loader ignores the order and accesses the fields by the nested key names. The missing fields are loaded with default values. The result vertices are:
 
 |===

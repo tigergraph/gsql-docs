@@ -99,11 +99,9 @@ DROP JOB ALL
 DROP JOB *
 ----
 
-[NOTE]
-====
-The scope of `ALL` depends on the user's current scope. If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph.
-If a superuser has set their scope to be global, then `DROP ALL` removes all jobs across all graph spaces.
-====
+The scope of `DROP JOB ALL` depends on the user's current scope.
+If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph.
+If a superuser has set their scope to be global, then `DROP JOB ALL` removes all jobs across all graph spaces.
 
 == `DEFINE` statements
 

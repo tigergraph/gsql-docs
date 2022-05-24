@@ -19,8 +19,7 @@ Pattern matching queries support nested queries.
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options.
 After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-
-In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern.
+In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern. `-( )-`
 
 The edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection.
 The directionality of the connection is explicitly stated for _each_ edge type.
@@ -29,7 +28,9 @@ The directionality of the connection is explicitly stated for _each_ edge type.
 * For a directed edge E from left to right, use a suffix:  `E>`
 * For a directed edge E from right to left, use a prefix:  `<E`
 
-For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: person `LIKES` message, and message `HAS_CREATOR` person.
+In this notation, `E` is a placeholder for any edge in a graph.
+
+For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: Person `LIKES` message, and Message `HAS_CREATOR` Person.
 Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
 
 .Pattern Example
@@ -40,9 +41,17 @@ Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
 
 === Edge type wildcards
 
-The underscore `\_` is a wildcard meaning any edge type.
-Arrowheads are used to indicate direction, e.g.,  `>` or `<` or `_`.
-The empty parentheses `()` means any edge, directed or undirected.
+Use the underscore `\_` or the keyword `ANY` to denote any undirected edge type.
+Arrowheads are used to indicate direction, e.g.,  `>` or `<`.
+Empty parentheses `()` means any edge, directed or undirected.
+
+If a type or wildcard is not given, it includes both directed and undirected edges in the results.
+
+.Example including directed and undirected edges
+[source,gsql]
+----
+Person:p -(:e)- Message:m
+----
 
 === Vertex type wildcards
 Use `_`, `ANY` or omit the vertex type to indicate any vertex type.
@@ -50,10 +59,10 @@ If you omit the vertex type, you must provide a vertex alias.
 
 The source or the target vertex set may be:
 
-* a vertex type `SELECT t FROM Person:s -(IS_LOCATED_IN>:e) - City:t`
-* an alternation of vertex types `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e) - Country:t`
-* omitted, with only an alias, meaning any vertex type `SELECT s FROM :s -(IS_LOCATED_IN>:e) - Country:t`
-* omitted, without an alias, meaning any vertex type `SELECT t FROM -(IS_LOCATED_IN>:e) - Country:t`
+* a vertex type `SELECT t FROM Person:s -(IS_LOCATED_IN>:e)- City:t`
+* an alternation of vertex types `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e)- Country:t`
+* omitted, with only an alias, meaning any vertex type `SELECT s FROM :s -(IS_LOCATED_IN>:e)- Country:t`
+* omitted, without an alias, meaning any vertex type `SELECT t FROM -(IS_LOCATED_IN>:e)- Country:t`
 
 [NOTE]
 ====
@@ -69,6 +78,8 @@ Performance may be better when types are explicitly provided.
  ** Right directed edge x binds to the source of E2; y binds to the target of E2.
 . `FROM X:x - (<E3:e3) - Y:y`
  ** Left directed edge; y binds to the source of E3; x binds to the target of E3.
+. `FROM X:x - (:e) - Y:y`
+ ** Any directed or undirected edge between a member of X and a member of Y.
 . `FROM X:x - (_:e) - Y:y`
  ** Any undirected edge between a member of X and a member of Y.
 . `FROM X:x - (_>:e) - Y:y`
@@ -80,8 +91,8 @@ Performance may be better when types are explicitly provided.
 . `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
  ** Any one of the three edge patterns.
 . `FROM X:x - () - Y:y`
- ** any edge (directed or undirected)
- ** Same as `+(<_|_>|_)+`
+ ** Any directed or undirected edge between a member of X and a member of Y.
+ ** Same as `+(<_|_>|_)+` or `(:e)`.
 
 
 == Running anonymous queries without installing

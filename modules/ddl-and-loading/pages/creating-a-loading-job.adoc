@@ -74,11 +74,14 @@ A loading job that includes both will be rejected when the `CREATE` statement is
 
 === Loading data to global vertices and edges
 
-The `CREATE` command creates global vertices and edges.
+The `CREATE VERTEX` and `CREATE EDGE` commands create global vertices and edges.
+See the xref:defining-a-graph-schema.adoc#_create_vertex[CREATE VERTEX] and xref:defining-a-graph-schema.adoc#_create_edge[CREATE EDGE] pages for more detail.
+
+
 Global vertex and edge type data is shared across all graphs, no matter which graph it is loaded to.
 In other words, if `v1` and `e2` are of `GLOBAL` type, the data loaded in this loading job will be accessible in other graphs that use `v1` and `e2` vertices and edges.
 
-To create a `LOCAL` vertex or edge, run a schema change job after a graph has already been created and use the `ADD` command to add a vertex or edge to a single graph.
+To create a local vertex or edge, run a schema change job after a graph has already been created and use the `ADD VERTEX` or `ADD EDGE` command to add a vertex or edge to a single graph.
 See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for more information.
 
 === Example

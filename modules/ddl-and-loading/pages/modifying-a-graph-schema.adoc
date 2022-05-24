@@ -29,9 +29,9 @@ Load or query operations which begin before the schema change will be completed 
 
 == *Global vs. Local Schema Changes*
 
-Only a superuser or globaldesigner can add, alter, or drop global vertex types or global edge types, which are those that are created using `CREATE VERTEX` or `CREATE` ... `EDGE`.  This rule applies even if the vertex or edge type is used in only one graph. To make these changes, the user uses a `GLOBAL` `SCHEMA_CHANGE JOB`.
+Only users with the `WRITE_SCHEMA` privilege on the global scope can add, alter, or drop global vertex types or global edge types, which are those that are created using `CREATE VERTEX` or `CREATE EDGE`.  This rule applies even if the vertex or edge type is used in only one graph. To make these changes, the user uses a `GLOBAL` `SCHEMA_CHANGE JOB`.
 
-An admin or designer user can add, alter, or drop local vertex types or local edge types which are created in the context of that graph. Local vertex and edge types are created using an `ADD` statement inside a `SCHEMA_CHANGE JOB` on one particular graph. To alter or drop any of these local types, the admin user uses a regular `SCHEMA_CHANGE JOB`.
+Only users with the `WRITE_SCHEMA` privilege on the corresponding graph can add, alter, or drop local vertex types or local edge types which are created in the context of that graph. Local vertex and edge types are created using an `ADD` statement inside a `SCHEMA_CHANGE JOB` on one particular graph. To alter or drop any of these local types, the admin user uses a regular `SCHEMA_CHANGE JOB`.
 
 To see which vertices or edges are global, run the `ls` command:
 
@@ -47,7 +47,7 @@ Use the `USE` command with a specific graph to view all vertices and edges on th
 [NOTE]
 ====
 Graphs can define local vertex and edge types independently of the local or global vertex and edge types in other graphs.
-That is, the same name can be used in different graphs for vertex or edge types as long as they are not global vertex or edge types that are used by multiple graphs.
+That is, local vertex and edge types can share the same name across different graphs, while global vertex or edge types used by multiple graphs cannot share the same name.
 ====
 
 The two types of schema change jobs are described below.

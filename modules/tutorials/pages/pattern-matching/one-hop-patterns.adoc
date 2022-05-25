@@ -17,9 +17,9 @@ Pattern matching queries support nested queries.
 == 1-Hop pattern
 
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options.
-After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
+After we've tackled single hops, we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern. `-( )-`
+In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern. This can also be written as `- ( ) -`. The spaces do not affect the output.
 
 The edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection.
 The directionality of the connection is explicitly stated for _each_ edge type.
@@ -72,25 +72,25 @@ Performance may be better when types are explicitly provided.
 
 ==== Examples of 1-Hop patterns
 
-. `FROM X:x - (E1:e1) - Y:y`
+. `FROM X:x -(E1:e1)- Y:y`
  ** E1 is an undirected edge, x and y bind to the end points of E1, and e1 is the alias of E1.
-. `FROM X:x - (E2>:e2) - Y:y`
+. `FROM X:x -(E2>:e2)- Y:y`
  ** Right directed edge x binds to the source of E2; y binds to the target of E2.
-. `FROM X:x - (<E3:e3) - Y:y`
+. `FROM X:x -(<E3:e3)- Y:y`
  ** Left directed edge; y binds to the source of E3; x binds to the target of E3.
-. `FROM X:x - (:e) - Y:y`
+. `FROM X:x -(:e)- Y:y`
  ** Any directed or undirected edge between a member of X and a member of Y.
-. `FROM X:x - (_:e) - Y:y`
+. `FROM X:x -(_:e)- Y:y`
  ** Any undirected edge between a member of X and a member of Y.
-. `FROM X:x - (_>:e) - Y:y`
+. `FROM X:x -(_>:e)- Y:y`
  ** Any right directed edge with source in X and target in Y.
-. `FROM X:x - (<_:e) - Y:y`
+. `FROM X:x -(<_:e)- Y:y`
  ** Any left directed edge with source in Y and target in X.
-. `+FROM X:x - ((<_|_):e) - Y:y+`
+. `+FROM X:x -((<_|_):e)- Y:y+`
  ** Any left directed or any undirected; `|` means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern `+(<_|_)+`.
-. `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
+. `FROM X:x -((E1|E2>|<E3):e)- Y:y`
  ** Any one of the three edge patterns.
-. `FROM X:x - () - Y:y`
+. `FROM X:x -()- Y:y`
  ** Any directed or undirected edge between a member of X and a member of Y.
  ** Same as `+(<_|_>|_)+` or `(:e)`.
 

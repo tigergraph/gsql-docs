@@ -10,25 +10,25 @@ GSQL pattern matching makes it easy to express such variable-length patterns whi
 Below are more illustrative examples:
 
 * *1-hop star pattern -- repetition of an edge pattern 0 or more times*
- .. `FROM X:x - (E*) - Y:y`
- .. `FROM X:x - (F>*) - Y:y`
- .. `FROM X:x - (<G*) - Y:y`
- .. `FROM X:x - (_*) - Y:y`
+ .. `FROM X:x -(E*)- Y:y`
+ .. `FROM X:x -(F>*)- Y:y`
+ .. `FROM X:x -(<G*)- Y:y`
+ .. `FROM X:x -(_*)- Y:y`
   *** Any undirected edge can be chosen at each repetition.
- .. `FROM X:x - (_>*) - Y:y`
+ .. `FROM X:x -(_>*)- Y:y`
   *** Any right-directed edge can be chosen at each repetition.
- .. `FROM X:x - (<_*) - Y:y`
+ .. `FROM X:x -(<_*)- Y:y`
   *** Any left-directed edge can be chosen at each repetition.
- .. `FROM X:x - ((E|F>|<G)*) - Y:y`
+ .. `FROM X:x -((E|F>|<G)*)- Y:y`
   *** Either E, F> or <G can be chosen at each repetition.
 * *1-hop star pattern with bounds*
- .. `FROM X:x - (E*2..) - Y:y`
+ .. `FROM X:x -(E*2..)- Y:y`
   *** Lower bounds only. There is a chain of at least 2 E edges.
- .. `FROM X:x - (F>*..3) - Y:y`
+ .. `FROM X:x -(F>*..3)- Y:y`
   *** Upper bounds only. There is a chain of between 0 and 3 F edges.
- .. `FROM X:x - (<G*3..5) - Y:y`
+ .. `FROM X:x -(<G*3..5)- Y:y`
   *** Both Lower and Upper bounds. There is a chain of 3 to 5 G edges.
- .. `FROM X:x - ((E|F>|<G)*3) - Y:y`
+ .. `FROM X:x -((E|F>|<G)*3)- Y:y`
   *** Exact bound. There is a chain of exactly 3 edges, where each edge is either E, F>, or <G.
 
 [discrete]
@@ -39,7 +39,7 @@ Below are more illustrative examples:
 
 image::screen-shot-2019-05-19-at-2.33.35-am.png[Figure 2 Shortest Path Illustration.]
 
-In Figure 2,  or Pattern `1 - (E>*) - 4`, any of the following paths reach 4 from 1.
+In Figure 2,  or Pattern `1 -(E>*)- 4`, any of the following paths reach 4 from 1.
 
 * 1->2->3->4
 * 1->2->3->5->6->2->3->4

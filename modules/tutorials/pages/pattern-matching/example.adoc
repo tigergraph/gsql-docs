@@ -10,8 +10,8 @@ How do we do this?
 
 One way is to find others who like the same messages Viktor likes, then recommend the messages that Others like but Viktor has not seen. The pattern can be sketched out as follows:
 
-* Viktor - (Likes>) - Message - (<Likes) - Others
-* Others - (Likes>) - NewMessage
+* Viktor -(Likes>)- Message -(<Likes)- Others
+* Others -(Likes>)- NewMessage
 * Recommend NewMessage to Viktor
 
 However, this is too granular. We are overfitting the message-level data with a collaborative filtering algorithm.
@@ -20,8 +20,8 @@ Intutively, two persons are similar to each other when their "liked" messages fa
 
 As a result, one way to avoid overfitting is to go one level upward. Instead of looking at common messages, we look at their tags. We consider Person A and Person B  similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
 
-* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others
-* Others - (Likes>) -  NewMessage
+* Viktor -(Likes>)- Message -(Has>)- *Tag* -(<Has)- Message -(<Likes)- Others
+* Others -(Likes>)- NewMessage
 * Recommend NewMessage to Viktor
 
 *GSQL. recommend_message Application.*

@@ -597,6 +597,8 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 
 `INSTALL QUERY -OPTIMIZE`
 
+WARNING: This feature is deprecated and support for it will be dropped in a future version.
+
 Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The names of the individual queries are not needed. This operation optimizes all previously installed queries, reducing their run times by about 20%. Optimize a query if query run time is more important to you than query installation time.
 
 == RUN QUERY

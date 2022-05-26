@@ -5,7 +5,7 @@
 
 * *Identifiers*. Identifiers are user-defined names.
 An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.  Identifiers cannot begin with a digit.
-* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case sensitive. Reserved words are set aside for use by the language, either now or in the future.
+* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case-sensitive. Reserved words are set aside for use by the language, either now or in the future.
 Reserved words may not be reused as user-defined identifiers.
 In most cases, a keyword is also a reserved word.
 For example, `VERTEX` is a keyword.
@@ -19,7 +19,7 @@ Multi-line comment blocks begin with `/*` and end with `*/`.
 
 == Running GSQL
 
-To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A user name, password, and a graph name may also be provided on the command line.
+To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A username, password, and a graph name may also be provided on the command line.
 
 .GSQL command syntax for entering interactive mode
 [source,gsql]
@@ -315,7 +315,7 @@ The graph g2 is created.
 Each attribute of a vertex or edge has an assigned data type.
 The following types are currently supported.
 
-=== Primitive pypes
+=== Primitive types
 
 |===
 | Name | Default value | Valid input format (regex) | Range and precision | Description

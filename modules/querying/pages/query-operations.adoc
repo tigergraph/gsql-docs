@@ -581,12 +581,7 @@ query is already installed. This is useful for overwriting an
 installation that is corrupted or otherwise outdated, without having to
 drop and then recreate the query. If this option is not used, the GSQL
 shell will refuse to re-install a query that is already installed.
-|`-DISTRIBUTED`
-|If you have a distributed database deployment,
-installing the query in Distributed Query Mode can increase performance
-for single queries - using a single worker from each available machine
-to yield results. Certain cases may benefit more from this option than
-others – more detailed information is available on the next page xref:distributed-query-mode.adoc[]
+
 a|`-SINGLE`
 |Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters page.]
 

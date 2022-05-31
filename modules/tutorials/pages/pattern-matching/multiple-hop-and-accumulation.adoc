@@ -17,7 +17,7 @@ As you see, a 2-hop pattern is a simple concatenation and merging of two 1-hop p
 
 [source,gsql]
 ----
-FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z
+FROM X:x -(E1:e1)- Y:y -(E2>:e2)- Z:z
 ----
 
 Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each pair of adjacent hops sharing one end point. Below, Y:y and Z:z are the connecting end points.
@@ -27,7 +27,7 @@ Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each p
 
 [source,gsql]
 ----
-FROM X:x - (E2>:e2) - Y:y - (<E3:e3) - Z:z - (E4:e4) - U:u
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u
 ----
 
 In general, we can connect N 1-hop patterns into an N-hop pattern. The database will search the graph topology to find subgraphs that match this N-hop pattern.
@@ -39,7 +39,7 @@ A multi-hop pattern has two endpoint vertex sets and one or more intermediate ve
 
 [source,gsql]
 ----
-FROM X:x - (E1.E2>) - Z:z
+FROM X:x -(E1.E2>)- Z:z
 ----
 
 [CAUTION]
@@ -54,7 +54,7 @@ If a pattern has a Kleene star to repeat an edge, GSQL pattern matching selects 
 
 image::screen-shot-2019-05-22-at-12.41.56-am.png[Figure 3. Shortest Path Illustration]
 
-For the pattern `1 - (_*) - 5` in Figure 3 above, you can see the following:
+For the pattern `1 -(_*)- 5` in Figure 3 above, you can see the following:
 
 * *There are TWO shortest paths: 1-2-3-4-5 and 1-2-6-4-5*
  ** These have 4 hops, so we can stop searching after 4 hops. This makes the task tractable.
@@ -154,7 +154,7 @@ GSQL's pattern matching syntax provides the essentials for a regular expression 
 
 . *The empty set* --> A path of length zero (no match)
 . *Concatenation* --> Combine paths together. You can write an N-hop pattern, and M-hop pattern, and then combine them to have an (N+M)-hop pattern.
-. *Alternation (either-or)* --> You can use alternation for both vertex sets and edge sets, e.g. `FROM (Source1 | Source2) -(Edge1> | <Edge 2)- (Target1 | Target2)` Note: This is not the same as  `FROM (Source1 -(Edge1>)- Target 1)   |   (Source2 -(<Edge2)- Target 2)` The latter can be achieved by writing two SELECT query blocks and getting the UNION of their results.
+. *Alternation (either-or)* --> You can use alternation for both vertex sets and edge sets, e.g. `FROM (Source1 | Source2)-(Edge1> | <Edge 2)-(Target1 | Target2)` Note: This is not the same as  `FROM (Source1 -(Edge1>)- Target 1)   |   (Source2 -(<Edge2)- Target 2)` The latter can be achieved by writing two SELECT query blocks and getting the UNION of their results.
 
 == Working with Your Pattern Matches
 

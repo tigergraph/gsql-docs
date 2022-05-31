@@ -16,14 +16,14 @@ A pattern could be a trace on this simple schema,
 
 [source,text]
 ----
-Person - (Friendship) - Person - (Friendship) - Person
+Person -(Friendship)- Person -(Friendship)- Person
 ----
 
 or, use *2 to denote the two consecutive Friendship edges,
 
 [source,text]
 ----
-Person - (Friendship*2) - Person
+Person -(Friendship*2)- Person
 ----
 
 == What is pattern matching?

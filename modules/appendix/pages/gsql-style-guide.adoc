@@ -179,6 +179,17 @@ CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
 This is not recommended.
 |===
 
+=== Patterns
+
+Spacing in pattern notation does not affect the output.
+
+`SELECT v FROM start:v -(Posted>:e)- Post:tgt`
+
+is the same as
+
+`SELECT v FROM start:v - (Posted>:e) - Post:tgt`
+
+The first style, with the parentheses connected to the dashes, is preferred.
 
 == Comments
 

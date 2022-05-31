@@ -200,7 +200,7 @@ DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables
 
 include::partial$load-statement.adoc[]
 
-== Attributes and Attribute Expressions
+== Attributes and attribute expressions
 
 A `LOAD` statement processes each line of an input file, splitting each lin into a sequence of tokens.
 Each destination clause provides a token-to-attribute mapping which defines how to construct a new vertex, an edge, or a temp table row instance (e.g., one data object).
@@ -234,7 +234,7 @@ LOAD "xx/yy/a.csv" TO VERTEX Person VALUES ($0, $1, $sys.file_name)
 Users do not need to explicitly define a primary ID. Given the attributes, one will be selected as the primary key.
 ====
 
-=== Cumulative Loading
+=== Cumulative loading
 
 A basic principle in the GSQL Loader is cumulative loading. Cumulative loading means that a particular data object might be written to (i.e., loaded) multiple times, and the result of the multiple loads may depend on the full sequence of writes. This usually means that If a data line provides a valid data object, and the `WHERE` clause and `OPTION` clause are satisfied, then the data object is loaded.
 
@@ -271,7 +271,7 @@ means to skip the next-to-last attribute. This technique is used when it is know
 . If the load operation is creating a new vertex or edge, then the skipped attribute will be assigned the default value.
 . If the load operation is overwriting an existing vertex or edge, then the skipped attribute will retain its existing value.
 
-=== More Complex Attribute Expressions
+=== More complex attribute expressions
 
 An attribute expression may use column tokens (e.g., `$0`), literals (constant numeric or string values), any of the built-in loader token functions, or a user-defined token function. Attribute expressions may *not* contain mathematical or boolean operators (such as `+`, `*`, `AND`). The rules for attribute expressions are the same as those for id expressions, but an attribute expression can additionally use a reducer function:
 
@@ -282,7 +282,7 @@ Note that token functions can be nested, that is, a token function can be used a
 
 The subsections below describe details about loading particular data types.
 
-=== Loading a DOUBLE or FLOAT Attribute
+=== Loading a `DOUBLE` or `FLOAT` attribute
 
 A floating point value has the basic format
 
@@ -313,7 +313,7 @@ In both cases, the leading sign ("+" or "-") is optional. The exponent, using "e
 ----
 
 
-=== Loading a `DATETIME` Attribute
+=== Loading a `DATETIME` attribute
 
 When loading data into a `DATETIME` attribute, the GSQL loader will automatically read a string representation of DateTime information and convert it to internal DateTime representation.  The loader accepts any of the following string formats:
 
@@ -334,7 +334,7 @@ Format notation:
 
 When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range. If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
 
-=== Loading a BOOL Attribute
+=== Loading a `BOOL` attribute
 
 When loading data from CSV files the following values are accepted for BOOL attributes :
 
@@ -343,9 +343,10 @@ When loading data from CSV files the following values are accepted for BOOL attr
 
 When loading data from JSON documents, the valid BOOL values are `true` and `false`.
 
-=== Loading a User-Defined Type (UDT) Attribute
+=== Loading a User-defined type (UDT) attribute
 
-To load a UDT attribute, state the name of the UDT type, followed by the list of attribute expressions for the UDT's fields, in parentheses.See the example below.
+To load a UDT attribute, state the name of the UDT type, followed by the list of attribute expressions for the UDT's fields, in parentheses.
+See the example below.
 
 .Load UDT example
 
@@ -356,7 +357,7 @@ include::appendix:example$test-schema/c_loadingjob_udt.gsql[]
 
 
 [#_loading_a_list_or_set_attribute]
-=== Loading a LIST or SET Attribute
+=== Loading a LIST or SET attribute
 
 There are three methods to load a `LIST` or a `SET`.
 
@@ -450,7 +451,7 @@ The `SPLIT()` function cannot be used for UDT type elements.
 ====
 
 [#_loading_a_map_attribute]
-=== Loading a MAP Attribute
+=== Loading a MAP attribute
 
 There are three methods to load a `MAP`.
 
@@ -539,7 +540,7 @@ include::appendix:example$test-schema/c_loadingjob_map_split.gsql[]
 The `SPLIT()` function cannot be used for UDT type elements.
 ====
 
-=== Loading Composite Key Attributes
+=== Loading composite key attributes
 
 Loading a Composite Key for a vertex works no differently than normal loading. Simply load all the attributes as you would for a vertex with a single-attribute primary key. The primary key will automatically be constructed from the appropriate attributes.
 
@@ -563,7 +564,7 @@ include::appendix:example$test-schema/c_loadingjob_wildcard.gsql[]
 ----
 
 
-== Token Functions
+== Token functions
 
 Token functions are functions in the DDL language that operate on tokens.Some may be used to construct attribute expressions and some may be used for conditional expressions in the `WHERE` clause.
 
@@ -577,7 +578,7 @@ To use a token function, replace the attribute in the destination clause of the 
 include::appendix:example$test-schema/c_loadingjob_tokenfunction.gsql[]
 ----
 
-=== Token Functions for Attribute Expressions
+=== Token functions for attribute expressions
 
 The following token functions can be used in an ID or attribute expression
 
@@ -749,7 +750,7 @@ time, which is the int number of seconds since Jan. 1, 1970.
 |===
 
 [#_timestamp_input_format]
-==== Timestamp Input Format
+==== Timestamp input format
 
 The timestamp parameter should be in one of the following formats:
 
@@ -763,11 +764,11 @@ The timestamp parameter should be in one of the following formats:
 
 See <<token-functions-in-where-clause>>.
 
-=== User-Defined Token Functions
+=== User-defined token functions
 
 Users can write their own token functions in C{pp} and install them in the GSQL system. To learn how to add a user-defined token function, see xref:add-token-function.adoc[].
 
-=== Reducer Functions
+=== Reducer functions
 
 A reducer function aggregates multiple values of a non-id attribute into one attribute value of a single vertex or edge.Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
 
@@ -813,7 +814,7 @@ Each function supports a certain set of attribute types.Calling a reducer functi
 ====
 
 [#_temp_table_and_flatten_functions]
-== `TEMP_TABLE` and Flatten Functions
+== `TEMP_TABLE` and flatten functions
 
 The keyword `TEMP_TABLE` triggers the use of a temporary data table which is used to store data generated by one `LOAD` statement, for use by a later `LOAD` statement.Earlier we introduced the syntax for loading data to a `TEMP_TABLE`:
 
@@ -829,7 +830,7 @@ This clause is designed to be used in conjunction with the `flatten` or `flatten
 
 There are two versions of the flatten function: One parses single-level groups and the other parses two-level groups.There are also two versions of the flatten_json_array function: One splits an array of primitive values, and the other splits an array of JSON objects.
 
-=== One-Level Flatten Function
+=== One-level flatten function
 
 `flatten (column_to_be_split, separator, 1)` is used to parse a one-level group into individual elements.
 An example is shown below:
@@ -960,7 +961,7 @@ The final graph will contain two `Book` vertices (101 and 102), five Genre verti
 ----
 
 
-=== Two-Level Flatten Function
+=== Two-level flatten function
 
 flatten (_column_to_be_split, group_separator, sub_field_separator, number_of_sub_fields_in_one_group_) is used for parse a two-level group into individual elements. Each token in the main group may itself be a group, so there are two separators: one for the top level and one for the second level. An example is shown below.
 
@@ -1013,7 +1014,7 @@ After running the loading job, the file book2.dat will be loaded into the TEMP_T
 | Chinese
 |===
 
-=== Flatten a JSON Array of Primitive Values
+=== Flatten a JSON array of primitive values
 
 flatten_json_array($" _array_name_ ") parses a JSON array of primitive (string, numberic, or bool) values, where "array_name" is the name of the array.
 Each value in the array creates a record. Below is an example:
@@ -1056,7 +1057,7 @@ The data and loading job creates the following temporary table:
 ====
 
 
-=== Flatten a JSON Array of JSON Objects
+=== Flatten a JSON array of JSON objects
 
 flatten_json_array (_$"array_name", $"sub_obj_1", $"sub_obj_2", ..., $"sub_obj_n"_) parses a JSON array of JSON objects. "array_name" is the name of the array, and the following parameters _$"sub_obj_1", $"sub_obj_2", ..., $"sub_obj_n"_ are the field key names in each object in the array. See complete example below:
 
@@ -1124,7 +1125,7 @@ When splitting a JSON array of JSON objects, the primitive values are skipped an
 | 30
 |===
 
-=== Flatten a JSON Array in a CSV file
+=== Flatten a JSON array in a CSV file
 
 *flatten_json_array()* can also be used to split a column of a tabular file, where the column contains JSON arrays. An example is given below:
 

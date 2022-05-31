@@ -763,57 +763,74 @@ The timestamp parameter should be in one of the following formats:
 
 See <<token-functions-in-where-clause>>.
 
-=== User-Defined Token Functions
+=== User-defined token functions
 
 Users can write their own token functions in C{pp} and install them in the GSQL system. To learn how to add a user-defined token function, see xref:add-token-function.adoc[].
 
-=== Reducer Functions
+=== Reducer functions
 
-A reducer function aggregates multiple values of a non-id attribute into one attribute value of a single vertex or edge.Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
+A reducer function aggregates multiple values of a non-ID attribute into one attribute value of a single vertex or edge.
+Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
 
-To reduce and load aggregate data to an attribute, the attribute expression has the form
+To reduce and load aggregate data to an attribute, the attribute expression has the following form:
 
 [source,gsql]
 ----
 REDUCE(reducer_function (input_expr))
 ----
 
-where _reducer_function_ is one of the functions in the table below. _input_expr_ can include non-reducer functions, but reducer functions cannot be nested.
+`reducer_function` is one of the functions in the following table.
+`input_expr` can include non-reducer functions, but reducer functions cannot be nested.
 
-Each reducer function is overloaded so that one function can be used for several different data types.For primitive data types, the output type is the same as the _input_expr_ type.For LIST, SET, and MAP containers, the _input_expr_ type is one of the allowed element types for these containers (see "Complex Types" in the Attribute Data Types section).The output is the entire container.
+Each reducer function is overloaded so that one function can be used for several data types:
+
+* For primitive data types, the output type is the same as the type of the input expression `input_expr`.
+* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+The output is the entire container.
 
 |===
-| Function name | Data type of _arg_: Description of function's return value
+| Function name | Return value
 
-| max(_arg_)
-| INT, UINT, FLOAT, DOUBLE: maximum of all _arg_ values cumulatively received
+| `max(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: maximum of all `arg` values cumulatively received
 
-| min(_arg_)
-| INT, UINT, FLOAT, DOUBLE: minimum of all _arg_ values cumulatively received
+| `min(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: minimum of all `arg` values cumulatively received
 
-| add(_arg_)
-| INT, UINT, FLOAT, DOUBLE: sum of all _arg_ values cumulatively received  STRING: concatenation of all arg values cumulatively received  LIST, SET element: list/set of all _arg_ values cumulatively received  MAP (key -> value) pair: key-value dictionary of all key-value pair _arg_ values cumulatively received
+| `add(arg)`
+a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively received
+* `STRING`: concatenation of all arg values cumulatively received
+* `LIST`, `SET` element: list/set of all `arg` values cumulatively received
+* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received.
+** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
 
-| and(_arg_)
-| BOOL: AND of all _arg_ values cumulatively received  INT, UINT: bitwise AND of all _arg_ values cumulatively received
+| `and(arg)`
+a| * `BOOL`: `AND` of all `arg` values cumulatively received
+* `INT`, `UINT`: bitwise `AND` of all `arg` values cumulatively received
 
-| or(_arg_)
-| BOOL: OR of all _arg_ values cumulatively received  INT, UINT: bitwise OR of all _arg_ values cumulatively received
+| `or(arg)`
+a| * BOOL: `OR` of all `arg` values cumulatively received
+* INT, UINT: bitwise `OR` of all `arg` values cumulatively received
 
-| overwrite(_arg_)
-| non-container: _arg_  LIST, SET: new list/set containing only _arg_
+| `overwrite(arg)`
+a| * Non-container: `arg`
+* `LIST`, `SET`: new list/set containing only `arg`
 
-| ignore_if_exists(_arg_)
-| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) _arg_ .
+| `ignore_if_exists(arg)`
+| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) `arg` .
 |===
 
 [WARNING]
 ====
-Each function supports a certain set of attribute types.Calling a reducer function with an incompatible type crashes the service.In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
+Each function supports a certain set of attribute types.
+Calling a reducer function with an incompatible type crashes the service.
+In order to prevent that, use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.
 ====
 
 [#_temp_table_and_flatten_functions]
-== `TEMP_TABLE` and Flatten Functions
+== `TEMP_TABLE` and flatten functions
 
 The keyword `TEMP_TABLE` triggers the use of a temporary data table which is used to store data generated by one `LOAD` statement, for use by a later `LOAD` statement.Earlier we introduced the syntax for loading data to a `TEMP_TABLE`:
 
@@ -829,7 +846,7 @@ This clause is designed to be used in conjunction with the `flatten` or `flatten
 
 There are two versions of the flatten function: One parses single-level groups and the other parses two-level groups.There are also two versions of the flatten_json_array function: One splits an array of primitive values, and the other splits an array of JSON objects.
 
-=== One-Level Flatten Function
+=== One-level flatten function
 
 `flatten (column_to_be_split, separator, 1)` is used to parse a one-level group into individual elements.
 An example is shown below:

@@ -980,17 +980,26 @@ The MapAccum type maintains a collection of (key -> value) pairs.
 The output of a MapAccum is a set of key and value pairs in which the keys are unique.
 
 The key type of a MapAccum can be all base types or tuples.
-If the key type is `VERTEX`, then only the vertex's id is stored and displayed.
+If the key type is `VERTEX`, then only the vertex's ID is stored and displayed.
 
 The value type of a MapAccum can be all base types, tuples, or any type of accumulator, except for HeapAccum.
 
-For MapAccum, the `+= (key->val)` operation adds a key-value element to the collection if *key* is not yet used in the MapAccum.
-If the MapAccum already contains *key* , then *val* is _accumulated_ to the current value, where the accumulation operation depends on the data type of *val*. 
-(Strings would get concatenated, lists would be appended, numerical values would be added, etc.)
+For MapAccum, the `+= (key->val)` operation adds a key-value element to the collection if the key is not yet used in the MapAccum.
+If the MapAccum already contains the key, then the corresponding value is _accumulated_ to the current value, where the accumulation operation depends on the data type of the value:
 
-MapAccum also supports the `+` operator:
+* Strings are concatenated.
+* Lists are appended.
+* Numerical values are added.
+* `DATETIME` and `ENUM` types are overwritten by the latest value.
+
+MapAccum also supports the `+` operator, which combines two MapAccums:
 
 * `@map1 + @map2` creates a new MapAccum, which contains the key-value pairs of `@map2` added to the key-value pairs of `@map1`.
+* If the two MapAccums share a key, the values corresponding to that key must have the same data type.
+The values at the same key accumulates from the left side to the right side in the same way as in the accumulation operation.
+* You can also use the `+=` operator to combine two MapAccums.
+The behavior is identical.
+
 The two MapAccums must have identical data types.
 
 MapAccum also supports the following class functions.
@@ -1006,23 +1015,23 @@ Functions that modify the MapAccum (mutator functions) can be used only under th
 |===
 | Function (`KEY` is the key type) | Return type | Accessor / Mutator | Description
 
-| `size()`
+| `.size()`
 | `INT`
 | Accessor
 | Returns the number of elements in the map.
 
-| `containsKey( KEY key )`
+| `.containsKey( KEY key )`
 | `BOOL`
 | Accessor
 | Returns true if the map does contain `key` and false if it doesn't.
 
-| `get( KEY key )`
+| `.get( KEY key )`
 | _value_ type
 | Accessor
 | Returns the value which the map associates with `key`.
 If the map doesn't contain key, then the return value is undefined.
 
-| `clear()`
+| `.clear()`
 | `VOID`
 | Mutator
 | Clears the map so it becomes empty with size 0.

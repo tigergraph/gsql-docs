@@ -995,8 +995,7 @@ If the MapAccum already contains the key, then the corresponding value is _accum
 MapAccum also supports the `+` operator, which combines two MapAccums:
 
 * `@map1 + @map2` creates a new MapAccum, which contains the key-value pairs of `@map2` added to the key-value pairs of `@map1`.
-* If the two MapAccums share a key, the values corresponding to that key must have the same data type.
-The values at the same key accumulates from the left side to the right side in the same way as in the accumulation operation.
+* The values at the same key accumulates from the left side to the right side in the same way as in the accumulation operation.
 * You can also use the `+=` operator to combine two MapAccums.
 The behavior is identical.
 

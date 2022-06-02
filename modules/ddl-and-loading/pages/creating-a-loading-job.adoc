@@ -801,10 +801,14 @@ The output is the entire container.
 a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively received
 * `STRING`: concatenation of all arg values cumulatively received
 * `LIST`, `SET` element: list/set of all `arg` values cumulatively received
-* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received.
+* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received:
++
+--
 ** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
 ** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
 ** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
+--
+If loading into an existing vertex, the new loaded key value paris accumulate with the existing pairs in the same way. 
 
 | `and(arg)`
 a| * `BOOL`: `AND` of all `arg` values cumulatively received

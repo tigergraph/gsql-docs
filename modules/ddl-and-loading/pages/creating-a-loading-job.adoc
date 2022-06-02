@@ -469,7 +469,11 @@ The loading order might not be the same as the order in the raw data.
 If a data file contains multiple lines with the same ID and same key but different values, loading them together results in a nondeterministic final value for that key.
 ====
 
-==== Load rows of key->value pairs by ID
+==== Load rows of key-value pairs by ID
+
+To load rows of key-value pairs by ID, use the arrowhead `\->` to indicate the key-value pair relationship between the columns, and enclose them in parentheses.
+
+For example, key-value pairs with tokens in column 2 as keys and tokens in column 3 as values is denoted by the following: `($1 \-> $2)`. 
 
 .Loading a MAP by method 1: \-> separator
 [source,gsql]
@@ -478,7 +482,7 @@ include::appendix:example$test-schema/c_loadingjob_map_1.gsql[]
 ----
 
 
-==== Load key->value pairs in multiple columns with `MAP()`
+==== Load key-value pairs in multiple columns with `MAP()`
 
 The second method is to use the `MAP()` function.
 If there are multiple key-value pairs among multiple columns, `MAP()` can load them together:
@@ -816,7 +820,7 @@ a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively rece
 ** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
 ** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
 --
-If loading into an existing vertex, the new loaded key value paris accumulate with the existing pairs in the same way.
+If loading into an existing vertex, the new loaded key-value pairs accumulate with the existing pairs in the same way.
 
 | `and(arg)`
 a| * `BOOL`: `AND` of all `arg` values cumulatively received

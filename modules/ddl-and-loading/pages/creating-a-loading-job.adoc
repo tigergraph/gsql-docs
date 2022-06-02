@@ -454,20 +454,22 @@ The `SPLIT()` function cannot be used for UDT type elements.
 
 There are three methods to load a `MAP`.
 
-The first method is to load multiple rows of data that share the same id values.
+The first method is to load multiple rows of data that share the same ID values.
 The maps are formed incrementally by reading one key-value pair from each eligible data line.
-When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not.
-If the id value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.
-If the id(s) has been used before, then the loading job checks whether the key exists in the map or not.
-If the key doesn't exist in the map, the new key-value pair is inserted.
-Otherwise, the value will be replaced by the new value.
+When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not:
+
+* If the ID value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.
+* If the ID(s) has been used before, then the loading job checks whether the key exists in the map or not.
+** If the key doesn't exist in the map, the new key-value pair is inserted.
+** If the key does exist, the newly loaded value replaces the old value.
 
 [WARNING]
 ====
-The loading order might not be the same as the order in the raw data.If a data file contains multiple lines with the same id and same key but different values, loading them together results in a nondeterministic final value for that key.
+The loading order might not be the same as the order in the raw data.
+If a data file contains multiple lines with the same ID and same key but different values, loading them together results in a nondeterministic final value for that key.
 ====
 
-*Method 1*: Below is the syntax to load a `MAP` by the first method: Use an arrow (->) to separate the map's key and value.
+==== Load rows of key->value pairs by ID
 
 .Loading a MAP by method 1: \-> separator
 [source,gsql]
@@ -476,7 +478,10 @@ include::appendix:example$test-schema/c_loadingjob_map_1.gsql[]
 ----
 
 
-*Method 2*: The second method is to use the `MAP()` function.If there are multiple key-value pairs among multiple columns, `MAP()` can load them together.Below is an example:
+==== Load key->value pairs in multiple columns with `MAP()`
+
+The second method is to use the `MAP()` function.
+If there are multiple key-value pairs among multiple columns, `MAP()` can load them together:
 
 .Loading a MAP by method 2: MAP() function
 [source,gsql]
@@ -485,12 +490,15 @@ include::appendix:example$test-schema/c_loadingjob_map_2.gsql[]
 ----
 
 
-*Method 3*: The third method is to use the `SPLIT()` function.
-Similar to the `SPLIT()` in loading `LIST` or `SET`, the `SPLIT()` function can be used when the key-value pair is in one column and separated by a key-value separator, or multiple key-value pairs are in one column and separated by element separators and key-value separators.
+==== Load key-value pairs by splitting values in one column
+
+The third method is to use the `SPLIT()` function.
+The `SPLIT()` function can be used when the key-value pair is in one column and separated by a key-value separator, or multiple key-value pairs are in one column and separated by element separators and key-value separators.
 
 `SPLIT()` has three parameters: The first is the column index, the second is the key-value separator, and the third is the element separator.
 The third parameter is optional.
-If one row of raw data only has one key-value pair, the third parameter can be skipped.Below are the examples without and with the given element separator.
+If one row of raw data only has one key-value pair, the third parameter can be skipped.
+Below are the examples without and with the given element separator.
 
 
 [tabs]
@@ -808,7 +816,7 @@ a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively rece
 ** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
 ** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
 --
-If loading into an existing vertex, the new loaded key value paris accumulate with the existing pairs in the same way. 
+If loading into an existing vertex, the new loaded key value paris accumulate with the existing pairs in the same way.
 
 | `and(arg)`
 a| * `BOOL`: `AND` of all `arg` values cumulatively received

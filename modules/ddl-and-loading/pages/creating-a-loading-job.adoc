@@ -455,20 +455,26 @@ The `SPLIT()` function cannot be used for UDT type elements.
 
 There are three methods to load a `MAP`.
 
-The first method is to load multiple rows of data that share the same id values.
+The first method is to load multiple rows of data that share the same ID values.
 The maps are formed incrementally by reading one key-value pair from each eligible data line.
-When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not.
-If the id value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.
-If the id(s) has been used before, then the loading job checks whether the key exists in the map or not.
-If the key doesn't exist in the map, the new key-value pair is inserted.
-Otherwise, the value will be replaced by the new value.
+When the loading job processes a line, it checks to see whether a vertex or edge with that id value(s) already exists or not:
+
+* If the ID value(s) is new, then a new vertex or edge is created with a new map containing the single key-value pair.
+* If the ID(s) has been used before, then the loading job checks whether the key exists in the map or not.
+** If the key doesn't exist in the map, the new key-value pair is inserted.
+** If the key does exist, the newly loaded value replaces the old value.
 
 [WARNING]
 ====
-The loading order might not be the same as the order in the raw data.If a data file contains multiple lines with the same id and same key but different values, loading them together results in a nondeterministic final value for that key.
+The loading order might not be the same as the order in the raw data.
+If a data file contains multiple lines with the same ID and same key but different values, loading them together results in a nondeterministic final value for that key.
 ====
 
-*Method 1*: Below is the syntax to load a `MAP` by the first method: Use an arrow (->) to separate the map's key and value.
+==== Load rows of key-value pairs by ID
+
+To load rows of key-value pairs by ID, use the arrowhead `\->` to indicate the key-value pair relationship between the columns, and enclose them in parentheses.
+
+For example, key-value pairs with tokens in column 2 as keys and tokens in column 3 as values is denoted by the following: `($1 \-> $2)`. 
 
 .Loading a MAP by method 1: \-> separator
 [source,gsql]
@@ -477,7 +483,10 @@ include::appendix:example$test-schema/c_loadingjob_map_1.gsql[]
 ----
 
 
-*Method 2*: The second method is to use the `MAP()` function.If there are multiple key-value pairs among multiple columns, `MAP()` can load them together.Below is an example:
+==== Load key-value pairs in multiple columns with `MAP()`
+
+The second method is to use the `MAP()` function.
+If there are multiple key-value pairs among multiple columns, `MAP()` can load them together:
 
 .Loading a MAP by method 2: MAP() function
 [source,gsql]
@@ -486,12 +495,15 @@ include::appendix:example$test-schema/c_loadingjob_map_2.gsql[]
 ----
 
 
-*Method 3*: The third method is to use the `SPLIT()` function.
-Similar to the `SPLIT()` in loading `LIST` or `SET`, the `SPLIT()` function can be used when the key-value pair is in one column and separated by a key-value separator, or multiple key-value pairs are in one column and separated by element separators and key-value separators.
+==== Load key-value pairs by splitting values in one column
+
+The third method is to use the `SPLIT()` function.
+The `SPLIT()` function can be used when the key-value pair is in one column and separated by a key-value separator, or multiple key-value pairs are in one column and separated by element separators and key-value separators.
 
 `SPLIT()` has three parameters: The first is the column index, the second is the key-value separator, and the third is the element separator.
 The third parameter is optional.
-If one row of raw data only has one key-value pair, the third parameter can be skipped.Below are the examples without and with the given element separator.
+If one row of raw data only has one key-value pair, the third parameter can be skipped.
+Below are the examples without and with the given element separator.
 
 
 [tabs]
@@ -770,47 +782,68 @@ Users can write their own token functions in C{pp} and install them in the GSQL 
 
 === Reducer functions
 
-A reducer function aggregates multiple values of a non-id attribute into one attribute value of a single vertex or edge.Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
+A reducer function aggregates multiple values of a non-ID attribute into one attribute value of a single vertex or edge.
+Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
 
-To reduce and load aggregate data to an attribute, the attribute expression has the form
+To reduce and load aggregate data to an attribute, the attribute expression has the following form:
 
 [source,gsql]
 ----
 REDUCE(reducer_function (input_expr))
 ----
 
-where _reducer_function_ is one of the functions in the table below. _input_expr_ can include non-reducer functions, but reducer functions cannot be nested.
+`reducer_function` is one of the functions in the following table.
+`input_expr` can include non-reducer functions, but reducer functions cannot be nested.
 
-Each reducer function is overloaded so that one function can be used for several different data types.For primitive data types, the output type is the same as the _input_expr_ type.For LIST, SET, and MAP containers, the _input_expr_ type is one of the allowed element types for these containers (see "Complex Types" in the Attribute Data Types section).The output is the entire container.
+Each reducer function is overloaded so that one function can be used for several data types:
+
+* For primitive data types, the output type is the same as the type of the input expression `input_expr`.
+* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+The output is the entire container.
 
 |===
-| Function name | Data type of _arg_: Description of function's return value
+| Function name | Return value
 
-| max(_arg_)
-| INT, UINT, FLOAT, DOUBLE: maximum of all _arg_ values cumulatively received
+| `max(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: maximum of all `arg` values cumulatively received
 
-| min(_arg_)
-| INT, UINT, FLOAT, DOUBLE: minimum of all _arg_ values cumulatively received
+| `min(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: minimum of all `arg` values cumulatively received
 
-| add(_arg_)
-| INT, UINT, FLOAT, DOUBLE: sum of all _arg_ values cumulatively received  STRING: concatenation of all arg values cumulatively received  LIST, SET element: list/set of all _arg_ values cumulatively received  MAP (key -> value) pair: key-value dictionary of all key-value pair _arg_ values cumulatively received
+| `add(arg)`
+a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively received
+* `STRING`: concatenation of all arg values cumulatively received
+* `LIST`, `SET` element: list/set of all `arg` values cumulatively received
+* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received:
++
+--
+** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
+--
+If loading into an existing vertex, the new loaded key-value pairs accumulate with the existing pairs in the same way.
 
-| and(_arg_)
-| BOOL: AND of all _arg_ values cumulatively received  INT, UINT: bitwise AND of all _arg_ values cumulatively received
+| `and(arg)`
+a| * `BOOL`: `AND` of all `arg` values cumulatively received
+* `INT`, `UINT`: bitwise `AND` of all `arg` values cumulatively received
 
-| or(_arg_)
-| BOOL: OR of all _arg_ values cumulatively received  INT, UINT: bitwise OR of all _arg_ values cumulatively received
+| `or(arg)`
+a| * BOOL: `OR` of all `arg` values cumulatively received
+* INT, UINT: bitwise `OR` of all `arg` values cumulatively received
 
-| overwrite(_arg_)
-| non-container: _arg_  LIST, SET: new list/set containing only _arg_
+| `overwrite(arg)`
+a| * Non-container: `arg`
+* `LIST`, `SET`: new list/set containing only `arg`
 
-| ignore_if_exists(_arg_)
-| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) _arg_ .
+| `ignore_if_exists(arg)`
+| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) `arg` .
 |===
 
 [WARNING]
 ====
-Each function supports a certain set of attribute types.Calling a reducer function with an incompatible type crashes the service.In order to prevent that, use the WHERE clause (introduced below) together with IS NUMERIC or other operators, functions, predicates for type checking if necessary.
+Each function supports a certain set of attribute types.
+Calling a reducer function with an incompatible type crashes the service.
+In order to prevent that, use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.
 ====
 
 [#_temp_table_and_flatten_functions]

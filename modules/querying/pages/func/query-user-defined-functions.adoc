@@ -18,7 +18,7 @@ There are two ways to modify these files to add user-defined functions to GSQL:
 ** The `PUT` command requires the `WRITE_FILE` privilege.
 
 WARNING: It is strongly recommended that you enable GSQL user authentication by changing the password of the default user `tigergraph` to protect your UDF files.
-If you don't enable user authentication, anyone with GSQL shell access can log in as the default user with `superuser` privileges and modify your files.
+If you don't enable user authentication, anyone with GSQL shell access can log in as the default user with `superuser` privileges and modify your UDF files.
 
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
 

@@ -448,18 +448,24 @@ include::appendix:example$investment_net/datatypes_udt_results.json[]
 
 == `STRING COMPRESS`
 
+[WARNING]
+====
+`STRING COMPRESS` is a deprecated data type.
+Please use `STRING` instead.
+====
+
 `STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`.
 The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally.
 A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
 
-[WARNING]
-====
-Using `STRING COMPRESS` instead of `STRING` is a trade-off: smaller storage vs. slower access times.
-The storage space will only be smaller if (1) the original strings are long, and (2) there are only a small number of different strings.
-Performance will always be slower; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
+Using `STRING COMPRESS` instead of `STRING` can sometimes reduce storage space used, but results in slower access times.
+The storage space is only be smaller if:
 
-We recommend performing comparison tests for both performance and memory usage before settling on `STRING COMPRESS`.
-====
+* The original strings are long.
+* There are only a small number of different strings.
+
+Performance is always be slower compared to `STRING`; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
+
 
 `STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times.
 In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
@@ -473,11 +479,6 @@ A `STRING COMPRESS` value can be automatically converted to a `STRING` value.
 When a `STRING COMPRESS` value is output (e.g. by a xref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[`PRINT` statement]), it is shown as a `STRING`.
 
 Below is an example query that uses the `STRING COMPRESS` type.
-
-[WARNING]
-====
-`STRING COMPRESS` is not a base type.
-====
 
 .STRING COMPRESS example query
 [tabs]

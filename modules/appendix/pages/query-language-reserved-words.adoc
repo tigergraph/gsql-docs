@@ -1,18 +1,18 @@
-= Query Language Reserved Words
+= Query Language Keywords & Reserved Words
 :page-aliases: querying:appendix-query/query-language-reserved-words.adoc
+
+The page lists the reserved words and non-reserved keywords used in the GSQL query language.
+
+There is a separate list for xref:appendix:keywords-and-reserved-words.adoc[].
+The compiler will reject the use of a Reserved Word as a user-defined identifier.
+
+== Reserved words
 
 The following words are reserved for use by the GSQL query language.
 That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local `TUPLE` type.
 
 You should also not use words from this list to name vertex or edge types.
 While GSQL will not raise an error when you define the types, you will not be able to reference the types in a query.
-
-== History:
-
-* v3.1: Added `TAGS`, `RESET_COLLECTION_ACCUM`, `WITH`
-
-There is a separate list for xref:appendix:keywords-and-reserved-words.adoc[Reserved Words for the *GSQL DDL Language*]. +
-The compiler will reject the use of a Reserved Word as a user-defined identifier.
 
 .Query Language Reserved Words
 [source,gsql]
@@ -50,3 +50,16 @@ UNION               UPDATE              VALUES              VERTEX
 WHEN                WHERE               WHILE               WITH
 ----
 
+== Non-reserved keywords
+
+These keywords in the language are non-reserved, so users may use them for user-defined identifiers.
+
+.Query language non-reserved keywords
+----
+LIST    MAP     LOG     NOW
+TO_DATETIME     UPDATE  FILE
+PER     PATH    REPLACE MATCH
+SRC     TGT     LASTHOP GROUP
+BY      COMMIT  ABORT   DISTINCT
+INSERT
+----

@@ -1,0 +1,19 @@
+= gsql_uuid_v4()
+
+Returns a version-4 https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random)[universally unique identifier (UUID)].
+
+== Syntax
+`gsql_uuid_v4()`
+
+== Parameters
+None.
+
+== Return type
+`STRING`
+
+== Example
+The function doesn't take any arguments and returns a version-4 UUID:
+
+----
+gsql_uuid_v4() -> "3e9ca3e6-5ad4-4a32-9cfc-9f53367bd420"
+----

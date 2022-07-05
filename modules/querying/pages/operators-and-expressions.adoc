@@ -533,9 +533,12 @@ include::appendix:example$social_net/operators_expressions_set_membership_result
 
 A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery.
 
-Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value.A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query.Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
+Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value.
+A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query.
+Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
 
-A subquery must be created before the query that calls the subquery.A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
+A subquery must be created before the query that calls the subquery.
+A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
 .Main Components of a Subquery
 [source,gsql]
@@ -547,9 +550,10 @@ RETURNS (INT) /* A subquery has a RETURNS header specifying
     // ...
     // Query body goes here
     // ...
-    RETURN <return_value> /* The return statement of a subquery. Return
-                            value must be the same type as specified in
-                            the RETURNS header */
+    RETURN <return_value>
+    /* The return statement of a subquery.
+    Return value must be the same type as specified in
+    the RETURNS header */
 }
 ----
 

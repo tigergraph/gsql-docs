@@ -1,0 +1,21 @@
+= gsql_to_bool()
+
+Returns true if the input string is either "t" or "true" (case-insensitive) and returns false if otherwise.
+
+
+== Syntax
+`gsql_to_bool(in_string)`
+
+== Parameters
+in_string::
+The input string.
+
+== Return type
+`BOOL`
+
+== Example
+
+----
+gsql_to_bool("true") -> TRUE
+gsql_to_bool("abc") -> FALSE
+----

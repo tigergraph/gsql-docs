@@ -90,13 +90,23 @@ The body defines the behavior of the query.
 
 `OR REPLACE`::
 
-If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, will replace a previous definition with the same query name.The new query will not be installed. That is, +
-`CREATE OR REPLACE QUERY name` +
-acts like +
-`DROP QUERY name
-CREATE QUERY name` +
-However, if there are any errors in this query definition, then the previous query definition will be maintained.If the `OR REPLACE` option is not used, then GSQL will reject a `CREATE QUERY` command that uses an existing name.
+If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, replaces a previous definition with the same query name.
+If the original query was installed, you'll need to reinstall the new query.
++
+However, if there are any errors in this query definition, then the previous query definition is maintained.
+If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
++
+Only the xref:tigergraph-server:user-access:access-control-model.adoc#_query_owner[query owner] is allowed to run `CREATE OR REPLACE` on a query.
+However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph, you can execute `DROP QUERY` to drop the query and create a new one with the same name.
++
+[NOTE]
+====
+The difference between `CREATE OR REPLACE` and dropped the query and recreating a query are the following:
 
+* Only the query owner is allowed to run `CREATE OR REPLACE` on a query directly, while anyone with the `WRITE_QUERY` privilege on the corresponding graph and drop and recreate the query.
+* The ACLs on the original query are dropped when you drop the query.
+`CREATE OR REPLACE` keeps the original ACLs intact.
+====
 `DISTRIBUTED`::
 The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
 If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]

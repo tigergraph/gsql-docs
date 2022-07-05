@@ -532,26 +532,30 @@ include::appendix:example$social_net/operators_expressions_set_membership_result
 == Subqueries
 
 A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery.
+Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value.
 
-Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value.A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query.Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
+A subquery must end with a xref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to a query.
+Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` statement can only return one expression.
 
-A subquery must be created before the query that calls the subquery.A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
+A subquery must be created before the query that calls the subquery.
+A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
 .Main Components of a Subquery
 [source,gsql]
 ----
-CREATE QUERY <query_name>() FOR GRAPH <Graph_Name> // Parameters are optional
-RETURNS (INT) /* A subquery has a RETURNS header specifying
-                              its return type */
+CREATE QUERY <query_name>() FOR GRAPH <Graph_Name> <1>
+RETURNS (INT) <2>
 {
     // ...
     // Query body goes here
     // ...
-    RETURN <return_value> /* The return statement of a subquery. Return
-                            value must be the same type as specified in
-                            the RETURNS header */
+    RETURN <return_value> <3>
 }
 ----
+<1> Parameters are optional.
+<2> A subquery has a `RETURNS` header specifying its return type.
+<3> The return statement of a subquery.
+Return value must be the same type as specified in the `RETURNS` header.
 
 
 
@@ -565,12 +569,13 @@ A subquery parameter can only be one of the following types:
 
 === Return types
 
-A subquery's return value can be any base type or accumulator type with the following exceptions.
+A subquery's return value can be any xref:declaration-and-assignment-statements.adoc#_base_type_variables[base type variable] or accumulator with the following exceptions:
 
-* If the return type is a user-defined tuple type, a HeapAccum type, or a GroupByAccum type,  the user-defined types must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level].
-* If the return type is a `BagAccum`. `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
+* If the return type is a `HeapAccum` or `GroupByAccum` that has a user-defined tuple as an element, the user-defined tuple must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level].
+* If the return type is a `BagAccum`, `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
 
 ==== Example
+
 The following query uses a subquery that returns an anonymous tuple:
 
 [tabs]
@@ -580,7 +585,9 @@ Subquery::
 --
 [,gsql]
 ----
-CREATE QUERY sub_query(VERTEX x) RETURNS (ListAccum<TUPLE<INT, STRING, DOUBLE>>){
+CREATE QUERY sub_query(VERTEX x)
+RETURNS (ListAccum<TUPLE<INT, STRING, DOUBLE>>)
+{
     TYPEDEF tuple<INT a, STRING b, DOUBLE c> My_Tuple;
     ListAccum<My_Tuple> @@res;
     RETURN @@res;
@@ -590,7 +597,7 @@ CREATE QUERY sub_query(VERTEX x) RETURNS (ListAccum<TUPLE<INT, STRING, DOUBLE>>)
 Query::
 +
 --
-[,gsql]
+[.wrap,gsql]
 ----
 CREATE QUERY main_query() {
     TYPEDEF tuple<INT a, STRING b, DOUBLE c> My_Tuple1;
@@ -606,12 +613,11 @@ CREATE QUERY main_query() {
 
 === Recursive subqueries
 
-Recursion is supported for subqueries and a subquery can call itself. The following example subquery takes a set of persons as starting points, and returns all the friends within a given distance.
+Recursion is supported for subqueries and a subquery can call itself.
+The following example subquery takes a set of persons as starting points, and returns all the friends within a given distance.
 
-[NOTE]
-====
 While recursive subqueries may look simpler in writing, they are usually not as efficient as iterative subqueries in GSQL.
-====
+
 
 ==== Example
 [tabs]

@@ -192,7 +192,7 @@ Our parameterized query thus becomes an HTTP service.
 .Linux shell
 [source,bash]
 ----
-curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
+curl -X GET 'http://localhost:9000/query/Social/hello?p=Tom'
 ----
 
 Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.

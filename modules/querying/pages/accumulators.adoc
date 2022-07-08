@@ -1376,7 +1376,7 @@ If the map doesn't contain key, then the return value is undefined.
 | Mutator
 | Clears the map so it becomes empty with size 0.
 
-|`.removeKey( KEY key )`
+|`.remove( KEY key )`
 |`VOID`
 |Mutator
 | Removes the key-value pair with the specified key. If there is no matching key, then the function will do nothing.

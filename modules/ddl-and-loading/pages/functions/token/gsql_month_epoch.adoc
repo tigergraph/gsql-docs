@@ -1,0 +1,21 @@
+= gsql_month_epoch()
+
+
+Returns the month number (1 - 12) from a Unix https://en.wikipedia.org/wiki/Unix_time[epoch time] value.
+
+== Syntax
+`gsql_month_epoch(epoch)`
+
+== Parameters
+epoch::
+Required.
+A Unix epoch time value.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_year_epoch(1657327158) -> 7
+----

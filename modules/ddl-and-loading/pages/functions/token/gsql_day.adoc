@@ -1,0 +1,22 @@
+= gsql_day()
+
+Returns the day number (1-31) from a timestamp.
+
+include::partial$timestamp.adoc[]
+
+== Syntax
+`gsql_month(timestamp)`
+
+== Parameters
+timestamp::
+Required.
+A timestamp.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_year("2013-05-09 23:56:52") -> 9
+----

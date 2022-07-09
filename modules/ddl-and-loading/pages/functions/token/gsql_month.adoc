@@ -1,0 +1,22 @@
+= gsql_month()
+
+Returns the month number (1-12) from a timestamp.
+
+include::partial$timestamp.adoc[]
+
+== Syntax
+`gsql_month(timestamp)`
+
+== Parameters
+timestamp::
+Required.
+A timestamp.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_year("2013-05-09 23:56:52") -> 5
+----

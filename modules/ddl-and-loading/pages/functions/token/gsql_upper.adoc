@@ -1,11 +1,22 @@
 = gsql_upper()
 
-
+Returns the input string with the English alphabet letters converted to uppercase.
 
 == Syntax
 
+`gsql_upper(in_string)`
+
 == Parameters
+
+in_string::
+The input string to capitalize.
 
 == Return type
 
+`STRING`
+
 == Example
+
+----
+gsql_upper("abcd") -> "ABCD"
+----

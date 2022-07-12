@@ -298,7 +298,7 @@ Below is an example.
 
 [source.wrap,gsql]
 ----
-CREATE VERTEX Movie (PRIMARY_ID id UINT, title STRING, country STRING COMPRESS, year UINT)
+CREATE VERTEX Movie (PRIMARY_ID id UINT, title STRING, country STRING, year UINT)
 CREATE DIRECTED EDGE Sequel_Of (FROM Movie, TO Movie)
 CREATE GRAPH Movie_Graph(*)
 CREATE LOADING JOB load_movie FOR GRAPH Movie_Graph{

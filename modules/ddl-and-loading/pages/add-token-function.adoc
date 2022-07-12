@@ -28,7 +28,7 @@ below depending on the attribute type.
 [cols=",,",options="header",]
 |===
 |Attribute type |Function signature |Function return type
-|`STRING` or `STRING COMPRESS`
+|`STRING`
 |`extern "C" void funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum,  char* const oToken, uint32_t& oTokenLen)`
 |`void`. The value of `oToken` will be returned in GSQL
 
@@ -60,8 +60,7 @@ named exactly as such, and are used to describe the input tokens:
 * `iTokenLen` is an array of the lengths of the string tokens
 * `iTokenNum` is the number of tokens
 
-Token functions for attribute types `STRING` or
-`STRING COMPRESS` have a C{pp} function return type of `void`.
+Token functions for attribute types `STRING` or have a C{pp} function return type of `void`.
 Use the parameter `oToken` to store the string you want returned, and
 in GSQL the token function will return the string stored in `oToken`:
 

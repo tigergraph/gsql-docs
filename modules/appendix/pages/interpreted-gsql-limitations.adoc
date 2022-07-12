@@ -26,7 +26,6 @@ To use the features on this page, xref:querying:query-operations.adoc#_install_q
 * Attributes and accumulators
 ** `ArrayAccum`
 ** Accessing the previous value of a vertex-attached accumulator with the ' operator, e.g., `src.@acc'`
-** `STRING COMPRESS` as accumulator type
 ** Accessing the attribute of a vertex variable that is not a vertex alias defined in a `FROM` clause
 * Functions and Operators
 ** Aggregate functions: `AVG()`, `MIN()`, `MAX()`, `COUNT()`, `ISEMPTY()`, `SUM()`

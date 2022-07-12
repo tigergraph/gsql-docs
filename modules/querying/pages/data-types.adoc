@@ -35,7 +35,7 @@ tupleType := name
 fieldName :=name
 funcName := name
 
-type := baseType | tupleType | accumType | STRING COMPRESS
+type := baseType | tupleType | accumType
 
 baseType := INT
           | UINT
@@ -61,6 +61,16 @@ parameterType := baseType
                | FILE
 ----
 
+[NOTE]
+====
+The legacy data type `STRING COMPRESS` has been deprecated since TigerGraph Server 3.0.
+You can no longer create new schema with the type `STRING COMPRESS`.
+As such, we have removed `STRING COMPRESS` from the documentation.
+
+Existing schemas that are using `STRING COMPRESS` can continue to function normally.
+If you need reference for `STRING COMPRESS`, please refer to GSQL Language Reference version 3.5 or older.
+====
+
 == Identifiers
 
 An identifier is the name for an instance of a language element. In the GSQL query language, identifiers are used to name elements such as a query, a variable, or a user-defined function.
@@ -80,7 +90,7 @@ name := (letter | "_") [letter | digit | "_"]*
 Different types of data can be used in different contexts.
 The EBNF syntax defines several classes of data types.
 The most basic is called base type (`baseType`).
-The other independent types are `FILE` and `STRING COMPRESS`.
+The other independent type is `FILE`.
 The remaining types are either compound data types built from the independent data types, or supersets of other types.  The table below gives an overview of their definitions and their uses.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
@@ -113,21 +123,11 @@ chapter.)
 set or bag of `+baseType+`, or `+FILE+` object a|
 * Query parameter
 
-a|
-`+STRING COMPRESS+`
-
-(⚠**Deprecated data type. Please use `STRING` instead**)
-
-|`STRING COMPRESS` a|
-* more compact storage of STRING, *if there is a limited number of
-different values and the value is rarely accessed. Otherwise, it may use
-more memory.*
-
-|`+elementType+` |`+baseType+`, `+STRING COMPRESS+`, or identifier a|
+|`+elementType+` |`baseType`, or identifier a|
 * Element for most types of container accumulators: `+SetAccum+`,
 `+BagAccum+`, `+GroupByAccum+`, key of a `+MapAccum+` element
 
-|`+type+` |`+baseType+`, `+STRING COMPRESS+`, identifier, or
+|`+type+` |`+baseType+`, identifier, or
 `+accumType+` a|
 * Element of a `+ListAccum+`, value of a `+MapAccum+` element
 * Local variable
@@ -287,9 +287,6 @@ If an attribute of a vertex or edge is referenced in a GSQL query, they will be 
 | `STRING`
 | `STRING`
 
-| `STRING COMPRESS`
-| `STRING`
-
 | `SET< type >`
 | `SetAccum< type >`
 
@@ -441,64 +438,6 @@ Result::
 ----
 GSQL > RUN QUERY tuple_ex("person1")
 include::appendix:example$investment_net/datatypes_udt_results.json[]
-----
---
-====
-
-
-== `STRING COMPRESS`
-
-[WARNING]
-====
-`STRING COMPRESS` is a deprecated data type.
-Please use `STRING` instead.
-====
-
-`STRING COMPRESS` is an integer type encoded by the system to represent string values. `STRING COMPRESS` uses less memory than `STRING`.
-The `STRING COMPRESS` type is designed to act like `STRING`: data are loaded and printed just as string data, and most functions and operators which take `STRING` input can also take `STRING COMPRESS` input. The difference is in how the data are stored internally.
-A `STRING COMPRESS` value can be obtained from a `STRING_SET COMPRESS` or `STRING_LIST COMPRESS` attribute or from converting a `STRING` value.
-
-Using `STRING COMPRESS` instead of `STRING` can sometimes reduce storage space used, but results in slower access times.
-The storage space is only be smaller if:
-
-* The original strings are long.
-* There are only a small number of different strings.
-
-Performance is always be slower compared to `STRING`; the slowdown is greater if the `STRING COMPRESS` attributes are accessed more often.
-
-
-`STRING COMPRESS` type is beneficial for sets of string values when the same values are used multiple times.
-In practice, `STRING COMPRESS` are most useful for container accumulators like `ListAccum<STRING COMPRESS>` or `SetAccum<STRING COMPRESS>`.
-
-An accumulator containing `STRING COMPRESS` stores the dictionary when it is assigned an attribute value or from another accumulator containing `STRING COMPRESS`.
-An accumulator containing `STRING COMPRESS` can store multiple dictionaries.
-A `STRING` value can be converted to a `STRING COMPRESS` value only if the value is in the dictionaries.
-If the `STRING` value is not in the dictionaries, the original string value is saved.
-A `STRING COMPRESS` value can be automatically converted to a `STRING` value.
-
-When a `STRING COMPRESS` value is output (e.g. by a xref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[`PRINT` statement]), it is shown as a `STRING`.
-
-Below is an example query that uses the `STRING COMPRESS` type.
-
-.STRING COMPRESS example query
-[tabs]
-====
-Query::
-+
---
-[source,gsql]
-----
-include::appendix:example$work_net/datatypes_stringcompress.gsql[]
-----
---
-
-Results::
-+
---
-[source,gsql]
-----
-GSQL > RUN QUERY string_compress_ex("person12")
-include::appendix:example$work_net/datatypes_stringcompress_results.json[]
 ----
 --
 ====

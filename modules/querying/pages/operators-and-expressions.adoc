@@ -213,10 +213,6 @@ condition := expr
 Strings are compared based on standard lexicographical ordering: +
 (space) < (digit) < (uppercase_letter) < (lowercase_letter).
 
-[NOTE]
-====
-The comparison operators treat the STRING COMPRESS type as though it is STRING type.
-====
 
 === BETWEEN ... AND ...
 

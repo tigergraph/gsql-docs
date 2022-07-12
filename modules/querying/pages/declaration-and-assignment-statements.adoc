@@ -202,17 +202,17 @@ The following types are allowed:
 |Container type |Element type
 
 |`SET`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
 
 |`BAG`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
 
 |`LIST`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
 
 |`MAP`
-a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
-* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `STRING COMPRESS`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
+a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
 |===
 
 

@@ -180,7 +180,7 @@ primary_id_name_type
 The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
-. Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type, DATETIME, or STRING COMPRESS attributes only)
+. Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type or DATETIME attributes only)
 
 Example:
 
@@ -348,21 +348,6 @@ The example below defines a tuple type `My_Tuple` and a heap accumulator type `M
 include::appendix:example$social_net/d_schema_typedef.gsql[]
 ----
 
-== Special Options
-
-=== Sharing a Compression Dictionary
-
-The `STRING COMPRESS` data type achieves compression by mapping each unique attribute value to a small integer. The mapping table ("this string" = "this integer") is called the dictionary. If two such attributes have the same or similar sets of possible values, then it is desirable to have them share one dictionary because it uses less storage space.
-
-When a `STRING COMPRESS` attribute is declared in a vertex or edge, the user can optionally provide a name for the dictionary. Any attributes which share the same dictionary name will share the same dictionary. For example, v1.attr1, v1.attr2, and e.attr1 below share the same dictionary named "e1".
-
-.Shared `STRING COMPRESS` dictionaries
-[source,gsql]
-----
-CREATE VERTEX V1 (PRIMARY_ID main_id STRING, att1 STRING COMPRESS e1, att2 STRING COMPRESS e1)
-CREATE UNDIRECTED EDGE E (FROM V1, TO V2, att1 STRING COMPRESS e1)
-----
-
 
 
 == `ALTER INDEX`
@@ -373,7 +358,7 @@ The TigerGraph database allows users to define on vertex attributes.
 The user has the flexibility to create indexes in an empty graph initially or to add indexes later when the database is running.
 If the index is added on an existing vertex, index data is built in the background.
 
-Indexes can be created on vertices on a single attribute of the following data types only:  `STRING`, `UINT`, `INT`, `DATETIME`, and `STRING COMPRESS`. Indexes will be used to optimize queries with all predicate types. However, if a predicate uses an in-built function, then index will not be used to optimize the query. Also, built-in queries are not optimized using indexes.
+Indexes can be created on vertices on a single attribute of the following data types only:  `STRING`, `UINT`, `INT`, and `DATETIME`. Indexes will be used to optimize queries with all predicate types. However, if a predicate uses an in-built function, then index will not be used to optimize the query. Also, built-in queries are not optimized using indexes.
 
 [WARNING]
 ====

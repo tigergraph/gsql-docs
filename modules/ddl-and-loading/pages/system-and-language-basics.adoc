@@ -384,6 +384,16 @@ not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
 bytes
 |===
 
+[NOTE]
+====
+The legacy data type `STRING COMPRESS` has been deprecated since TigerGraph Server 3.0.
+You can no longer create new schema with the type `STRING COMPRESS`.
+As such, we have removed `STRING COMPRESS` from the documentation.
+
+Existing schemas that are using `STRING COMPRESS` can continue to function normally.
+If you need reference for `STRING COMPRESS`, please refer to GSQL Language Reference version 3.5 or older.
+====
+
 Additionally, GSQL also supports the following complex data types:
 
 === Collection types

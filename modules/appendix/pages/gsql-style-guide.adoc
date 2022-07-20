@@ -2,7 +2,8 @@
 :description: TigerGraph's Style guide for writing GSQL.
 
 
-This page details TigerGraph’s style guide for writing GSQL. The purpose of the style guide is to make code easy to read and achieve lower cost of maintenance.
+This page details TigerGraph’s style guide for writing GSQL.
+The purpose of the style guide is to make code easy to read and achieve lower cost of maintenance.
 
 == General
 * Always write keywords and reserved words in all caps. You can find a list of keywords and reserved words in xref:query-language-reserved-words.adoc[] and xref:keywords-and-reserved-words.adoc[].
@@ -23,7 +24,7 @@ Detailed identifier naming conventions are described in the following table:
 |===
 |Identifier type |Style |Example
 
-|Instances
+|Instances (This includes any variable one can declare in a loading job or query not otherwise specified in the table)
 |Use snake case: lowercase, letters connected by underscore
 a|* `batch_number`
 * `v_type`
@@ -120,9 +121,9 @@ If a line is more than 80 characters, it should be split into multiple lines. Th
 [,gsql]
 ----
 CREATE QUERY hello(VERTEX<Person> p) {
-    Start = {p};
-    Result = SELECT tgt
-        FROM Start:s -(Friendship:e)- Person:tgt; /* This is a long
+    start = {p};
+    result = SELECT tgt
+        FROM start:s -(Friendship:e)- Person:tgt; /* This is a long
           comment and it is split into multiple lines. */
         PRINT Result;
 }

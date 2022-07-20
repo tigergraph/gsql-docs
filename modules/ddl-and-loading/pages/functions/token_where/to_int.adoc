@@ -1,0 +1,20 @@
+= to_int()
+
+This function converts the token to an integer.
+This is a token function for the `WHERE` clause of a `LOAD` statement only.
+It cannot be used in a destination clause.
+
+== Syntax
+
+`to_int( token )`
+
+== Return value
+
+The integer converted from the input token.
+
+== Example
+
+[,gsql]
+----
+LOAD 
+----

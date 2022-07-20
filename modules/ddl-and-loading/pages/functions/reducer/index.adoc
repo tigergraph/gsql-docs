@@ -1,0 +1,68 @@
+= Reducer functions
+
+A reducer function aggregates multiple values of a non-ID attribute into one attribute value of a single vertex or edge.
+Reducer functions are computed incrementally; that is, each time a new input token is applied, a new resulting value is computed.
+
+== Syntax
+
+To reduce and load aggregate data to an attribute, the attribute expression has the following form:
+
+[source,gsql]
+----
+REDUCE(reducer_function (input_expr))
+----
+
+`reducer_function` is one of the functions in the following table.
+`input_expr` can include non-reducer functions, but reducer functions cannot be nested.
+
+Each reducer function can be used for several data types:
+
+* For primitive data types, the output type is the same as the type of the input expression `input_expr`.
+* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+The output is the entire container.
+
+== Table of reducer functions
+
+|===
+| Function name | Return value
+
+| `max(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: maximum of all `arg` values cumulatively received
+
+| `min(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: minimum of all `arg` values cumulatively received
+
+| `add(arg)`
+a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively received
+* `STRING`: concatenation of all arg values cumulatively received
+* `LIST`, `SET` element: list/set of all `arg` values cumulatively received
+* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received:
++
+--
+** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
+--
+If loading into an existing vertex, the new loaded key-value pairs accumulate with the existing pairs in the same way.
+
+| `and(arg)`
+a| * `BOOL`: `AND` of all `arg` values cumulatively received
+* `INT`, `UINT`: bitwise `AND` of all `arg` values cumulatively received
+
+| `or(arg)`
+a| * BOOL: `OR` of all `arg` values cumulatively received
+* INT, UINT: bitwise `OR` of all `arg` values cumulatively received
+
+| `overwrite(arg)`
+a| * Non-container: `arg`
+* `LIST`, `SET`: new list/set containing only `arg`
+
+| `ignore_if_exists(arg)`
+| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) `arg` .
+|===
+
+Each function supports a certain set of attribute types.
+Calling a reducer function with an incompatible type crashes the service.
+In order to prevent , use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.
+
+== Examples

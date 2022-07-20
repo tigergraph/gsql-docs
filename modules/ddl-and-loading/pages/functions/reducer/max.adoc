@@ -1,0 +1,52 @@
+= max()
+
+The reducer function `max()` aggregates all values corresponding to the same ID and returns the maximum value.
+
+== Syntax
+
+`REDUCE( max (arg) )`
+
+== Accepted parameter types
+
+This function only accepts parameters that can be interpreted as a numeric type.
+
+== Return value
+
+`INT`, `UINT`, `FLOAT`, `DOUBLE`: maximum of all arg values cumulatively received
+
+== Example
+
+If we have the following data in a CSV file of the different scores of test takers, and we want to load the highest score to an attribute of the vertex:
+
+
+|===
+|name |score
+
+|Tommy
+|95
+
+|Tommy
+|93
+
+|Tommy
+|92
+
+|Amy
+|85
+
+|Amy
+|94
+
+|Amy
+|99
+|===
+
+We can use write the following load statement to use the `max()` reduce function to load the maximum of the scores matching their vertex ID.
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", REDUCE(max($"score"))
+----
+
+After loading, Tommy has a `score` attribute of 95 and Amy has a `score` attribute of 99.

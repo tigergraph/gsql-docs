@@ -1,0 +1,48 @@
+= ignore_if_exists()
+
+This function ensures that vertex attributes retain their values if they have an existing value.
+
+== Acceptable parameter types
+
+Any type.
+
+== Return value
+* If there already exists a value for the attribute, return the existing  value.
+This makes sure that the existing value is retained.
+* If there isn't an existing attribute value, return the input token.
+
+== Example
+
+If we have the following data in a CSV file of the different scores of test takers, and Tommy and Amy both already have existing scores.
+We want to load new scores only if the vertex doesn't have an existing score:
+
+
+|===
+|name |score
+
+|Tommy
+|95
+
+|Tommy
+|93
+
+|Amy
+|94
+
+|Amy
+|99
+
+|Emily
+|97
+
+|Emily
+|92
+|===
+
+We can write the following `LOAD` statement:
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", REDUCE(ignore_if_exists($"score"))
+----

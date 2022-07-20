@@ -243,7 +243,7 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 . `UINT`: Any non-digit character. (Out-of-range values cause overflow instead of rejection)
 . `INT`: Any non-digit or non-sign character. (Out-of-range values cause overflow instead of rejection)
 . `FLOAT` and `DOUBLE`: Any wrong format
-. `STRING`, `STRING COMPRESS`, `FIXED_BINARY`: N/A
+. `STRING`, `FIXED_BINARY`: N/A
 . `DATETIME`: Wrong format, invalid date time, or out of range.
 . `BOOL`: Any value not listed later.
 . Complex type: Depends on the field type or element type. Any invalid field (in `UDT`), element (in `LIST` or `SET`), key or value (in `MAP`) causes rejection.

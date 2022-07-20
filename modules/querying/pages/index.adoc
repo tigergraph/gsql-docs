@@ -26,7 +26,7 @@ CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
 
 [source,gsql]
 ----
-CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING COMPRESS>, interestList LIST<STRING COMPRESS>)
+CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING>, interestList LIST<STRING>)
 CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
 CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
 ----

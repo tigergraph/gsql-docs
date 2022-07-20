@@ -19,7 +19,7 @@ localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
 
 
-accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) ">"
+accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
        | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
        | "MinAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
        | "AvgAccum"
@@ -37,7 +37,7 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) "
 		                     accumType fieldName ["," accumType fieldName]* ">"
        | "ArrayAccum" "<" accumName ">"
 
-elementType := baseType | tupleType | STRING COMPRESS
+elementType := baseType | tupleType
 
 gAccumAccumStmt := globalAccumName "+=" expr
 
@@ -162,7 +162,7 @@ The following are the accumulator types we currently support. Each type of accum
 .EBNF for Accumulator Types
 [source.wrap,ebnf]
 ----
-accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) ">"
+accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
 		   | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
  	     | "MinAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
      	 | "AvgAccum"
@@ -180,7 +180,7 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) "
 		                        accumType fieldName ["," accumType fieldName]* ">"
        | "ArrayAccum" "<" accumName ">"
 
-elementType := baseType | tupleType | STRING COMPRESS
+elementType := baseType | tupleType
 
 gAccumAccumStmt := globaAccumName "+=" expr
 ----
@@ -639,7 +639,7 @@ include::appendix:example$minimal_net/accum_bitwise_results.json[]
 
 The ListAccum type maintains a sequential collection of elements.
 The output of a ListAccum is a list of values in the order the elements were added.
-The element type can be any base type, tuple, or `STRING COMPRESS`.
+The element type can be any base type or tuple.
 Additionally, a ListAccum can contain a nested collection of type ListAccum.
 Nesting of ListAccums is limited to a depth of three.
 
@@ -783,7 +783,7 @@ include::appendix:example$work_net/accum_vertex_listaccum_results.json[]
 
 The SetAccum type maintains a collection of unique elements.The output of a SetAccum is a list of elements in arbitrary order.
 A SetAccum instance can contain values of one type.
-The element type can be any base type, tuple, or `STRING COMPRESS`.
+The element type can be any base type or tuple.
 
 For SetAccum, the `+= arg` operation adds a non-duplicate element or set of elements to the set.
 If an element is already represented in the set, then the SetAccum state does not change.
@@ -900,7 +900,7 @@ GSQL > RUN QUERY set_accum_ex()
 The BagAccum type maintains a collection of elements with duplicated elements allowed.
 The output of a BagAccum is a list of elements in arbitrary order.
 A BagAccum instance can contain values of one type.
-The element type can be any base type, tuple, or `STRING COMPRESS`.
+The element type can be any base type or tuple.
 
 For BagAccum, the `+= arg` operation adds an element or bag of elements to the bag.
 
@@ -1330,7 +1330,7 @@ GroupByAccum<type [, type]* , accumType [, accumType]* >
 In the EBNF above, the *type* terms form the key set, and the *accumType* terms form the map's value. Since they are accumulators, they perform a grouping. Like a MapAccum, if we try to store a (key->value) whose key has already been used, then the new value will accumulate to the data which is already stored.
 In this case, each field of the multiple-field value has its own accumulation function. One way to think about GroupByAccum is that each unique key is a group ID.
 
-In GroupByAccum, the key types can be base type, tuple, or STRING COMPRESS. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
+In GroupByAccum, the key types can be base type or tuple. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
 
 [source,gsql]
 ----

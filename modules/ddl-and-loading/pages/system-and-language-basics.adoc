@@ -374,11 +374,6 @@ Some numeric expressions may return a non-numeric string result, such as "inf" f
 |===
 |Name |Default value |Supported data format |Range and Precision
 |Description
-|`STRING COMPRESS`(Deprecated) |Empty
-string |.* |UTF-8 |String with a finite set of categorical values. More
-compact storage of `STRING`, *if there is a limited number of different
-values and the value is rarely accessed. Otherwise, it may use more
-memory.*
 
 |`DATETIME` |UTC time 0 |See xref:ddl-and-loading:creating-a-loading-job.adoc#_loading_a_datetime_attribute[Loading `DATETIME` Attribute]
 |1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC) as the
@@ -388,6 +383,16 @@ not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
 |`FIXED_BINARY(*n*)` |N/A | |N/A |Stream of n binary-encoded
 bytes
 |===
+
+[NOTE]
+====
+The legacy data type `STRING COMPRESS` has been deprecated since TigerGraph Server 3.0.
+You can no longer create new schema with the type `STRING COMPRESS`.
+As such, we have removed `STRING COMPRESS` from the documentation.
+
+Existing schemas that are using `STRING COMPRESS` can continue to function normally.
+If you need reference for `STRING COMPRESS`, please refer to GSQL Language Reference version 3.5 or older.
+====
 
 Additionally, GSQL also supports the following complex data types:
 

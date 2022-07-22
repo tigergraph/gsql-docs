@@ -229,7 +229,7 @@ From a vertex, traverses edges of a specified type to its neighbors of a specifi
 
 For the following graph:
 
-image::image (79).png[]
+image::image (79).png["Diagram of a graph of Person vertices connected to each other with friendship edges. Each vertex is connected to one or two other vertices except for 'Dan', who is connected to three."]
 
 [source,bash]
 ----
@@ -270,7 +270,7 @@ Returns the out-neighbors or undirected neighbors of the vertex. If edge types a
 
 For the following graph:
 
-image::image (79) (1).png[]
+image::image (79) (1).png["Diagram of a graph of Person vertices connected to each other with friendship edges. Each vertex is connected to one or two other vertices except for 'Dan', who is connected to three."]
 
 [source,bash]
 ----

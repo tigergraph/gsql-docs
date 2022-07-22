@@ -273,9 +273,9 @@ The following text and visual flowchart details how the TRY... EXCEPTION block h
 
 When an exception occurs within a TRY block, the flow of execution skips the remainder of the TRY block and jumps to the EXCEPTION block. The GSQL flow now seeks to match the exception type with a handler. After executing the handling statements in the THEN or ELSE clause, the flow skips the remainder of the EXCEPTION block and continues with the statement following the END statement. However, if there is no matching WHEN or ELSE handler, then the exception is propagated. That is, the RAISE state is maintained after exiting the EXCEPTION block. If the TRY...EXCEPTION block is nested inside another TRY block, then the handling process is repeated at this upper level. This repeats until either the exception is handled or there are no more TRY...EXCEPTION blocks.
 
-Finally, if the unhandled exception is not within a TRY block, then the the query is aborted, and the default exception response is the output.
+Finally, if the unhandled exception is not within a TRY block, then the query is aborted, and the default exception response is the output.
 
-image::2 (3).png[]
+image::2 (3).png[Illustration of a nested TRY block with an EXCEPTION statement]
 
 *Case 1: If cond1 is true* in the outer TRY block,
 
@@ -393,4 +393,4 @@ GSQL > RUN QUERY compPathValid("c24","c25",false)
 
 The flowchart below summarizes all the cases for triggering and handling exceptions, both user-defined and built-in.
 
-image::3.png[]
+image::3.png["Visualization of the ways exceptions are raised and handled. Queries are only aborted if a built-in exception occurs or the RAISE statement is not in a TRY block."]

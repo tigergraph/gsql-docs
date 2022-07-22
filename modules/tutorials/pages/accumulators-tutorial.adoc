@@ -9,7 +9,8 @@ This short tutorial aims to shorten the learning curve of accumulator. Supposedl
 
 == *What is an Accumulator?*
 
-image::https://lh3.googleusercontent.com/TZfcbUMlXsHvCYVO_ex9QqjlK823ybyrX7aQhv38j35fghJVpsJEtdFBjcjMj1x2pHfHbNUraTgbySriMRttCuNv359iOwnRHDVcRgPyAj9tQLappYXe6ManjmRS27eunYMc2rjG[Figure 1. The left box is a GSQL query with different accumulators being accumulated to. The right box shows the accumulator variables&apos; final results.]
+.The left box is a GSQL query with different accumulators being accumulated to. The right box shows the accumulator variables&apos; final results.
+image::https://lh3.googleusercontent.com/TZfcbUMlXsHvCYVO_ex9QqjlK823ybyrX7aQhv38j35fghJVpsJEtdFBjcjMj1x2pHfHbNUraTgbySriMRttCuNv359iOwnRHDVcRgPyAj9tQLappYXe6ManjmRS27eunYMc2rjG[Screenshots of the console showing accumulators and their results.]
 
 An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query. It has an initial value, and users can keep accumulating (using its "+=" built-in operator) new values into it. Each accumulator variable has a type. The type decides what semantics the declared accumulator will use to interpret the "+=" operation.
 
@@ -31,7 +32,8 @@ Global accumulator belongs to the entire query. Anywhere in a query, a statement
 * *@@* prefix is used for declaring global accumulator variable. It is always used stand-alone. E.g  _**_`@@cnt +=1`
 * *@* prefix is used for declaring local accumulator variable. It must be used with a vertex alias in a query block. E.g. `v.@cnt += 1,` where v is a vertex alias specified in a FROM clause of a SELECT-FROM-WHERE query block.
 
-image::https://lh6.googleusercontent.com/zBXxBe-6iSKX2RJZ9ITyC1wLf-gcbuJbzHlqnGCFV6uwjkYHrTYXtW56HzAn2uA-YYw4TQNt2-MFe-nbGXDnNml0K1sRYVdAKlc3SxMYZ5UsRnlWTb4R-fHIcXJillIGsyffAO2H[Figure 2. A social graph with 7 person vertices and 7 friendship edges connecting them.]
+.A Social graph with 7 Person vertices and 7 Friendship edges connecting them.
+image::https://lh6.googleusercontent.com/zBXxBe-6iSKX2RJZ9ITyC1wLf-gcbuJbzHlqnGCFV6uwjkYHrTYXtW56HzAn2uA-YYw4TQNt2-MFe-nbGXDnNml0K1sRYVdAKlc3SxMYZ5UsRnlWTb4R-fHIcXJillIGsyffAO2H[]
 
 Consider a toy social graph modeled by a person vertex type and a person-to-person friendship edge type shown in Figure 2. Below we write a query, which accepts a person, and does a 1-hop traversal from the input person to its neighbors. We use the @@global_edge_cnt accumulator to accumulate the total number of edges we traverse. And we use @vertex_cnt to write to the input person's each friend vertex an integer 1.
 

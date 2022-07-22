@@ -1,0 +1,22 @@
+= gsql_token_equal()
+
+Returns true if two strings are exactly the same, case-sensitive.
+Returns false if otherwise.
+
+
+== Syntax
+
+`gsql_token_equal( string1, string2 )`
+
+== Return value
+
+`BOOL`.
+Returns true if two strings are exactly the same, case-sensitive.
+Returns false if otherwise.
+
+== Example
+
+----
+gsql_token_equal( "lorem ipsum", "lorem ipsum" ) -> true
+gsql_token_equal( "lorem ipsum", "Lorem Ipsum" ) -> false
+----

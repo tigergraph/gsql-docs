@@ -64,5 +64,3 @@ a| * Non-container: `arg`
 Each function supports a certain set of attribute types.
 Calling a reducer function with an incompatible type crashes the service.
 In order to prevent , use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.
-
-== Examples

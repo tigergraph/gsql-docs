@@ -18,7 +18,7 @@ We recommend you install jq and redirect the REST call result to jq before it is
 .Linux Shell
 [.wrap,bash]
 ----
-# get vertex cardinality
+// Get vertex cardinality
 curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
@@ -140,7 +140,7 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 .Linux Shell
 [.wrap,bash]
 ----
-curl -X GET "http://localhost:9000/graph/social/edges/Person/Tom/friendship/" | jq .
+curl -X GET "http://localhost:9000/graph/Social/edges/Person/Tom/Friendship/" | jq .
 ----
 
 

@@ -25,7 +25,7 @@ Required.
 When you only provide three parameters to perform a one-level split on the column, the value of this parameter must be set to 1.
 
 If you supply four parameters, the function performs two levels of splitting on a column.
-It first splits the column into groups by the group separator, and then splits the group into multiple fields by the
+It first splits the column into groups by the group separator, and then splits the group into multiple fields by the subfield separator.
 
 column_to_be_split::
 Required.

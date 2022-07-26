@@ -1,0 +1,73 @@
+=== Flatten a JSON object in a CSV file
+The function can also be used to flatten a JSON object in a CSV file.
+
+[tabs]
+====
+Data file::
++
+--
+If we have xref:attachment$encoding.csv[the following CSV file].
+The second column in the CSV file is a JSON object we want to flatten.
+
+.encoding.csv
+[source,gsql]
+----
+golang|{"prop":{"age":"noidea"}}
+pascal|{"score":"1.0", "prop":{"age":"old"}}
+c++|{"score":2.0, "indent":{"length":12, "use_space": true}}
+java|{"score":2.22, "prop":{"age":"new"}, "indent":{"use_space":"true", "length":2}}
+python|{ "prop":{"compiled":"false"}, "indent":{"length":4}, "score":3.0}
+go|{"score":4.0, "prop":{"age":"new"}}
+----
+--
+Loading job::
++
+--
+`flatten_json_array()` can be used in this case without the `USING JSON_FILE="true"` clause:
+
+.json_flatten_cvs.gsql
+[source,gsql]
+----
+include::appendix:example$test-schema/c_loadingjob_jsonarray_csv.gsql[]
+----
+--
+Temporary table::
++
+--
+The example generates the temporary table shown below:
+
+|===
+| id | score | age | length
+
+| golang
+| -1 (default)
+| noidea
+| -1 (default)
+
+| pascal
+| 1
+| old
+| -1 (default)
+
+| c{pp}
+| 2
+| unknown (default)
+| 12
+
+| java
+| 2.22
+| new
+| 2
+
+| python
+| 3
+| unknown (default)
+| 4
+
+| go
+| 4
+| new
+| -1 (default)
+|===
+--
+====

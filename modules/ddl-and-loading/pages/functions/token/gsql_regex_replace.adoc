@@ -11,12 +11,13 @@ Required.
 The original string.
 regex::
 Required.
-The regex to match
+The regex for the original string to match against.
+replace_substr::
+Required.
+The substring to replace all instances of substrings that match the provided regex.
 
 == Return type
 `STRING`
-
-== Example
 
 
 == See also

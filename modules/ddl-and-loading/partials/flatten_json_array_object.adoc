@@ -1,0 +1,40 @@
+=== Flatten a JSON array of JSON objects
+When loading JSON lines, each line is a JSON object.
+If a value field of the JSON object is a JSON array of JSON objects , you can use `flatten_json_array()` to flatten the array:
+
+When splitting a JSON array of JSON objects, the primitive values in the array are skipped and only JSON objects are processed.
+
+[tabs]
+====
+Data file::
++
+--
+For example, if we have the following
+xref:attachment$encoding3.json[JSON line file].
+There is a `plug-in` field in each JSON object, and it is an array.
+
+.encoding3.json
+[source,javascript]
+----
+{"encoding":"UTF-1","indent":{"use_space": "dontloadme"}, "plug-ins" : [null, true, false, {"lang":"golang","prop":{"age":"noidea"}}]}
+{"encoding": "UTF-8", "plug-ins" : [{"lang": "pascal", "score":"1.0", "prop":{"age":"old"}}, {"lang":"c++", "score":2.0}],"indent":{"length" :12,"use_space": true}}
+{"encoding": "UTF-7",  "plug-ins" : [{"lang":"java", "score":2.22}, {"lang":"python", "score":3.0},{"lang":"go", "score":4.0, "prop":{"age":"new"}}],"indent" : { "length" : 30, "use_space": true }}
+{"plug-ins" : ["C", "c++"],"encoding" : "UTF-6","indent" : { "length" : 3, "use_space": false}}
+----
+--
+Loading job::
++
+--
+The `flatten_json_array()` function in the destination clause returns three values to the three columns in the temporary table.
+The `lang` field corresponds to the `name` column; the `score` field corresponds to the `score` column; the `age` field of the `prop` field corresponds to the `prop_age` column.
+These columns are subsequently loaded into to the vertices.
+
+The fourth line in the original file does not generate any value, because the `plug-in` field does not contain any JSON object.
+
+.json_flatten_array_test.gsql
+[source,gsql]
+----
+include::appendix:example$test-schema/c_loadingjob_flatten_jsonobjects.gsql[]
+----
+--
+====

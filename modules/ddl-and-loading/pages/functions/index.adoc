@@ -1,6 +1,7 @@
 = Functions
+:description: Overview of functions in the data definition & loading language.
 
-This section provides references the functions that are available in the GSQL Data Definition and Loading (DDL) Language that operate on input tokens.
+This section provides references for the functions that are available in the GSQL Data Definition and Loading (DDL) Language that operate on input tokens.
 
 Token functions are functions that operate on input tokens during data loading.
 These functions allow you to clean and format your raw data, as well as transform the raw data to better fit with your graph schema.

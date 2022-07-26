@@ -1,6 +1,6 @@
 = and()
 
-This function checks if all values received is `true`.
+This function checks if all values received are `true`.
 If they are, the function returns true.
 Otherwise, the function returns false.
 
@@ -16,7 +16,7 @@ Otherwise, the function returns false.
 == Return value
 
 * Returns 1 if all input values are 1.
-Returns if one input value is 0.
+Returns 0 if one input value is 0.
 * Returns boolean `TRUE` if all input values are `TRUE`, `True`, or `true`.
 Returns boolean `FALSE` if one input value is `FALSE`, `False`, or `false`.
 

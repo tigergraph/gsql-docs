@@ -18,7 +18,7 @@ REDUCE(reducer_function (input_expr))
 Each reducer function can be used for several data types:
 
 * For primitive data types, the output type is the same as the type of the input expression `input_expr`.
-* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+* For `LIST`, `SET`, and `MAP` containers, the `input_expr` type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
 The output is the entire container.
 
 == Table of reducer functions
@@ -40,7 +40,7 @@ a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively rece
 +
 --
 ** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
-** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are a concatenation of all values by key.
 ** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
 --
 If loading into an existing vertex, the new loaded key-value pairs accumulate with the existing pairs in the same way.
@@ -58,9 +58,10 @@ a| * Non-container: `arg`
 * `LIST`, `SET`: new list/set containing only `arg`
 
 | `ignore_if_exists(arg)`
-| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) `arg` .
+| Any: If an attribute value already exists, return(retain) the existing value.
+Otherwise, return (load) `arg` .
 |===
 
 Each function supports a certain set of attribute types.
-Calling a reducer function with an incompatible type crashes the service.
-In order to prevent , use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.
+Calling a reducer function with an incompatible type causes the loading job to fail.
+In order to prevent this, use the `WHERE` clause together with `IS NUMERIC` or other operators, functions, predicates for type checking if necessary.

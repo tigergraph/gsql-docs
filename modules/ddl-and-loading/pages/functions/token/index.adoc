@@ -42,7 +42,7 @@ substring within the string. If it is not found, then return -1.
 |gsql_replace(_str_, _oldToken_, _newToken_ [, _max_])
 |`STRING`
 |Returns
-the string resulting from replacing all matchings of _oldToken_ with
+the string resulting from replacing all matching substrings of _oldToken_ with
 _newToken_ in the original string. If a _max_ count is provided, there
 can only be up to that many replacements.
 
@@ -86,8 +86,8 @@ below.
 
 |gsql_current_time_epoch(0)
 |`UINT`
-|Returns the current time in Unix epoch seconds. *By
-convention, the input parameter should be 0, but it is ignored.
+|Returns the current time in Unix epoch seconds.
+By convention, the input parameter should be 0, but it is ignored.
 
 a|
 flatten (_column_to_be_split, group_separator, 1_)

@@ -144,7 +144,7 @@ tupleType := name
 fieldName := name
 funcName := name
 
-type := baseType | tupleType | accumType | STRING COMPRESS
+type := baseType | tupleType | accumType
 
 baseType := INT
           | UINT
@@ -180,7 +180,7 @@ localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
 
 
-accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) ">"
+accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
            | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
            | "MinAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
            | "AvgAccum"
@@ -198,7 +198,7 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING | STRING COMPRESS) "
 		                        accumType fieldName ["," accumType fieldName]* ">"
            | "ArrayAccum" "<" accumName ">"
 
-elementType := baseType | tupleType | STRING COMPRESS
+elementType := baseType | tupleType
 
 gAccumAccumStmt := globalAccumName "+=" expr
 																				

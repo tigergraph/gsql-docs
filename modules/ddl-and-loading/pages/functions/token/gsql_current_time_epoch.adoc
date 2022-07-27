@@ -1,0 +1,14 @@
+= gsql_current_time_epoch()
+
+Returns the current time in Unix epoch seconds.
+
+
+== Syntax
+`gsql_current_time_epoch(0)`
+
+== Parameters
+The function takes one `INT` parameter.
+This parameter is actually ignored, but by convention, set its value to 0.
+
+== Return type
+`UINT`

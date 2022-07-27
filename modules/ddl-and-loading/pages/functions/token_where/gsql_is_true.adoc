@@ -1,0 +1,21 @@
+= gsql_is_true()
+
+
+Returns true if the input token is either "t" or "true" (case-insensitive). Returns false otherwise.
+
+== Syntax
+
+`gsql_is_true( token )`
+
+== Return value
+
+`BOOL`.
+Returns true if the input token is either "t" or "true" (case-insensitive). Returns false otherwise.
+
+== Example
+
+----
+gsql_is_true( "T" ) -> true
+gsql_is_true("True") -> true
+gsql_is_true("abc") -> false
+----

@@ -1,0 +1,56 @@
+= add()
+
+This function accumulates all the received values in a column matching the same ID.
+
+== Accepted parameter types
+
+`INT`, `UINT`, `FLOAT`, `DOUBLE`, `STRING`, `LIST`, `SET`, `MAP`
+
+== Return values
+
+The return value is dependent on the attribute type:
+
+* `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all values.
+* `STRING`: concatenation of all arg values.
+** This order might be different from order of the raw data.
+* `LIST`, `SET` element: list/set of all arg values.
+* `MAP` (key → value) pair: key-value dictionary of all key-value pair arg values cumulatively received:
+** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
+
+== Examples
+
+If we have the following data in a CSV file of the different scores of test takers, and we want to load the total score to an attribute of the vertex:
+
+|===
+|name |score
+
+|Tommy
+|95
+
+|Tommy
+|93
+
+|Tommy
+|92
+
+|Amy
+|85
+
+|Amy
+|94
+
+|Amy
+|99
+|===
+
+We can use write the following load statement to use the `add()` reduce function to load the total score matching their vertex ID.
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", REDUCE(add($"score"))
+----
+
+After loading, Tommy has a `score` attribute of 280 and Amy has a `score` attribute of 278.

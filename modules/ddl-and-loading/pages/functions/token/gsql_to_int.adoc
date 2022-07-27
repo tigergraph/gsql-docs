@@ -1,0 +1,24 @@
+= gsql_to_int()
+
+Converts the string representation of an integer into an integer.
+
+* If the input string is the string representation of an int, the function returns that integer.
+
+* If the input string is the string representation of a float, the function returns that number cast as an integer.
+
+== Syntax
+`gsql_to_int(in_string)`
+
+== Parameters
+in_string::
+The string representation of an integer.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_to_int("120") -> 120
+gsql_to_int("-123") -> -123
+----

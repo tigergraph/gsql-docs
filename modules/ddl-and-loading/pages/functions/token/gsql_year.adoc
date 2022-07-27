@@ -1,0 +1,22 @@
+= gsql_year()
+
+Returns 4-digit year from timestamp.
+
+include::partial$timestamp.adoc[]
+
+== Syntax
+`gsql_year(timestamp)`
+
+== Parameters
+timestamp::
+Required.
+A timestamp.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_year("2013-05-09 23:56:52") -> 2013
+----

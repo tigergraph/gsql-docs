@@ -1,0 +1,22 @@
+= gsql_find()
+
+Returns the start index of the substring within the string.
+If it is not found, then return -1.
+
+== Syntax
+`gsql_find(str, substr)`
+
+== Parameters
+str::
+The string in which to find the start index of the substring.
+substr::
+The substring whose start index to find in the given string.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_find("abcd", "bcd") -> 1
+----

@@ -7,7 +7,8 @@ We will use the http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmar
 This data set models a typical online forum where users post messages and discuss topics. It comes with a data generator, which allows you to generate data at different scale factors.
 Scale factor 1 generates roughly 1GB of raw data, scale factor 10 generates roughly 10GB of raw data, and so on.
 
-image::screen-shot-2019-05-15-at-5.05.00-pm.png[Figure 1. LDBC SNB Schema]
+.LDBC SNB Schema
+image::screen-shot-2019-05-15-at-5.05.00-pm.png[Diagram of the vertex and edge types in the LDBC Social Network Benchmark schema]
 
 Figure 1 shows the schema (from the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB specification]).
 It models the activities and relationships of social forum participants.

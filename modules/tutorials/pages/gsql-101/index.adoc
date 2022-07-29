@@ -29,7 +29,7 @@ Every graph has a *schema*, or a model describing the types of vertices and edge
 Consider a graph showing a group of friends and when each of them met.
 The graph schema would have a single type of vertex, a *Person*, and a single type of edge, the *Friendship*.
 
-image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
+image::friendship-social-graph-schema.png[Illustration of a Person vertex with a Friendship edge]
 
 In this schema image, the Friendship edge connects a Person vertex to a Person vertex.
 This is not saying that a person is friends with themselves. Rather, it answers the question, "What type of entity is connected by friendship?"
@@ -42,7 +42,7 @@ It contains seven *Person* vertices, representing seven people in the friend gro
 Not all of the people are friends with all of the others.
 The Friendship edges reveal which people in the group are friends.
 
-image::friendship-social-graph.png[Friendship Social Graph]
+image::friendship-social-graph.png[Diagram of seven Person vertices and seven Friendship edges]
 
 A graph schema is always smaller and simpler than the full graph diagram because the schema shows only the categories of data in the graph, not all data points.
 

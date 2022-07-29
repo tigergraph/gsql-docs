@@ -4,4 +4,5 @@
 The figures below illustrates the sequence of steps and the dependencies to progress from no graph to a loaded graph and a query result.
 Note that online and offline follow the same flow.
 
-image::image (9).png[Figure B1: Complete GSQL Workflow]
+.Workflow and State Transitions v1.0: Complete GSQL Workflow
+image::image (9).png["Diagram showing the GSQL workflow in three phases: Create Schema, Load Data, Run Queries. The user first defines the graph schema with the vertices and edges, optionally creates and executes a loading job, and creates and instals queries."]

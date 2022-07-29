@@ -12,8 +12,7 @@ WHERE p2 != p
 
 As you see, a 2-hop pattern is a simple concatenation and merging of two 1-hop patterns where the two patterns share a common endpoint. Below, Y:y is the connecting end point.
 
-[discrete]
-==== 2-hop pattern
+=== 2-hop pattern
 
 [source,gsql]
 ----
@@ -22,8 +21,8 @@ FROM X:x - (E1:e1) - Y:y - (E2>:e2) - Z:z
 
 Similarly, a 3-hop pattern concatenates three 1-hop patterns in sequence, each pair of adjacent hops sharing one end point. Below, Y:y and Z:z are the connecting end points.
 
-[discrete]
-==== 3-hop pattern
+
+=== 3-hop pattern
 
 [source,gsql]
 ----
@@ -32,8 +31,8 @@ FROM X:x - (E2>:e2) - Y:y - (<E3:e3) - Z:z - (E4:e4) - U:u
 
 In general, we can connect N 1-hop patterns into an N-hop pattern. The database will search the graph topology to find subgraphs that match this N-hop pattern.
 
-[discrete]
-==== Unnamed Intermediate Vertex Set
+
+== Unnamed Intermediate Vertex Set
 
 A multi-hop pattern has two endpoint vertex sets and one or more intermediate vertex sets. If the query does not need to express any conditions for an intermediate vertex set, then the vertex set can be omitted and the two surrounding edge sets can be joined with a simple `.`. For example, in the 2-hop pattern example above, if we do not need to specify the type of the intermediate vertex Y, nor need to refer to it in any of the query's other clauses (such as WHERE or ACCUM), then the pattern can be reduced as follows:
 
@@ -47,8 +46,8 @@ FROM X:x - (E1.E2>) - Z:z
 Note that when we abbreviate that path in this way, we do not support aliases for the edges or intermediate vertices in the abbreviated section.
 ====
 
-[discrete]
-==== Shortest Paths Only for Variable Length Patterns
+
+== Shortest Paths Only for Variable Length Patterns
 
 If a pattern has a Kleene star to repeat an edge, GSQL pattern matching selects only the _shortest paths_ which match the pattern. If we did not apply this restriction, computer science theory tells us that the computation time could be unbounded or extreme (NP = non-polynomial, to be technical). If we instead matched ALL paths regardless of length when a Kleene star is used without an upper bound, there could be an infinite number of matches, if there are loops in the graph. Even without loops or with an upper bound, the number of paths to check grows exponentially with the number of hops.
 
@@ -68,11 +67,6 @@ For the pattern `1 - (_*) - 5` in Figure 3 above, you can see the following:
  ** There are an infinite number of matches, because we can go around the 3-7-8-3 cycle any number of times.
 
 == Additional Details about Pattern Matching
-
-[NOTE]
-====
-In the early version of Pattern Matching (TigerGraph v2.4 to v2.6), there were a number of restrictions on the WHERE, ACCUM and POST-ACCUM clauses In TigerGraph 3.0, most of these restrictions are lifted.
-====
 
 Each vertex set or edge set in a pattern (except edges with Kleene stars) can have an alias variable associated with it. When the query runs and finds matches, it associates, or binds, each alias to the matching vertices or edges in the graph.
 
@@ -101,8 +95,6 @@ SELECT u
 FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 ----
 
-
-
 === FROM Clause
 
 For a multiple-hop pattern, if you don't need to refer to the intermediate vertex points, you can just use `.` to connect the edge patterns, giving a more succinct representation. For example, below we remove y and z, and connect E2>, <E3 and E4 using the period symbol. Note that you cannot have an alias for a multi-hop sequence like E2>.<E3.E4.
@@ -119,8 +111,6 @@ FROM X:x-(E2>:e2)-Y:y-(<E3:e3)-Z:z-(E4:e4)-U:u;
 SELECT u
 FROM X:x-(E2>.<E3.E4)-U:u;
 ----
-
-
 
 === WHERE Clause
 
@@ -145,8 +135,6 @@ SELECT x
 FROM X1:x1-(E1:e1)-X2:x2-(E2:e2)-X3:x3-(E3:e3)-X4:x4
 WHERE x1.age>x2.age AND x2.@cnt!=x4.@cnt AND (x1.salary+x3.salary)<x4.salary
 ----
-
-
 
 == Path Patterns as a Regular Expression Language
 
@@ -243,7 +231,17 @@ Also, you may not use more than one alias in a single assignment. The following 
 
 == Examples of Multiple Hop Pattern Match
 
-*Example 1.* Find the 3rd superclass of the Tag class whose name is "TennisPlayer".
+You can copy any of the shown GSQL scripts to a file with the file extension `.gsql` and invoke it in a Linux shell to see the results.
+
+.Linux Bash
+
+[source,bash]
+----
+gsql example.gsql
+----
+
+=== Example 1
+Find the 3rd superclass of the Tag class whose name is "TennisPlayer".
 
 .Example 1. Succinct Representation Of Multiple-hop Pattern
 
@@ -253,16 +251,6 @@ include::appendix:example$ldbc_snb/multiple_hop_pattern_match.gsql[]
 
 ----
 
-
-
-You can copy the above GSQL script to a file named example1.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example1.gsql
-----
 
 .Output of Example 1
 
@@ -274,7 +262,8 @@ include::appendix:example$ldbc_snb/multiple_hop_pattern_match_results.json[]
 
 
 
-*Example 2.* Find in which continents were the 3 most recent messages in Jan 2011 created.
+=== Example 2
+Find in which continents were the 3 most recent messages in Jan 2011 created.
 
 .Example 2. Disjunction in a Succinct Representation of a Multiple-hop Pattern
 
@@ -285,19 +274,7 @@ include::appendix:example$ldbc_snb/multiple_hop_disjunction.gsql[]
 ----
 
 
-
-You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example2.gsql
-----
-
-
-
-. Output of Example 2
+.Output of Example 2
 
 [source,coffeescript]
 ----
@@ -307,7 +284,9 @@ include::appendix:example$ldbc_snb/multiple_hop_disjunction_results.json[]
 
 
 
-*Example 3.* Find Viktor Akhiezer's favorite author of 2012 whose last name begins with the letter 'S'. Also find how many LIKES Viktor has given to the author's post or comment.
+=== Example 3
+Find Viktor Akhiezer's favorite author of 2012 whose last name begins with the letter 'S'. Also find how many LIKES Viktor has given to the author's post or comment.
+
 
 .Example 3. Multiple-hop Pattern With Accumulator Applied To All Matched Paths
 
@@ -318,18 +297,7 @@ include::appendix:example$ldbc_snb/multiple_hop_pattern_with_accumulator.gsql[]
 
 
 
-You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example3.gsql
-----
-
-
-
-. Output of Example 3
+.Output of Example 3
 
 [source,coffeescript]
 
@@ -350,7 +318,8 @@ For example, if Set1, Set2, and Set3 were the outputs of three previous SELECT b
 * `FROM     :x1 -(mh1)- :x2 -(mh2)- Set3:x3`
 * `FROM     Set2:x1 -(mh1)- :x2 -(mh2)- Set2:x3`
 
-*Example 1.* Find Viktor Akhiezer's liked messages whose authors' last names begin with S. Find these authors' alumni count.
+=== Example 1
+Find Viktor Akhiezer's liked messages whose authors' last names begin with S. Find these authors' alumni count.
 
 [source,gsql]
 ----
@@ -360,7 +329,8 @@ include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_results.json
 
 ----
 
-*Example 2.* Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that members from groups A and B studied at.
+=== Example 2
+Find Viktor Akhiezer's liked posts' authors A, and his liked comments' authors B. Count the universities that members from groups A and B studied at.
 
 [source,gsql]
 ----
@@ -383,7 +353,8 @@ include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_3_results
 
 ----
 
-*Example 4.* Find how many messages are created and liked by the same person whose first name begins with the letter T.
+=== Example 4
+Find how many messages are created and liked by the same person whose first name begins with the letter T.
 
 [source,gsql]
 ----
@@ -400,5 +371,3 @@ include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_5.gsql[]
 include::appendix:example$ldbc_snb/multiple_hop_multi_block_queries_ex_5_results.json[]
 
 ----
-
-##

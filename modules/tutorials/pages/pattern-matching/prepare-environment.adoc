@@ -14,8 +14,11 @@ It models the activities and relationships of social forum participants.
 For example, a forum Member can publish Posts on a Forum, and other Members of the Forum can make a Comment on the Post or on someone else's Comment.
 
 A Person's home location is a hierarchy (Continent>Country>City), and a person can be affiliated with a University or a Company.
-A Tag can be used to classify a Forum, a Message, or a Person's interests. Tags can further be classified by Tag_Class.
+A Tag can be used to classify a Forum, a Message, or a Person's interests.
+Tags can further be classified by Tag_Class.
+
 The relationships between entities are modeled as directed edges, except Person KNOWS Person is modeled as an undirected edge.
+
 For example, Person connects to Tag by the hasInterest edge. Forum connects to Person by two different edges, Has_Member and Has_Moderator.
 
 

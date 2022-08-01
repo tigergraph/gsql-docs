@@ -4,9 +4,11 @@
 
 Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.
 
-A pattern usually appears in the `FROM` clause, the most fundamental part of the query structure.
 The pattern specifies sets of vertex types and how they are connected by edge types.
+
+A pattern usually appears in the `FROM` clause, the most fundamental part of the query structure.
 A pattern can be refined further with conditions in the `WHERE` clause.
+
 In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
 
 [NOTE]
@@ -19,21 +21,41 @@ Pattern matching queries support nested queries.
 The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options.
 After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
 
-In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern. `-( )-`
+In GSQL syntax V2, we use the punctuation `-( )-` to denote a 1-hop pattern.
 
 The edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection.
 The directionality of the connection is explicitly stated for _each_ edge type.
+Arrowheads are used to indicate direction:  `>` or `<`.
 
-* For an undirected edge E, no added decoration:    `E`
-* For a directed edge E from left to right, use a suffix:  `E>`
-* For a directed edge E from right to left, use a prefix:  `<E`
+* For an undirected edge E, leave as is:    `E`
+* For a directed edge E from left to right, use a right-pointing arrowhead:  `E>`
+* For a directed edge E from right to left, use a left-pointing arrowhead:  `<E`
 
 In this notation, `E` is a placeholder for any edge in a graph.
+"Left" and "right" refer to the order of the actual written pattern itself.
 
-For example, in the `LDBC SNB` schema, there are two directed relationships between Person and Message: Person `LIKES` message, and Message `HAS_CREATOR` Person.
-Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
+[source,text]
+----
+Vertex_A -(Edge)- Vertex_B
+----
 
-.Pattern Example
+Here, Edge is to the right of Vertex_A and to the left of Vertex_B.
+
+=== Alternation separator
+
+In the `LDBC SNB` schema, there are two directed relationships between Person and Message.
+
+. Person `LIKES` Message
+. Message `HAS_CREATOR` Person
+
+[source,gsql]
+----
+Person:p -(LIKES>:e)- Message:m
+Person:p -(<HAS_CREATOR:e)- Message:m
+----
+
+Despite the fact that these relationships are in opposite directions, we can use the alternation separator (the pipe) `|` to include both of them in the same pattern:
+
 [source,gsql]
 ----
 Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
@@ -41,8 +63,7 @@ Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m
 
 === Edge type wildcards
 
-Use the underscore `\_` or the keyword `ANY` to denote any undirected edge type.
-Arrowheads are used to indicate direction, e.g.,  `>` or `<`.
+Use the underscore `_` or the keyword `ANY` to denote any undirected edge type.
 Empty parentheses `()` means any edge, directed or undirected.
 
 If a type or wildcard is not given, it includes both directed and undirected edges in the results.
@@ -72,25 +93,25 @@ Performance may be better when types are explicitly provided.
 
 ==== Examples of 1-Hop patterns
 
-. `FROM X:x - (E1:e1) - Y:y`
+. `FROM X:x -(E1:e1)- Y:y`
  ** E1 is an undirected edge, x and y bind to the end points of E1, and e1 is the alias of E1.
-. `FROM X:x - (E2>:e2) - Y:y`
+. `FROM X:x -(E2>:e2)- Y:y`
  ** Right directed edge x binds to the source of E2; y binds to the target of E2.
-. `FROM X:x - (<E3:e3) - Y:y`
+. `FROM X:x -(<E3:e3)- Y:y`
  ** Left directed edge; y binds to the source of E3; x binds to the target of E3.
-. `FROM X:x - (:e) - Y:y`
+. `FROM X:x -(:e)- Y:y`
  ** Any directed or undirected edge between a member of X and a member of Y.
-. `FROM X:x - (_:e) - Y:y`
+. `FROM X:x -(_:e)- Y:y`
  ** Any undirected edge between a member of X and a member of Y.
-. `FROM X:x - (_>:e) - Y:y`
+. `FROM X:x -(_>:e)- Y:y`
  ** Any right directed edge with source in X and target in Y.
-. `FROM X:x - (<_:e) - Y:y`
+. `FROM X:x -(<_:e)- Y:y`
  ** Any left directed edge with source in Y and target in X.
-. `+FROM X:x - ((<_|_):e) - Y:y+`
+. `+FROM X:x -((<_|_):e)- Y:y+`
  ** Any left directed or any undirected; `|` means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern `+(<_|_)+`.
-. `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
+. `FROM X:x -((E1|E2>|<E3):e)- Y:y`
  ** Any one of the three edge patterns.
-. `FROM X:x - () - Y:y`
+. `FROM X:x -()- Y:y`
  ** Any directed or undirected edge between a member of X and a member of Y.
  ** Same as `+(<_|_>|_)+` or `(:e)`.
 
@@ -99,9 +120,9 @@ Performance may be better when types are explicitly provided.
 
 In this tutorial, we will use Interpreted Mode for GSQL.
 Interpreted mode lets us skip the `INSTALL` step, and even run a query as soon as we create it, to offer a more interactive experience.
-These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+These one-step interpreted queries are unnamed (anonymous) and parameterless.
 
-To run an anonymous query, replace the keyword `CREATE` with `INTERPRET`.
+To run an interpreted query, replace the keyword `CREATE` with `INTERPRET`.
 
 
 [source,gsql]
@@ -125,6 +146,15 @@ SET query_timeout = 60000
 
 == Examples of 1-Hop Fixed Length Query
 
+You can copy any of the shown GSQL scripts to a file with the file extension `.gsql` and invoke it in a Linux shell to see the results.
+
+.Linux Bash
+
+[source,bash]
+----
+gsql example.gsql
+----
+
 === Example 1
 Find persons who know the person named "Viktor Akhiezer" and return the top 3 oldest such persons.
 
@@ -136,16 +166,6 @@ include::appendix:example$ldbc_snb/one_hop_fixed_length_left_directed_edge.gsql[
 ----
 <1> In the `FROM` clause, we directly use vertex type Person as the starting vertex set.
 This syntax enhancement is available in syntax V2 only.
-
-
-You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
-
-.Linux Bash
-[source,bash]
-----
-gsql example1.gsql
-----
-
 
 
 .Output of Example 1
@@ -164,18 +184,6 @@ Find the total number of comments and total number of posts liked by Viktor. A P
 ----
 include::appendix:example$ldbc_snb/one_hop_fixed_length_right_directed_edge.gsql[]
 ----
-
-
-
-You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in Linux.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example2.gsql
-----
-
 
 
 .Output of Example 2.
@@ -199,9 +207,7 @@ Note below (line 8) that the source vertex set are now Comment and Post, and the
 include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_3.gsql[]
 ----
 
-
-
-You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in linux command line. The output should be the same as in Example 2.
+The output should be the same as in Example 2.
 
 === Example 4
 Find Viktor Akhiezer's total number of related comments and total number of related posts.
@@ -212,17 +218,6 @@ Note that the `HAS_CREATOR` edge type starts from `Comment|Post`, and the `LIKES
 [source,gsql]
 ----
 include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_4.gsql[]
-----
-
-
-
-You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in Linux:
-
-.Linux Bash
-
-[source,coffeescript]
-----
-gsql example4.gsql
 ----
 
 
@@ -238,7 +233,7 @@ include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_4_results.json[]
 
 === Example 5
 Find the total number of comments or posts related to "Viktor Akhiezer".
-This time, we count them together and, we use the wildcard `+_+` to represent the two types of edges: HAS_CREATOR and `LIKES_REVERSE`.
+This time, we count them together and, we use the wildcard `+_+` to represent the two types of edges: `HAS_CREATOR` and `LIKES_REVERSE`.
 Both are following the same direction.
 
 .Example 5. Disjunctive 1-hop edge pattern.
@@ -246,17 +241,6 @@ Both are following the same direction.
 [source,gsql]
 ----
 include::appendix:example$ldbc_snb/one_hop_fixed_length_ex_5.gsql[]
-----
-
-
-
-You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in Linux:
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example5.gsql
 ----
 
 

@@ -24,7 +24,7 @@ As a result, one way to avoid overfitting is to go one level upward. Instead of 
 * Others - (Likes>) -  NewMessage
 * Recommend NewMessage to Viktor
 
-*GSQL. recommend_message Application.*
+== GSQL recommend_message Application
 
 This time, we create the query first and interpret the query by calling the query name with parameters. +
 If we are satisfied with this query, we can use `INSTALL QUERY queryName` to install the query, increasing performance.
@@ -41,19 +41,7 @@ INTERPRET QUERY recommend_message ("Adriaan", "Jong")
 ----
 
 
-
-You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql app1.gsql
-----
-
-
-
-. Output of App1
+.Output of App1
 
 [source,coffeescript]
 ----
@@ -61,16 +49,14 @@ include::appendix:example$ldbc_snb/example_recommendation_algorithm_results.json
 
 ----
 
+=== Install the query
 
+When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably.
+Since we have been using `CREATE QUERY ...` syntax, the query is added into the catalog, and we can set the syntax version and install it.
 
-[discrete]
-==== Install the query
+.Prepare to Install Query
 
-When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, and we can set the syntax version and install it.
-
-.GSQL Prepare to Install Query
-
-[source,coffeescript]
+[source,gsql]
 ----
 // before installing the query, need to set the syntax version
 SET syntax_version="v2"
@@ -82,9 +68,9 @@ INSTALL QUERY recommend_message
 
 
 
-.GSQL Run the Installed Query
+.Run the Installed Query
 
-[source,coffeescript]
+[source,gsql]
 ----
 GSQL > INSTALL QUERY recommend_message
 Start installing queries, about 1 minute ...
@@ -121,9 +107,7 @@ GSQL > run query recommend_message("Viktor", "Akhiezer")
 }
 ----
 
-
-
-The above uses log-cosine as a similarity measurement. We can also use cosine similarity by using two persons' liked messages.
+The previous example uses log-cosine as a similarity measurement. We can also use cosine similarity by using two persons' liked messages.
 
 .GSQL Recommendation Algorithm 2
 

@@ -8,18 +8,31 @@ This tutorial assumes you have finished xref:tutorials:gsql-101/index.adoc[GSQL 
 
 == What is a graph pattern?
 
-A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps.
-A pattern can be a linear trace, or a non-linear trace (tree, circle etc.).
+Imagine drawing a line over an image of the graph, starting from a particular vertex and tracing a route across edges and vertices to another vertex.
+
+A graph pattern is exactly that - a traversal trace on the graph schema.
+In fact, it's even more open-ended than that, because a graph pattern:
+
+* Can be linear (Vertex A to Vertex B)
+* Can be non-linear (a tree or circle shape)
+* Can traverse the same vertices multiple times
 
 For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type.
-A pattern could be a trace on this simple schema,
+A pattern could be a trace on this simple schema, going from a Person across the Friendship edge and to another Person.
+
+[source,text]
+----
+Person - (Friendship) - Person
+----
+
+A pattern could continue on to additional Person vertices beyond the second one:
 
 [source,text]
 ----
 Person - (Friendship) - Person - (Friendship) - Person
 ----
 
-or, use *2 to denote the two consecutive Friendship edges,
+We can use a different notation here, `*2,` to express that we interacted with two Friendship edges.
 
 [source,text]
 ----
@@ -28,9 +41,9 @@ Person - (Friendship*2) - Person
 
 == What is pattern matching?
 
-Pattern matching is the process of finding subgraphs in a data graph that conform to a given query pattern.
+Pattern matching is the process of finding subgraphs in a graph that conform to a given query pattern.
 
-Pattern matching provides a simple, declarative way to write queries to search for multi-hop pattern.
+Pattern matching provides a simple, declarative way to write queries to search for multi-hop patterns.
 You can write multi-hop patterns in one query block (`SELECT-FROM-WHERE`) instead of several individual blocks.
 
 The pattern can be fixed length or variable length (using Kleene stars for repeated hops), which significantly shortens the GSQL query length.

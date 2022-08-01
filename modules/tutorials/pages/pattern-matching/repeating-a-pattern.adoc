@@ -1,45 +1,57 @@
 = Repeating a 1-Hop Pattern
 
-A common pattern is the two-step "Friend of a Friend". Or, how many entities might receive a message if it is passed up to three times? Do you have any known connections to a celebrity?
+A common pattern is the two-step "Friend of a Friend".
 
-GSQL pattern matching makes it easy to express such variable-length patterns which repeat a single-hop. Everything else stays the same as introduced in the previous section, except we append an asterisk (or _Kleene star_ for you regular expressionists) and an optional _min..max_ range to an edge pattern.
+This is related to the question "Do I know any famous people?"
+Even if you aren't friends with any famous people, at least one of _your friends'_ friends might be famous.
+That's a one-hop pattern, repeated twice.
 
-* (E*)  means edge type E repeats any number of times (including zero!)
+In terms of data throughput on a network, you can also ask "If everyone who receives a message passes it along to everyone else they know, how many entities will receive it?"
+
+GSQL pattern matching makes it easy to express such variable-length patterns which repeat a single hop.
+Everything else stays the same as introduced in the previous section, except we append an asterisk (or _Kleene star_) and an optional _min..max_ range to an edge pattern.
+
+* (E*)  means edge type E repeats any number of times (including zero)
 * (E*1..3) means edge type E occurs one to three times.
 
 Below are more illustrative examples:
 
 * *1-hop star pattern -- repetition of an edge pattern 0 or more times*
- .. `FROM X:x - (E*) - Y:y`
- .. `FROM X:x - (F>*) - Y:y`
- .. `FROM X:x - (<G*) - Y:y`
- .. `FROM X:x - (_*) - Y:y`
+ .. `FROM X:x -(E*)- Y:y`
+ .. `FROM X:x -(F>*)- Y:y`
+ .. `FROM X:x -(<G*)- Y:y`
+ .. `FROM X:x -(_*)- Y:y`
   *** Any undirected edge can be chosen at each repetition.
- .. `FROM X:x - (_>*) - Y:y`
+ .. `FROM X:x -(_>*)- Y:y`
   *** Any right-directed edge can be chosen at each repetition.
- .. `FROM X:x - (<_*) - Y:y`
+ .. `FROM X:x -(<_*)- Y:y`
   *** Any left-directed edge can be chosen at each repetition.
- .. `FROM X:x - ((E|F>|<G)*) - Y:y`
+ .. `FROM X:x -((E|F>|<G)*)- Y:y`
   *** Either E, F> or <G can be chosen at each repetition.
 * *1-hop star pattern with bounds*
- .. `FROM X:x - (E*2..) - Y:y`
+ .. `FROM X:x -(E*2..)- Y:y`
   *** Lower bounds only. There is a chain of at least 2 E edges.
- .. `FROM X:x - (F>*..3) - Y:y`
+ .. `FROM X:x -(F>*..3)- Y:y`
   *** Upper bounds only. There is a chain of between 0 and 3 F edges.
- .. `FROM X:x - (<G*3..5) - Y:y`
+ .. `FROM X:x -(<G*3..5)- Y:y`
   *** Both Lower and Upper bounds. There is a chain of 3 to 5 G edges.
- .. `FROM X:x - ((E|F>|<G)*3) - Y:y`
+ .. `FROM X:x -((E|F>|<G)*3)- Y:y`
   *** Exact bound. There is a chain of exactly 3 edges, where each edge is either E, F>, or <G.
 
-[discrete]
+
 === Remarks
 
-* *No alias allowed for edge with Kleene star* An edge alias may not be used when a Kleene star is used. The reason is that when there are a variable number of edges, we cannot associate or bind the alias to a specific edge in the pattern.
-* *Shortest path semantics* When an edge is repeated with a Kleene star, only the shortest matching occurrences are selected. See the example below:
+==== No alias allowed for edge with Kleene star
+
+An edge alias may not be used when a Kleene star is used. The reason is that when there are a variable number of edges, we cannot associate or bind the alias to a specific edge in the pattern.
+
+==== Shortest path semantics
+
+When an edge is repeated with a Kleene star, only the shortest matching occurrences are selected. See the example below:
 
 image::screen-shot-2019-05-19-at-2.33.35-am.png[Figure 2 Shortest Path Illustration.]
 
-In Figure 2,  or Pattern `1 - (E>*) - 4`, any of the following paths reach 4 from 1.
+In Figure 2,  or Pattern `1 -(E>*)- 4`, any of the following paths reach 4 from 1.
 
 * 1->2->3->4
 * 1->2->3->5->6->2->3->4
@@ -49,9 +61,21 @@ The first path is shorter than the rest; it is considered the only match.
 
 == Examples of Variable Hop Queries
 
-In this tutorial, we will use the Interpreted Mode for GSQL, introduced in TigerGraph 2.4. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+In this tutorial, we will use the Interpreted Mode for GSQL so that we can skip the INSTALL step and run a query as soon as we create it.
+These one-step interpreted queries are unnamed (anonymous) and parameterless.
 
-*Example 1*. Find the direct or indirect superclass (including the self class) of the tag_class whose name is "tennis_player".
+You can copy any of the shown GSQL scripts to a file with the file extension `.gsql` and invoke it in a Linux shell to see the results.
+
+.Linux Bash
+
+[source,bash]
+----
+gsql example.gsql
+----
+
+=== Example 1
+
+Find the direct or indirect superclass (including the self class) of the tag_class whose name is "TennisPlayer".
 
 .Example 1.  Directed Edge Pattern Unconstrained Repetition 
 
@@ -61,21 +85,13 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1.gsql[]
 ----
 
 
-You can copy the above GSQL script to a file named example1.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example1.gsql
-----
 
 
 
-Note below that the starting vertex s, whose name is tennis_player, is also a match, using a path with zero hops.
 
-. Output of Example 1
+Note below that the starting vertex s, whose name is TennisPlayer, is also a match, using a path with zero hops.
 
+.Output of Example 1
 [source,coffeescript]
 ----
 include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1_results.json[]
@@ -84,9 +100,11 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1_results.json[]
 
 
 
-*Example 2*. Find the immediate superclass of the tag_class whose name is "tennis_player". (This is equivalent to a 1-hop non-repeating pattern.)
+=== Example 2
 
-.Exmaple 2. Exactly 1 Repetition of A Directed Edge
+Find the immediate superclass of the tag_class whose name is "tennis_player". (This is equivalent to a 1-hop non-repeating pattern.)
+
+.Example 2. Exactly 1 Repetition of A Directed Edge
 
 [source,gsql]
 ----
@@ -95,19 +113,7 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2.gsql[]
 
 
 
-You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example2.gsql
-----
-
-
-
-. Output of Example 2
-
+.Output of Example 2
 [source,coffeescript]
 ----
 include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2_results.json[]
@@ -115,7 +121,9 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2_results.json[]
 
 
 
-*Example 3*. Find the 1 to 2 hops direct and indirect superclasses of the tag_class whose name is "tennis_player".
+=== Example 3
+
+Find the 1 to 2 hops direct and indirect superclasses of the tag_class whose name is "TennisPlayer".
 
 .Example 3.  1 to 2 Repetition Of A Directed Edge. 
 
@@ -127,18 +135,7 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3.gsql[]
 
 
 
-You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example3.gsql
-----
-
-
-
-. Output of Example 3
+.Output of Example 3
 
 [source,coffeescript]
 ----
@@ -147,7 +144,9 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3_results.json[]
 
 
 
-*Example 4*. Find the superclasses within 2 hops of the tag_class whose name is "tennis_player".
+=== Example 4
+
+Find the superclasses within 2 hops of the tag_class whose name is "TennisPlayer".
 
 .Example 4.  Up-to 2 Repetition Of A Directed Edge. 
 
@@ -158,19 +157,7 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4.gsql[]
 
 
 
-You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example4.gsql
-----
-
-
-
-. Output of Example 4
-
+.Output of Example 4
 [source,coffeescript]
 ----
 include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4_results.json[]
@@ -178,7 +165,9 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4_results.json[]
 
 
 
-*Example 5*. Find the superclasses at least one hop from the tag_class whose name is "tennis_player".
+=== Example 5
+
+Find the superclasses at least one hop from the tag_class whose name is "TennisPlayer".
 
 .Example 5.  At Least 1 Repetition Of A Directed Edge.
 
@@ -189,18 +178,7 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5.gsql[]
 
 
 
-You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in a Linux shell.
-
-.Linux Bash
-
-[source,bash]
-----
-gsql example5.gsql
-----
-
-
-
-. Output of Example 5
+.Output of Example 5
 
 [source,coffeescript]
 ----
@@ -209,7 +187,9 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5_results.json[]
 
 
 
-*Example 6*. Find the 3 most recent comments that are liked or created by Viktor Akhiezer and the total number of comments liked or created by the same person.
+=== Example 6
+
+Find the 3 most recent comments that are liked or created by Viktor Akhiezer and the total number of comments liked or created by the same person.
 
 .Example 6.  Disjunctive 1-Repetition Directed Edge. 
 
@@ -218,19 +198,8 @@ include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5_results.json[]
 include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6.gsql[]
 ----
 
-You can copy the above GSQL script to a file named example6.gsql, and invoke this script file in a Linux shell.
 
-.Linux Bash
-
-[source,bash]
-----
-gsql example6.gsql
-----
-
-
-
-. Output of Example 6
-
+.Output of Example 6
 [source,coffeescript]
 ----
 include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6_results.json[]

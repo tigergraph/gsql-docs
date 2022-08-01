@@ -1,10 +1,10 @@
 = Data Modification
 
-Pattern Matching GSQL supports Insert, Update, and Delete operations. The syntax is identical to that in classic GSQL (v1), though the full range of data modification operations are not yet support.
+Pattern Matching GSQL supports Insert, Update, and Delete operations. The syntax is identical to that in classic GSQL (v1), though the full range of data modification operations are not yet supported.
 
 In general, data modification can be at two levels in GSQL:
 
-. Top level. The statement does not need to within any other statement.
+. Top level. The statement does not need to be embedded within any other statement.
 . Within a SELECT query statement. The FROM-WHERE clauses define a match table, and the data modification is performed based on the vertex and edge information in the match table. The GSQL specifications calls these within-SELECT statements *DML-sub statements*.
 
 [CAUTION]

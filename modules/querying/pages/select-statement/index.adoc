@@ -51,7 +51,7 @@ Along the way, computations can be performed on the selected vertices and edges.
 
 
 [#_from_clause]
-== `FROM` clause
+== `FROM`
 
 The `FROM` clause describes either a single _hop_ or a multi-hop _path pattern_.
 Path patterns also have many other options for finer control and greater flexibility.
@@ -418,7 +418,7 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 ====
 
 
-== `SAMPLE` Clause
+== `SAMPLE`
 
 The `SAMPLE` clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the `FROM` argument.
 
@@ -539,7 +539,7 @@ Since the `PRINT` statements are placed at the end of query, the two vertex sets
 There is one difference: `company3` is not included in after_sample because none of the sample-selected edges reached company3.
 ====
 
-== `WHERE` Clause
+== `WHERE`
 
 The `WHERE` clause is an optional clause that constrains edges and vertices specified in the `FROM` and `SAMPLE` clauses.
 
@@ -701,7 +701,7 @@ The edge-type conflict checking detects an error, because it uses attributes fro
 ====
 
 
-== `ACCUM` clause
+== `ACCUM`
 
 The `ACCUM` clause enables sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding `FROM`, `SAMPLE`, and `WHERE` clauses.
 
@@ -914,7 +914,7 @@ include::appendix:example$social_net/select_statement_index_global_accum_results
 
 
 [#_post_accum_clause]
-== `POST-ACCUM` clause
+== `POST-ACCUM`
 The optional `POST-ACCUM` clause enables aggregation and other computations across the set of vertices (but not edges) selected by the preceding clauses.
 `POST-ACCUM` can be used without `ACCUM`.
 If it is preceded by an `ACCUM` clause, then it can be used for 2-stage accumulative computation: a first stage in `ACCUM` followed by a second stage in `POST-ACCUM`.
@@ -1130,7 +1130,7 @@ include::appendix:example$social_net/select_statement_index_updating_indirect_re
 ====
 
 
-== `PER` clause
+== `PER`
 
 The `PER` clause is an optional prefix to an `ACCUM` clause, affecting only that clause.
 
@@ -1138,7 +1138,7 @@ The `FROM` clause of a `SELECT` statement produces a match table.
 The `PER` clause allows the user to specify that they wish to aggregate the match table, so that there is one row per alias.
 For more information see the xref:tutorials:pattern-matching/adv/per-clause.adoc[`PER` Clause section in the Pattern Matching tutorial].
 
-== `HAVING` Clause
+== `HAVING`
 
 The optional `HAVING` clause provides constraints on the result set of the `SELECT` statement.
 The constraints are applied *after* `ACCUM` and `POST-ACCUM` actions.
@@ -1286,7 +1286,7 @@ The SELECT block selects src, but the HAVING clause uses tgt
 ====
 
 
-== `ORDER BY` Clause
+== `ORDER BY`
 
 The optional `ORDER BY` clause sorts the result set.
 
@@ -1334,7 +1334,7 @@ include::appendix:example$friend_net/select_statement_index_order_by_descending_
 ====
 
 
-== `LIMIT` Clause
+== `LIMIT`
 
 The optional `LIMIT` clause sets constraints on the number and ranking of items included in the final result set.
 

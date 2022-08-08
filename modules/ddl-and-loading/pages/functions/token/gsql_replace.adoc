@@ -1,0 +1,29 @@
+= gsql_replace()
+
+Replaces all occurrences of a token (substring) in a string with a new token.
+If a max count is provided, there can only be up to that many replacements starting from the left side of the string.
+
+== Syntax
+`gsql_replace(str, old_token, new_token [, max])`
+
+== Parameters
+str::
+Required.
+The original string.
+old_token::
+Required.
+The token in the original string to replace.
+new_token::
+Required. The new token to replace the original token.
+max::
+Optional.
+The maximum number of occurrences that the old token can be replaced.
+
+== Return type
+`STRING`
+
+== Example
+
+----
+gsql_replace("hello world", l, i, 2) -> "heiio world"
+----

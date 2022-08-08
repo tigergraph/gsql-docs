@@ -1,0 +1,27 @@
+= gsql_ts_to_epoch_seconds()
+
+Converts a timestamp in canonical string format to Unix epoch time, which is the number of seconds since Jan 1st, 1970.
+
+The timestamp parameter should be in one of the following formats:
+
+* `"%Y-%m-%d %H:%M:%S"`
+* `"%Y/%m/%d %H:%M:%S"`
+* `"%Y-%m-%dT%H:%M:%S.000z"`
+** Text after the dot `.` is ignored
+
+== Syntax
+`gsql_ts_to_epoch_seconds(timestamp)`
+
+== Parameters
+timestamp::
+Required.
+The timestamp to convert to Unix epoch time.
+
+== Return type
+`UINT`
+
+== Example
+
+----
+gsql_ts_to_epoch_seconds("2022-06-30 22-08-28") -> 1656652105
+----

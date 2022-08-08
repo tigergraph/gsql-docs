@@ -1,0 +1,43 @@
+= to_float()
+
+Converts the string token to a float.
+This is a token function for the `WHERE` clause of a `LOAD` statement only.
+It cannot be used in a destination clause.
+
+This function is necessary when you need to filter floating point values during loading, as all tokens are treated as strings.
+
+== Syntax
+
+`to_float( token )`
+
+== Return value
+
+`FLOAT`.
+The floating point value converted from integers.
+
+== Example
+
+If we have the following data in a CSV file of the different scores of test takers, and we want to load a record if their score is higher than 95.5:
+
+
+|===
+|name |score
+
+|Tommy
+|94.3
+
+|Amy
+|95.9
+
+|Amy
+|93.1
+|===
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", $"score")
+  WHERE to_float($"score") > 95.5
+----
+
+After loading, only the second row in the provided data is loaded, as it is the only record where the score is greater than 95.

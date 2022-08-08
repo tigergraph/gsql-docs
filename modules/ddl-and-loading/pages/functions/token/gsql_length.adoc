@@ -1,0 +1,19 @@
+= gsql_length()
+
+Returns the length of a string.
+
+== Syntax
+`gsql_length(str)`
+
+== Parameters
+str::
+The string whose length to return.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_length("abcd") -> 4
+----

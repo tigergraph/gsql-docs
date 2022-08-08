@@ -1,0 +1,18 @@
+= Token Functions in WHERE Clause
+
+The token functions in this section can only be used in the `WHERE` clause of a `LOAD` statement.
+
+include::partial$token_functions_where.adoc[]
+
+== Example
+
+These functions can be used as part of expression in the `WHERE` clause.
+For example, the following statement only loads a record if the `score` column of a record is greater than 95.5:
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", $"score")
+  WHERE to_float($"score") > 95.5
+----
+

@@ -1,0 +1,20 @@
+= gsql_ltrim()
+
+Trims leading whitespace from the input string.
+
+== Syntax
+`gsql_ltrim(in_string)`
+
+== Parameters
+in_string::
+Required.
+The string whose leading whitespace to trim.
+
+== Return type
+`STRING`
+
+== Example
+
+----
+gsql_trim("  hello world  ") -> "hello world  "
+----

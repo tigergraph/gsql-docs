@@ -1,0 +1,37 @@
+= gsql_substring()
+
+Returns the substring of a string beginning at a specified index.
+Optionally, you can specify a length for the substring.
+
+== Syntax
+`gsql_substring(str, begin_index [, length])`
+
+== Parameters
+str::
+Required.
+The string from which to obtain substring.
+begin_index::
+Required.
+The index of the first character to include in the returned substring.
+length::
+Optional.
+The length of the substring.
+If the parameter is not specified, the substring goes from the beginning index to the end of the original string.
+
+== Return type
+`STRING`
+
+== Example
+For the following CSV file:
+
+[,csv]
+----
+Name,DOB
+Taylor,1988-04-25
+----
+
+The function returns the following results:
+
+----
+gsql_substring($"Name", 1, 3) -> "ayl"
+----

@@ -1,0 +1,18 @@
+= concat()
+
+Concatenates two strings.
+This is a token function for the `WHERE` clause of a `LOAD` statement only.
+It cannot be used in a destination clause.
+
+== Syntax
+
+`concat( string1, string2)`
+
+== Return value
+
+`STRING`.
+The string resulting from the concatenation of the two input strings.
+
+
+
+

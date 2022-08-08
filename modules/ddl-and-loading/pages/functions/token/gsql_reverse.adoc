@@ -1,0 +1,36 @@
+= gsql_reverse()
+
+Returns a string with the characters in the reverse order of the input string.
+
+== Syntax
+`gsql_reverse(in_string)`
+
+== Parameters
+
+in_string::
+Required.
+The string to reverse.
+
+
+== Return type
+`STRING`
+
+== Example
+
+For the following CSV file:
+
+[,csv]
+----
+Name,DOB
+Sam,1994-05-01
+Chris,1985-12-25
+Pat,1996-11-13
+Joe,1975-11-02
+Taylor,1988-04-25
+----
+
+For the first row, the token function would produce the following result:
+
+----
+gsql_reverse($"Name") -> "maS"
+----

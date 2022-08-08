@@ -15,7 +15,7 @@ It also does not indicate the cardinality of the relationship.
 For example, it does not specify whether a User may connect to multiple occupations.
 
 .A schema for a User-Book-Rating graph
-image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
+image::user-book-rating-schema.png[A schema for a User-Book-Rating graph. The vertex User is connected to Occupation with the user_occupation edge and to Book with the user_book_rating edge. Book is connected to Genre with the book_genre edge.]
 
 An edge connects two vertices: a _source vertex_ and a _target vertex_ .
 An edge type can be either _directed_ or _undirected_.
@@ -35,7 +35,7 @@ _The Two Towers_ is the sequel of _The Fellowship of the Ring_ , but the reverse
 User_book_read is added to illustrate that there may be more than one edge type between a pair of vertex types.
 
 .Expanded-User-Book-Rating schema with additional edges
-image::image (2).png[Expanded-User-Book-Rating schema with additional edges]
+image::user-book-rating-schema-expanded.png[User-Book-Rating schema with addtional edges.]
 
 The TigerGraph system user designs a graph schema to fit the source data and the user's needs and interests.
 The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed.
@@ -206,7 +206,8 @@ There are two* options.
 
 The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
 
-image::image (13).png[Figure 3 - Outdegree stats illustration]
+.Illustration of outdegree stats
+image::comms-graph-outdegree.png["Diagram of a graph with five person vertices. Andy is connected to Bobby with a phone_call edge. Bobby is connected to three other person vertices, Casey, Dean and Emory with a text, phone_call, and text edges respectively."]
 
 |===
 | WITH STATS option (case insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")

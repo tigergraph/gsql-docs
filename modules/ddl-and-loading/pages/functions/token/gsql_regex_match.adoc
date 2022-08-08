@@ -1,0 +1,23 @@
+= gsql_regex_match()
+
+Returns true if the given string token matches the given regex token and false otherwise.
+
+== Syntax
+
+`gsql_regex_match(str, regex)`
+
+== Parameters
+
+str::
+The string to match against the regex.
+regex::
+The regex used to match the string.
+
+== Return type
+`BOOL`
+
+== Example
+
+----
+gsql_regex_match("subject","(sub)(.*)") -> TRUE
+----

@@ -42,7 +42,7 @@ The SELECT block has many optional clauses, which fit together in a logical flow
 image::select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop GSQL SELECT statement]
 
 [#_from_clause]
-== FROM Clause
+== FROM
 
 In classic (Syntax v1) GSQL, the FROM clause describes one step or hop pattern.
 
@@ -779,7 +779,7 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 
 
 
-== SAMPLE Clause
+== SAMPLE
 
 The SAMPLE clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the FROM argument.
 
@@ -1086,7 +1086,7 @@ GSQL > RUN QUERY sampleEx1()
 Since the PRINT statements are placed at the end of query, the two vertex sets _beforeSample_ and _afterSample_ are almost identical, showing the final values of both accumulators@timesTraversedNoSample and @timesTraversedWithSample. There is one difference: company3 is not included in afterSample because none of the sample-selected edges reached company3.
 ====
 
-== WHERE Clause
+== WHERE
 
 The WHERE clause is an optional clause that constrains edges and vertices specified in the FROM and SAMPLE clauses.
 
@@ -1572,7 +1572,7 @@ CREATE QUERY multipleEdgeTypeWhereEx(vertex<person> m1) FOR GRAPH socialNet SYNT
 The above query is compilable. However, if we use line 5 as the WHERE clause instead, the query is not compilable. The edge-type conflict checking detects an error, because i t uses attributes from both "liked" edges and "friend" edges without separating them out by OR.
 ====
 
-== ACCUM and POST-ACCUM Clauses
+== ACCUM and POST-ACCUM
 
 The optional ACCUM and POST-ACCUM clauses enable sophisticated aggregation and other computations across the set of vertices or edges selected by the preceding FROM, SAMPLE, and WHERE clauses. A query can contain one or both of these clauses. The statements in an ACCUM clause are applied for every edge in an edge-induced selection or every vertex in a vertex-induced selection.
 
@@ -2422,7 +2422,7 @@ GSQL > RUN QUERY personGender("Female")
 ====
 
 
-== HAVING Clause
+== HAVING
 
 The optional HAVING clause provides constraints on the result set of the SELECT.
 The constraints are applied *after* ACCUM and POST-ACCUM actions.
@@ -2843,7 +2843,7 @@ The SELECT block selects src, but the HAVING clause uses tgt
 ====
 
 
-== ORDER BY Clause
+== ORDER BY
 
 The optional ORDER BY clause sorts the result set.
 
@@ -3022,7 +3022,7 @@ GSQL > RUN QUERY topPopular()
 ====
 
 
-== LIMIT Clause
+== LIMIT
 
 The optional LIMIT clause sets constraints on the number and ranking of items included in the final result set.
 

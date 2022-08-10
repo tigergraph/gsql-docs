@@ -367,9 +367,10 @@ include::appendix:example$social_net/declaration_vertex_set_example.gsql[]
 <1> See xref:func/vertex-methods.adoc#_selectvertex[SelectVertex()].
 
 
-When declaring a vertex set variable, you may opt to specify the vertex set type for the vertex set variable by .
-If the vertex set variable set type is not specified explicitly, the system determines the type implicitly by the vertex set value.
-The type can be `ANY`, `_` (equivalent to `ANY`), or any explicit vertex type(s). See the EBNF grammar rule `vertexEdgeType`.
+When declaring a vertex set variable, you may opt to specify the vertex set type for the vertex set variable by enclosing the type in parentheses after the variable name.
+
+If the vertex set variable set type is not specified explicitly, GSQL determines the type implicitly by the vertex set value.
+The type can be `ANY`, `_` (equivalent to `ANY`), or any explicit vertex type(s).
 
 
 ==== Assignment

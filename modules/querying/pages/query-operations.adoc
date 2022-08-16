@@ -752,12 +752,14 @@ permitted. |`[ ("person1","person"),("11","post") ]`
 |Set or bag of primitives |Use a JSON array containing the primitive
 values |`["a", "list", "of", "args"]`
 
-|`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
-vertex ID and a field `"type"` for the type of the vertex
-|`{"id": "person1","type": "person"}`
-
-|`VERTEX` (type not specified) |Use a JSON object containing a field
+|`VERTEX<type>` |Since the type is already specified in the query, you only need to use a JSON object containing the field
 `"id"` for the vertex ID |`{"id": "person1"}`
+
+|`VERTEX` (type not specified)
+
+|Use a JSON object containing a field `"id"` for the
+vertex ID and a field `"type"` for the type of the vertex.
+|`{"id": "person1","type": "person"}`
 
 |Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
 JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`

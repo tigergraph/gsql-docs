@@ -1,25 +1,27 @@
 = Edge Methods
+:description: Methods available to edge aliases in a SELECT statement.
+:page-toclevels: 1
 
 This page lists all built-in edge methods that can be accessed by edge aliases using the dot (`.`) operator.
 
 == `getAttr()`
 
-[discrete]
+
 ===  Syntax
 
 `e.getAttr( attrName, attrType )`
 
-[discrete]
+
 ===  Description
 
 Returns the value of an attribute of the edge.
 
-[discrete]
+
 ===  Return type
 
 The data type of the attribute itself.
 
-[discrete]
+
 ===  Parameters
 
 |===
@@ -34,7 +36,7 @@ The data type of the attribute itself.
 | `STRING`
 |===
 
-[discrete]
+
 ===  Example
 
 If we have the following edge:
@@ -63,44 +65,44 @@ e.getAttr("rating", "DOUBLE") -> 5.2
 
 == `isDirected()`
 
-[discrete]
+
 ===  Syntax
 
 `e.isDirected()`
 
-[discrete]
+
 ===  Description
 
 Returns a boolean value indicating whether the edge is directed or undirected.
 
-[discrete]
+
 ===  Return type
 
 `BOOL`
 
-[discrete]
+
 ===  Parameters
 
 None.
 
 == `setAttr()`
 
-[discrete]
+
 ===  Syntax
 
 `e.setAttr( attrName, attrNewValue )`
 
-[discrete]
+
 ===  Description
 
 Sets an attribute of an edge to a new value.
 
-[discrete]
+
 ===  Return type
 
 No return value.
 
-[discrete]
+
 ===  Parameters
 
 |===
@@ -115,21 +117,18 @@ No return value.
 | The type of the attribute. 
 |===
 
-[discrete]
+
 ===  Example
 
 [source,gsql]
 ----
-CREATE QUERY setAttrExample(STRING attr){ <1>
+CREATE QUERY setAttrExample(STRING attr){
     Current = {v_type.*}
     S = SELECT s
             FROM Current:s -(e_type:e) -> v_type:t
             WHERE t.attribute1 == "example_value"
-            ACCUM e.setAttr(attr, TRUE); <2>
+            ACCUM e.setAttr(attr, TRUE); <1>
 }
 ----
-<1> The first argument of `e.setAttr` must be a query parameter.
-Therefore, in this example we are passing a string value in the query parameter `attr`.
-The string value should be the name of the attribute you want to call the function with.
-<2> Selected edges will have their specified attribute set to `TRUE`.
+<1> Selected edges will have their specified attribute set to `TRUE`.
 

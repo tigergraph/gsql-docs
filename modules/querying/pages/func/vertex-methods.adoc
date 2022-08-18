@@ -15,22 +15,22 @@ This section lists the built-in methods of vertex aliases. Methods can be access
 
 === `edgeAttribute()`
 
-[discrete]
+
 ====  Syntax
 
 `v.edgeAttribute( edgeType, attrName )`
 
-[discrete]
+
 ====  Description
 
 From a vertex, traverse edges of a specified type and return the bag of values for a specified edge attribute.
 
-[discrete]
+
 ====  Return type
 
 `BagAccum<attrType>`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -48,7 +48,7 @@ From a vertex, traverse edges of a specified type and return the bag of values f
 
 === `filter()`
 
-[discrete]
+
 ====  Syntax
 
 [source,bash]
@@ -58,17 +58,17 @@ v.neighborAttribute().filter( condition )
 v.edgeAttribute().filter( condition )
 ----
 
-[discrete]
+
 ====  Description
 
 This function is appended to <<_neighbors>>, <<_neighborattribute>>, or <<_edgeattribute>> to filter the output set according to a filter condition. Only elements that satisfy the condition will be returned.
 
-[discrete]
+
 ====  Return type
 
 `BagAccum`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -79,7 +79,7 @@ This function is appended to <<_neighbors>>, <<_neighborattribute>>, or <<_edgea
 | `BOOL`
 |===
 
-[discrete]
+
 ====  Example
 
 .Example query
@@ -158,22 +158,22 @@ GSQL > RUN QUERY filterEx(["person1","person2"],2016)
 
 === `getAttr()`
 
-[discrete]
+
 ====  Syntax
 
 `v.getAttr(attrName, attrType)`
 
-[discrete]
+
 ====  Description
 
 Returns the value of a vertex attribute on the vertex.
 
-[discrete]
+
 ====  Return type
 
 `attrType`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -190,22 +190,22 @@ Returns the value of a vertex attribute on the vertex.
 
 === `neighborAttribute()`
 
-[discrete]
+
 ====  Syntax
 
 `v.neighborAttribute( edgeType, targetVertexType, attrName )`
 
-[discrete]
+
 ====  Description
 
 From a vertex, traverses edges of a specified type to its neighbors of a specified type, and returns the set of values for a specified attribute.
 
-[discrete]
+
 ====  Return type
 
 `BagAccum<attrType>`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -224,7 +224,7 @@ From a vertex, traverses edges of a specified type to its neighbors of a specifi
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example
 
 For the following graph:
@@ -239,22 +239,22 @@ v.neighborAttribute("friendship", "person", "state") -> ["ca", "ny", "ca"]
 
 === `neighbors()`
 
-[discrete]
+
 ====  Syntax
 
 `v.neighbors([edgeType])`
 
-[discrete]
+
 ====  Description
 
 Returns the out-neighbors or undirected neighbors of the vertex. If edge types are provided, it will only return the neighbors connected by the specified edge types.
 
-[discrete]
+
 ====  Return type
 
 `BagAccum<VERTEX>`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -265,7 +265,7 @@ Returns the out-neighbors or undirected neighbors of the vertex. If edge types a
 | `STRING`, `SET<STRING>`, `SetAccum<STRING>`, `BagAccum<STRING>`, `ListAccum<STRING>`
 |===
 
-[discrete]
+
 ====  Example
 
 For the following graph:
@@ -280,22 +280,22 @@ v.neighbors() -> ["Dan", "Amily", "Tom"]
 
 === `outdegree()`
 
-[discrete]
+
 ====  Syntax
 
 `v.outdegree([edgeType])`
 
-[discrete]
+
 ====  Description
 
 Returns the number of outgoing or undirected edges connected to the vertex. If edge types are provided, it will only return the number of edges of the specified types.
 
-[discrete]
+
 ====  Return type
 
 `INT`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -307,30 +307,30 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 |===
 
 [CAUTION]
-[discrete]
+
 ==== 
 *Note on outdegree()*: This function reads a metadata value stored with each vertex, to avoid traversing the graph and thus have a fast response. The snapshot transaction semantics means that outdegree() may sometimes read an old value if there are concurrent write transactions. To guarantee an accurate count, traverse the neighboring edges and count them with a SumAccum, or use a function like neighbors() and then use size() on the set.
-[discrete]
+
 ==== 
 
 === `setAttr()`
 
-[discrete]
+
 ====  Syntax
 
 `v.setAttr( attrName, newValue )`
 
-[discrete]
+
 ====  Description
 
 Sets the specified attribute of a vertex to a new value.
 
-[discrete]
+
 ====  Return type
 
 No return value.
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -352,22 +352,22 @@ This section covers the vertex alias methods used to access and modify tags on v
 
 === `addTags()`
 
-[discrete]
+
 ====  Syntax
 
 `+v.addTags(STRING tag1,... STRING tagN)+`
 
-[discrete]
+
 ====  Description
 
 Adds the tags provided in the argument list to the vertex.
 
-[discrete]
+
 ====  Return type
 
 No return value.
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -378,7 +378,7 @@ No return value.
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -407,22 +407,22 @@ CREATE QUERY addTagsToPerson() {
 
 === `differenceTags()`
 
-[discrete]
+
 ====  Syntax
 
 `v.differenceTags( v2 )`
 
-[discrete]
+
 ====  Description
 
 Returns the difference in tags between the vertex and another vertex as a set.
 
-[discrete]
+
 ====  Return type
 
 `SET<STRING>`
 
-[discrete]
+
 ====  Paramters
 
 |===
@@ -433,7 +433,7 @@ Returns the difference in tags between the vertex and another vertex as a set.
 | `VERTEX`
 |===
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -452,27 +452,27 @@ CREATE QUERY exampleDifferencetags() {
 
 === `getTags()`
 
-[discrete]
+
 ====  Syntax
 
 `v.getTags()`
 
-[discrete]
+
 ====  Descriptions
 
 Returns the vertex's tags as a set. If the vertex has no tags or is untaggable, it returns an empty set.
 
-[discrete]
+
 ====  Return type
 
 `SET<STRING>`
 
-[discrete]
+
 ====  Parameters
 
 None.
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -490,33 +490,33 @@ CREATE QUERY exampleGettags() {
 ----
 
 [NOTE]
-[discrete]
+
 ==== 
 Tip: `getTags()` can be used within a `PRINT` statement:
 
 * `PRINT R [R.getTags()];`
 * or `PRINT R WITH TAGS` which is syntax sugar, except that it won't print `"R.getTags()": []` for non-taggable vertices.
-[discrete]
+
 ==== 
 
 === `hasTags()`
 
-[discrete]
+
 ====  Syntax
 
 `+hasTags( tag1, tag2, ..., tagN )+`
 
-[discrete]
+
 ====  Description
 
 Returns `true` if the vertex has every tag provided in the argument list and returns `false` if it does not.
 
-[discrete]
+
 ====  Return type
 
 `BOOL`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -527,7 +527,7 @@ Returns `true` if the vertex has every tag provided in the argument list and ret
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -601,27 +601,27 @@ The output of the query would be:
 
 === `isTaggable()`
 
-[discrete]
+
 ====  Syntax
 
 `v.isTaggable()`
 
-[discrete]
+
 ====  Description
 
 Returns true if the vertex is taggable.
 
-[discrete]
+
 ====  Return type
 
 `BOOL`
 
-[discrete]
+
 ====  Parameters
 
 None
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -640,22 +640,22 @@ CREATE QUERY countIstaggable() for graph poc_graph_tag {
 
 === `intersectTags()`
 
-[discrete]
+
 ====  Syntax
 
 `v.intersectTags( v2 )`
 
-[discrete]
+
 ====  Description
 
 Returns the common tags between the vertex and another vertex as a set.
 
-[discrete]
+
 ====  Return type
 
 `SET<STRING>`
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -674,27 +674,27 @@ CREATE QUERY exampleIntersecttags() {
 
 === `removeAllTags()`
 
-[discrete]
+
 ====  Syntax
 
 `v.removeAllTags()`
 
-[discrete]
+
 ====  Description
 
 Removes all tags from the vertex.
 
-[discrete]
+
 ====  Return type
 
 No return value.
 
-[discrete]
+
 ====  Parameters
 
 None
 
-[discrete]
+
 ====  Example:
 
 [source,gsql]
@@ -711,22 +711,22 @@ CREATE QUERY removealltagsFromPerson() {
 
 === `removeTags()`
 
-[discrete]
+
 ====  Syntax
 
 `+removeTags( tag1, tag2, ..., tagN )+`
 
-[discrete]
+
 ====  Description
 
 Removes the tags provided in the argument list from the vertex.
 
-[discrete]
+
 ====  Return type
 
 No return value.
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -737,7 +737,7 @@ No return value.
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example
 
 [source,gsql]
@@ -758,12 +758,12 @@ The functions in this section either have return values of vertex or vertex set 
 
 === `getvid()`
 
-[discrete]
+
 ====  Syntax
 
 `getvid( v )`
 
-[discrete]
+
 ====  Description
 
 Returns the _internal_ ID number of a vertex.
@@ -772,12 +772,12 @@ The internal ID is not the primary ID which the user assigned when creating the 
 
 The engine can access the internal ID faster than accessing the external ID, so if a query needs unique values for a large number of vertices, but doesn't care about particular values, `getvid()` can be a useful option. For example, in many community detection algorithms, we start by assigning every vertex a unique community ID. Then, as the algorithm progresses, some vertices will join the community of one of their neighbors, giving up their current community ID and copying the IDs of their neighbors.
 
-[discrete]
+
 ====  Return type
 
 `INT`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -788,10 +788,10 @@ The engine can access the internal ID faster than accessing the external ID, so 
 | Vertex alias
 |===
 
-[discrete]
+
 ====  Example
 [tabs]
-[discrete]
+
 ==== 
 Query::
 +
@@ -870,28 +870,28 @@ Result::
 }
 ----
 --
-[discrete]
+
 ==== 
 
 [#_selectvertex]
 === `selectVertex()`
 
-[discrete]
+
 ====  Syntax
 
 `selectVertex( filepath, vertexIdColumn, vertexTypeColumn, seperator, header)`
 
-[discrete]
+
 ====  Description
 
 Reads a data file that lists particular vertices of the graph and returns the corresponding vertex set.This function can only be used in a vertex set variable declaration statement as a seed set and the vertices in the data file *must already be in the graph*.The data file must be organized as a table with one or more columns.One column must be for vertex ID.Optionally, another column is for vertex type.
 
-[discrete]
+
 ====  Return type
 
 `SET<VERTEX>`
 
-[discrete]
+
 ====  Parameters
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
@@ -924,7 +924,7 @@ Alternatively, a vertex type without double quotes.
 |`+header+` |Whether this file has a header. |`BOO
 |===
 
-[discrete]
+
 ====  Example
 
 .selectVertex.csv
@@ -1035,22 +1035,22 @@ Running `to_vertex() and to_vertex_set()` requires real-time conversion of an ex
 * Calling `to_vertex_set()` one time is much faster than calling `to_vertex()` multiple times. Use `to_vertex_set()` instead of `to_vertex()` as much as possible.
 ==== 
 
-[discrete]
+
 ====  Syntax
 
 `to_vertex( id, vertex_type )`
 
-[discrete]
+
 ====  Description
 
 Returns a vertex from a string ID and vertex type. If a vertex with the provided ID and type does not exist, the function will throw a run-time error.
 
-[discrete]
+
 ====  Return type
 
 `VERTEX`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -1065,7 +1065,7 @@ Returns a vertex from a string ID and vertex type. If a vertex with the provided
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example
 
 .Example query using to_vertex()
@@ -1103,22 +1103,22 @@ GSQL > RUN QUERY to_vertex_test("Dan", "person")
 
 === `to_vertex_set()`
 
-[discrete]
+
 ====  Syntax
 
 `to_vertex_set( id_set, vertex_type)`
 
-[discrete]
+
 ====  Description
 
 Returns a vertex set from a set or bag of string IDs and a vertex type. If there are invalid IDs in the set, those IDs will be skipped and the response will contain a warning message. If the vertex type does not exist, the function will throw a run-time error.
 
-[discrete]
+
 ====  Return type
 
 `SET<VERTEX>`
 
-[discrete]
+
 ====  Parameters
 
 |===
@@ -1133,7 +1133,7 @@ Returns a vertex set from a set or bag of string IDs and a vertex type. If there
 | `STRING`
 |===
 
-[discrete]
+
 ====  Example
 
 [source,gsql]

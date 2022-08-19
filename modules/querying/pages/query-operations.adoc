@@ -581,6 +581,7 @@ Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUE
 When installing a query, you have the option of using the query optimizer.
 The query optimizer can potentially reduce the amount of memory a query requires and the time it takes to finish execution.
 The optimizer works by automatically finds the most efficient traversal plan when compiling the query during query installation.
+You can benefit from this option if you query uses a `FROM` clause that performs any number of hops.
 
 To use the query optimizer, use the `-COST` option when installing a query.
 This option can be used together with other options, but it must come after the other options.
@@ -595,7 +596,7 @@ The following options are available:
 |Option|Effect
 
 |`-FORCE`
-|Reinstalls the query even if the system indicates the
+|Re-installs the query even if the system indicates the
 query is already installed. This is useful for overwriting an
 installation that is corrupted or otherwise outdated, without having to
 drop and then recreate the query. If this option is not used, the GSQL
@@ -609,6 +610,7 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 a|`-COST`
 |Installs and optimizes the query using the query optimizer.
 This option automatically finds the most efficient traversal plan for executing the query and can reduce the time and memory it takes to execute a query.
+You can benefit from this option if you query uses a `FROM` clause that performs any number of hops.
 
 This option can be used together with other options, but it must come after the other options.
 For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`

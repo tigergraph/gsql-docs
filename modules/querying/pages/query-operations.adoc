@@ -583,6 +583,8 @@ The query optimizer can potentially reduce the amount of memory a query requires
 The optimizer works by automatically finds the most efficient traversal plan when compiling the query during query installation.
 
 To use the query optimizer, use the `-COST` option when installing a query.
+This option can be used together with other options, but it must come after the other options.
+For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`
 
 === Options
 
@@ -607,6 +609,9 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 a|`-COST`
 |Installs and optimizes the query using the query optimizer.
 This option automatically finds the most efficient traversal plan for executing the query and can reduce the time and memory it takes to execute a query.
+
+This option can be used together with other options, but it must come after the other options.
+For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`
 
 This is a preview feature and should not be used in production.
 |===

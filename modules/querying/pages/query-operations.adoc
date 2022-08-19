@@ -577,7 +577,14 @@ Installing takes several seconds for each query. The current version does not su
 Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
 ====
 
-=== Options for `INSTALL QUERY`
+=== Query optimizer (preview)
+When installing a query, you have the option of using the query optimizer.
+The query optimizer can potentially reduce the amount of memory a query requires and the time it takes to finish execution.
+The optimizer works by automatically finds the most efficient traversal plan when compiling the query during query installation.
+
+To use the query optimizer, use the `-COST` option when installing a query.
+
+=== Options
 
 The following options are available:
 
@@ -586,7 +593,7 @@ The following options are available:
 |Option|Effect
 
 |`-FORCE`
-|Reinstall the query even if the system indicates the
+|Reinstalls the query even if the system indicates the
 query is already installed. This is useful for overwriting an
 installation that is corrupted or otherwise outdated, without having to
 drop and then recreate the query. If this option is not used, the GSQL
@@ -596,6 +603,12 @@ a|`-SINGLE`
 |Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters page.]
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
+
+a|`-COST`
+|Installs and optimizes the query using the query optimizer.
+This option automatically finds the most efficient traversal plan for executing the query and can reduce the time and memory it takes to execute a query.
+
+This is a preview feature and should not be used in production.
 |===
 
 === Optimize installed queries

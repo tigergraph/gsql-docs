@@ -1,23 +1,23 @@
-= Run Built-in Queries
+= 組み込みのクエリの実行
 
-You now have a graph with data!  You can run some  queries using the built-in REST endpoint calls.
+データが読み込まれたグラフが完成しました。次にビルトインのRESTエンドポイントコールを使って、クエリを実行してみましょう。
 
-== Get Vertex/Edge Statistics
+== 頂点とエッジに関する統計データを取得する
 
-Below we call two functions, stat_vertex_number and stat_edge_number to return the cardinality of each vertex and edge type.
+ここでは、次の2つの関数、stat_vertex_numberとstat_edge_numberを呼び出して、各頂点タイプと各エッジタイプのカーディナリティを調べます。
 
 [NOTE]
 ====
-REST endpoints return results in JSON format. JSON data are used for various purposes. But JSON data can't be read easily from JSON file by using bash script like other normal files. *jq* tool is used to solve this problem
+RESTエンドポイントの結果は、JSON形式で応答されます。JSONデータはさまざまな用途に使われますが、ほかの普通のファイルのようにbashスクリプトを使ってJSONファイルから簡単に読むことはできません。代わりに**jq**ツールを使ってください。
 
-We recommend you install jq and redirect the REST call result to jq before it is output. +
+jqをインストールして、RESTコールの結果が出力される前に、jqに転送することをお勧めします。 +
 ====
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
-#get vertex cardinality
+#頂点のカーディナリティを取得する
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
@@ -25,7 +25,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 
 [,gsql]
 ----
-#results
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -43,11 +43,11 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vert
 }
 ----
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
-#get edge cardinality
+#エッジのカーディナリティを取得する
 curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
 ----
 
@@ -55,7 +55,7 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 
 [,gsql]
 ----
-#results
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -73,11 +73,11 @@ curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge
 }
 ----
 
-== Select Vertices
+== 頂点を選択する
 
-If you want to lookup the details about a vertex with its primary_id, you can use the following REST call.
+任意の頂点のプライマリIDの詳細を調べたいときには、次のRESTコールを使います。
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
@@ -86,9 +86,9 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 
 
-*Example*. Find a person vertex whose primary_id is "Tom".
+*例* プライマリIDが「Tom」というpersonの頂点を検索する
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
@@ -99,7 +99,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 
 [,gsql]
 ----
- #result
+ #結果
  {
   "version": {
     "edition": "enterprise",
@@ -123,26 +123,26 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 }
 ----
 
-== Select Edges
+== エッジを選択する
 
-In similar fashion, we can see details about edges.  To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
+上の例と同様に、エッジの詳細を表示できます。エッジを特定するには、URLの2つまたは3つの部分で、頂点タイプとエッジタイプの名前を指定します。
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
-#two parts
+#2つの部分を使う場合
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
 
-#three parts
+#3つの部分を使う場合
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}"
 ----
 
 
 
-*Example*. Find all friendship edges whose source vertex's primary_id is "Tom".
+*例* ソース頂点のprimary_idが「Tom」であるfriendshipのエッジを検索する
 
-.Linux Shell
+.Linuxシェル
 
 [,gsql]
 ----
@@ -153,7 +153,7 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 
 [,gsql]
 ----
-#result
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -189,4 +189,4 @@ curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | 
 }
 ----
 
-For more built-in REST endpoints, you can the xref:3.2@tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].
+この他のビルトインのRESTエンドポイントは、xref:3.2@tigergraph-server:API:built-in-endpoints.adoc[ビルトインエンドポイント]のページに記載されています。

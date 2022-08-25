@@ -1,57 +1,57 @@
-= One-hop patterns
+= 1ホップのパターン
 
-== Introduction
+== はじめに
 
-Pattern matching by nature is declarative. It enables users to focus on specifying what they want from a query without worrying about the underlying query processing.‌
+‌パターンマッチングは、その性質上、宣言によって処理されます。ユーザーは、クエリの土台となる処理の詳細にわずらわされることなく、クエリで求めたいものを指定することに専念できます。
 
-A pattern usually appears in the FROM clause, the most fundamental part of the query structure. The pattern specifies sets of vertex types and how they are connected by edge types. A pattern can be refined further with conditions in the WHERE clause. In this tutorial, we'll start with simple one-hop path patterns, and then extend it multi-hop patterns and finally multiple-path patterns.
-
-[NOTE]
-====
-Currently, pattern matching may only be used in read-only queries. DML support will be added in the near future release.
-====
+求めるパターンは、通常、クエリの構造で最も基礎的な部分であるFROM句で宣言されます。パターンは、一連の頂点タイプのセットと、それらとエッジタイプとの結び付き方を指定されます。パターンは、WHERE句にある条件により、さらに微調整できます。このチュートリアルでは、まず単純な1ホップパスのパターンを説明し、次にマルチホップのパターン、最後にマルチパスのパターンへと進みます。
 
 [NOTE]
 ====
-Pattern matching queries support nested queries
+現在、パターンマッチングは、読み取りのみ（read-only）のクエリで利用可能です。今後のリリースでDMLのサポートが追加される予定です。
 ====
 
-== 1-Hop Pattern
+[NOTE]
+====
+パターンマッチングはネストされたクエリに対応します。
+====
 
-The easiest way to understand patterns is to start with a simple 1-Hop pattern. Even a single hop has several options. After we've tackled single hops, then we'll see how to add repetition to make variable length patterns and how to connect single hops to form bigger patterns.
+== 1ホップのパターン
 
-In classic GSQL queries, described in xref:tutorials:gsql-101/README.adoc[GSQL 101], we used the punctuation `+-( )->+`  in the FROM clause to indicate a 1-hop query, where the arrow specifies the vertex flow from left to right, and `( )` encloses the edge types.
+パターンについて理解するには、単純な1ホップパターンから始めるのが一番簡単です。1回ホップするだけのクエリでも選択肢がいくつもあります。1回のホップについて学んだら、反復を追加して可変長パターンを作ったり、1ホップクエリ同士をつなげて大きなパターンを作ったりする方法に進みます。
 
-[source,gsql]
-----
-Person:p -(LIKES:e)-> Message:m          /* Classic GSQL example */
-----
-
-In pattern matching, we use the punctuation `-( )-` to denote a 1-hop pattern, where the edge type(s) is enclosed in the parentheses `()` and the hyphens `-` symbolize connection without specifying direction. Instead, directionality is explicitly stated for _each_ edge type.
-
-* For an undirected edge E, no added decoration:    `E`
-* For a directed edge E from left to right, use a suffix:  `E>`
-* For a directed edge E from right to left, use a prefix:  `<E`
-
-‌For example, in the LDBC SNB schema, there are two directed relationships between Person and Message: person _LIKES_ message, and message _HAS_CREATOR_ person. Despite the fact that these relationships are in opposite directions, we can include both of them in the same pattern very concisely using an alternation separator `|` :
+xref:tutorials:gsql-101/README.adoc[GSQL 101]で説明されているような従来のGSQLクエリでは、FORM句で次の記号 `+-( )->+` を使って1ホップクエリであることを表しました。ここでは、右向きの矢印が頂点の流れを指定し、括弧 `( )` の中にエッジタイプが置かれます。
 
 [source,gsql]
 ----
-Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* Pattern example */
+Person:p -(LIKES:e)-> Message:m          /* 従来のGSQLの例 */
+----
+
+パターンマッチングでは、次の記号 `-( )-` を使って1ホップパターンを表します。ここでは、エッジタイプは括弧 `()` の中に置かれ、ハイフン `-` が接続を表し、方向は指定しません。その代わり、有向性は、各エッジタイプ _1つひとつ_　において明示されます。
+
+* 無向エッジEの場合、記号は付加しません。    `E`
+* 左から右向きの有向エッジEの場合、接尾文字>を付加します。  `E>`
+* 左から右向きの有向エッジEの場合、接尾文字>を付加します。  `<E`
+
+例えば、LDBC SNBのスキーマでは、PersonとMessageの間に有向な関係性が2つ存在します。すなわち、人はメッセージが _LIKES_ （好きである）という関係と、メッセージにとって人は _HAS_CREATOR_  (その作成者である)という関係です。この２つの関係性は左右逆の方向性を持っていますが、交互セパレーター `|` を使うことによって、1つのパターンに簡潔に含むことができます。
+
+[source,gsql]
+----
+Person:p -((LIKES>|<HAS_CREATOR):e)- Message:m         /* パターンの例 */
 ----
 
 [discrete]
-==== Edge Type Wildcards
+==== エッジタイプのワイルドカード
 
-The underscore _`_`_ is a wildcard meaning _any edge type._ Arrowheads are still used to indicate direction, e.g.,  `_>` or `<_` or `_` +
-The empty parentheses `()` means any edge, directed or undirected.
+アンダースコア _`_`_ はワイルドカードで、__任意のエッジタイプ__ を意味します。矢印はここでも方向を表します。例えば、 `_>` または  `<_` または `_` +
+空の括弧 `()` は有向または無向の任意のエッジを意味します。
 
 [discrete]
-==== Vertex Type Wildcards and Path Symmetry
+==== 頂点タイプのワイルドカードとパスの対称性
 
-Prior to TigerGraph 3.0, the source (leftmost) vertex set needed to be defined as an explicit set, prior to the SELECT statement.  A typical approach is shown here.
+TigerGraph 3.0 がリリースされる前は、ソースとなる（最も左に位置している）頂点セットを、SELECT文の前に、明示セットとして定義する必要がありました。典型的なアプローチをここに示します。
 
-.Seed set definition required in classic GSQL
+.従来のGSQLで必要なシードセットの定義
 
 [source,gsql]
 ----
@@ -64,53 +64,53 @@ CREATE QUERY seedSet() FOR GRAPH ldbc_snb SYNTAX v1 {
 
 
 
-Beginning in TigerGraph 3.0, SYNTAX V2 treats the source vertex set the same as the target vertex set.  That is, the source or the target vertex set may be:
+TigerGraph 3.0からは、SYNTAX V2がソース頂点セットとターゲット頂点セットを同じように取り扱います。つまり、ソースまたはターゲットの頂点セットを次にように表すことができます。
 
-* a vertex type `SELECT t FROM Person:s -(IS_LOCATED_IN>:e) - City:t`
-* an alternation of vertex types `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e) - Country:t`
-* omitted, with only an alias, meaning any vertex type `SELECT s FROM :s -(IS_LOCATED_IN>:e) - Country:t`
-* omitted, without an alias, meaning any vertex type `SELECT t FROM -(IS_LOCATED_IN>:e) - Country:t`
+* 頂点タイプ `SELECT t FROM Person:s -(IS_LOCATED_IN>:e) - City:t`
+* 頂点タイプの交換 `SELECT t FROM (Post|Comment):s -(IS_LOCATED_IN>:e) - Country:t`
+* 頂点タイプが省かれて、エイリアスのみで表され、任意の頂点タイプを意味する `SELECT s FROM :s -(IS_LOCATED_IN>:e) - Country:t`
+* 頂点タイプが省かれて、エイリアスなしで、任意の頂点タイプを意味する `SELECT t FROM -(IS_LOCATED_IN>:e) - Country:t`
 
 [NOTE]
 ====
-Performance may be better when types are explicitly provided.
+タイプを明示したほうが優秀なパフォーマンスが得られる可能性があります。
 ====
 
 [discrete]
-==== *Examples of 1-Hop Patterns*
+==== **1ホップパターンの例**
 
 . `FROM X:x - (E1:e1) - Y:y`
- ** E1 is an undirected edge, x and y bind to the end points of E1, and e1 is the alias of E1.
+ ** E1は無方向エッジです。x と y がE1のエンドポイントに結び付けられており、e1 は E1のエイリアスです。
 . `FROM X:x - (E2>:e2) - Y:y`
- ** Right directed edge x binds to the source of E2; y binds to the target of E2.
+ ** 右向きのエッジ x がE2のソースと結び付きます。y はE2のターゲットと結び付きます。
 . `FROM X:x - (<E3:e3) - Y:y`
- ** Left directed edge; y binds to the source of E3; x binds to the target of E3.
+ ** 左向きのエッジ y がE3のソースと結び付きます。x はE3のターゲットと結び付きます。
 . `FROM X:x - (_:e) - Y:y`
- ** Any undirected edge between a member of X and a member of Y.
+ ** X のメンバーとYのメンバー間にある任意の無向性エッジ。
 . `FROM X:x - (_>:e) - Y:y`
- ** Any right directed edge with source in X and target in Y.
+ ** XにソースがありYにターゲットがある、任意の右向きのエッジ。
 . `FROM X:x - (<_:e) - Y:y`
- ** Any left directed edge with source in Y and target in X.
+ ** YにソースがありXにターゲットがある、任意の左向きのエッジ。
 . `FROM X:x - ((<_|_):e) - Y:y`
- ** Any left directed or any undirected; "|" means OR, and parentheses enclose the group of edge descriptors; e is the alias for the edge pattern (<_|_).
+ ** 任意の左向きまたは任意の無向性のエッジ。 "|" はORを意味し、括弧の中にエッジの説明がまとめられています。e はエッジパターン (<_|_) のエイリアスです。
 . `FROM X:x - ((E1|E2>|<E3):e) - Y:y`
- ** Any one of the three edge patterns.
+ ** 3つのエッジパターンのいずれか1つ。
 . `FROM X:x - () - Y:y`
- ** any edge (directed or undirected)
- ** Same as `(<_|_>|_)`
+ ** 任意のエッジ（有向、無向）
+ ** `(<_|_>|_)` と同じ。
 
-== Entering Pattern Match Syntax Mode
+== パターンマッチの構文モードを入力
 
-To use pattern matching, you need to either set a session parameter or specify it in the query. There are currently two syntax versions for queries:
+パターンマッチングを使うには、セッションパラメータを設定するか、クエリ内で指定する必要があります。現在、クエリに使う構文には2つのバージョンがあります。
 
-* "v1" is the classic syntax, traversing one hop per SELECT statement. This is the default mode.
-* "v2" enhances the v1 syntax with pattern matching.
+* "v1" は従来の構文で、SELECT文毎に1ホップ横断します。これはデフォルトモードです。
+* "v2" はv1の構文をパターンマッチング機能で強化したものです。
 
-=== syntax_version Session Parameter
+=== セッションパラメータ: syntax_version
 
-You can use the SET command to assign a value to the _syntax_version_ session parameter: v1 for classic syntax; v2 for pattern matching. If the parameter is never set, the classic v1 syntax is enabled. Once set, the selection remains valid for the duration of the GSQL client session, or until it is changed with another SET command.
+SETコマンドを使って _syntax_version_ にセッションパラメータ値を付与することができます。従来の構文の場合はv1を、パターンマッチングの場合にはv2を指定します。パラメータの設定がない場合には、従来のv1構文が有効です。パラメータの設定は、そのGSQLクライアントセッション中有効です。セッション中に再度SETコマンドを使って変更することもできます。
 
-.GSQL: Set Syntax Version By A Session Parameter
+.GSQL: セッションパラメータで構文バージョンを設定する
 
 [source,gsql]
 ----
@@ -119,11 +119,11 @@ SET syntax_version="v2"
 
 
 
-=== Query-Level SYNTAX option
+=== クエリレベルでSYNTAXを使った設定
 
-You can also select the syntax by using the SYNTAX clause in the CREATE QUERY statement: v1 for classic syntax (default); v2 for pattern matching. The query-level SYNTAX option overrides the syntax_version session parameter.
+CREATE QUERY文の中のSYNTAX句 節を使って構文を選択することもできます。従来の構文 (デフォルト) はv1、パターンマッチングはv2です。クエリレベルでのSYNTAXの選択は、syntax_versionのセッションパラメータ設定を上書きします。
 
-.GSQL: Set Syntax Version By Specifying The Version After Graph Name In The Query 
+.GSQL: クエリ内のグラフ名の後ろでバ―ションを指定して、構文のバージョンを設定する
 
 [source,gsql]
 ----
@@ -135,11 +135,11 @@ CREATE QUERY test10 (string str ) FOR GRAPH ldbc_snb SYNTAX v2
 
 
 
-== Running Anonymous Queries Without Installing
+== インストールなしで無名のクエリを実行する
 
-In this tutorial, we will use Interpreted Mode for GSQL, introduced in TigerGraph 2.4. Interpreted mode lets us skip the INSTALL step, and even run a query as soon as we create it, to offer a more interactive experience. These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
+このチュートリアルでは、TigerGraph 2.4で追加されたインタプリタモードのGSQLを使います。インタプリタモードを使うと、インストールのステップを省くことができ、再生したクエリをすぐに実行できるので、インタラクティブなエクスペリエンスが提供されます。このようなワンステップで実行できるインタプリタモードのクエリは、名前なし（無名）、パラメータなしで、SQLと全く同じです。
 
-To run an anonymous query, replace the keyword CREATE with INTERPRET. Remember, no parameters:
+無名のクエリを実行するには、キーワードCREATEの代わりにINTERPRETを使います。パラメータは利用できないことに注意してください。
 
 [source,coffeescript]
 ----
@@ -148,34 +148,34 @@ INTERPRET QUERY () FOR GRAPH graph_name SYNTAX v2 { <query body> }
 
 [CAUTION]
 ====
-Recommendation: Increase the query timeout threshold.
+推奨: クエリのタイムアウトのしきい値を上げてください。
 
-Interpreted queries may run slower than installed queries, so we recommend increasing the query timeout threshold:
+インタプリタモードのクエリは、インストールされたクエリよりも時間がかかる場合があるので、クエリのタイムアウトのしきい値を上げることをお勧めします。
 
-.GSQL: Set Longer Timeout
+.GSQL: タイムアウトの設定値を上げる
 
 [source,coffeescript]
 ----
-# set query time out to 1 minutes
-# 1 unit is 1 millisecond
+# クエリタイムアウトを1分に設定
+# 1単位は1ミリ秒
 SET query_timeout = 60000
 ----
 
 
 ====
 
-== Examples of 1-Hop Fixed Length Query
+== 1ホップの固定長クエリの例
 
-*Example 1*. Find persons who know the person named "Viktor Akhiezer" and return the top 3 oldest such persons.
+**例1**. 「Viktor Akhiezer」という名前の人を知っている人たちを探して、その中から最高齢者3人を求める。
 
-.Example 1. Left Directed Edge Pattern
+.例1. 左向きのエッジのパターン
 
 [source,gsql]
 ----
 USE GRAPH ldbc_snb
 
 INTERPRET QUERY () SYNTAX v2 {
-   #1-hop pattern.
+   #1ホップパターン
    friends = SELECT p
              FROM Person:s -(KNOWS:e)- Person:p
              WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
@@ -190,15 +190,15 @@ INTERPRET QUERY () SYNTAX v2 {
 
 [NOTE]
 ====
-Syntax Enhancement in TigerGraph 3.0+
+TigerGraph 3.0以降は構文機能が強化されました。
 
-* In Example 1, "FOR GRAPH ldbc_snb" is not used after () in the query signature. It's an optional component in 3.0+ when "USE GRAPH graphName" is used; Or from the command line, "gsql -g graphName " precedes any query invocation.
-* In the FROM clause, we directly use vertex type Person as the starting vertex set. This syntax enhancement is available in syntax V2 only.
+* •	例1にある「FOR GRAPH ldbc_snb」は、クエリシグネチャの () の後ろに使われていません。これは、バージョン3.0以降で「USE GRAPH graphName」を使った場合に適用できるオプションのコンポーネントです。その他の場合、コマンドラインでのクエリの呼び出しは、必ずその前に「gsql -g graphName」が置かれます。 
+* FROM句では、頂点タイプPersonを直接、始めの頂点セットとして使います。この構文機能の強化は、バージョン2の構文のみにて利用可能です。
 ====
 
-You can copy the above GSQL script to a file named example1.gsql and invoke this script file in Linux.
+上記のGSQLスクリプトをexample1.qsglと名付けたファイルにコピーしてスクリプトファイルとし、Linuxから呼び出すことができます。
 
-.Linux Bash
+.Linuxバッシュ
 
 [source,bash]
 ----
@@ -207,7 +207,7 @@ gsql example1.gsql
 
 
 
-. Output of Example 1
+.例1の出力
 
 [source,coffeescript]
 ----
@@ -253,9 +253,9 @@ gsql example1.gsql
 
 
 
-*Example 2*. Find the total number of comments and total number of posts liked by Viktor. A Person can reach Comments or Posts via a directed edge LIKES.
+**例2**. Viktorが好きなコメントと投稿の各々の合計を求める。Personは、有向エッジLIKESを使ってコメントや投稿と結び付くことができます。
 
-.Example 2. Right-directed Edge Pattern
+.例2. 右向きエッジのパターン
 
 [source,gsql]
 ----
@@ -265,7 +265,7 @@ INTERPRET QUERY () SYNTAX v2 {
    SumAccum<int> @commentCnt= 0;
    SumAccum<int> @postCnt= 0;
 
-   #1-hop pattern.
+   #1ホップのパターン
    Result = SELECT s
             FROM Person:s -(LIKES>)- :tgt
             WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
@@ -281,9 +281,9 @@ INTERPRET QUERY () SYNTAX v2 {
 
 
 
-You can copy the above GSQL script to a file named example2.gsql, and invoke this script file in Linux.
+上記のGSQLスクリプトをexample2.qsglと名付けたファイルにコピーしてスクリプトファイルとし、Linuxから呼び出すことができます。
 
-.Linux Bash
+.Linuxバッシュ
 
 [source,bash]
 ----
@@ -292,7 +292,7 @@ gsql example2.gsql
 
 
 
-.Output of Example 2.
+.例2の出力
 
 [source,coffeescript]
 ----
@@ -318,11 +318,11 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 3*. Solve the same problem as in Example 2, but use a left-directed edge pattern.
+**例3**. 例2と同じ問題を、左向きエッジのパターンを使って解決する。
 
-Note below (line 8) that the source vertex set are now Comment and Post, and the target is Person.
+次（8行目）の例では、ソースの頂点セットがCommentとPostで、ターゲットがPersonになっていることに注意してください。
 
-.Example 3. Left-directed Edge Pattern
+.例3. 左向きエッジのパターン
 
 [source,gsql]
 ----
@@ -347,11 +347,11 @@ INTERPRET QUERY () SYNTAX v2{
 
 
 
-You can copy the above GSQL script to a file named example3.gsql, and invoke this script file in linux command line. The output should be the same as in Example 2.
+上記のGSQLスクリプトをexample3.qsglと名付けたファイルにコピーしてスクリプトファイルとし、Linuxから呼び出すことができます。出力は例2と同じになります。
 
-*Example 4*. Find Viktor Akhiezer's total number of related comments and total number of related posts. That is, a comment or post is either created by Viktor or is liked by Viktor. Note that the HAS_CREATOR edge type starts from Comment|Post, and the LIKES edge type starts from Person.
+**例4**. Viktor Akhiezerの関連したコメントと関連した投稿の各々の合計を探す。「関連した」とは、Viktorが作成した、またはいいね！したコメントや投稿を指します。ここで、HAS_CREATORのエッジタイプはComment|Postから始まり、LIKESのエッジタイプはPersonから始まっていることに注意してください。
 
-.Example 4. Disjunctive 1-hop edge pattern.
+.例4. 分離型1ホップエッジのパターン
 
 [source,gsql]
 ----
@@ -377,9 +377,9 @@ INTERPRET QUERY () SYNTAX v2{
 
 
 
-You can copy the above GSQL script to a file named example4.gsql, and invoke this script file in Linux:
+上記のGSQLスクリプトをexample4.qsglと名付けたファイルにコピーしてスクリプトファイルとし、Linuxから呼び出すことができます。
 
-.Linux Bash
+.Linuxバッシュ
 
 [source,coffeescript]
 ----
@@ -388,7 +388,7 @@ gsql example4.gsql
 
 
 
-.Output of Example 4.
+.例4の出力
 
 [source,coffeescript]
 ----
@@ -414,9 +414,9 @@ Using graph 'ldbc_snb'
 
 
 
-*Example 5.* Find the total number of comments or posts related to "Viktor Akhiezer". This time, we count them together and, we use wildcard "_" to represent the two types of edges: HAS_CREATOR and LIKES_REVERSE. Both are following the same direction.
+**例5.** Viktor Akhiezerに関連したコメントや投稿の合計数を求める。今度は、投稿とコメントを一緒に数えて、ワイルドカード "_" を使って、2種類のエッジタイプHAS_CREATORとLIKES_REVERSEを表します。両方とも同じ向きです。
 
-.Example 5. Disjunctive 1-hop edge pattern.
+.例5. 分離型1ホップエッジのパターン
 
 [source,gsql]
 ----
@@ -436,9 +436,9 @@ INTERPRET QUERY () SYNTAX v2{
 
 
 
-You can copy the above GSQL script to a file named example5.gsql, and invoke this script file in Linux:
+上記のGSQLスクリプトをexample5.qsglと名付けたファイルにコピーしてスクリプトファイルとし、Linuxから呼び出すことができます。
 
-.Linux Bash
+.Linuxバッシュ
 
 [source,bash]
 ----
@@ -447,7 +447,7 @@ gsql example5.gsql
 
 
 
-.Output of Example 5.
+.例5の出力
 
 [source,coffeescript]
 ----

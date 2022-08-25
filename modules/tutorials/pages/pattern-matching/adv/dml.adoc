@@ -1,33 +1,33 @@
-= Data Modification
+= データ修正
 
-Pattern Matching GSQL supports Insert, Update, and Delete operations. The syntax is identical to that in classic GSQL (v1), though the full range of data modification operations are not yet support.
+パターンマッチングのGSQLは挿入、更新、削除に対応しています。構文は従来のGSQL (v1) と全く同じですが、データ修正機能はまだ完全にサポートされていません。
 
-In general, data modification can be at two levels in GSQL:
+基本的に、GSQLのデータ修正には、次の2つのレベルがあります。
 
-. Top level. The statement does not need to within any other statement.
-. Within a SELECT query statement. The FROM-WHERE clauses define a match table, and the data modification is performed based on the vertex and edge information in the match table. The GSQL specifications calls these within-SELECT statements *DML-sub statements*.
+. トップレベル。修正を宣言する文は、ほかの文に従属する必要はありません。
+. SELECTクエリ文の中で宣言。マッチテーブルはFROM-WHERE句で定義されますが、データ修正は、マッチテーブルにある頂点とエッジの情報に対して実行されます。GSQLの仕様では、このようなSELECT内の宣言を**DML-サブステートメント**と呼んでいます。
 
 [CAUTION]
 ====
 
-* Insert, Update, and Delete currently work in compiled mode only (e.g., you must run INSTALL QUERY before RUN QUERY.)  Data Modification in interpreted mode is not yet available.
-* SELECT queries with data modification may only have one POST-ACCUM clause.
+* 挿入、更新、削除は、現在、コンパイルモードのみにて機能します。(例えば、RUN QUERYの前にINSTALL QUERYを実行する必要があります。) インタプリタモードでのデータ修正機能はまだ提供されていません。
+* データ修正を含むSELECTクエリには、POST-ACCUM句を1つしか使用できません。
 ====
 
-== INSERT
+== 挿入
 
-Pattern matching Insert is supported at both the top-level and within-SELECT levels, using the same syntax as in classic GSQL. You can insert vertices and edges.
+パターンマッチングの挿入は、トップレベルとSELECT内のレベルの両方に対応しており、従来のGSQLと同じ構文を使います。頂点とエッジの挿入が可能です。
 
-* For a top-level statement, use xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO],
-* Inside an ACCUM or POST-ACCUM clause, use the xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insert[DML-sub INSERT] statement.
+* トップレベルの文の場合は、 xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO]を使います。
+* ACCUM句またはPOST-ACCUM句の場合は、 use the xref:3.2@gsql-ref:querying:data-modification-statements.adoc#_dml_sub_insertDML-サブステートメントのINSERT] を使います。
 
-*Example 1.*  Create a  Person vertex, whose name is Tiger Woods. Next, find Viktor's favorite 2012 posts' authors, whose last name is prefixed with S. Finally, insert  KNOWS edges connecting Tiger Woods with Viktor's favorite authors.
+**例1.**  Tiger Woodsという名前の人の頂点を作成する。次に、Viktorの大好きな2012年の投稿の作者で姓の接頭文字がSである人を求める。最後に、Viktorの大好きな作者とTiger WoodsをつなぐKNOWSエッジを挿入する。
 
 [source,gsql]
 ----
 USE GRAPH ldbc_snb
 
-#find Viktor's 2012 favorite posts' authors, whose lastName prefix with S.
+#Viktorの大好きな2012年の投稿作者の姓の接頭文字がSである人を探します
 INTERPRET QUERY() SYNTAX V2 {
 
   R  =  SELECT t
@@ -38,7 +38,7 @@ INTERPRET QUERY() SYNTAX V2 {
   PRINT R[R.id, R.firstName, R.lastName];
 }
 
-#result
+#結果
 {
   "error": false,
   "message": "",
@@ -78,11 +78,11 @@ INTERPRET QUERY() SYNTAX V2 {
   ]}]
 }
 
-# create a Person node, whose name is tiger,
-# and connect this Person with above Victor's favorite authors
+# 名前がtigerというPersonのノードを作ります
+# そしてこのPersonを上のVictorの大好きな作者と結び付けます
 CREATE QUERY InsertEdgeAndVertex () SYNTAX v2{
 
-  #add a celebrity person node using INSERT INTO statement.
+  #INSERT INTO 文を使って、有名人の ノードを追加します
   INSERT INTO Person VALUES (100000000,"Tiger", "Woods", "m", _, _,_,_,_,_);
 
   R  =  SELECT t
@@ -91,7 +91,7 @@ CREATE QUERY InsertEdgeAndVertex () SYNTAX v2{
          AND t.lastName LIKE "S%" AND year(msg.creationDate) == 2012
         PER (s, t)
         ACCUM
-           #add edges connecting "tiger" and t with a 6/1/2020 time stamp
+           #「tiger」とtを結び付けるエッジをタイムスタンプ6/1/2020を付加して追加します
           INSERT INTO KNOWS VALUES(100000000, t, to_datetime("2020-06-01"));
 
   PRINT R [R.id, R.firstName, R.lastName];
@@ -101,18 +101,18 @@ INSTALL QUERY InsertEdgeAndVertex
 RUN QUERY InsertEdgeAndVertex()
 ----
 
-You can verify the result by running a simple built-in REST endpoint.
+標準提供されている簡単なRESTエンドポイントを使って結果を検証することができます。
 
-Check the inserted vertex.
+挿入頂点の確認
 
-.Linux Shell
+.Linuxシェル
 
 [source,gsql]
 ----
-#check the inserted vertex
+#挿入された頂点の確認
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
 
-#result
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -144,15 +144,15 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 
 
 
-Check the inserted edges.
+挿入エッジの確認
 
-.Linux file
+.Linuxファイル
 
 [source,gsql]
 ----
-#check the inserted edges using tiger's id (100,000,000)
+#tigerのID (100,000,000) を使った挿入エッジの確認
 curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
-#result
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -197,25 +197,25 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
     }
   ]
 }
-#note you can use the vertex lookup API to verify the three connected authors. E.g
+#なお、結び付いた3人の作者は、次の例ように頂点を検索するルックアップAPIを使って検証することができます：
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410" | jq .
 ----
 
 
 
-== UPDATE
+== 更新
 
 [NOTE]
 ====
 
-* Top-level UPDATE statements are not yet supported in syntax v2.
+* トップレベルのUPDATE文は、構文v2では現在、未対応です。
 +
-Vertex attributes can only be updated in POST-ACCUM clause, and  edge attributes can only be updated in the ACCUM clause.
+頂点の属性は、POST-ACCUM句のみで更新が可能で、エッジの属性は、ACCUM句のみで更新が可能です。
 
-* To perform within-SELECT updates, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
+* SELECT内で更新を実行する場合、FROMで宣言するパターンは、_**1ホップ、固定長**__であることが条件になります。
 ====
 
-*Example 2.* For all KNOWS edges that connect Viktor Akhiezer and his friends whose lastName begins with "S", update the edge creationDate to "2020-10-01".  Also, for the Person vertex (Tiger Woods) update the vertex's creationDate and language he speaks.
+**例2.** Viktor Akhiezerと彼の友達で姓がSで始まる人を結び付けている、すべてのKNOWSエッジの作成日を「2020-10-01」に更新する。また、Person (Tiger Woods) の頂点について、頂点の作成日と彼が使っている言語を更新する。
 
 [source,gsql]
 ----
@@ -225,22 +225,22 @@ DROP QUERY UpdateKnowsTS
 
 CREATE QUERY UpdateKnowsTS () SYNTAX v2 {
 
-  # update the vertex tiger's attributes
-  # creationDate and languages spoken in POST-ACCUM
+  # 頂点tigerの属性、作成日（creationDate）と使用言語（speaks）を
+  # POST-ACCUMで更新します
   R = SELECT p
       FROM Person:p
       WHERE p.firstName == "Tiger" AND p.lastName == "Woods"
       POST-ACCUM
-            # update simple base type attribute
+            # シンプルベースタイプの属性の更新
             p.creationDate = to_datetime("2020-6-1"),
-            # update  collection-type attribute
+            # コレクションタイプの属性の更新
             p.speaks = ("english", "golf");
 
-  #DML-sub level, update KNOWS edge attribute "creationDate" in ACCUM
+  #DMLサブレベルで、KNOWSエッジの属性「creationDate」をACCUMで更新します
   R  =  SELECT t
         FROM Person:s-(KNOWS:e) -:t
         WHERE s.firstName == "Tiger" and s.lastName == "Woods"
-        #update the KNOWS edge time stamp
+        #KNOWSエッジのタイムスタンプの更新
         ACCUM e.creationDate = to_datetime("2020-10-01");
 }
 
@@ -248,16 +248,16 @@ INSTALL QUERY UpdateKnowsTS
 RUN QUERY UpdateKnowsTS()
 ----
 
-To verify the update, we can use REST calls.
+更新結果を検証するにはRESTコールを使います。
 
-Check Tiger Woods' creationDate and language he speaks.
+Tiger Woodsの作成日と彼が使う言語を確認します。
 
-.Linux Shell
+.Linuxシェル
 
 [source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
-#result
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -292,15 +292,15 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 
 
 
-Check KNOWS edges whose source is tiger woods.
+ソースがtiger woodsであるKNOWSエッジを確認します。
 
-.Linux Shell
+.Linuxシェル
 
 [source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
 
-#result
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -349,20 +349,20 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" 
 
 
 
-== DELETE
+== 削除
 
-You  can use delete () function to delete edges and vertices in ACCUM and POST-ACCUM clauses.
+削除の関数、 DELETE () は、エッジと頂点の削除のために、ACCUM句とPOST-ACCUM句で使うことができます。
 
 [NOTE]
 ====
 
-* Top-levels  DELETE statements are not yet supported in SYNTAX v2.
-* Edges can only be deleted in the ACCUM clause.
-* For best performance, vertices should be deleted in the POST-ACCUM clause.
-* To perform within-SELECT deletes, the FROM pattern can only be a _*single hop, fixed length*_ pattern.
+* トップレベルのDELETE文は構文v2では現在、未対応です。
+* エッジの削除は、ACCUM句のみで可能です。
+* 頂点は、POST-ACCUM句で削除すると最も優れたパフォーマンスが得られます。
+* SELECT内で削除を実行する場合、FROMで宣言するパターンは、__**1ホップ、固定長**__であることが条件になります。
 ====
 
-*Example 3.* Delete vertex Tiger Woods and its KNOWS edges.
+**例3.** 頂点Tiger Woodsと付随したKNOWSエッジを削除する。
 
 [source,gsql]
 ----
@@ -376,9 +376,9 @@ CREATE QUERY DeleteEdgeAndVertex () SYNTAX v2{
         FROM Person:s -(KNOWS:e)- Person:t
         WHERE s.firstName == "Tiger" AND s.lastName == "Woods"
         ACCUM
-           //delete edges
+           //エッジの削除
            DELETE(e)
-        POST-ACCUM DELETE(s); //delete src vertex
+        POST-ACCUM DELETE(s); //ソース頂点の削除
 
 
   PRINT  R [R.id, R.firstName, R.lastName];
@@ -388,12 +388,12 @@ INSTALL QUERY DeleteEdgeAndVertex
 RUN QUERY DeleteEdgeAndVertex()
 ----
 
-To verify the result, you can use built-in REST calls.
+更新結果を検証するにはRESTコールを使います。
 
 [source,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
-#vertexresults
+#頂点の結果
 {
   "version": {
     "edition": "enterprise",
@@ -406,7 +406,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
 }
 
 curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/KNOWS" | jq .
-#edge results
+#エッジの結果 
 {
   "version": {
     "edition": "enterprise",

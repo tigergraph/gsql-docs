@@ -1,28 +1,28 @@
-= Get Set
+= 準備
 
-== Introduction
+== はじめに
 
-In this tutorial, we will show you how to create a graph schema, load data in your graph, write simple parameterized queries, and run your queries. Before you start, you need to have installed the TigerGraph system, verified that it is working, and cleared out any previous data. It'll also help to become familiar with our graph terminology.
+このチュートリアルでは、グラフスキーマの作成、グラフへのデータ読み込み、簡単なパラメータ化されたクエリの作成、クエリの実行方法について説明します。作業を開始する前に、TigerGraphシステムをインストールし、動作を確認し、、以前のデータがすべて削除されていることを確認してください。TigerGraphのグラフ用語に慣れると作業がしやすくなりますので習得されることをお勧めします。
 
-== What is a Graph?
+== グラフとは
 
-A graph is a collection of data entities and the connections between them.  That is, it's a network of data entities.
+グラフは、データエンティティ（管理対象となるデータの集まり）の集合と、データ同士の結びつきです。言い換えれば、データエンティティのネットワークです。
 
-Many people call a data entity a *node* ; at TigerGraph we called it a *vertex*. The plural is *vertices*. We call a connection an edge.  Both vertices and edges can have properties or attributes.  The figure below is a visual representation of a graph containing 7 vertices (shown as circles) and 7 edges (the lines).
+データエンティティは、よく**ノード**と呼ばれますが、TigerGraphでは**頂点**と呼びます。英語では単数の場合は**vertex**で、複数形は**vertices**です。結びつきのことをTigerGraphではエッジと呼びます。頂点とエッジは、プロパティまたは属性を持つことができます。下の図は、頂点とエッジが各々7つあるグラフを視覚的に表したものです。頂点は円で、エッジは線で表されています。
 
 image::friendship-social-graph.png[Friendship Social Graph]
 
-A graph schema is the model which describes the *types* of vertices (nodes) and edge (connections) which can appear in your graph.  The graph above has one type of vertex (person) and one type of edge (friendship).
+グラフスキーマは、グラフに表れる頂点 (ノード) とエッジ (結びつき) の**タイプ**を説明するモデルです。上のグラフには、1種類の頂点 (person) と1種類のエッジ (friendship) があります。
 
-A schema diagram looks like a small graph, except each node represents one *type* of vertex, and each link represents one *type* of edge.
+スキーマ図は小さなグラフのように見えますが、グラフと違う点はノードが1つの頂点の**タイプ**を表し、つながりを示す線が1つのエッジの**タイプ**を表しているところです。
 
 image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
 
-The friendship loop shows that a friendship is between a person and another person.
+friendshipのループを見ると、この友人関係はpersonとpersonの間のものであることがわかります。
 
-=== Data Set
+=== データセット
 
-For this tutorial, we will create and query the simple friendship social graph shown in Figure Friendship Social Graph. The data for this graph consists of two files in csv (comma-separated values) format. To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk. In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
+このチュートリアルでは、簡単なfriendshipの人間関係を表したグラフ (図のFriendship Social Graph) を作成してクエリします。このグラフのデータは2つのcsvファイル (カンマで値が区切られたファイル形式) に含まれています。次に進む前に、person.csvとfriendship.csvの2つのファイルをTigerGraphのローカルディスクに保存してください。チュートリアル内の説明では、この2つのファイルは `/home/tigergraph/` のフォルダーに格納されています。
 
 .person.csv
 
@@ -56,14 +56,14 @@ Dan,Kevin,2015-12-30
 
 
 
-=== Prepare Your TigerGraph Environment +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
+=== TigerGraph環境の準備 +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
 
-First, let's check that you can access GSQL.
+最初に、GSQLにアクセスできることを確認しましょう。
 
-. Open a Linux shell.
-. Type gsql as below. A GSQL shell prompt should appear as below.
+. Linux シェルを開きます。
+. 次のようにgsqlと入力します。次のようなGSQLシェルプロンプトが表示されます。
 +
-.Linux Shell
+.Linuxシェル
 +
 [,bash]
 ----
@@ -73,11 +73,11 @@ GSQL >
 +
 
 
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". If you need further help, please see xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
+. GSQLシェルが起動しない場合は、gadmin start allコマンドでシステムを再設定してください。それでもうまくいかない場合には、xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[gadminによるTigerGraphの管理]を参照してください。
 
-If this is your first time using GSQL, the TigerGraph data store is probably empty.  However, if you or someone else has already been working on the system, there may already be a database.  You can check by listing out the database catalog with the "ls" command. This is what should look like if it is empty:
+今回、GSQLを初めて使うのであれば、TigerGraphのデータストアは多分空です。しかし、他の方がシステムを使っていた場合など、データベースがすでに存在している可能性があります。lsのコマンドで、データベースのカタログをリストアップして確認ができます。データストアが空の場合は次のように表示されます。
 
-.GSQL shell - an empty database catalog
+.GSQLシェル - 空のデータベースカタログ
 
 [,text]
 ----
@@ -94,9 +94,9 @@ Json API version: v2
 
 
 
-If the data catalog is not empty, you will need to empty it to start this tutorial. We'll assume you have your coworkers' permission.  Use the command DROP ALL to delete all the database data, its schema, and all related definitions. This command takes about a minute to run.
+データストアが空でない場合は、まず空にしてからチュートリアルを進めてください。削除にあたって、他の方の許可を得ていると仮定します。DROP ALLのコマンドを使って、データベースにあるデータ、スキーマ、関連する定義をすべて削除します。このコマンドの実行には1分程かかります。
 
-.GSQL shell - DROP ALL
+.GSQLシェル - DROP ALL
 
 [,text]
 ----
@@ -115,20 +115,20 @@ Everything is dropped.
 
 [CAUTION]
 ====
-*Restarting TigerGraph*
+*TigerGraphの再起動*
 
-If you need to restart TigerGraph for any reason, use the following command sequence:
+何らかの理由でTigerGraphを再起動しなければならない場合には次のコマンドシーケンスを使います。
 
-.Linux Shell - Restarting TigerGraph services
+.Linuxシェル - TigerGraphサービスの再起動
 
 [,bash]
 ----
-# Switch to the user account set up during installation
-# The default is user=tigergraph, password=tigergraph
+# インストール時に設定したユーザーアカウントに切り替えます
+# デフォルトは user=tigergraph、password=tigergraph
 $ su tigergraph
 Password:tigergraph
 
-# Start all services
+# すべてのサービスを起動します
 $ gadmin restart -y
 ----
 
@@ -137,15 +137,15 @@ $ gadmin restart -y
 
 [NOTE]
 ====
-*Running GSQL commands from Linux*
+*LinuxからGSQLコマンドを実行する場合*
 
-You can also run GSQL commands from a Linux shell. To run a single command, just use "gsql" followed by the command line enclosed in single quotes. (The quotes aren't necessary if there is no parsing ambiguity; it's safer to just use them.)  For example,
+LinuxシェルからGSQLコマンドを実行することもできます。単独のコマンドの場合は、コマンドラインの先頭に「gsql」と挿入して、コマンド本体を一重引用符でくくります。(引用符は、構文の解析が明確な場合は必要ありませんが、使う方が無難です。) 例えば、
 
-.Linux shell - GSQL commands from a Linux shell
+.Linuxシェル - LinuxシェルからGSQLコマンドを実行する
 
 [,bash]
 ----
-# "-g graphname" is need for a given graph
+# "-g graphname"が対象のグラフには必要です
 gsql -g social 'ls'
 gsql 'drop all'
 gsql 'ls'
@@ -153,7 +153,7 @@ gsql 'ls'
 
 
 
-You can also execute a series of commands which you have stored in a file, by simply invoking "gsql" following by the name of the file.
+ファイルに保管してある一連のコマンドを実行する場合には、単に「gsql」を呼び出して次にファイル名を入力します。
 ====
 
-When you are done, you can exit the GSQL shell with the command "quit" (without the quotes).
+以上の作業が完了したら、quitのコマンドでGSQLシェルを終了します。

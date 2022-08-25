@@ -1,0 +1,33 @@
+= Query Optimizer
+:description: Overview of the query optimizer.
+
+GSQL has a built-in query optimizer that can optimize the execution plan of a query when you install the query.
+Currently, the optimizer can optimize the execution plan in the following ways:
+
+* Cost-based optimization
+
+== What is the query optimizer?
+The query optimizer optimizes the compiled binary execution plan of a query.
+
+When you install a GSQL query, GSQL compiles the query logic into a binary execution plan.
+If your query contains a path pattern, the pattern contains a source vertex set, a number of path edge pattern, and one or more step vertex sets.
+Similar to the path pattern in GSQL, its binary execution plan also starts from a set of source vertices, traverses through edges in the specified pattern, and finds the target vertices.
+
+However, the source vertices in the GSQL query might not actually be the source vertices that the query's execution plan starts from.
+When you install a query, the query optimizer can optimize the execution plan of so that it executes more efficiently.
+
+Depending on the type of optimization used, this could allow a query to execute with less time, less memory, or less storage.
+
+== Cost-based optimization
+
+To optimize a query based on cost means reducing the number of edge traversals a query has to execute.
+Enabling the cost-based optimizer when installing a query has the potential to significantly reduce the execution time of the installed query.
+
+=== How it works
+The cost-based optimizer takes statistics regarding the vertex and edge types as well as their attributes that are referenced in the query to compile an execution plan that involves the fewest edge traversals.
+This reduces the "cost" of the query and has the potential to reduce its execution time significantly.
+
+To use the cost-based query optimizer, see xref:query-optimizer/enable-cost-optimizer.adoc[].
+
+
+

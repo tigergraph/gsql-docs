@@ -1,0 +1,94 @@
+= Enabling Cost-Based Optimizer
+:sectnums:
+:description: Steps to enable the cost-based optimizer.
+
+This page walks you through the steps to enable the cost-based optimizer.
+
+== Before you begin
+* You have created a query that contains a `SELECT` statement that uses a path pattern in its `FROM` clause with one or more hops.
+* You have the privilege to install queries on the graph where you are operating.
+
+== Procedure
+The following is the procedure to enable cost-based optimizer when installing a query.
+
+=== Identify referenced types and attributes
+You need to identify the vertex and edge types for which you need to compute cardinality data, and attributes of those types for which you need to compute histogram data.
+
+Vertex and edge types:
+
+* Any vertex type referenced in the path pattern of a `FROM` clause.
+* Any edge type, as well as the endpoint vertex types of the edge types.
+
+Attributes:
+
+* Any attribute referenced in a `WHERE` clause in a `SELECT` statement in the query.
+
+For example, if you want to optimize the following query:
+
+----
+CREATE OR REPLACE QUERY example3() FOR GRAPH ldbc_snb SYNTAX V2 {
+
+ vSet = SELECT p
+        FROM Tag:t - (<HAS_TAG) - Comment:m - (<LIKES:e) - Person:p
+        WHERE p.gender == "female" AND t.id != 100;
+
+}
+----
+
+We would need the following statistics:
+
+* Cardinality
+** Vertex types
+*** `Tag`
+*** `Comment`
+*** `Person`
+** Refined edge types
+*** `HAS_TAG`: from `Comment` to `Tag`
+*** `LIKES`: from `Person` to `Comment`
+* Histogram
+** `gender` attribute of type `Person`
+** `id` attribute of type `Tag`
+
+
+=== Compute cardinality data
+To compute cardinality data, use the `POST :14240/gsqlserver/gsql/stats/card` endpoint.
+
+For example, to compute the cardinality data of the vertex `Person` in graph `ldbc_snb`, make the following request:
+
+[source.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
+----
+
+For another example, to compute the cardinality data of the edge type `LIKES` from a `Person` vertex to a `Comment` vertex, make the following request:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Comment"
+----
+
+You need to compute the cardinality data for every type you identified in the previous step, each with its own request.
+
+=== Compute histogram data
+To compute histogram data, use the `POST :14240/gsqlserver/gsql/stats/histogram` endpoint.
+
+For example, to compute the histogram data for attribute `gender` of vertex type `Person` on graph `ldbc_snb`, make the following request:
+
+[.wrap,console]
+----
+$ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=gender&buckets=256"
+----
+
+You need to compute the histogram data for every vertex attribute referenced in a `WHERE` clause of a `SELECT` statement.
+Edge attributes are not yet supported.
+
+=== Install query with `-cost` option
+
+Now that the relevant statistics are available to the query optimizer, you can install the query using the cost-based query optimizer option.
+To use the cost-based optimizer during installation, use the `-cost` option when installing the query.
+
+For example, to install the query `example3`, run `INSTALL QUERY example3`.
+
+Alternatively, set the session variable to true by running `set cost_opt = true` in the GSQL shell.
+
+If you missed any cardinality or histogram data, GSQL warns you about the missing data, so you can compute the data for any missing type or attribute.

@@ -1,0 +1,108 @@
+=== Compute histogram statistics
+
+`POST :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint computes histogram statistics for a specified attribute of a vertex type.
+
+==== Parameters
+
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+|`STRING`
+
+|`vertex`
+|Name of the vertex type.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+|`STRING`
+
+|`bucket`
+|
+|
+
+|`compute`
+|
+|
+|===
+
+==== Examples
+
+The following request computes the histogram data for attribute `first_name` of vertex type `Person` on graph `ldbc_snb`:
+
+[.wrap,console]
+----
+$ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=first_name&buckets=10&compute=true"
+----
+
+=== Retrieve histogram statistics
+
+`GET :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint retrieves histogram data for a specified attribute of a vertex type.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+|`STRING`
+
+|`vertex`
+|Name of the vertex type.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+|`STRING`
+|===
+
+==== Examples
+
+The following request retrieves the histogram statistics for the `first_name` attribute of the vertex type `Person`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=firstName"
+----
+
+=== Delete histogram statistics
+
+`DELETE :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint deletes histogram data for a graph.
+This includes histogram data on all vertex attributes in that graph.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+|`STRING`
+
+|`vertex`
+|Name of the vertex type.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+|`STRING`
+|===
+
+==== Examples
+
+The following request deletes the histogram statistics for the graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb=
+----

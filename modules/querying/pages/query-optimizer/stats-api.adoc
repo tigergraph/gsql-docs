@@ -1,0 +1,19 @@
+= Statistics REST APIs
+
+The endpoints on this page calculate cardinality and histogram statistics of vertex and edge types and attributes.
+The statistics are required for effective optimization.
+
+
+== Cardinality
+
+The following endpoints compute, fetch and delete vertex and edge counts (cardinality) of a graph.
+
+
+include::partial$cardinality-api.adoc[]
+
+== Histogram
+
+Histogram is a type of attribute statistics that stores information about the distribution of values of an attribute.
+
+include::partial$histogram-api.adoc[]
+

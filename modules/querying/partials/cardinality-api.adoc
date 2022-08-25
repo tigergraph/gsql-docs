@@ -67,6 +67,7 @@ This endpoint retrieves cardinality statistics of a graph.
 
 |`graph`
 |Name of the graph.
+Required.
 |`STRING`
 |===
 
@@ -93,6 +94,7 @@ This endpoint deletes the cardinality statistics of a graph.
 
 |`graph`
 |Name of the graph.
+Required.
 |`STRING`
 |===
 

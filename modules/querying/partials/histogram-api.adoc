@@ -12,23 +12,34 @@ This endpoint computes histogram statistics for a specified attribute of a verte
 
 |`graph`
 |Name of the graph.
+Required.
 |`STRING`
+
 
 |`vertex`
 |Name of the vertex type.
+Required.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
+Required.
 |`STRING`
 
 |`bucket`
-|
-|
+|The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
+Required.
+
+It is recommended that each bucket has at least 100 values.
+Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
+For example, if the vertex type has 100,000 vertices, set this parameter to 1000.
+|`INT`
 
 |`compute`
-|
-|
+|Whether to compute histogram for the attribute.
+If set to `false`, the request is equivalent to a `GET` request.
+Defaults to `true`.
+|`BOOL`
 |===
 
 ==== Examples
@@ -53,14 +64,18 @@ This endpoint retrieves histogram data for a specified attribute of a vertex typ
 
 |`graph`
 |Name of the graph.
+Required.
 |`STRING`
+
 
 |`vertex`
 |Name of the vertex type.
+Required.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
+Required.
 |`STRING`
 |===
 
@@ -87,14 +102,18 @@ This includes histogram data on all vertex attributes in that graph.
 
 |`graph`
 |Name of the graph.
+Required.
 |`STRING`
+
 
 |`vertex`
 |Name of the vertex type.
+Required.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
+Required.
 |`STRING`
 |===
 

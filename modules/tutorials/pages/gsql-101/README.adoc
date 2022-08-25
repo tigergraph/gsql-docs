@@ -1,8 +1,8 @@
 = GSQL 101
 
-In this exercise, we will go through the 3-step process of writing GSQL-- define a schema, load data, and write a query.
+このチュートリアルでは、GSQL作成に必要な3つのステップ - スキーマの定義、データの読み込み、クエリの作成 -　について解説します。
 
-This tutorial is written so that you can follow along and perform the steps on your TigerGraph system as your read.
+ユーザーが本書を読みながら TigerGraph システムで手順を実行できるように作成されています。
 
 * xref:tutorials:gsql-101/get-set.adoc[]
 

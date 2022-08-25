@@ -1,47 +1,47 @@
-= Get Set
+= 準備
 
-== Introduction
+== はじめに
 
-In this tutorial, we will show you how to write and run Pattern Matching queries. Pattern Matching is available in TigerGraph v2.4+.
+このチュートリアルでは、パターンマッチングのクエリの作成と実行方法について説明します。パターンマッチングはTigerGraph 2.4以降のバージョンで提供されています。
 
-We assume you have finished xref:tutorials:gsql-101/README.adoc[GSQL 101]. If not, please complete GSQL 101 first.
+xref:tutorials:gsql-101/README.adoc[GSQL 101]のチュートリアルを終了していることを前提としています。そうでない場合は、先にGSQL 101を完了してからこちらを始めてください。
 
 [NOTE]
 ====
-This tutorial was updated for TigerGraph 3.0. If you are using an older version, please change to the documentation for that version.
+このチュートリアルはTigerGraph 3.0のリリース時に更新されています。古いバージョンをお使いの場合は、そのバージョンのドキュメントに変更してください。
 ====
 
-=== What is a Graph Pattern?
+=== グラフパターンとは
 
-A graph pattern is a traversal trace on the graph schema. A pattern can contain repeated steps. A pattern can be a linear trace, or a non-linear trace (tree, circle etc.). For example, imagine a simple schema consisting of a Person vertex type and a Friendship edge type. A pattern could be a trace on this simple schema,
+グラフパターンは、グラフスキーマに表示されるトラバーサルトレースです。パターンは繰り返されるステップを含むことができます。パターンには線状のトレースもあれば、線以外（ツリー、円など）のトレースもあります。例えば、Person という頂点タイプとFriendshipというエッジタイプによって構成される単純なスキーマの場合、パターンは次のようにその単純なスキーマ内のトレースを指す場合もあれば、
 
 [source,text]
 ----
 Person - (Friendship) - Person - (Friendship) - Person
 ----
 
-or, use *2 to denote the two consecutive Friendship edges,
+次のように *2を使って、2つの連続したFriendshipのエッジを指す場合もあります。
 
 [source,text]
 ----
 Person - (Friendship*2) - Person
 ----
 
-=== What is Pattern Matching?
+=== パターンマッチングとは
 
-Pattern matching is the process of finding subgraphs in a data graph that conform to a given query pattern.
+パターンマッチングは、指定されているクエリパターンが適合するサブグラフをデータグラフ内で探索する処理です。
 
-== Prepare Your TigerGraph Environment
+== TigerGraph環境の準備
 
-We assume you are running your own TigerGraph instance as the sole user with full privileges. If you are on a multiuser Enterprise Edition, consult with your DB administrator. You need to have Designer or Admin privilege on an empty graph. At various points in this tutorial, there are links to download files. Most are small, but the graph data file is 1GB when uncompressed.
+ここでは、TigerGraphインスタンスのすべての権限を持つ唯一のユーザーとして実行していることを前提としています。マルチユーザーのエンタープライズエディションをお使いの場合は、データベース管理者の方と相談してください。空のグラフに対する、デザイナーまたは管理者の権限が必要です。チュートリアルの各所に、ファイルをダウンロードするリンクがあります。大半のファイルは小さいものですが、グラフデータファイルは解凍すると1GBになります。
 
-First, let's check that you can access GSQL, and that your version is 3.0 or higher.
+まず、GSQLにアクセスできること、お使いのバージョンが3.0以上であることを確認してください。
 
-. Open a Linux shell.
-. Type `gsql` as below. A GSQL shell prompt should appear as below.
-. Type version in GSQL shell. It should show 2.4 or higher as below. If not, please download and install the latest version from https://www.tigergraph.com/download/
+. Linuxシェルを開きます。
+. 次のように `gsql` と入力します。GSQLシェルのプロンプトが次のように表示されます。
+. GSQLシェルにversionと入力します。次のように、2.4以上と表示されるでしょう。そうでない場合には、最新のバージョンを https://www.tigergraph.co.jp/get-tigergraph/ からダウンロードしインストールしてください。
 +
-.Linux Shell
+.Linuxシェル
 +
 [source,bash]
 ----
@@ -52,33 +52,33 @@ GSQL version: 3.0
 +
 
 
-. If the GSQL shell does not launch, try resetting the system with "gadmin start all". This will launch each service if they have not been started yet. If you need further help, please see the xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[manage TigerGraph with gadmin].
-. You need to start from an empty data catalog. If necessary, run `drop all` to clear the catalog first.
+. GSQLシェルが起動しない場合は、「gadmin start all」でシステムをリセットしてみてください。これにより、まだ開始していない各サービスが起動されます。それでもうまく行かない場合には、「  xref:3.4@tigergraph-server:gadmin:management-with-gadmin.adoc[TigerGraphをgadminで管理]」のドキュメントをご覧ください。
+. データカタログが空の状態で、シェルを起動させる必要があります。必要であれば、まず `drop all` を実行して、カタログをクリアしてください。
 
-=== Cheatsheet
+=== チートシート
 
-The following general use commands were introduced in xref:tutorials:gsql-101/README.adoc[GSQL 101].
+以下は  xref:tutorials:gsql-101/README.adoc[GSQL 101]で説明があった一般的なコマンドです。
 
-* The *`%`* prefix indicates Linux shell commands. You need TigerGraph admin privilege to run most gadmin commands.
-* The *`GSQL>`* prefix indicates GSQL shell commands.
+* Linuxシェルのコマンドには *`%`* の接頭文字がついています。大多数のgadminコマンドは、TigerGraphの管理者権限がなければ実行できません。
+* GSQLシェルのコマンドには *`GSQL>`* の接頭文字がついています。
 
 [width="100%",cols="<50%,<50%",options="header",]
 |===
-|Command |Description
-|% gsql |Enter the GSQL shell in interactive mode
-|% gsql '<GSQL command string>' |Run one GSQL command
-|% gadmin status |Check the status of TigerGraph services +
+|コマンド |説明
+|% gsql |GSQLシェルにインタラクティブモードで入る
+|% gsql '<GSQLコマンドの文字列>' |GSQLコマンドを1つ実行する
+|% gadmin status |TigerGraphサービスのステータスを確認する +
 +
-(If your graph store is empty, it is normal for +
+(グラフストアが空の場合は、 +
 +
-some statuses to be flagged in red.)
-|% gadmin restart |Restart TigerGraph services
-|GSQL> ls |List the graph schema, loading jobs, and queries
-|GSQL> show user |Show your user name and roles
+一部のステータスが赤くフラグされることがあります)
+|% gadmin restart |TigerGraphサービスを再起動する
+|GSQL> ls |グラフスキーマ、読み込みジョブ、クエリをリストする
+|GSQL> show user |ユーザー名とロールを表示する
 |GSQL> drop all a|
-Delete the entire schema, all data, all
+スキーマ全体、すべてのデータ、すべてのジョブ、
 
-jobs, and all queries
+すべてのクエリを削除する
 
-|GSQL> exit |Exit GSQL interactive shell
+|GSQL> exit |GSQLのインタラクティブシェルを終了する
 |===

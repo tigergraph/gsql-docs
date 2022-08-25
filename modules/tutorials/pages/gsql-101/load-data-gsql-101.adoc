@@ -1,16 +1,16 @@
-= Load Data
+= データの読み込み
 
-After creating a graph schema, the next step is to load data into it. The task here is to instruct the GSQL loader how to associate ("map") the fields in a set of data files to the attributes in your vertex types and edge types of  the graph schema we just defined.
+グラフスキーマを作成したら、次に作成したスキーマにデータを読み込みます。実際の作業は、一式のデータファイルにあるフィールドを、先に定義したグラフスキーマの頂点タイプとエッジタイプの属性と関連付ける（マッピングする）方法をGSQLローダーに指示することです。
 
-You should have the two data files person.csv and friendship.csv on your local disk. It's not necessary that they are in the same folder with you.
+person.csvとfriendship.csvという2つのデータファイルがローカルディスクにあるはずです。それらのファイルは、同じフォルダにある必要はありません。 
 
-If you need to exit the GSQL shell for any reason, you can do so by typing "quit" without the quotes.  Type gsql to enter again.
+GSQLシェルを終了する必要がある場合は、quitと入力します。gsqlと入力すれば、シェルに戻ることができます。
 
-== Define a Loading Job
+== 読み込みジョブの定義
 
-The loading job below assumes that your data files are in the folder `/home/tigergraph`. If they are elsewhere, then in the loading job script below replace `/home/tigergraph/person.csv` and `/home/tigergraph/friendship.csv` with their corresponding file path respectively. Assuming you're (back) in the GSQL shell, enter the following set of commands.
+次の読み込みのジョブでは、データファイルが `/home/tigergraph` のフォルダにあることを前提としています。他の場所にある場合は、次の読み込みジョブスクリプトにある `/home/tigergraph/person.csv` と `/home/tigergraph/friendship.csv` の部分を、各々実際のファイルパスに置き換えてください。GSQLシェル （に戻って） から操作しているという前提で、次のコマンドを入力します。
 
-.GSQL commands to define a loading job
+.読み込みジョブを定義するGSQLコマンド
 
 [,gsql]
 ----
@@ -28,18 +28,18 @@ END
 
 
 
-Let's walk through the commands:
+順を追って、コマンドの説明します。
 
-* `USE GRAPH social` :  Tells GSQL which graph you want to work with.
-* `+BEGIN ... END+`:  Indicates multiple-line mode.  The GSQL shell will treat everything between these markers as a single statement.  These is only needed for interactive mode.  If you run GSQL statements that are stored in a command file, the command interpreter will study your whole file, so it doesn't need the BEGIN and END hints.
-* `CREATE LOADING JOB`:  One loading job can describe the mappings from multiple files to multiple graph objects. Each file must be assigned to a filename variable. The field labels can be either by name or by position. By-name labelling requires a header line in the source file. By-position labelling uses integers to indicate source column position 0, 1,... In the example above, the first LOAD statement refers to the source file columns by name, whereas the second LOAD statement refers to the source file columns by position. Note the following details:
- ** The column "name" in file1 gets mapped to two fields, both the PRIMARY_ID and the "name" attribute of the person vertex.
- ** In file1, gender comes before age.  In the person vertex, gender comes after age. When loading, state your attributes in the order needed by the target object (in this case, the person vertex).
- ** Each LOAD statement has a USING clause.  Here it tells GSQL that both files contain a header (whether we choose to use the names or not, GSQL still needs to know whether to consider the first line as data or not). It also says the column separator is comma. GSQL can handle any single-character separator, not just commas.
+* `USE GRAPH social` :  どのグラフが作業の対象になるかをGSQLに伝えます。
+* `+BEGIN ... END+`:  複数行モードであることを意味します。GSQLシェルは、この2つのマーカーの間にあるものすべてを単独の命令文として取り扱います。このマーカーはインタラクティブモードの場合にのみ必要です。コマンドファイルに格納されているGSQL文を実行する場合には、コマンドのインタプリタ (CLI) がファイル全体を精査するので、BEGINとENDを示唆する必要はありません。
+* `CREATE LOADING JOB`:  1つの読み込みジョブは、複数のファイルから複数のグラフオブジェクトに対するマッピングを指示できます。各ファイルは、ファイル名変数に割り当てられている必要があります。フィールドラベルには、名前または位置のいずれかを設定できます。名前によるラベル付けの場合は、ソースファイルにヘッダー行が必要です。位置によるラベル付けの場合には、整数0, 1,… がソースの列の位置を表します。上記の例では、最初のLOAD文はソースファイルの列を名前で参照し、2つ目のLOAD文は、位置で参照しています。次のことに注意してください。
+ ** ファイル1にあるnameという列は、2つのフィールド （personという頂点のPRIMARY_IDと「名前」という属性の両方） にマッピングされます。
+ ** ファイル1では、性別の次に年齢があります。personの頂点では、性別は年齢の後にきます。読み込みの命令文では、読み込み先のオブジェクト （この例では頂点person） が必要とする順番で属性を入力します。
+ ** 各LOAD文には、必ずUSING句があります。ここでは、両方のファイルにヘッダーが含まれていることをGSQLに伝えています。（名前を使うかどうかに関わらず、GSQLは最初の行が考慮するデータであるかどうかを識別する必要があります。） また、列がカンマによって区切られていることも宣言しています。GSQLは、カンマだけでなく、あらゆる単一文字のセパレーターに対応しています。
 
-When you run the CREATE LOADING JOB statement, GSQL checks for syntax errors and checks that you have data files in the locations specified. If it detects no errors, it compiles and saves your job.
+CREATE LOADING JOBの命令文を実行するときに、GSQLは構文エラーをチェックして、データファイルが指定された場所にあることを確認します。エラーがなければ、ジョブはコンパイルされ保存されます。
 
-.GSQL shell
+.GSQLシェル
 
 [,gsql]
 ----
@@ -59,11 +59,11 @@ The job load_social is created.
 
 
 
-== Run a Loading Job
+== 読み込みジョブの実行
 
-You can now run your loading job to load data into your graph:
+以上で読み込みの準備ができました。読み込みジョブを実行してデータをグラフに読み込ませます。
 
-.GSQL command
+.GSQLコマンド
 
 [,gsql]
 ----
@@ -72,9 +72,9 @@ RUN LOADING JOB load_social
 
 
 
-The result is shown below.
+以下が結果です。
 
-.GSQL shell
+.GSQLシェル
 
 [,bash]
 ----
@@ -97,4 +97,4 @@ Job "social_m1.1528095850854" loading status
 
 
 
-Notice the location of the loading log file.  The example assumes that you installed TigerGraph in the default location, `/home/tigergraph/`. In your installation folder is the main product folder, tigergraph.  Within the tigergraph folder are several subfolders, such as logs, document, config, bin, and gstore. If you installed in a different location, say `/usr/local/`, then you would find the product folder at `/usr/local/tigergraph`.
+読み込みのログファイルの場所に注意してください。この例では、TigerGraphがデフォルトの場所である `/home/tigergraph/` にインストールされていることを前提としています。インストールフォルダ内に、tigergraphという主な製品フォルダがあります。そのtigergraphフォルダの中にはlogs、document、config、bin、gstoreなどの数個のサブフォルダがあります。TigerGraphのインストール先が別の場所、例えば `/usr/local/` である場合は、製品フォルダは `/usr/local/tigergraph` になります。

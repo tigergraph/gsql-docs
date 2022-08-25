@@ -1,31 +1,31 @@
-= Example - A Recommender
+= パターンマッチを使ったソリューション - レコメンダー
 
-We have demonstrated the basic pattern match syntax. You should have mastered the basics by this point. In this section, we show two end-to-end solutions using the pattern match syntax.
+ここまでのセクションでは基本的なパターンマッチ構文を解説しました。基本はマスターされている前提で次に進みます。このセクションでは、パターンマッチの構文を使った、エンドツーエンドのソリューションを2つご紹介します。
 
-== A Recommendation Application
+== 推薦アプリケーション
 
-In this example, we want to recommend some messages (comments or posts) to the person Viktor Akhiezer.
+この例は、Viktor Akhiezerという人に、メッセージ（コメントや投稿）をレコメンドするのが目的です。
 
-How do we do this?
+さて、どのようにしたらよいでしょうか。
 
-One way is to find Others who likes the same messages Viktor likes. And then recommend the messages that Others like but Viktor have not seen. The pattern is roughly like below
+1つの方法は、Viktorと同じメッセージにいいね！をした他の人たち（Others）を探すことです。そして、他の人たち（Others）がいいね！をしたメッセージの中からViktor がまだ見ていないメッセージをレコメンドします。この場合のパターンの概要は次のようになります。
 
-* Viktor - (Likes>) - Message - (<Likes) - Others
-* Others - (Likes>) - NewMessage
-* Recommend NewMessage to Viktor
+* Viktor - (Likes>) - Message - (<Likes) - Others（Viktor と他の人達はMessageにいいね！した）
+* Others - (Likes>) - NewMessage（他の人達はNewMessageにいいね！した）
+* Recommend NewMessage to Viktor	  (NewMessageをViktorにレコメンドする)
 
-However, this is too fine granularity, and we are overfitting the message level data with a collaborative filtering algorithm. The intuition is that two persons are similar to each other when their "liked" messages fall into the same category (tag). This makes more sense and common than finding two persons that "likes" the same set of messages. As a result,  one way to avoid this overfitting is to go one level above. That is, instead of finding common messages as a similarity base, we find common messages'  tags as a similarity base. Person A and Person B are similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
+しかし、これでは粒度が細かすぎます。また、メッセージレベルのデータに協調フィルタリングのアルゴリズムが過剰適合されています。直感的に「いいね！」を押したメッセージが同じカテゴリー（タグ）である時、同じ種類のメッセージが好きな人達は、類似していると考えます。同じメッセージのセットに「いいね！」を付けた人を探すよりこの方法の方が、理にかなっていて一般的です。そこで、過剰適合を避ける方法として、1つ上のレベルで検索することができます。共通のメッセージを類似度の基準にする代わりに、共通のメッセージのタグを基準にするわけで、Person A と Person B が同じタグに属しているメッセージを好きな場合、この2人は似ていると捉えます。このスキーマを使うと、過剰適合の問題が解決できます。パターンマッチの語彙を使うと次のように表現できます。
 
-* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others
-* Others - (Likes>) -  NewMessage
-* Recommend NewMessage to Viktor
+* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others（Viktorと他の人達は同じタグのあるMessageにいいね！した）
+* Others - (Likes>) -  NewMessage　（他の人達はNewMessageにいいね！した）
+* Recommend NewMessage to Viktor 	(NewMessageをViktorにレコメンドする)
 
-*GSQL. RecommendMessage Application.*
+**GSQL. レコメンドメッセージのアプリケーション**
 
-This time, we create the query first, and interpret the query by calling the query name with parameters. +
-If we are satisfied with this query, we can use "install query queryName" to get the compiled query installed which has the best performance.
+今度は、クエリを先に作成して、パラメータを使ってクエリ名を呼び出して、クエリを解釈します。 +
+このクエリの結果が満足であれば、「INSTALL QUERY queryName」を使ってコンパイルされたクエリをインストールして、より良いパフォーマンスを得ることができます。
 
-.GSQL Recommendation Algorithm 
+.GSQLの推薦アルゴリズム 
 
 [source,gsql]
 ----
@@ -40,9 +40,9 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
   SumAccum<float> @Rank;
   OrAccum @Liked = false;
 
-   #1. mark messages liked by Viktor
-   #2. calculate log similarity score for each persons share the same
-   #   interests at Tag level.
+   #1. Viktorが「いいね！」したメッセージに印を付けます
+   #2. Viktorとタグレベルで同じ興味を持っている人の
+   #   ログ類似スコアを計算します
     Others =
        SELECT p
        FROM Person:s-(LIKES>)-:msg - (HAS_TAG>.<HAS_TAG.<LIKES)- :p
@@ -50,7 +50,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
        ACCUM msg.@Liked = true, p.@TagInCommon +=1
        POST-ACCUM p.@SimilarityScore = log (1 + p.@TagInCommon);
 
-    # recommend new messages to Viktor that have not liked by him.
+    # Viktorが今まで「いいね！」としていなかった新しいメッセージを彼に推薦します。
     RecommendedMessage =
              SELECT msg
              FROM Others:o-(LIKES>) - :msg
@@ -64,15 +64,15 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
 
 
 INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
-#try the second person with just parameter change.
+#パラメータだけを変更し、もう1人違う人にレコメンドしてみます
 INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 
 
 
-You can copy the above GSQL script to a file named app1.gsql, and invoke this script file in linux command line.
+上のGSQLスクリプトをapp1.gsqlと名付けたファイルにコピーしてスクリプトファイルとすれば、Linuxコマンドラインから呼び出すことができます。
 
-.Linux Bash
+.Linuxバッシュ
 
 [source,bash]
 ----
@@ -81,7 +81,7 @@ gsql app1.gsql
 
 
 
-. Output of App1
+. App1の出力
 
 [source,coffeescript]
 ----
@@ -120,11 +120,11 @@ The query RecommendMessage has been added!
 
 
 [discrete]
-==== Install the query
+==== クエリのインストール
 
-When you are satisfied with your query  in the GSQL interpret mode,  you can now install it as a generic service which has a much faster speed.  Since we have been using "CREATE QUERY .." syntax, the query is added into the catalog, we can set the syntax version and install it.
+GSQLのインタプリタモードでクエリが満足いくものであることを確かめたら、一般的なサービスとしてインストールするとよいでしょう。クエリの処理スピードがかなり速くなります。ここまで「CREATE QUERY ..」の構文を使ってきたので、このクエリはカタログに追加され、構文のバージョンを設定してインストールすることができます。
 
-.GSQL Prepare Install Query
+.GSQLクエリのインストール準備
 
 [source,coffeescript]
 ----
@@ -138,7 +138,7 @@ INSTALL QUERY RecommendMessage
 
 
 
-.GSQL Run the Installed Query
+.GSQLインストール済みクエリの実行
 
 [source,coffeescript]
 ----
@@ -179,22 +179,22 @@ GSQL > run query RecommendMessage("Viktor", "Akhiezer")
 
 
 
-.Linux Bash:  Shutdown The System
+.Linuxバッシュ:  システムをシャットダウンする
 
 [source,coffeescript]
 ----
-#when you are not using the TigerGraph System on your laptop,
-# to save resource, you can stop it by
+#ラップトップ上でTigerGraph システムを使っていない間、
+# リソースを節約するために次のコマンドで停止することができます
 gadmin stop
-#when you need to start it again, use
+#再起動するときには、次のコマンドを使います
 gadmin start
 ----
 
 
 
-The above use log-cosine as a similarity measurement. We can also use cosine similarity by using two persons liked messages.
+上の例ではログとコサインを使って類似度を測っています。2人の人が共通のメッセージを好きだという方法を使う場合には、コサイン類似度を使うこともできます。
 
-.GSQL Recommendation Algorithm 2
+.GSQL推薦アルゴリズム 2
 
 [source,gsql]
 ----
@@ -213,8 +213,8 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
   OrAccum @Liked = false;
   float sqrtOfInputPersonMsgCnt;
 
-   #1. mark messages liked by input user
-   #2. find common msg between input user and other persons
+   #1. インプットするユーザーがいいね！したメッセージに印を付けます
+   #2. インプットしたユーザーと別の人達に共通するいいね！されたメッセージを探します
     Others =
        SELECT p
        FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
@@ -224,7 +224,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
 
     sqrtOfInputPersonMsgCnt = sqrt(@@InputPersonMsgCnt);
 
-    #calculate cosine similarity score.
+    #コサインの類似度を計算します
     #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
     Others  =
         SELECT o
@@ -232,7 +232,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
         ACCUM o.@MsgCnt += 1
         POST-ACCUM o.@SimilarityScore = o.@MsgInCommon/(sqrtOfInputPersonMsgCnt * sqrt(o.@MsgCnt));
 
-   #recommend new messages to input user that have not liked by him.
+   #インプットしたユーザーが今までいいね！をしていなかった新しいメッセージをそのユーザーに推奨します
     RecommendedMessage =
              SELECT msg
              FROM Others:o-(LIKES>) - :msg
@@ -245,7 +245,7 @@ CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
 }
 
 INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
-#try the second person with just parameter change.
+#パラメータだけを変更し、もう1人違う人にレコメンドしてみます
 INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 

@@ -1,26 +1,26 @@
-= Summary
+= まとめ
 
-We have covered a lot of territory in GSQL 102:
+GSQL 102では実に多くの内容を学んできました。
 
-* Showed how to invoke GSQL Pattern Matching syntax
-* Explained how Pattern Matching extends the classic FROM clause grammar:
- ** Each hop can be a choice of multiple, individually directed edge types
- ** The Kleene star and a min...max range enable each hop to be repeated.
- ** GSQL automatically finds the shortest paths that satisfy a variable length path.
- ** A virtual match table has a column for each vertex or edge alias in a multi-hop path, and a row for each graph path that satisfies the pattern.
- ** The ACCUM clause iterates on each row in the match table.
- ** A POST-ACCUM clause iterates on one vertex alias; a query can have multiple POST-ACCUM clauses.
-* Described the improvements to Pattern Matching in TigerGraph 3.0:
- ** The source (leftmost) vertex set can be specified with the same flexibility as the other vertex sets: a vertex type, an alteration of types, or omitted. Explicit seed sets are no longer needed
- ** Restrictions on which vertex aliases may be used in the ACCUM clause have been lifted.
- ** Described three major advanced options:
-  *** The PER <vertex alias> clause enables users to fine tune the ACCUM iteration.
-  *** Data modification (insert, update, delete) are now supported.
-  *** Conjunctive Pattern Matching let users express a complex pattern as a set of path patterns which must all be satisfied.
-* Provided best practices for writing queries, especially pattern matching queries:
- ** Put the smaller vertex set on the left end.
- ** Specify all vertex and edge types explicitly.
- ** Use the PER clause to reduce the match table size
-* Provided numerous examples and the full set of LDBC Social Network benchmark queries.
+* GSQLのパターンマッチング構文の呼び出し方
+* 従来のFROM句の文法を拡張したパターンマッチングの構文について
+ ** 各ホップに、複数の個別の方向性を持つエッジタイプが選択できる
+ ** クリーネ閉包とmin…max のレンジによって、各ホップを繰り返すことができる
+ ** GSQLは可変長パスの条件を満たす最短パスを自動的に探し出す
+ ** 仮想マッチテーブルには、マルチホップパスの各頂点またはエッジのエイリアスの列があり、そのパターンと一致する各グラフパスの行がある
+ ** ACCUM句は、マッチテーブルの各行で反復処理される
+ ** POST-ACCUM句は、1つの頂点のエイリアスに対して反復処理される。1つのクエリで複数のPOST-ACCUM句を持つことができる
+* TigerGraph 3.0で改善されたパターンマッチング機能について
+ ** ソースの頂点セット（最も左側に位置する）は、他の頂点セットと同じような柔軟性を持って指定できる。すなわち、頂点タイプ、タイプの変更、または省略することもできる。明示的なシードセットは不要となった。
+ ** ACCUM句で使える頂点のエイリアスに関する制限が取り除かれた。
+ ** 3つの主要な高度のオプションの追加
+  *** PER <頂点のエイリアス> 節を使った、ACCUM反復処理の微調整
+  *** データ変更（挿入、更新、削除）機能
+  *** 連結パターンマッチングにより、すべてを満たさなければならないパスパターンを複数集めたセットとして、複雑なパターンを表現する方法
+* クエリの作成、特にパターンマッチのクエリに関するベストプラクティスの提供
+ ** 頂点セットは、最も小さいものを左端に配置すること
+ ** すべての頂点とエッジタイプを明示的に指定すること
+ ** PER句を使ってマッチテーブルのサイズを縮小させること
+* 多数の例やLDBC ソーシャルネットワークのベンチマーククエリのフルセットを提供
 
-With a little practice, you will be writing GSQL pattern matching queries to efficiently solve real-world problems. You can  post your feedback and questions on the https://community.tigergraph.com/[GSQL community forum]. Our community members and developers love to hear any feedback from your graph journey of using GSQL and are ready to help clarifying any doubts.
+少し練習すれば、実世界の問題を効率的に解決できるGSQLのパターンマッチングクエリが作成できるでしょう。GSQLを使ったグラフジャーニーの経験について、フィードバックや質問は https://community.tigergraph.com/[GSQL コミュニティフォーラム] にお寄せください。不明な点などについて回答します。コミュニティのメンバーと開発エンジニアが、皆さんからの投稿をお待ちしています。

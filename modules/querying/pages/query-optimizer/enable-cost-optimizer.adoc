@@ -5,7 +5,7 @@
 This page walks you through the steps to enable the cost-based optimizer.
 
 == Before you begin
-* You have created a query that contains a `SELECT` statement that uses a path pattern in its `FROM` clause with one or more hops.
+* You have created a query that contains a xref:select-statement/index.adoc[`SELECT` statement] that uses a xref:select-statement/index.adoc#_path_pattern[path pattern] in its `FROM` clause with one or more hops.
 * You have the privilege to install queries on the graph where you are operating.
 
 == Procedure
@@ -17,14 +17,16 @@ You need to identify the vertex and edge types for which you need to compute car
 Vertex and edge types:
 
 * Any vertex type referenced in the path pattern of a `FROM` clause.
-* Any edge type, as well as the endpoint vertex types of the edge types.
+* Any _refined edge type_.
+A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types.
 
 Attributes:
 
-* Any attribute referenced in a `WHERE` clause in a `SELECT` statement in the query.
+* Any attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
 
 For example, if you want to optimize the following query:
 
+[.wrap,gsql]
 ----
 CREATE OR REPLACE QUERY example3() FOR GRAPH ldbc_snb SYNTAX V2 {
 
@@ -60,7 +62,7 @@ For example, to compute the cardinality data of the vertex `Person` in graph `ld
 curl -s --user tigergraph:tigergraph -X POST "localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
 ----
 
-For another example, to compute the cardinality data of the edge type `LIKES` from a `Person` vertex to a `Comment` vertex, make the following request:
+For another example, to compute the cardinality data of the refined edge type `LIKES` from a `Person` vertex to a `Comment` vertex, make the following request:
 
 [.wrap,console]
 ----

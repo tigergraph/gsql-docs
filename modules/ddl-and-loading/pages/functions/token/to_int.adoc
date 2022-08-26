@@ -1,8 +1,6 @@
 = to_int()
 
 Converts the string token to an integer.
-This is a token function for the `WHERE` clause of a `LOAD` statement only.
-It cannot be used in a destination clause.
 
 This function is necessary when you need to filter integer values during loading, as all tokens are treated as strings.
 

@@ -10,164 +10,164 @@ The token functions in this section are used in the attribute expressions in the
 | `STRING`
 | Returns a string which is the concatenation of _string1_ and _string2_.
 
-|gsql_reverse(_in_string_)
+|xref:functions/token/gsql_reverse.adoc[gsql_reverse(_in_string_)]
 |`STRING`
 |Returns a string with the
 characters in the reverse order of the input string _in_string_.
 
-|gsql_concat(_string1, string2,...,stringN_)
+|xref:functions/token/gsql_concat.adoc[gsql_concat(_string1, string2,...,stringN_)]
 |`STRING`
 |Returns a string
 which is the concatenation of all the input strings.
 
-|gsql_uuid_v4()
+|xref:functions/token/gsql_uuid_v4.adoc[gsql_uuid_v4()]
 |`STRING`
 |Returns a version-4 UUID.
 
-|gsql_split_by_space(_in_string_)
-|`STRING`
-|Returns a modified version
-of _in_string_, in which each space character is replaced with ASCII 30
-(decimal).
+//|xref:functions/token/gsql_split_by_space(_in_string_)
+//|`STRING`
+//|Returns a modified version
+//of _in_string_, in which each space character is replaced with ASCII 30
+//(decimal).
 
-|gsql_substring(_str_, _beginIndex_ [, _length_])
+|xref:functions/token/gsql_substring.adoc[gsql_substring(_str_, _beginIndex_ [, _length_\])]
 |`STRING`
 |Returns the
 substring beginning at _beginIndex_, having the given _length_.
 
-|gsql_find(_str_, _substr_)
+|xref:functions/token/gsql_find.adoc[gsql_find(_str_, _substr_)]
 |`INT`
 |Returns the start index of the
 substring within the string. If it is not found, then return -1.
 
-|gsql_length(_str_)
+|xref:functions/token/gsql_length.adoc[gsql_length(_str_)]
 |`INT`
 |Returns the length of the string.
 
-|gsql_replace(_str_, _oldToken_, _newToken_ [, _max_])
+|xref:functions/token/gsql_replace.adoc[gsql_replace(_str_, _oldToken_, _newToken_ [, _max_\])]
 |`STRING`
 |Returns
 the string resulting from replacing all matching substrings of _oldToken_ with
 _newToken_ in the original string. If a _max_ count is provided, there
 can only be up to that many replacements.
 
-|gsql_regex_replace(_str_, _regex_, _replaceSubstr_)
+|xref:functions/token/gsql_regex_replace.adoc[gsql_regex_replace(_str_, _regex_, _replaceSubstr_)]
 |`STRING`
 |Returns
 the string resulting from replacing all substrings in the input string
 that match the given _regex_ token with the substitute string.
 
-|gsql_regex_match(_str_, _regex_)
+|xref:functions/token/gsql_regex_match.adoc[gsql_regex_match(_str_, _regex_)]
 |bool
 |Returns true if the given
 string token matches the given regex token and false otherwise.
 
-|gsql_to_bool(_in_string_)
+|xref:functions/token/gsql_to_bool.adoc[gsql_to_bool(_in_string_)]
 |bool
 |Returns true if the _in_string_ is
 either "t" or "true", with case-insensitive checking. Returns false
 otherwise.
 
-|gsql_to_uint(_in_string_)
+|xref:functions/token/gsql_to_uint.adoc[gsql_to_uint(_in_string_)]
 |`UINT`
 a|* If _in_string_ is the string
 representation of an unsigned integer, the function returns that integer.
 * If _in_string_ is the string representation of a non-negative float, the
 function returns that number cast as an integer.
 
-|gsql_to_int(_in_string_)
+|xref:functions/token/to_int.adoc[gsql_to_int(_in_string_)]
 |`INT`
 a|* If _in_string_ is the string
 representation of an integer, the function returns that integer.
 * If _in_string_ is the string representation of a float, the function
 returns that number cast as an integer.
 
-|gsql_ts_to_epoch_seconds(_timestamp_)
+|xref:functions/token/gsql_ts_to_epoch.adoc[gsql_ts_to_epoch_seconds(_timestamp_)]
 |`UINT`
 |Converts a timestamp in
 canonical string format to Unix epoch time, which is the int number of
 seconds since Jan. 1, 1970. Refer to the timestamp input format note
 below.
 
-|gsql_current_time_epoch(0)
+|xref:functions/token/gsql_current_time_epoch.adoc[gsql_current_time_epoch(0)]
 |`UINT`
 |Returns the current time in Unix epoch seconds.
 By convention, the input parameter should be 0, but it is ignored.
 
 a|
-flatten (_column_to_be_split, group_separator, 1_)
+xref:functions/token/flatten.adoc[flatten (_column_to_be_split, group_separator, 1_)]
 
-flatten (_column_to_be_split, group_separator, sub_field_separator,
-number_of_sub_fields_in_one_group_)
+xref:functions/token/flatten.adoc[flatten (_column_to_be_split, group_separator, sub_field_separator,
+number_of_sub_fields_in_one_group_)]
 
 |
 |Splits a multi-value field into a set of records.
 Those records are first stored in a temporary table, and then the temporary table can be loaded into vertices and/or edges.
 
 a|
-flatten_json_array (_$"array_name"_)
+xref:functions/token/flatten_json_array.adoc[flatten_json_array (_$"array_name"_)]
 
-flatten_json_array (_$"array_name", $"sub_obj_1", $"sub_obj_2", ...,
-$"sub_obj_n"_)
+xref:functions/token/flatten_json_array.adoc[flatten_json_array (_$"array_name", $"sub_obj_1", $"sub_obj_2", ...,
+$"sub_obj_n"_)]
 |
 |Parses a JSON array of primitive values or JSON objects, as well as JSON objects in a column of a CSV file.
 
 a|
-split(_column_to_be_split, element_separator_)
+xref:functions/token/split.adoc[split(_column_to_be_split, element_separator_)]
 
-split(_column_to_be_split, key_value_separator, element _separator_)
+xref:functions/token/split.adoc[split(_column_to_be_split, key_value_separator, element _separator_)]
 
 |
 a|
 Reads a compound token and splits it into a collection of elements, to form a set or list collection, or a map.
 
-|gsql_upper(_in_string_)
+|xref:functions/token/gsql_upper.adoc[gsql_upper(_in_string_)]
 |`STRING`
 |Returns the input string in
 upper-case.
 
-|gsql_lower(_in_string_)
+|xref:functions/token/gsql_lower.adoc[gsql_lower(_in_string_)]
 |`STRING`
 |Returns the input string in
 lower-case.
 
-|gsql_trim(_in_string_)
+|xref:functions/token/gsql_trim.adoc[gsql_trim(_in_string_)]
 |`STRING`
 |Trims whitespace from the beginning
 and end of the input string.
 
 a|
-gsql_ltrim(_in_string_)
+xref:functions/token/gsql_ltrim.adoc[gsql_ltrim(_in_string_)]
 
-gsql_rtrim(_in_string_)
+xref:functions/token/gsql_rtrim.adoc[gsql_rtrim(_in_string_)]
 
 |`STRING`
 |Trims white space from either the beginning or the end of the
 input string (Left or right).
 
-|gsql_year(_timestamp_)
+|xref:functions/token/gsql_year.adoc[gsql_year(_timestamp_)]
 |`INT`
 |Returns 4-digit year from timestamp.
 
-|_gsql_month(timestamp)_
+|xref:functions/token/gsql_month.adoc[gsql_month(timestamp)]
 |`INT`
 |Returns month (1-12) from timestamp.
 
-|gsql_day(_timestamp_)
+|xref:functions/token/gsql_day.adoc[gsql_day(_timestamp_)]
 |`INT`
 |Returns day (1-31) from timestamp.
 
-|gsql_year_epoch(_epoch_)
+|xref:functions/token/gsql_year_epoch.adoc[gsql_year_epoch(_epoch_)]
 |`INT`
 |Returns 4-digit year from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.
 
-|gsql_month_epoch(_epoch_)
+|xref:functions/token/gsql_month_epoch.adoc[gsql_month_epoch(_epoch_)]
 |`INT`
 |Returns month (1-12) from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.
 
-|gsql_day_epoch(_epoch_)
+|xref:functions/token/gsql_day_epoch.adoc[gsql_day_epoch(_epoch_)]
 |`INT`
 |Returns day (1-31) from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.

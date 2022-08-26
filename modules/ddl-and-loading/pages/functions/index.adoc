@@ -6,9 +6,8 @@ This section provides references for the functions that are available in the GSQ
 Token functions are functions that operate on input tokens during data loading.
 These functions allow you to clean and format your raw data, as well as transform the raw data to better fit with your graph schema.
 
-There are four types of token functions:
+There are three types of functions in the DDL language:
 
 * xref:functions/token/index.adoc[]
-* xref:functions/token_where/index.adoc[]
 * xref:functions/reducer/index.adoc[]
 * xref:add-token-function.adoc[User-defined token functions]

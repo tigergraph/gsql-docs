@@ -1,10 +1,15 @@
-= Token Functions for Attribute Expressions
+= Token Functions
 
 The token functions in this section are used in the attribute expressions in the destination clause of a `LOAD` statement.
 
 [width="100%",cols="2,1,2",options="header",]
 |===
 |Function |Output type |Description
+
+| xref:functions/token/concat.adoc[concat( _string1, string2_ )]
+| `STRING`
+| Returns a string which is the concatenation of _string1_ and _string2_.
+
 |gsql_reverse(_in_string_)
 |`STRING`
 |Returns a string with the
@@ -166,4 +171,35 @@ time, which is the number of seconds since Jan. 1, 1970.
 |`INT`
 |Returns day (1-31) from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.
+
+| xref:functions/token/to_int.adoc[to_int( _main_string_ )]
+| `INT`
+| Converts _main_string_ to an integer value.
+
+| xref:functions/token/to_float.adoc[to_float( _main_string_ )]
+| `FLOAT`
+| Converts _main_string_ to a float value.
+
+
+| xref:functions/token/token_len.adoc[token_len( _main_string_ )]
+| INT
+| Returns the length of _main_string._
+
+
+| xref:functions/token/gsql_token_equal.adoc[gsql_token_equal( _string1, string2_ )]
+| `BOOL`
+| Returns true if _string1_ is exactly the same (case-sensitive) as _string2_ . Returns false otherwise.
+
+| xref:functions/token/gsql_token_ignore_case_equal.adoc[gsql_token_ignore_case_equal( _string1, string2_ )]
+| `BOOL`
+| Returns true if _string1_ is exactly the same (case-insensitive) as _string2_.
+Returns false otherwise.
+
+| xref:functions/token/gsql_is_true.adoc[gsql_is_true( _main_string_ )]
+| `BOOL`
+| Returns true if _main_string_ is either "t" or "true" (case-insensitive). Returns false otherwise.
+
+| xref:functions/token/gsql_is_false.adoc[gsql_is_false( _main_string_ )]
+| `BOOL`
+| Returns true if _main_string_ is either "f" or "false" (case-insensitive). Returns false otherwise.
 |===

@@ -1,16 +1,18 @@
 = Type Conversion Functions
+:page-toclevels: 1
+
 
 The functions on this page are used to convert data from one type to another in the GSQL query language.
 
 [#_parse_json_array]
 == `parse_json_array()`
 
-[discrete]
+  
 ===  Syntax
 
 `parse_json_array( str )`
 
-[discrete]
+  
 ===  Description
 
 Converts a string into a JSON array. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `+{ }+` and brackets `[ ]`, each value field must be one of the following:
@@ -21,12 +23,12 @@ Converts a string into a JSON array. The string must be properly formatted, or t
 * a JSONOBJECT - Each key of a key-value pair must be a string in double quotes.
 * a JSON array
 
-[discrete]
+  
 ===  Return type
 
 `JSONARRAY`
 
-[discrete]
+  
 ===  Parameters
 
 |===
@@ -37,7 +39,7 @@ Converts a string into a JSON array. The string must be properly formatted, or t
 | `STRING`
 |===
 
-[discrete]
+  
 ===  Example
 
 [source,javascript]
@@ -48,12 +50,12 @@ parse_json_array("[123]") -> [123]
 [#_parse_json_object]
 == `parse_json_object()`
 
-[discrete]
+  
 ===  Syntax
 
 `parse_json_object( str )`
 
-[discrete]
+  
 ===  Description
 
 Converts a string into a JSON object. The string must be properly formatted, or the function will generate a run-time error. To be properly formatted, besides having the proper nesting and matching of curly braces `+{ }+` and brackets `[ ]`, each value field must be one of the following:
@@ -64,12 +66,12 @@ Converts a string into a JSON object. The string must be properly formatted, or 
 * a JSONOBJECT - Each key of a key-value pair must be a string in double quotes, and the quotes need to be escaped with a backlash-escape `\`. However, if you are supplying the string in GraphStudio as a parameter, you do not need the backlash-escape since string values are not enclosed in double quotes.
 * a JSON array
 
-[discrete]
+  
 ===  Return type
 
 `JSONOBJECT`
 
-[discrete]
+  
 ===  Parameters
 
 |===
@@ -80,7 +82,7 @@ Converts a string into a JSON object. The string must be properly formatted, or 
 | `STRING`
 |===
 
-[discrete]
+  
 ===  Example
 
 [source,javascript]
@@ -90,22 +92,22 @@ parse_json_object("{\"abc\":123}")  -> {"abc": 123}
 
 == `str_to_int ()`
 
-[discrete]
+  
 ===  Syntax
 
 `str_to_int (str)`
 
-[discrete]
+  
 ===  Description
 
 Converts a string to an integer.
 
-[discrete]
+  
 ===  Return type
 
 `INT`
 
-[discrete]
+  
 ===  Parameters
 
 |===
@@ -119,22 +121,22 @@ Converts a string to an integer.
 [#_to_datetime]
 == `to_datetime ()`
 
-[discrete]
+  
 ===  Syntax
 
 `to_datetime ( str )`
 
-[discrete]
+  
 ===  Description
 
 Converts a string value into a `DATETIME` value.
 
-[discrete]
+  
 ===  Return type
 
 `DATETIME`
 
-[discrete]
+  
 ===  Parameters
 
 |===
@@ -145,7 +147,7 @@ Converts a string value into a `DATETIME` value.
 | `STRING`
 |===
 
-[discrete]
+  
 ===  Example
 
 [source,javascript]
@@ -155,22 +157,21 @@ to_datetime("2020-01-02 01:02:03") -> 2020-01-02 01:02:03
 
 == `to_string()`
 
-[discrete]
+  
 ===  Syntax
 
 `to_string(num)`
 
-[discrete]
+  
 ===  Description
 
-Converts a number to a string.
+Converts a number to a string using the C++ printf function with the `g` specifier, which means it always produces the shortest output.
 
-[discrete]
+  
 ===  Return type
 
 `STRING`
-
-[discrete]
+  
 ===  Parameters
 
 |===
@@ -180,3 +181,11 @@ Converts a number to a string.
 | The number to turn into a string
 | Number
 |===
+
+=== Example
+
+----
+to_string(1000.1) -> "1000.1"
+to_string(0.0000000001) -> "1E-10"
+to_string(12300000000) -> "1.23E7"
+----

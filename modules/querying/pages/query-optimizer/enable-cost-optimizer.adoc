@@ -12,22 +12,27 @@ This page walks you through the steps to enable the cost-based optimizer.
 The following is the procedure to enable cost-based optimization when installing a query.
 
 === Identify referenced types and attributes
-You need to identify the vertex and edge types for which you need to compute cardinality data, and attributes of those types for which you need to compute histogram data.
+You need to identify the vertex and edge types for which you need to compute the following statistics:
 
-Vertex and edge types:
+* Cardinality: the number of instances for each type
+* Histogram: the distribution of values for an attribute
+
+==== Cardinality
+You need to compute cardinality data for the following vertex and edge types:
 
 * Any vertex type referenced in the path pattern of a `FROM` clause.
 * Any _refined edge type_.
-A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types as well as their reverse edge types.
+A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types as well as their reverse edge types if they exist.
 
-If you are not sure which types and attributes you need to compute histogram data for a query, you can try <<_install_query_with_cost_option,installing that query with the cost-based optimizer enabled>> first.
-The optimizer produces a helpful recommendation if it sees any types/attributes don't have statistics computed for them.
-
-Attributes:
+==== Histogram
+You need to compute histograms for the following attributes:
 
 * Any vertex attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
 
-For example, if you want to optimize the following query:
+If you are not sure which types and attributes you need to compute histogram data for a query, you can try <<_install_query_with_cost_option,installing that query with the cost-based optimizer enabled>> first.
+The optimizer produces a helpful recommendation if it sees any types/attributes that don't have statistics computed for them.
+
+For example, to optimize the following query:
 
 [.wrap,gsql]
 ----
@@ -40,7 +45,7 @@ CREATE OR REPLACE QUERY example3() FOR GRAPH ldbc_snb SYNTAX V2 {
 }
 ----
 
-We would need the following statistics:
+You need the following statistics:
 
 * Cardinality
 ** Vertex types
@@ -58,7 +63,7 @@ We would need the following statistics:
 
 
 === Compute cardinality data
-To compute cardinality data (the count of each type), use the `POST :14240/gsqlserver/gsql/stats/card` endpoint.
+To compute cardinality data (the count of each type), use the xref:query-optimizer/stats-api.adoc#_compute_cardinality_statistics[`POST :14240/gsqlserver/gsql/stats/card` endpoint].
 
 For example, to compute the cardinality data of the vertex `Person` in graph `ldbc_snb`, make the following request:
 
@@ -77,7 +82,7 @@ curl -s --user tigergraph:tigergraph -X POST "localhost:14240/gsqlserver/gsql/st
 For best results, compute the cardinality data for every type you identified in the previous step, each with its own request.
 
 === Compute histogram data
-To compute histogram data, use the `POST :14240/gsqlserver/gsql/stats/histogram` endpoint.
+To compute histogram data, use the xref:query-optimizer/stats-api.adoc#_compute_histogram_statistics[`POST :14240/gsqlserver/gsql/stats/histogram` endpoint].
 
 For example, to compute the histogram data for attribute `gender` of vertex type `Person` on graph `ldbc_snb`, make the following request:
 
@@ -87,16 +92,17 @@ $ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserve
 ----
 
 For best results, compute the histogram data for every vertex attribute referenced in a `WHERE` clause of a `SELECT` statement.
-Edge attributes are not yet supported.
 
 [#_install_query_with_cost_option]
 === Install query with `-cost` option
 
-Now that the relevant statistics are available to the query optimizer, you can install the query using the cost-based query optimizer option.
-To use the cost-based optimizer during installation, use the `-cost` option when installing the query.
+Now that the relevant statistics are available to the query optimizer, you can install the query using the cost-based query optimizer.
+To use the cost-based optimizer during installation, use the xref:query-operations.adoc#_install_query[`-cost` option] when installing the query.
 
-For example, to install the query `example3`, run `INSTALL QUERY example3`.
+For example, to install the query `example3`, run `INSTALL QUERY example3 -cost`.
 
-Alternatively, set the session variable to true by running `set cost_opt = true` in the GSQL shell.
+Alternatively, set xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[the `cost_opt` session parameter] to true by running `set cost_opt = true` in the GSQL shell.
+This enables the query optimizer for the rest of your GSQL session.
+You no long need to supply the `-cost` option when installing queries to use the optimizer if the `cost_opt` parameter is set to true.
 
-If you missed any cardinality or histogram data, GSQL warns you about the missing data, so you can compute the data for any missing type or attribute.
+If you missed any cardinality or histogram data, the optimizer warns you about which types are missing, so you can compute the data for any missing type or attribute.

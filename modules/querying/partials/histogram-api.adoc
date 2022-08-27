@@ -1,8 +1,9 @@
+[#_compute_histogram_statistics]
 === Compute histogram statistics
 
 `POST :14240/gsqlserver/gsql/stats/histogram`
 
-This endpoint computes histogram statistics for a specified attribute of a vertex type.
+This endpoint computes histograms for a specified attribute of a vertex type.
 
 ==== Parameters
 

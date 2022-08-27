@@ -2,7 +2,7 @@
 :description: Overview of the query optimizer.
 
 GSQL has a built-in query optimizer that can optimize the execution plan of a query when you install the query.
-Currently, the optimizer can optimize the execution plan in the following ways:
+As of TigerGraph 3.7, the optimizer can optimize a query in the following ways:
 
 * <<_cost_based_optimization>>
 
@@ -10,10 +10,10 @@ Currently, the optimizer can optimize the execution plan in the following ways:
 The query optimizer optimizes the compiled binary execution plan of a query.
 
 When you xref:query-operations.adoc#_install_query[install a GSQL query], GSQL compiles the query logic into a binary execution plan.
-If your query contains a path pattern, the pattern contains a source vertex set, one mor more path edge patterns, and one or more step vertex sets.
-Similar to the path pattern in GSQL, its binary execution plan also starts from a set of source vertices, traverses through edges in the specified pattern, and finds the target vertices.
+If your query contains a xref:querying:select-statement/index.adoc#_path_pattern[path pattern], the pattern contains a source vertex set, one or more path edge patterns, and one or more step vertex sets.
+Similar to the path pattern in the GSQL query, its binary execution plan also starts from a set of source vertices, traverses through edges, and finds the target vertices.
 
-However, the actual execution plan of the query might perform path traversals differently than specified in the GSQL query to product results.
+However, the actual execution plan of the query might perform path traversals differently than specified in the GSQL query to produce results.
 When you install a query, the query optimizer can optimize the execution plan of a query so that it executes more efficiently.
 
 Depending on the type of optimization used, this could allow a query to execute with less time, less memory, or less storage.
@@ -22,12 +22,11 @@ As of 3.7, TigerGraph supports cost-based optimization, which reduces the execut
 [#_cost_based_optimization]
 == Cost-based optimization
 
-Cost-based optimization reduces the number of edge traversals a query has to execute.
-Enabling the cost-based optimizer when installing a query has the potential to significantly reduce the execution time of the installed query.
+Cost-based optimization reduces time it takes to execute a query.
+
 
 === How it works
-The cost-based optimizer takes statistics regarding the vertex and edge types as well as their attributes that are referenced in the query to compile an execution plan that involves the fewest edge traversals.
-This reduces the "cost" of the query and has the potential to reduce its execution time significantly.
+The cost-based optimizer takes statistics regarding the vertex and edge types as well as their attributes that are referenced in the query to compile an execution plan that reduces the amount of time it takes to execute a query.
 
 To use the cost-based query optimizer, see xref:query-optimizer/enable-cost-optimizer.adoc[].
 

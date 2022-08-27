@@ -9,7 +9,7 @@ This page walks you through the steps to enable the cost-based optimizer.
 * You have the privilege to install queries on the graph where you are operating.
 
 == Procedure
-The following is the procedure to enable cost-based optimizer when installing a query.
+The following is the procedure to enable cost-based optimization when installing a query.
 
 === Identify referenced types and attributes
 You need to identify the vertex and edge types for which you need to compute cardinality data, and attributes of those types for which you need to compute histogram data.
@@ -18,11 +18,14 @@ Vertex and edge types:
 
 * Any vertex type referenced in the path pattern of a `FROM` clause.
 * Any _refined edge type_.
-A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types.
+A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types as well as their reverse edge types.
+
+If you are not sure which types and attributes you need to compute histogram data for a query, you can try <<_install_query_with_cost_option,installing that query with the cost-based optimizer enabled>> first.
+The optimizer produces a helpful recommendation if it sees any types/attributes don't have statistics computed for them.
 
 Attributes:
 
-* Any attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
+* Any vertex attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
 
 For example, if you want to optimize the following query:
 
@@ -46,14 +49,16 @@ We would need the following statistics:
 *** `Person`
 ** Refined edge types
 *** `HAS_TAG`: from `Comment` to `Tag`
+*** `HAS_TAG_REVERSE`: from `Tag` to `Comment`
 *** `LIKES`: from `Person` to `Comment`
+*** `LIKES_REVERSE`: from `Comment` to `Person`
 * Histogram
 ** `gender` attribute of type `Person`
 ** `id` attribute of type `Tag`
 
 
 === Compute cardinality data
-To compute cardinality data, use the `POST :14240/gsqlserver/gsql/stats/card` endpoint.
+To compute cardinality data (the count of each type), use the `POST :14240/gsqlserver/gsql/stats/card` endpoint.
 
 For example, to compute the cardinality data of the vertex `Person` in graph `ldbc_snb`, make the following request:
 
@@ -69,7 +74,7 @@ For another example, to compute the cardinality data of the refined edge type `L
 curl -s --user tigergraph:tigergraph -X POST "localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Comment"
 ----
 
-You need to compute the cardinality data for every type you identified in the previous step, each with its own request.
+For best results, compute the cardinality data for every type you identified in the previous step, each with its own request.
 
 === Compute histogram data
 To compute histogram data, use the `POST :14240/gsqlserver/gsql/stats/histogram` endpoint.
@@ -81,9 +86,10 @@ For example, to compute the histogram data for attribute `gender` of vertex type
 $ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=gender&buckets=256"
 ----
 
-You need to compute the histogram data for every vertex attribute referenced in a `WHERE` clause of a `SELECT` statement.
+For best results, compute the histogram data for every vertex attribute referenced in a `WHERE` clause of a `SELECT` statement.
 Edge attributes are not yet supported.
 
+[#_install_query_with_cost_option]
 === Install query with `-cost` option
 
 Now that the relevant statistics are available to the query optimizer, you can install the query using the cost-based query optimizer option.

@@ -13,7 +13,7 @@ include::partial$cardinality-api.adoc[]
 
 == Histogram
 
-Histogram is a type of attribute statistics that stores information about the distribution of values of an attribute.
+Histograms store information about the distribution of attribute values.
 
 include::partial$histogram-api.adoc[]
 

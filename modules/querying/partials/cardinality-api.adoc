@@ -22,18 +22,18 @@ You must provide either the `vertex` or `edge` parameter.
 |`STRING`
 
 |`edge`
-|Vertex type to compute statistics for.
-You must provide either the `vertex` or `edge` parameter.
+|Edge type to compute statistics for.
+You must provide either the `vertex` or `edge` parameter, but not both.
 If you provided it an edge type, you also need to provide the `from` and `to` parameters.
 |`STRING`
 
 |`from`
-|Vertex type of the  `from` endpoint of an edge type.
+|The source vertex type of an edge.
 Required if `edge` is provided.
 |`STRING`
 
 |`to`
-|Vertex type of the  `from` endpoint of an edge type.
+|The target vertex type of an edge.
 Required if `edge` is provided.
 |`STRING`
 |===

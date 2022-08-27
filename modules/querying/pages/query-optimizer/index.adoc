@@ -17,6 +17,7 @@ However, the actual execution plan of the query might perform path traversals di
 When you install a query, the query optimizer can optimize the execution plan of a query so that it executes more efficiently.
 
 Depending on the type of optimization used, this could allow a query to execute with less time, less memory, or less storage.
+As of 3.7, TigerGraph supports cost-based optimization, which reduces the execution time of a query.
 
 [#_cost_based_optimization]
 == Cost-based optimization

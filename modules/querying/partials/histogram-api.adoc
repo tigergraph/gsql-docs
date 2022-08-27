@@ -32,7 +32,8 @@ Required.
 
 It is recommended that each bucket has at least 100 values.
 Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
-For example, if the vertex type has 100,000 vertices, set this parameter to 1000.
+For example, if the vertex type has 100,000 vertices, set this parameter to no higher than 1000.
+A standard value for this parameter is 256.
 |`INT`
 
 |`compute`
@@ -108,12 +109,13 @@ Required.
 
 |`vertex`
 |Name of the vertex type.
-Required.
+Required if an attribute is specified.
+If not provided, the request deletes histogram data on all attributes in the graph.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
-Required.
+Optional.
 |`STRING`
 |===
 
@@ -123,5 +125,5 @@ The following request deletes the histogram statistics for the graph `ldbc_snb`:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb=
+curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb
 ----

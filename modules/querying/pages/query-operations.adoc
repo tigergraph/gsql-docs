@@ -598,14 +598,14 @@ a|`-SINGLE`
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 
 a|`-COST`
-|Installs and optimizes the query using the xref:query-optimizer/index.adoc#_cost_based_optimization[cost-based query optimizer].
+|Installs and optimizes the query using the xref:query-optimizer/index.adoc[query optimizer].
 The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
 You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
 
 This option can be used together with other options, but it must come after the other options.
 For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`
 
-This is a preview feature and should not be used in production.
+This is a Preview feature and should not be used in production.
 |===
 
 === Optimize installed queries

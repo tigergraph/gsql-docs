@@ -1,34 +1,24 @@
 = Query Optimizer
 :description: Overview of the query optimizer.
 
-GSQL has a built-in query optimizer that can optimize the execution plan of a query when you install the query.
-As of TigerGraph 3.7, the optimizer can optimize a query in the following ways:
+NOTE: This is a Preview feature and should not be used for production purposes.
 
-* <<_cost_based_optimization>>
+The query optimizer optimizes the execution plan of a query based on cost.
 
-== What is the query optimizer?
-The query optimizer optimizes the compiled binary execution plan of a query.
+When you write a GSQL query with a xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)], you specify a pattern that contains a source vertex set, one or more path edge patterns, and one or more step vertex sets.
+This pattern is declarative.
+In other words, it specifies the structure of paths to be matched, without specifying the particulars of how the graph is traversed to find these paths.
 
-When you xref:query-operations.adoc#_install_query[install a GSQL query], GSQL compiles the query logic into a binary execution plan.
-If your query contains a xref:querying:select-statement/index.adoc#_path_pattern[path pattern], the pattern contains a source vertex set, one or more path edge patterns, and one or more step vertex sets.
-Similar to the path pattern in the GSQL query, its binary execution plan also starts from a set of source vertices, traverses through edges, and finds the target vertices.
+When you xref:query-operations.adoc#_install_query[install the GSQL query], GSQL compiles the query logic into a binary execution plan.
+The query optimizer takes statistics such as the number of instances for each vertex and edge type, as well as the distribution of values in the attributes relevant to the query.
+It then optimizes the execution plan to traverse the graph based on those statistics to minimize the cost of executing the query.
 
-However, the actual execution plan of the query might perform path traversals differently than specified in the GSQL query to produce results.
-When you install a query, the query optimizer can optimize the execution plan of a query so that it executes more efficiently.
+As of 3.7, the Preview version of the optimizer is focused on reducing query execution time.
 
-Depending on the type of optimization used, this could allow a query to execute with less time, less memory, or less storage.
-As of 3.7, TigerGraph supports cost-based optimization, which reduces the execution time of a query.
+NOTE: The query optimizer has a more significant effect when more hops that a query has to perform are combined in a single multi-hop `SELECT` statement using path patterns in Syntax V2, as opposed to using multiple one-hop `SELECT` statements.
 
-[#_cost_based_optimization]
-== Cost-based optimization
+To enable the query optimizer, see xref:query-optimizer/enable-cost-optimizer.adoc[].
 
-Cost-based optimization reduces time it takes to execute a query.
-
-
-=== How it works
-The cost-based optimizer takes statistics regarding the vertex and edge types as well as their attributes that are referenced in the query to compile an execution plan that reduces the amount of time it takes to execute a query.
-
-To use the cost-based query optimizer, see xref:query-optimizer/enable-cost-optimizer.adoc[].
-
+For references on the REST endpoints for gathering statistics for the optimizer, see xref:query-optimizer/stats-api.adoc[].
 
 

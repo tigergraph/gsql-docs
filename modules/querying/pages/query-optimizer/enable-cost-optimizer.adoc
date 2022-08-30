@@ -1,8 +1,8 @@
-= Enabling Cost-Based Optimizer
+= Enabling Query Optimizer
 :sectnums:
-:description: Steps to enable the cost-based optimizer.
+:description: Steps to enable the query optimizer.
 
-This page walks you through the steps to enable the cost-based optimizer.
+This page walks you through the steps to enable the query optimizer.
 
 == Before you begin
 * You have created a query that contains a xref:select-statement/index.adoc[`SELECT` statement] that uses a xref:select-statement/index.adoc#_path_pattern[path pattern] in its `FROM` clause with one or more hops.

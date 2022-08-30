@@ -31,7 +31,7 @@ Required.
 |The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
 Required.
 
-It is recommended that each bucket has at least 100 values.
+It is recommended that each bucket have at least 100 values.
 Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
 For example, if the vertex type has 100,000 vertices, set this parameter to no higher than 1000.
 A standard value for this parameter is 256.

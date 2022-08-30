@@ -600,7 +600,7 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 a|`-COST`
 |Installs and optimizes the query using the xref:query-optimizer/index.adoc#_cost_based_optimization[cost-based query optimizer].
 The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
-You can benefit from this option if you query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
+You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
 
 This option can be used together with other options, but it must come after the other options.
 For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`

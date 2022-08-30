@@ -5,12 +5,11 @@ NOTE: This is a Preview feature and should not be used for production purposes.
 
 The query optimizer optimizes the execution plan of a query based on cost.
 
-When you write a GSQL query with a xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)], you specify a pattern that contains a source vertex set, one or more path edge patterns, and one or more step vertex sets.
-This pattern is declarative.
+When writing a GSQL query with multi-hop `SELECT` statements, the xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)] specified in the `FROM` clause is declarative.
 In other words, it specifies the structure of paths to be matched, without specifying the particulars of how the graph is traversed to find these paths.
 
-When you xref:query-operations.adoc#_install_query[install the GSQL query], GSQL compiles the query logic into a binary execution plan.
-The query optimizer takes statistics such as the number of instances for each vertex and edge type, as well as the distribution of values in the attributes relevant to the query.
+It is the query optimizer's job to determine the best graph traversal plan to satisfy the query.
+It does so by utilizing various pre-computed statistics describing the data distribution of the types referenced in the query.
 It then optimizes the execution plan to traverse the graph based on those statistics to minimize the cost of executing the query.
 
 As of 3.7, the Preview version of the optimizer is focused on reducing query execution time.

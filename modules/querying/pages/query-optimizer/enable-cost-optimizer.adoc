@@ -96,7 +96,7 @@ For best results, compute the histogram data for every vertex attribute referenc
 [#_install_query_with_cost_option]
 === Install query with `-cost` option
 
-Now that the relevant statistics are available to the query optimizer, you can install the query using the cost-based query optimizer.
+Now that the relevant statistics are available to the query optimizer, you can install the query using the query optimizer.
 To use the cost-based optimizer during installation, use the xref:query-operations.adoc#_install_query[`-cost` option] when installing the query.
 
 For example, to install the query `example3`, run `INSTALL QUERY example3 -cost`.

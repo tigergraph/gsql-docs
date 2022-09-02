@@ -3,7 +3,7 @@
 This function parses a JSON array of primitive values or JSON objects, as well as JSON objects in a column of a CSV file.
 
 When it flattens a JSON array of primitive values, it returns all the values in the array, each value creating its own record.
-When it flattens a JSON array of JSON objects, it returns all the values of fields specified in the parameters, each
+When it flattens a JSON array of JSON objects, it returns all the values of fields specified in the parameters; each parameter is a column, and each object creates a record.
 
 == Syntax
 * `flatten_json_array(array_name)`

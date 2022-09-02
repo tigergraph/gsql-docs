@@ -338,7 +338,7 @@ CREATE UNDIRECTED EDGE encoding_edge (FROM encoding, TO encoding)
 CREATE GRAPH encoding_graph (*)
 
 CREATE LOADING JOB json_load FOR GRAPH encoding_graph {
-  LOAD "encoding.json" TO VERTEX encoding
+  LOAD "encoding.jsonl" TO VERTEX encoding
     VALUES ($"encoding", $"indent":"length") USING JSON_FILE="true";
 }
 RUN LOADING JOB json_load

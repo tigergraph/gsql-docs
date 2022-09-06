@@ -3,6 +3,8 @@
 
 The token functions in this section are used in the attribute expressions in the destination clause or as part of a condition in xref:functions/token_where/index.adoc#_token_functions_with_logical_operators[the `WHERE` clause of a `LOAD` statement].
 
+NOTE: Datetime functions in the
+
 [width="100%",cols="2,1,2",options="header",]
 |===
 |Function |Output type |Description
@@ -168,3 +170,4 @@ time, which is the number of seconds since Jan. 1, 1970.
 |Returns day (1-31) from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.
 |===
+

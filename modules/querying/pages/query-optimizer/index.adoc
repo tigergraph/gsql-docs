@@ -11,7 +11,7 @@ It is the query optimizer's job to determine the best graph traversal plan to sa
 
 By default, the query optimizer chooses traversal plans based on heuristics.
 That is, it looks at the syntax of the query and makes a best-effort estimate to determine the traversal plan.
-This happens automatically during the installation of a query and is completely transparent.
+This happens automatically during the installation of a query.
 
 However, since heuristics-based optimization does not take the actual distribution of data into account, it sometimes would produce less-than-optimal traversal plans.
 

@@ -232,11 +232,10 @@ gsql -g demo_graph "RESUME LOADING JOB demo_graph_m1.1519111662589"
 
 
 
-=== Verifying and Debugging a Loading Job
+=== Verifying and debugging a loading job
 
-Every loading job creates a log file. When the job starts, it will display the location of the log file. Typically, the file is located at
-
-<TigerGraph.root.dir>/logs/restpp/restpp_loader_logs/<graph_name>/<job_id>.log
+Every loading job creates a log file.
+When the job starts, GSQL display the location of the log file.
 
 This file contains the following information which most users will find useful:
 

@@ -629,10 +629,10 @@ returnStmt := RETURN expr
 
 The `RETURN` statement specifies data that a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] passes back to an outer query that called the subquery. The return type for a `RETURN` statement can be any base type or accumulator type, but *must be the same type* as indicated by the `RETURNS` clause of the subquery.
 
-For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] or xref:querying:accumulators.adoc#_groupbyaccum[`GroupByAccum`], the accumulators must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_catalog_level_typedef[defined at the catalog level]. See the example below:
+For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] or xref:querying:accumulators.adoc#_groupbyaccum[`GroupByAccum`], the accumulators must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level]. See the example below:
 
 .Subquery Returning HeapAccum Example
-[source,gsql]
+[source.wrap,gsql]
 ----
 include::appendix:example$social_net/output_statements_passing_file_object.gsql[]
 ----

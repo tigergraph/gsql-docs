@@ -598,7 +598,7 @@ a|`-SINGLE`
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 
 a|`-COST`
-|Installs and optimizes the query using the xref:query-optimizer/index.adoc[query optimizer].
+|Installs and optimizes the query using xref:query-optimizer/index.adoc[cost-based optimization].
 The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
 You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
 

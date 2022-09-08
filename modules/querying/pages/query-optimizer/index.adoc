@@ -1,22 +1,29 @@
 = Query Optimizer
 :description: Overview of the query optimizer.
 
-NOTE: This is a Preview feature and should not be used for production purposes.
-
-The query optimizer optimizes the execution plan of a query based on cost.
+The query optimizer optimizes the execution plan of a query.
 
 When writing a GSQL query with multi-hop `SELECT` statements, the xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)] specified in the `FROM` clause is declarative.
 In other words, it specifies the structure of paths to be matched, without specifying the particulars of how the graph is traversed to find these paths.
-
 It is the query optimizer's job to determine the best graph traversal plan to satisfy the query.
-It does so by utilizing various pre-computed statistics describing the data distribution of the types referenced in the query.
+
+== Heuristics-based optimization
+
+By default, the query optimizer chooses traversal plans based on heuristics.
+That is, it looks at the syntax of the query and makes a best-effort estimate to determine the traversal plan.
+This happens automatically during the installation of a query and is completely transparent.
+
+However, since heuristics-based optimization does not take the actual distribution of data into account, it sometimes would produce less-than-optimal traversal plans.
+
+== Cost-based optimization (Preview)
+TigerGraph 3.7 adds the capability of performing cost-based optimization to the query optimizer.
+
+In cost-based optimization, the query optimizer utilizes various pre-computed statistics describing the data distribution of the types referenced in the query.
 It then optimizes the execution plan to traverse the graph based on those statistics to minimize the cost of executing the query.
 
-As of 3.7, the Preview version of the optimizer is focused on reducing query execution time.
+As of 3.7, the Preview version of cost-based optimization is focused on reducing query execution time.
 
-NOTE: The query optimizer has a more significant effect when more hops that a query has to perform are combined in a single multi-hop `SELECT` statement using path patterns in Syntax V2, as opposed to using multiple one-hop `SELECT` statements.
-
-To enable the query optimizer, see xref:query-optimizer/enable-cost-optimizer.adoc[].
+To enable cost-based optimization, see xref:query-optimizer/enable-cost-optimizer.adoc[].
 
 For references on the REST endpoints for gathering statistics for the optimizer, see xref:query-optimizer/stats-api.adoc[].
 

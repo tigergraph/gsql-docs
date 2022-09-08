@@ -268,8 +268,8 @@ a| `single_gpr` | Changes the internal engine framework for single queries to th
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 
-|`cost-opt`| Whether to use the xref:querying:query-optimizer/index.adoc[query optimizer] when installing a query.
-If set to true, query installation during this session uses the optimizer, which optimizes the query based on cost.
+|`cost-opt`| Whether to use xref:querying:query-optimizer/index.adoc[cost-based optimization] when installing a query.
+If set to true, query installation during this session uses cost-based optimization.
 |===
 
 .Example of exit_on_error = FALSE

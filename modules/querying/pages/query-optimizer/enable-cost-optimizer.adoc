@@ -1,8 +1,8 @@
-= Enabling Query Optimizer
+= Enabling Cost-Based Optimization
 :sectnums:
 :description: Steps to enable the query optimizer.
 
-This page walks you through the steps to enable the query optimizer.
+This page walks you through the steps to enable cost-based optimization.
 
 == Before you begin
 * You have created a query that contains a xref:select-statement/index.adoc[`SELECT` statement] that uses a xref:select-statement/index.adoc#_path_pattern[path pattern] in its `FROM` clause with one or more hops.
@@ -96,13 +96,13 @@ For best results, compute the histogram data for every vertex attribute referenc
 [#_install_query_with_cost_option]
 === Install query with `-cost` option
 
-Now that the relevant statistics are available to the query optimizer, you can install the query using the query optimizer.
-To use the cost-based optimizer during installation, use the xref:query-operations.adoc#_install_query[`-cost` option] when installing the query.
+Now that the relevant statistics are available to the query optimizer, you can install the query with cost-based optimization.
+To use the cost-based optimization during installation, use the xref:query-operations.adoc#_install_query[`-cost` option] when installing the query.
 
 For example, to install the query `example3`, run `INSTALL QUERY example3 -cost`.
 
 Alternatively, set xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[the `cost_opt` session parameter] to true by running `set cost_opt = true` in the GSQL shell.
-This enables the query optimizer for the rest of your GSQL session.
-You no long need to supply the `-cost` option when installing queries to use the optimizer if the `cost_opt` parameter is set to true.
+This enables cost-based optimization for the rest of your GSQL session.
+You no long need to supply the `-cost` option when installing queries if the `cost_opt` parameter is set to true.
 
 If you missed any cardinality or histogram data, the optimizer warns you about which types are missing, so you can compute the data for any missing type or attribute.

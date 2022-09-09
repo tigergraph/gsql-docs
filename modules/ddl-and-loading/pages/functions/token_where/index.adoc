@@ -2,9 +2,13 @@
 
 The token functions in this section can only be used in the `WHERE` clause of a `LOAD` statement.
 
+NOTE: Besides the functions in the following table, all xref:functions/token/index.adoc[token functions for attribute expressions] can also be used in the `WHERE` clause, including xref:add-token-function.adoc[user-defined functions].
+
 include::partial$token_functions_where.adoc[]
 
-== Example
+== Examples
+
+=== Single token function
 
 These functions can be used as part of expression in the `WHERE` clause.
 For example, the following statement only loads a record if the `score` column of a record is greater than 95.5:
@@ -15,4 +19,25 @@ LOAD f TO VERTEX Person
   VALUES ($"name", $"score")
   WHERE to_float($"score") > 95.5
 ----
+
+[#_token_functions_with_logical_operators]
+=== Token functions with logical operators
+
+You can use logical operators such as `AND`, `OR`, `NOT`,`IN`, `IS NUMERIC`, `IS EMPTY`, and `BETWEEN …​ AND` in the `WHERE` clause with token functions.
+
+[,gsql]
+----
+CREATE LOADING JOB load_token FOR GRAPH Example_Graph {
+    LOAD "data/data.csv"
+    TO VERTEX vertex_1 VALUES($0, $1, $2, $3, $4, $5)
+    WHERE gsql_token_equal($1,"DHB09")
+      OR  token_len($2) > 15
+      AND gsql_substr($2, 0, 3) == “DHB”
+      OR  to_int($2)  IN (1,10)
+      OR  to_float($5) BETWEEN 1 AND 100.5
+      AND $4 == “12”
+    USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+----
+
 

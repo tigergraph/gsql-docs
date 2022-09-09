@@ -334,6 +334,21 @@ Format notation:
 
 When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range. If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
 
+==== Load static `DATETIME` values
+
+GSQL automatically converts correctly formatted strings in a data source file into `DATETIME` values during loading.
+However, if you want to load static `DATETIME` values, you need to use `to_datetime()` to convert the strings into `DATETIME` values.
+
+Once the strings have been converted to `DATETIME` values, you can use other `DATETIME` functions to modify the value you want loaded to the attribute.
+
+For example, the following destination clause always loads the difference in the number of seconds between `"2020-01-01 00:00:00"` and `"2020-01-01 04:13:12"`.
+
+[.wrap,gsql]
+----
+TO EDGE date_time_edge VALUES ($"account_id", $"account_id",
+        datetime_diff(to_datetime("2020-01-01 00:00:00"), to_datetime("2020-02-03 04:13:12"))
+----
+
 === Loading a `BOOL` attribute
 
 When loading data from CSV files the following values are accepted for BOOL attributes :

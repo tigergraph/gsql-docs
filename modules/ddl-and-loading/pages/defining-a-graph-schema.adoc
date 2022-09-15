@@ -85,21 +85,18 @@ CREATE VERTEX Vertex_Type_Name "(" primary_id_name_type
 
 === Keys and Attributes
 
-[NOTE]
-====
-Beginning with v2.3, there are two syntaxes for specifying the primary id/key:
+There are two ways of specifying the primary ID/key:
 
-Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additional options and additional flexibility:
+. `PRIMARY_ID` and `WITH primary_id_as attribute`
+. `PRIMARY KEY` syntax.
+This syntax is modeled after SQL.
 
-. PRIMARY_ID and WITH primary_id_as attribute
-. PRIMARY KEY syntax.  This syntax is modeled after SQL.
-====
 
 ==== `PRIMARY_ID`  and `WITH primary_id_as_attribute`
 
 The `primary_id` is a required field whose purpose is to uniquely identify each vertex instance.
 GSQL creates a hash index on the primary id with O(1) time complexity.
-Its data type may be `STRING`, `INT`, or `UINT`.
+Its data type may be `STRING`, `INT`, `UINT`, or `DATETIME`.
 The syntax for the `primary_id_name_type` term is as follows:
 
 [source,ebnf]
@@ -113,7 +110,7 @@ The functional consequence of this difference is that a query cannot read the `p
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
     WITH primary_id_as_attribute="true"
@@ -379,7 +376,7 @@ CREATE GLOBAL SCHEMA_CHANGE job <job-name>
 };
 ----
 
-*Example:*
+Example:
 
 `ALTER VERTEX User ADD INDEX user_country_index ON (country);`
 
@@ -420,7 +417,7 @@ CREATE GRAPH Empty_Graph ()
 Create graph `Book_rating` for the edge and vertex types defined for the below:
 
 .A schema for a User-Book-Rating graph
-image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
+image::user-book-rating-schema.png[A schema for a User-Book-Rating graph]
 
 .Full definition for the Expanded User-Book-Rating graph
 [source,gsql]

@@ -582,7 +582,6 @@ Token functions are functions in the DDL language that operate on tokens.Some ma
 
 To use a token function, replace the attribute in the destination clause of the `LOAD` statement with the function call.The arguments of the function can be a column from the `FILE` object.
 
-[discrete]
 ==== Example
 
 [source,gsql]

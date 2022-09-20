@@ -499,7 +499,6 @@ If the `println` statement has a list of expressions to print, it will produce a
 The data from query-body level `FILE` print statements (either `TO_CSV` or `println`) will appear in their original order. However, due to the parallel processing of statements in an `ACCUM` block, the order in which `println` statements at the DML-sub-statement level are processed cannot be guaranteed.
 ====
 
-[discrete]
 ==== Example
 
 .File object query example

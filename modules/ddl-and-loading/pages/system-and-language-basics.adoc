@@ -348,13 +348,16 @@ The following types are currently supported.
 | false
 | true, false (case insensitive), 1, 0
 | true, false
-| boolean true and false, represented within GSQL as _true_ and _false_ , and represented in input and output as 1 and 0
+| Boolean true and false, represented within GSQL as _true_ and _false_ , and represented in input and output as 1 and 0
 
 | `STRING`
 | Empty string
 | .*
-| UTF-8
-| character string. The string value can optionally be enclosed by single quote marks or double quote marks. Please see the QUOTE parameter in Section "Other Optional LOAD Clauses".
+| UTF-8 encoding.
+A string attribute does not have a maximum length limit by itself.
+However, the size of all attributes of a vertex or edge combined cannot exceed 10 MB.
+| Character string.
+The string value can optionally be enclosed by single quote marks or double quote marks.
 |===
 
 [WARNING]

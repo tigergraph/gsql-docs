@@ -1,5 +1,7 @@
 = Mathematical Functions
 :stem: latexmath
+:description: A list of mathematical functions in GSQL.
+:page-toclevel: 1
 
 This page lists the mathematical functions that are available in the GSQL query language. They are divided into three categories:
 
@@ -11,22 +13,22 @@ This page lists the mathematical functions that are available in the GSQL query 
 
 === abs()
 
-[discrete]
+
 ==== Syntax
 
 `abs( num )`
 
-[discrete]
+
 ==== Description
 
 Returns the absolute value of a number.
 
-[discrete]
+
 ==== Return type
 
 Number
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -39,22 +41,22 @@ Number
 
 === ceil()
 
-[discrete]
+
 ==== Syntax
 
 `ceil(num)`
 
-[discrete]
+
 ==== Description
 
 Rounds a number up to the smallest integer that's greater than or equal to the number.
 
-[discrete]
+
 ==== Return type
 
 `INT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -67,22 +69,22 @@ Rounds a number up to the smallest integer that's greater than or equal to the n
 
 === *exp()*
 
-[discrete]
+
 ==== Syntax
 
 `exp(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the base-e exponential of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -95,22 +97,22 @@ Returns the base-e exponential of a number.
 
 === float_to_int()
 
-[discrete]
+
 ==== Syntax
 
 `float_to_int (num)`
 
-[discrete]
+
 ==== *Description*
 
 Converts a floating-point number to an integer by truncating the floating part.
 
-[discrete]
+
 ==== Return type
 
 `INT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -123,22 +125,22 @@ Converts a floating-point number to an integer by truncating the floating part.
 
 === floor()
 
-[discrete]
+
 ==== Syntax
 
 `floor(num)`
 
-[discrete]
+
 ==== Description
 
 Rounds a number down to the biggest integer that is smaller than or equal to the number.
 
-[discrete]
+
 ==== Return type
 
 `INT`
 
-[discrete]
+
 ==== Parameter
 
 |===
@@ -151,22 +153,22 @@ Rounds a number down to the biggest integer that is smaller than or equal to the
 
 === fmod()
 
-[discrete]
+
 ==== Syntax
 
 `fmod(numer, denom)`
 
-[discrete]
+
 ==== Description
 
 Returns the floating-point remainder of `numer` divided by `denom`
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -183,12 +185,12 @@ Returns the floating-point remainder of `numer` divided by `denom`
 
 === ldexp()
 
-[discrete]
+
 ==== Syntax
 
 `ldexp(x, exp)`
 
-[discrete]
+
 ==== Description
 
 Returns `x` multiplied by 2 raised to the power of `exp`
@@ -198,12 +200,12 @@ Returns `x` multiplied by 2 raised to the power of `exp`
 x*2^{exp}
 ++++
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -220,27 +222,27 @@ x*2^{exp}
 
 === PI()
 
-[discrete]
+
 ==== Syntax
 
 `PI()`
 
-[discrete]
+
 ==== Description
 
 Returns the value of π.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 None.
 
-[discrete]
+
 ==== Example
 
 [,text]
@@ -250,22 +252,22 @@ None.
 
 === pow()
 
-[discrete]
+
 ==== Syntax
 
 `pow(base, exp)`
 
-[discrete]
+
 ==== Description
 
 Returns the power of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -282,22 +284,22 @@ Returns the power of a number.
 
 === rand()
 
-[discrete]
+
 ==== Syntax
 
 `rand( [seed] )`
 
-[discrete]
+
 ==== Description
 
 Returns a completely random number >= 0 and <1. If `seed` is specified, it returns a repeatable sequence of random numbers. If no seed is specified, it returns a completely random number.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -308,7 +310,7 @@ Returns a completely random number >= 0 and <1. If `seed` is specified, it retur
 | `UINT`
 |===
 
-[discrete]
+
 ==== Example
 
 [,text]
@@ -320,22 +322,22 @@ rand(5) -> 0.36374
 
 === round()
 
-[discrete]
+
 ==== Syntax
 
 `round ( num[, integer] )`
 
-[discrete]
+
 ==== Description
 
 Rounds a number to a specified place relative to the decimal point and returns the result.
 
-[discrete]
+
 ==== Return type
 
 A numeric type.
 
-[discrete]
+
 ==== Parameters
 [width="100%",cols="1,2,1",options="header",]
 |===
@@ -355,7 +357,7 @@ negative, then `+num+` is rounded off to the left of the decimal point.
 |`+INT+`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -368,22 +370,22 @@ round(2.25, 1) => 2.3
 
 === sign()
 
-[discrete]
+
 ==== Syntax
 
 `sign( num )`
 
-[discrete]
+
 ==== Description
 
 Returns the sign of a number. If the number is positive, return `1`; if the number is negative, return `-1`; if the number is `0`, return `0`
 
-[discrete]
+
 ==== Return type
 
 `INT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -394,7 +396,7 @@ Returns the sign of a number. If the number is positive, return `1`; if the numb
 | `INT`, `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -406,22 +408,22 @@ sign(-1.23) => -1
 
 === square()
 
-[discrete]
+
 ==== Syntax
 
 `square( num )`
 
-[discrete]
+
 ==== Description
 
 Returns the square of a number.
 
-[discrete]
+
 ==== Return type
 
 A numeric type.
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -432,7 +434,7 @@ A numeric type.
 | `INT`, `FLOAT`, or `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -444,22 +446,22 @@ square(-50) => 2500
 
 === sqrt()
 
-[discrete]
+
 ==== Syntax
 
 `sqrt(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the square root of a number
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -472,22 +474,22 @@ Returns the square root of a number
 
 === trunc()
 
-[discrete]
+
 ==== Syntax
 
 `trunc( num, [decimal_place] )`
 
-[discrete]
+
 ==== Description
 
 Returns a number truncated to a specified decimal place.
 
-[discrete]
+
 ==== Return type
 
 A numeric type.
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -502,7 +504,7 @@ A numeric type.
 | `INT`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -517,22 +519,22 @@ trunc(9.99, 1) => 9.9
 
 === *log*()
 
-[discrete]
+
 ==== Syntax
 
 `log(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the natural logarithm of a number (base e).
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -545,22 +547,22 @@ Returns the natural logarithm of a number (base e).
 
 === log2()
 
-[discrete]
+
 ==== Syntax
 
 `log2( num )`
 
-[discrete]
+
 ==== Description
 
 Returns the base-2 logarithm of a number.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -571,7 +573,7 @@ Returns the base-2 logarithm of a number.
 | `INT`, `FLOAT`, `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -583,22 +585,22 @@ log2(3) => 1.58
 
 === log10()
 
-[discrete]
+
 ==== Syntax
 
 `log10(num)`
 
-[discrete]
+
 ==== Description
 
 Return the common logarithm of a number (base 10).
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -613,22 +615,22 @@ Return the common logarithm of a number (base 10).
 
 === acos()
 
-[discrete]
+
 ==== Syntax
 
 `acos(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the arc cosine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -641,22 +643,22 @@ Returns the arc cosine of a number.
 
 === *asin()*
 
-[discrete]
+
 ==== Syntax
 
 `asin(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the arc sine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -669,22 +671,22 @@ Returns the arc sine of a number.
 
 === *atan()*
 
-[discrete]
+
 ==== Syntax
 
 `atan(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the arctangent of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -697,12 +699,12 @@ Returns the arctangent of a number.
 
 === *atan2()*
 
-[discrete]
+
 ==== Syntax
 
 `atan2(y, x)`
 
-[discrete]
+
 ==== Description
 
 Returns the arctangent of a fraction.
@@ -712,12 +714,12 @@ Returns the arctangent of a fraction.
 atan(\frac{y}x)
 ++++
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -734,22 +736,22 @@ atan(\frac{y}x)
 
 === *cos*()
 
-[discrete]
+
 ==== Syntax
 
 `cos(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the cosine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -762,22 +764,22 @@ Returns the cosine of a number.
 
 === *cosh()*
 
-[discrete]
+
 ==== Syntax
 
 `cosh(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the hyperbolic cosine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -790,22 +792,22 @@ Returns the hyperbolic cosine of a number.
 
 === cot()
 
-[discrete]
+
 ==== Syntax
 
 `cot( num )`
 
-[discrete]
+
 ==== Description
 
 Returns the cotangent of a number.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -816,7 +818,7 @@ Returns the cotangent of a number.
 | `INT`, `FLOAT`, or `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -827,22 +829,22 @@ cot(-1) => -0.64209261593433065
 
 === degrees()
 
-[discrete]
+
 ==== Syntax
 
 `degrees( num )`
 
-[discrete]
+
 ==== Description
 
 Converts a value in radians to degrees.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -853,7 +855,7 @@ Converts a value in radians to degrees.
 | `INT`, `FLOAT`, or `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -864,22 +866,22 @@ degrees(1) => -57.29577951308232
 
 === radians()
 
-[discrete]
+
 ==== Syntax
 
 `radians( num )`
 
-[discrete]
+
 ==== Description
 
 Converts a value in degrees to radians.
 
-[discrete]
+
 ==== Return type
 
 `DOUBLE`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -890,7 +892,7 @@ Converts a value in degrees to radians.
 | `INT`, `FLOAT`, or `DOUBLE`
 |===
 
-[discrete]
+
 ==== Examples
 
 [,text]
@@ -902,22 +904,22 @@ radians( 50 ) => 0.8726646259971648
 
 === sin()
 
-[discrete]
+
 ==== Syntax
 
 `sin(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the sine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -930,22 +932,22 @@ Returns the sine of a number.
 
 === *sinh()*
 
-[discrete]
+
 ==== Syntax
 
 `sinh(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the hyperbolic sine of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -958,22 +960,22 @@ Returns the hyperbolic sine of a number.
 
 === *tan()*
 
-[discrete]
+
 ==== Syntax
 
 `tan(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the tangent of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===
@@ -986,22 +988,22 @@ Returns the tangent of a number.
 
 === tanh()
 
-[discrete]
+
 ==== Syntax
 
 `tanh(num)`
 
-[discrete]
+
 ==== Description
 
 Returns the hyperbolic tangent of a number.
 
-[discrete]
+
 ==== Return type
 
 `FLOAT`
 
-[discrete]
+
 ==== Parameters
 
 |===

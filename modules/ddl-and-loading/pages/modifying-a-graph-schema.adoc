@@ -53,7 +53,7 @@ In addition, graphs can also have local types that share the same name with glob
 
 The two types of schema change jobs are described below.
 
-== *`CREATE SCHEMA_CHANGE JOB` (local)*
+== `CREATE SCHEMA_CHANGE JOB` (local)
 
 The CREATE SCHEMA_CHANGE JOB block defines a sequence of ADD, ALTER, and DROP statements for changing a particular graph. It does not perform the schema change.
 
@@ -79,13 +79,14 @@ Remember to include a semicolon at the end of each `DROP`, `ALTER`, or `ADD` sta
 If a `SCHEMA_CHANGE JOB` defines a new edge type which connects to a new vertex type, the `ADD VERTEX` statement should precede the related `ADD EDGE` statement. However, the `ADD EDGE` and `ADD VERTEX` statements can be in the same `SCHEMA_CHANGE` `JOB`.
 ====
 
-=== *`ADD VERTEX | EDGE` (local)*
+=== `ADD VERTEX | EDGE` (local)
 
-The `ADD` statement defines a new type of vertex or edge and automatically adds it to a graph schema. The syntax for the `ADD VERTEX | EDGE` statement is analogous to that of the `CREATE VERTEX | EDGE | GRAPH` statements.  It may only be used within a `SCHEMA_CHANGE` `JOB`.
+The `ADD` statement defines a new type of vertex or edge and automatically adds it to a graph schema.
+The syntax for the `ADD VERTEX | EDGE` statement is analogous to that of the `CREATE VERTEX | EDGE | GRAPH` statements.
+It may only be used within a `SCHEMA_CHANGE JOB`.
 
-.ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE
-
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
 ADD VERTEX Vertex_Type_Name (PRIMARY_ID id type [',' attribute_list]) [WITH STATS '=' "none"|"outdegree_by_edgetype"];
 ADD UNDIRECTED EDGE Edge_Type_Name (FROM Vertex_Type_Name',' TO Vertex_Type_Name [',' edge_attribute_list])
@@ -95,27 +96,26 @@ ADD DIRECTED EDGE Edge_Type_Name (FROM Vertex_Type_Name',' TO Vertex_Type_Name [
 
 
 
-=== *`ALTER VERTEX | EDGE`*
+=== `ALTER VERTEX | EDGE`
 
 The `ALTER` statement adds attributes to or removes attributes from an existing vertex type or edge type. It may only be used within a `SCHEMA_CHANGE` `JOB`.  The basic format is as follows:
 
-.ALTER VERTEX / EDGE
-
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
-ALTER VERTEX|EDGE object_type_name ADD|DROP (attribute_list);
+ALTER VERTEX|EDGE object_type_name ADD|DROP ATTRIBUTE (attribute_list);
 ----
 
 
 
-==== *`+ALTER ... ADD+`*
+==== `ALTER ... ADD`
 
-`+ALTER ... ADD+` can add attributes to vertex or edge types.
+`ALTER ... ADD` can add attributes to vertex or edge types.
 
-Added attributes are appended to the end of the schema. The new attributes may include DEFAULT fields. To add attributes to a vertex type, the syntax is as follows:
+Added attributes are appended to the end of the schema. The new attributes may include `DEFAULT` fields.
+To add attributes to a vertex type, the syntax is as follows:
 
-.ALTER VERTEX ... ADD
-
+.Syntax
 [source,gsql]
 ----
 ALTER VERTEX Vertex_Type_Name ADD
@@ -134,8 +134,7 @@ STRING, market_cap DOUBLE)
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:
 
-.ALTER EDGE... ADD
-
+.Syntax
 [source,gsql]
 ----
 ALTER EDGE Edge_Type_Name ADD
@@ -148,17 +147,17 @@ ALTER EDGE Edge_Type_Name ADD
 
 `+ALTER EDGE ... ADD PAIR+` adds one or more edge pairs, which refer to the `FROM` and `TO` vertex types of  an edge type. To add an edge pair, put the vertex type names in parentheses after keywords `FROM` and `TO`.
 
-*Syntax*
-
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
 ALTER EDGE Edge_Type ADD PAIR
 "(" FROM Vertex_Type, TO Vertex_Type (| FROM Vertex_Type, TO Vertex_Type)* ")”
 ----
 
-*Example*
+===== Example
 
-In the example below, the first statement in the schema change job will add an edge pair (`FROM Person, TO Company`) to the edge type `Visit`.  The second example adds two edge pairs to the edge type `Has_Pet`; the edge type can now connect both `Person` and `Dog` vertices, as well as `Person` and `Bird` vertices.
+In the example below, the first statement in the schema change job will add an edge pair (`FROM Person, TO Company`) to the edge type `Visit`.
+The second example adds two edge pairs to the edge type `Has_Pet`; the edge type can now connect both `Person` and `Dog` vertices, as well as `Person` and `Bird` vertices.
 
 [source,gsql]
 ----
@@ -168,12 +167,11 @@ CREATE SCHEMA_CHANGE JOB job_2 FOR GRAPH Example_Graph {
 }
 ----
 
-==== *`+ALTER ... DROP+`*
+==== `ALTER ... DROP`
 
 The syntax for ALTER ... DROP is analogous to that of ALTER ... ADD.
 
-.ALTER ... DROP
-
+.Syntax
 [source,gsql]
 ----
 ALTER VERTEX|EDGE Object_Type_Name DROP ATTRIBUTE (
@@ -182,45 +180,39 @@ ALTER VERTEX|EDGE Object_Type_Name DROP ATTRIBUTE (
 
 
 
-==== `+ALTER VERTEX ... WITH+`  (Beta)
+==== `ALTER VERTEX ... WITH`  (Beta)
 
-`The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to xref:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
+`The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable.
+Vertex types are untaggable by default.
+When a vertex type is marked as taggable, the vertex type can be used to xref:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
 
-.ALTER VERTEX WITH TAGGABLE
-
+.Syntax
 [source,gsql]
 ----
 ALTER VERTEX Vertex_Type_Name WITH TAGGABLE = ("true" | "false")
 ----
 
-
-
 === `DROP VERTEX | EDGE` (local)
 
-The DROP statement removes the specified vertex type or edge type from the database dictionary. The DROP statement should only be used when graph operations are not in progress.
+The DROP statement removes the specified vertex type or edge type from the database dictionary.
+The DROP statement should only be used when graph operations are not in progress.
 
-.drop vertex / edge
-
+.Syntax
 [source,gsql]
 ----
 DROP VERTEX Vertex_Type_Name [',' Vertex_Type_Name]*
 DROP EDGE Edge_Type_Name [',' Edge_Type_Name]*
 ----
 
-
-
 === `DROP TUPLE`
 
 For tuples that are defined within a graph schema, you can drop them by using the following command.
 
-.drop tuple
-
+.Syntax
 [source,text]
 ----
 DROP TUPLE Tuple_Name [',' Tuple_Name]*
 ----
-
-
 
 === `ADD TAG`
 
@@ -233,14 +225,11 @@ DROP TUPLE Tuple_Name [',' Tuple_Name]*
 ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 ----
 
-
-
 === `DROP TAG`
 
 `DROP TAG` drops a tag or multiple tags from the schema, and deletes the tag from each vertex to which it is attached. `DROP TAG` cannot be run if the tag to be dropped is used in the definition of a tag-based graph; the graph must be dropped first.
 
 .Syntax for DROP TAG
-
 [source,gsql]
 ----
 DROP TAG <tag_name> ["," <tag_name>]*
@@ -250,7 +239,7 @@ DROP TAG <tag_name> ["," <tag_name>]*
 
 == `RUN SCHEMA_CHANGE JOB`
 
-*RUN SCHEMA_CHANGE JOB job_name* performs the schema change job. After the schema has been changed, the GSQL system checks all existing GSQL queries. If an existing GSQL query uses a dropped vertex, edge, or attribute, the query becomes invalid, and GSQL will show the message "Query _Query_Name_ becomes invalid after schema update, please update it.".
+`RUN SCHEMA_CHANGE JOB job_name` performs the schema change job. After the schema has been changed, the GSQL system checks all existing GSQL queries. If an existing GSQL query uses a dropped vertex, edge, or attribute, the query becomes invalid, and GSQL will show the message "Query _Query_Name_ becomes invalid after schema update, please update it.".
 
 Below is an example. The schema change job add_reviews adds a Review vertex type and two edge types to connect reviews to users and books, respectively.
 
@@ -289,9 +278,8 @@ The `USE GLOBAL` command changes a superuser's mode to Global mode.  In global m
 
 The `CREATE GLOBAL SCHEMA_CHANGE JOB` block defines a sequence of `ADD`, `ALTER`, and `DROP` statements that modify either the attributes or the graph membership of global vertex or edge types. Unlike the non-global schema change job, the header does not include a graph name. However, the `ADD`/`ALTER`/`DROP` statements in the body do mention graphs.
 
-.CREATE GLOBAL SCHEMA_CHANGE JOB syntax
-
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
 CREATE GLOBAL SCHEMA_CHANGE JOB job_name {
     [sequence of global DROP, ALTER, and ADD statements, each line ending with a semicolon]
@@ -323,16 +311,13 @@ Although both global and local schema change jobs have `ADD` and `DROP` statemen
 Remember to include a semicolon at the end of each `DROP`, `ALTER`, or `ADD` statement within the JOB block.
 ====
 
-=== *`ADD VERTEX | EDGE` (global)*
+=== `ADD VERTEX | EDGE` (global)
 
-[NOTE]
-====
 The ADD statement adds existing global vertex or edge types to one of the graphs.
-====
 
-.ADD VERTEX / UNDIRECTED EDGE / DIRECTED EDGE (Global)
 
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
 ADD VERTEX Vertex_Type_Name [',' Vertex_Type_Name...] TO GRAPH Graph_Name;
 ADD EDGE Edge_Type_Name [',' Edge_Type_Name...] TO GRAPH Graph_Name;
@@ -340,30 +325,24 @@ ADD EDGE Edge_Type_Name [',' Edge_Type_Name...] TO GRAPH Graph_Name;
 
 
 
-=== *`ALTER VERTEX | EDGE`*
+=== `ALTER VERTEX | EDGE`
 
-[NOTE]
-====
-The `ALTER` statement is used to add attributes to or remove attributes from an existing global vertex type or edge type. The `ALTER VERTEX / EDGE` syntax for global schema changes is the same as that for local schema change jobs.
-====
+The `ALTER` statement is used to add attributes to or remove attributes from an existing vertex type or edge type.
 
-The `ALTER` statement is used to add attributes to or remove attributes from an existing vertex type or edge type. It can also be used to add or remove source (`FROM`) vertex types or destination (`TO`) vertex types of an edge type.  It may only be used within a `SCHEMA_CHANGE JOB`.  The basic format is as follows:
+It can also be used to add or remove source (`FROM`) vertex types or destination (`TO`) vertex types of an edge type.  It may only be used within a `SCHEMA_CHANGE JOB`.  The basic format is as follows:
 
-.ALTER VERTEX / EDGE
-
-[source,gsql]
+.Syntax
+[source.wrap,gsql]
 ----
-ALTER VERTEX|EDGE Object_Type_Name ADD|DROP (attribute_list);
+ALTER VERTEX|EDGE Object_Type_Name ADD|DROP ATTRIBUTE (attribute_list);
 ----
 
 
+==== `ALTER ... ADD`
 
-==== *`+ALTER ... ADD+`*
+Added attributes are appended to the end of the schema.  The new attributes may include default fields. To add attributes to a vertex type, the syntax is as follows:
 
-Added attributes are appended to the end of the schema.  The new attributes may include DEFAULT fields. To add attributes to a vertex type, the syntax is as follows:
-
-.ALTER VERTEX ... ADD
-
+.Syntax
 [source,gsql]
 ----
 ALTER VERTEX Vertex_Type_Name ADD
@@ -371,10 +350,8 @@ ALTER VERTEX Vertex_Type_Name ADD
     [',' attribute_name type [DEFAULT default_value]]* );
 ----
 
-
 For example:
-
-[source,gsql]
+[source.wrap,gsql]
 ----
 ALTER VERTEX Company ADD ATTRIBUTE (industry
 STRING, market_cap DOUBLE)
@@ -382,8 +359,7 @@ STRING, market_cap DOUBLE)
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:
 
-.ALTER EDGE... ADD
-
+.Syntax
 [source,gsql]
 ----
 ALTER EDGE Edge_Type_Name ADD
@@ -405,17 +381,17 @@ ALTER EDGE Like ADD TO (Animal) ATTRIBUTE (suggested_by STRING)
 
 `+ALTER EDGE ... ADD PAIR+` adds one or more edge pairs, which refer to the `FROM` and `TO` vertex types of  an edge type. To add an edge pair, put the vertex type names in parentheses after keywords `FROM` and `TO`.
 
-*Syntax*
-
+.Syntax
 [source,gsql]
 ----
 ALTER EDGE Edge_Type ADD PAIR
 "(" FROM Vertex_Type, TO Vertex_Type (| FROM Vertex_Type, TO Vertex_Type)* ")”
 ----
 
-*Example*
+===== Example
 
-In the example below, the first statement in the schema change job will add an edge pair (`FROM person, TO company`) to the edge type `visit`.  The second example adds two edge pairs to the edge type `has_pet`; the edge type can now connect both `person` and `dog` vertices, as well as `person` and `bird` vertices.
+In the following example below, the first statement in the schema change job will add an edge pair (`FROM person, TO company`) to the edge type `visit`.
+The second example adds two edge pairs to the edge type `has_pet`; the edge type can now connect both `person` and `dog` vertices, as well as `person` and `bird` vertices.
 
 [source,gsql]
 ----
@@ -425,7 +401,7 @@ CREATE GLOBAL SCHEMA_CHANGE JOB job_2 FOR GRAPH Example_Graph {
 }
 ----
 
-==== *`+ALTER ... DROP+`*
+==== `ALTER ... DROP`
 
 The syntax for `+ALTER ... DROP+` is analogous to that of `+ALTER ... ADD+`.
 

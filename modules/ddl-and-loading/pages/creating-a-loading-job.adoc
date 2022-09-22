@@ -190,12 +190,14 @@ DEFINE HEADER header_name = " column_name "[," column_name "]*;
 
 === `DEFINE INPUT_LINE_FILTER`
 
+NOTE: This statement is not supported in a xref:tigergraph-server:data-loading:kafka-loader/index.adoc[Kafka loading job].
+
 The `DEFINE INPUT_LINE_FILTER` statement defines a named Boolean expression whose value depends on column attributes from a row of input data.
 When combined with a `USING reject_line_rule` clause in a `LOAD` statement, the filter determines whether an input line is ignored or not.
 
-[source,ebnf]
+[source.wrap,ebnf]
 ----
-DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables ;
+DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables;
 ----
 
 include::partial$load-statement.adoc[]

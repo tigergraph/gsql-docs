@@ -273,6 +273,7 @@ header has been defined in the loading job, rather than in the data file
 |`REJECT_LINE_RULE`
 |If the filter expression evaluates to true, then do
 not use this input data line.
+Not supported in a xref:tigergraph-server:data-loading:kafka-loader/index.adoc[Kafka loading job].
 |name of filter from a preceding `DEFINE
 INPUT_LINE_FILTER` statement
 

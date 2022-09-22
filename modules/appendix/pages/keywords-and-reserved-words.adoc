@@ -9,10 +9,6 @@ That is, a graph schema or loading job may not use any of these words for the *n
 There is a separate list for xref:query-language-reserved-words.adoc[Reserved Words in the *Query Language*].
 The compiler will reject the use of a reserved word as well as any word beginning with a reserved prefix as a user-defined identifier.
 
-=== History
-
-* v3.1: Added reserved prefix `gsql_sys_`
-
 === Reserved prefixes
 
 * `gsql_sys_`
@@ -205,11 +201,8 @@ The compiler will reject the use of a reserved word as well as any word beginnin
 
 These keywords in the language are non-reserved, so users may use them for user-defined identifiers.
 
-=== History
 
-* v3.1: Added `DESCRIPTION,` `TAG`, `TAGS`
-
-=== Non-reserved keyword list:
+=== Non-reserved keyword list
 
 * ABORT
 * ACL

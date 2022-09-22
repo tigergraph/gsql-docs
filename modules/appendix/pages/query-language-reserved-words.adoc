@@ -9,57 +9,232 @@ The compiler will reject the use of a Reserved Word as a user-defined identifier
 == Reserved words
 
 The following words are reserved for use by the GSQL query language.
-That is, a query may not use any of these words for a user-defined identifier, such as the name of a local variable or a local `TUPLE` type.
+That is a query may not use any of these words for a user-defined identifier
+ such as the name of a local variable or a local `TUPLE` type.
+Some of them come from C++, which is a dependency for GSQL.
 
-You should also not use words from this list to name vertex or edge types.
-While GSQL will not raise an error when you define the types, you will not be able to reference the types in a query.
+You should also not use words from the following lists to name vertex or edge types.
+While GSQL does not raise an error when you define the types, you will not be able to reference the types in a query.
 
-.Query Language Reserved Words
-[source,gsql]
-----
-ACCUM               AND                 ANY                 API
-AS                  ASC                 AVG                 BAG
-BATCH               BETWEEN             BOOL                BOTH
-BREAK               BY                  CASE                CATCH
-COALESCE            COMPRESS            CONTINUE            COUNT
-CREATE              DATETIME            DATETIME_ADD        DATETIME_SUB
-DELETE              DESC                DISTRIBUTED         DO
-DOUBLE              EDGE                ELSE                END
-ESCAPE              EXCEPTION           FALSE               FILE
-FILTER              FLOAT               FOR                 FOREACH
-FROM                GRAPH               GROUP               GSQL_INT_MAX
-GSQL_INT_MIN        GSQL_UINT_MAX       HAVING              IF
-IN                  INSERT              INT                 INTERPRET
-INTERSECT           INTERVAL            INTO                IS
-ISEMPTY             JSONARRAY           JSONOBJECT          LASTHOP
-LEADING             LIKE                LIMIT               LIST
-LOAD_ACCUM          LOG                 MAP                 MATCH
-MAX                 MIN                 MINUS               NOT
-NOW                 NULL                OFFSET              OR
-ORDER               PATH                PER                 PINNED
-POST_ACCUM          POST-ACCUM          PRIMARY_ID          PRINT
-QUERY               RAISE               RANGE               REPLACE
-RESET_COLLECTION_ACCUM                  RETURN              RETURNS
-RUN                 SAMPLE              SELECT              SELECT_VERTEX
-SET                 SRC                 STATIC              STRING
-SUM                 SYNTAX              TARGET              TAGS
-TGT                 THEN                TO                  TO_CSV
-TO_DATETIME         TRAILING            TRIM                TRUE
-TRY                 TUPLE               TYPEDEF             UINT
-UNION               UPDATE              VALUES              VERTEX
-WHEN                WHERE               WHILE               WITH
-----
+.C++ reserved words
+* ALIGNAS
+* ALIGNOF
+* AND
+* AND_EQ
+* ASM
+* AUTO
+* BITAND
+* BITOR
+* BOOL
+* BREAK
+*  CASE
+* CATCH
+* CHAR
+* CHAR16_T
+* CHAR32_T
+* CLASS
+* COMPL
+* CONCEPT
+* CONST
+* CONSTEXPR
+* CONST_CAST
+* CONTINUE
+* DECLTYPE
+* DEFAULT
+* DELETE
+* DO
+* DOUBLE
+* DYNAMIC_CAST
+* ELSE
+* ENUM
+* EXPLICIT
+* EXPORT
+* EXTERN
+* FALSE
+* FLOAT
+* FOR
+* FRIEND
+* GOTO
+* IF
+* INLINE
+* INT
+* LONG
+* MUTABLE
+* NAMESPACE
+* NEW
+* NOEXCEPT
+* NO_TRANSLATION_EID_TO_IID
+* NOT
+* NOT_EQ
+* NULLPTR
+* OPERATOR
+* OR
+* OR_EQ
+* PRIVATE
+* PROTECTED
+* PUBLIC
+* REGISTER
+* REINTERPRET_CAST
+* REQUIRES
+* RETURN
+* SHORT
+* SIGNED
+* SIZEOF
+* STATIC
+* STATIC_ASSERT
+* STATIC_CAST
+* STRUCT
+* SWITCH
+* TEMPLATE
+* THIS
+* THREAD_LOCAL
+* THROW
+* TRUE
+* TRY
+* TYPEDEF
+* TYPEID
+* TYPENAME
+* UNION
+* UNSIGNED
+* USING
+* VIRTUAL
+* VOID
+* VOLATILE
+* WCHAR_T
+* WHILE
+* XOR
+* XOR_EQ
+
+.GSQL reserved words
+* ACCUM
+* AND
+* ANY
+* API
+* AS
+* ASC
+* AVG
+* BAG
+* BATCH
+* BETWEEN
+* BOOL
+* BOTH
+* BREAK
+* CASE
+* CATCH
+* COALESCE
+* COMPRESS
+* CONTINUE
+* COUNT
+* CREATE
+* DATETIME
+* DATETIME_ADD
+* DATETIME_SUB
+* DELETE
+* DESC
+* DISTRIBUTED
+* DO
+* DOUBLE
+* EDGE
+* ELSE
+* END
+* ESCAPE
+* EXCEPTION
+* FALSE
+* FILTER
+* FLOAD
+* FOR
+* FOREACH
+* FROM
+* GRAPH
+* HAVING
+* IF
+* IN
+* INT
+* INTERPRET
+* INTERSECT
+* INTERVAL
+* INTO
+* IS
+* ISEMPTY
+* JSONARRAY
+* JSONOBJECT
+* LEADING
+* LIKE
+* LIMIT
+* LOADACCUM
+* MAX
+* MIN
+* MINUS
+* NOT
+* NULL
+* OFFSET
+* OR
+* ORDER
+* PINNED
+* POST_ACCUM
+* PRIMARY_ID
+* PRINT
+* QUERY
+* RAISE
+* RANGE
+* RETURN
+* RETURNS
+* RUN
+* SAMPLE
+* SELECT
+* SELECTVERTEX
+* SET
+* STATIC
+* STRING
+* SUM
+* SYNTAX
+* TARGET
+* TAGS
+* THEN
+* TO
+* TO_CSV
+* TRAILING
+* TRIM
+* TRUE
+* TRY
+* TUPLE
+* TYPEDEF
+* UINT
+* UNION
+* VALUES
+* VERTEX
+* WHEN
+* WHILE
+* WITH
+* GSQL_INT_MAX
+* GSQL_INT_MIN
+* GSQL_UINT_MAX
+* RESET_COLLECTION_ACCUM
+
 
 == Non-reserved keywords
 
-These keywords in the language are non-reserved, so users may use them for user-defined identifiers.
+These keywords in the language are non-reserved so users may use them for user-defined identifiers.
 
-.Query language non-reserved keywords
-----
-LIST    MAP     LOG     NOW
-TO_DATETIME     UPDATE  FILE
-PER     PATH    REPLACE MATCH
-SRC     TGT     LASTHOP GROUP
-BY      COMMIT  ABORT   DISTINCT
-INSERT
-----
+.List of non-reserved keywords in the query language
+* LIST
+* MAP
+* LOG
+* NOW
+* TO_DATETIME
+* UPDATE
+* FILE
+* PER
+* PATH
+* REPLACE
+* MATCH
+* SRC
+* TGT
+* LASTHOP
+* GROUP
+* BY
+* COMMIT
+* ABORT
+* DISTINCT
+* INSERT
+

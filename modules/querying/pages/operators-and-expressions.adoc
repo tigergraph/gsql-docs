@@ -792,6 +792,12 @@ Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` state
 A subquery must be created before the query that calls the subquery.
 A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
+[CAUTION]
+====
+* A xref:distributed-query-mode.adoc[distributed query] cannot call another distributed query
+* A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause
+====
+
 .Main Components of a Subquery
 [source,gsql]
 ----

@@ -781,6 +781,7 @@ GSQL > RUN QUERY friendsNotInblockedlist("person1", ["person2"])
 ====
 
 
+[#_subqueries]
 == Subqueries
 
 A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery.

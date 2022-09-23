@@ -1,6 +1,5 @@
 = Distributed Query Mode
-
-== Introduction
+:description: Overview of distributed query mode.
 
 In a distributed graph (where the data are spread across multiple machines), the default execution plan is as follows:
 
@@ -21,27 +20,32 @@ To invoke Distributed Query Mode, insert the keyword `DISTRIBUTED` before `QUERY
 ----
 createQuery :=
     CREATE [OR REPLACE][DISTRIBUTED] QUERY queryName "(" [parameterList] ")"
-               FOR GRAPH graphName
-               [RETURNS "("  baseType | accumType ")"]
-               [API "(" stringLiteral ")"]
-               [SYNTAX syntaxName]
-               "{" queryBody "}"
+    FOR GRAPH graphName
+    [RETURNS "("  baseType | accumType ")"]
+    [API "(" stringLiteral ")"]
+    [SYNTAX syntaxName]
+    "{" queryBody "}"
 ----
 
-== Guidelines for Selecting Distributed Query Mode
+== When to use Distributed Query Mode
 
-The basic trade-off between distributed query mode and default mode is greater parallelism for the given query vs. using more system resources, which reduces the potential for concurrency with other operations. Each machine has a certain number of workers available for concurrent execution of queries.  A query in default mode uses only one worker out of the whole system. (This one worker will have multiple threads for processing edge traversals in parallel.)  However, a query in distributed mode uses one query worker _per machine._ This means this query can run faster, but it leaves fewer workers for other queries running concurrently.
+The basic trade-off between distributed query mode and default mode is greater parallelism for the given query vs. using more system resources, which reduces the potential for concurrency with other operations.
+Each machine has a certain number of workers available for concurrent execution of queries.
+A query in default mode uses only one worker out of the whole system. (This one worker will have multiple threads for processing edge traversals in parallel.)
+However, a query in distributed mode uses one query worker _per machine._
+This means this query can run faster, but it leaves fewer workers for other queries running concurrently.
 
 In general, Distributed Query Mode is likely to improve the performance of a query if the query:
 
 * Starts at a very large set of starting point vertices.
 * Performs many hops.
 
-For example, algorithms that compute a value for every vertex or one value for the entire graph should use Distributed Query Mode. This includes PageRank, Centrality, and Connected Component algorithms.
+For example, algorithms that compute a value for every vertex or one value for the entire graph should use Distributed Query Mode.
+This includes PageRank, Centrality, and Connected Component algorithms.
 
 [NOTE]
 ====
-For applications where the same query (queries with the same logic but different input parameters) will be run many times in production, the application designer is encouraged to try both modes during development and choose the one which works better for their use case and data.
+For applications where the same query are run many times in production, the application designer is encouraged to try both modes during development and choose the one which works better for their use case and data.
 ====
 
 == Unsupported Features
@@ -59,3 +63,5 @@ The following GSQL features are not supported in Distributed Query Mode:
 
 * Accumulator nesting limitations
  ** Accumulator methods are not supported if the accumulator is nested inside another accumulator
+* A distributed query cannot call another distributed query as a xref:operators-and-expressions.adoc#_subqueries[subquery]
+* A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause

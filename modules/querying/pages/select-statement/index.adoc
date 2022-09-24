@@ -771,7 +771,7 @@ The statements within the `ACCUM` clause are executed sequentially for a given v
 However, there is no fixed order in which a vertex set or edge set is processed.
 Any inspection of an intermediate result within the `ACCUM` clause is incomplete and may not be that meaningful.
 
-Due to the parallel nature of the statements within an `ACCUM` clause, you cannot reference updated variables within an `ACCUM` clause.
+Due to the parallel nature of the statements within an `ACCUM` clause, you cannot reference updated variables within an `ACCUM` clause since there is no guarantee that the variable was indeed updated when it's referenced.
 For example, in the following query, the second statement in the `ACCUM` clause does not necessarily run after the first statement.
 
 [tabs]

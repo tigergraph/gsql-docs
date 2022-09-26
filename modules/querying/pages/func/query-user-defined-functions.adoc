@@ -49,6 +49,7 @@ Below is a list of data types and where each is allowed in a function.
 |Data Type | Argument | Return | Function Body
 | `bool` | Yes | Yes | Yes
 | `int` | Yes | Yes | Yes
+| `uint` | Yes | Yes | Yes
 | `float` | Yes | Yes | Yes
 | `double` | Yes | Yes | Yes
 | `string` | Yes | Yes | Yes

@@ -45,6 +45,7 @@ inline bool greater_than_three (double x) {
 
 | `bool` | Yes | Yes | Yes
 | `int` | Yes | Yes | Yes
+| `uint` | Yes | Yes | Yes
 | `float` | Yes | Yes | Yes
 | `double` | Yes | Yes | Yes
 | `string` | Yes | Yes | Yes

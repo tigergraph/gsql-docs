@@ -313,7 +313,7 @@ Default is "false"
 |===
 
 [#_loading_json_data]
-=== Loading JSON Data
+=== Loading JSON data
 
 When the USING option `JSON_FILE="true"` is used, the loader loads JSON objects instead of tabular data.
 A JSON object is an unordered set of key/value pairs, where each value may itself be an array or object, leading to nested structures.A colon separates each key from its value, and a comma separates items in a collection.
@@ -376,10 +376,14 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 | 3
 |===
 
-=== Loading Parquet Data
+=== Loading Parquet data
 
-TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
-In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
+TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets.
+For more details on how to set up S3 data sources and loading jobs, read the xref:tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
+
+CAUTION: When loading Parquet data, INT96 data types are not supported. 
+
+TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
 
 In order to load Parquet data, you need to:
 
@@ -387,7 +391,7 @@ In order to load Parquet data, you need to:
 . Specify `JSON_FILE="true"` in the USING clause of the LOAD statements
 . Refer to JSON keys (≈ Parquet "column names") instead of column numbers
 
-You will probably want to add `USING EOF="true"` to your `RUN LOADING JOB` statement to explicitly indicate to the loading job to stop after consuming all data from the Parquet source, not to expect further entries.
+You should consider adding `USING EOF="true"` to your `RUN LOADING JOB` statement to explicitly indicate to the loading job to stop after consuming all data from the Parquet source, not to expect further entries.
 
 An example of a Parquet loading setup is shown below:
 

@@ -423,7 +423,7 @@ We strongly suggest that an alias should be declared with every vertex and edge 
 The `SAMPLE` clause is an optional clause that selects a uniform random sample from the population of edges or target vertices specified in the `FROM` argument.
 
 WARNING: Known issue: The `SAMPLE` clause is not supported in syntax V2 in {page-component-version}.
-To use `SAMPLE` clauses, write your query in xref:select-statement/select-statement-v1.adoc#_sample_clause[syntax V1].
+To use `SAMPLE` clauses, write your query in xref:select-statement/select-statement-v1.adoc#_sample[syntax V1].
 
 [NOTE]
 ====
@@ -712,7 +712,6 @@ However, other kinds of statements (e.g., branching, iteration, local assignment
 
 The EBNF syntax below defines the allowable kinds of statements that can occur within an `ACCUM` clause.
 
-
 .EBNF for `ACCUM` clause
 [.wrap,ebnf]
 ----
@@ -770,12 +769,34 @@ Operations that are to be performed exactly once per vertex should be performed 
 TigerGraph uses parallelism to improve performance.
 The statements within the `ACCUM` clause are executed sequentially for a given vertex or edge.
 However, there is no fixed order in which a vertex set or edge set is processed.
-
-Within an `ACCUM` clause, each edge is handled by a separate process.
-As such, there is no fixed order in which the edges are processed within the `ACCUM` clause and the edges should not be treated as executing sequentially.
-The accumulators are mutex variables shared among each of these processes.
-The results of any accumulation within the `ACCUM` clause is not complete until all edges are traversed.
 Any inspection of an intermediate result within the `ACCUM` clause is incomplete and may not be that meaningful.
+
+Due to the parallel nature of the statements within an `ACCUM` clause, you cannot reference updated variables within an `ACCUM` clause since there is no guarantee that the variable was indeed updated when it's referenced.
+For example, in the following query, the second statement in the `ACCUM` clause does not necessarily run after the first statement.
+
+[tabs]
+====
+Example of incorrect usage::
++
+--
+[source,gsql]
+----
+include::appendix:example$ldbc_snb/select_statement_accum.gsql[]
+----
+<1> This statement does not necessarily occur ofter the previous line.
+--
+Correct example::
++
+--
+The correct way to execute the logic is to put the second statement in the `POST-ACCUM` clause.
+This guarantees that the second statement executes after the first statement:
+
+[source,gsql]
+----
+include::appendix:example$ldbc_snb/select_statement_accum_2.gsql[]
+----
+--
+====
 
 [NOTE]
 ====
@@ -798,7 +819,7 @@ This is similar to a SQL `SELECT C, COUNT(*) ... GROUP BY C` query.
 There is no alias for the vertex in the middle of `Knows.Knows` so the identities of Larry, Moe, and Curly cannot be reported.
 ====
 
-=== Edge/Vertex Type Inference and Conflict
+=== Edge/Vertex type inference and conflict
 
 If multiple edge types are specified in an `ACCUM` clause, each `ACCUM` statement in the `ACCUM` clause checks whether edge types are conflicted.
 If only a subset of edge types are effective in an `ACCUM` statement, this statement is not executed on other edge types.

@@ -381,7 +381,8 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets.
 For more details on how to set up S3 data sources and loading jobs, read the xref:tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
 
-CAUTION: When loading Parquet data, INT96 data types are not supported. 
+CAUTION: When loading Parquet data, INT96 data types are not supported.
+If your data source uses INT96 data types, the corresponding attribute in your graph will be left empty.  
 
 TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
 

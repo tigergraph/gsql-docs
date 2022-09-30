@@ -118,7 +118,7 @@ CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
 
 ==== `PRIMARY KEY`
 
-Instead of the legacy `PRIMARY_ID` syntax, starting with v2.3, GSQL now offers another option for specifying the primary key.
+Instead of the legacy `PRIMARY_ID` syntax, GSQL offers another option for specifying the primary key.
 Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attribute list to make the attribute the primary key.
 It is conventional for the primary key to be the first attribute.
 Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity.
@@ -128,7 +128,6 @@ The primary key data type should `STRING`, `INT`, or `UINT`.
 ----
 primary_id_name_type := id_name_id_type PRIMARY KEY
 ----
-
 
 Example:
 
@@ -141,6 +140,11 @@ CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ====
 PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
+
+*Maximum Size*
+
+A vertex primary key has a length limit of 16384 bytes.
+The size of a vertex, including all of its attributes, cannot exceed 10 megabytes.
 
 ==== Composite keys
 

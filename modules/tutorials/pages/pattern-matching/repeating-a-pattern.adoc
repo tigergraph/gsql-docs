@@ -1,209 +1,540 @@
-= Repeating a 1-Hop Pattern
+= 1ホップパターンの反復
 
-A common pattern is the two-step "Friend of a Friend".
+一般的な反復パターンにステップを2回繰り返すパターンの「友達の友達」があります。そのほか、メッセージを3ホップ先まで流すとして、メッセージの受信者の数はどのくらいになるだろうか。有名人と既存の結びつきがあるだろうか、など。
 
-This is related to the question "Do I know any famous people?"
-Even if you aren't friends with any famous people, at least one of _your friends'_ friends might be famous.
-That's a one-hop pattern, repeated twice.
+GSQLパターンマッチングを使えば、このような1ホップの繰り返しで構成される可変長のパターンが簡単に表現できます。エッジのパターンにアスタリスク記号（正規表現で言うならばクリーネ閉包）と任意の _min..max_ レンジを付加する以外は、前のセクションで紹介した内容です。
 
-In terms of data throughput on a network, you can also ask "If everyone who receives a message passes it along to everyone else they know, how many entities will receive it?"
+* (E*) は、エッジタイプEが任意の回数繰り返されることを意味します。（ゼロ回も含まれるので注意してください。）
+* (E*1..3) は、エッジタイプEが1回から3回まで反復されることを意味します。
 
-GSQL pattern matching makes it easy to express such variable-length patterns which repeat a single hop.
-Everything else stays the same as introduced in the previous section, except we append an asterisk (or _Kleene star_) and an optional _min..max_ range to an edge pattern.
+次にもう少し詳しい例を挙げます。
 
-* (E*)  means edge type E repeats any number of times (including zero)
-* (E*1..3) means edge type E occurs one to three times.
+* **1ホップスターパターン — エッジパターンのゼロ回以上の反復**
+ .. `FROM X:x - (E*) - Y:y`
+ .. `FROM X:x - (F>*) - Y:y`
+ .. `FROM X:x - (<G*) - Y:y`
+ .. `FROM X:x - (_*) - Y:y`
+  *** 各反復において、任意の無向性のエッジが選択できます。
+ .. `FROM X:x - (_>*) - Y:y`
+  *** 各反復において、任意の右向きのエッジが選択できます。
+ .. `FROM X:x - (<_*) - Y:y`
+  *** 各反復において、任意の左向きのエッジが選択できます。
+ .. `FROM X:x - ((E|F>|<G)*) - Y:y`
+  *** 各反復において、E、F>、<G のうちの1つが選択できます。
+* **限度のある1ホップスターパターン**
+ .. `FROM X:x - (E*2..) - Y:y`
+  *** 下限のみ設定。エッジEが少なくとも2回繰り返されるチェーン。
+ .. `FROM X:x - (F>*..3) - Y:y`
+  *** 上限のみ設定。エッジFが0～3回繰り返されるチェーン。
+ .. `FROM X:x - (<G*3..5) - Y:y`
+  *** 上限と下限両方設定。エッジGが3～5回繰り返されるチェーン。
+ .. `FROM X:x - ((E|F>|<G)*3) - Y:y`
+  *** 回数規定。エッジ反復が3回と規定されているチェーン。各反復において、エッジは、E、F>、<Gのいずれか。
 
-Below are more illustrative examples:
+[discrete]
+=== コメント
 
-* *1-hop star pattern -- repetition of an edge pattern 0 or more times*
- .. `FROM X:x -(E*)- Y:y`
- .. `FROM X:x -(F>*)- Y:y`
- .. `FROM X:x -(<G*)- Y:y`
- .. `FROM X:x -(_*)- Y:y`
-  *** Any undirected edge can be chosen at each repetition.
- .. `FROM X:x -(_>*)- Y:y`
-  *** Any right-directed edge can be chosen at each repetition.
- .. `FROM X:x -(<_*)- Y:y`
-  *** Any left-directed edge can be chosen at each repetition.
- .. `FROM X:x -((E|F>|<G)*)- Y:y`
-  *** Either E, F> or <G can be chosen at each repetition.
-* *1-hop star pattern with bounds*
- .. `FROM X:x -(E*2..)- Y:y`
-  *** Lower bounds only. There is a chain of at least 2 E edges.
- .. `FROM X:x -(F>*..3)- Y:y`
-  *** Upper bounds only. There is a chain of between 0 and 3 F edges.
- .. `FROM X:x -(<G*3..5)- Y:y`
-  *** Both Lower and Upper bounds. There is a chain of 3 to 5 G edges.
- .. `FROM X:x -((E|F>|<G)*3)- Y:y`
-  *** Exact bound. There is a chain of exactly 3 edges, where each edge is either E, F>, or <G.
-
-
-=== Remarks
-
-==== No alias allowed for edge with Kleene star
-
-An edge alias may not be used when a Kleene star is used. The reason is that when there are a variable number of edges, we cannot associate or bind the alias to a specific edge in the pattern.
-
-==== Shortest path semantics
-
-When an edge is repeated with a Kleene star, only the shortest matching occurrences are selected. See the example below:
+* **スターマークが付加されているエッジのエイリアスは無効**　スターマークを使う場合には、エッジのエイリアスは使えません。エッジの数が可変である場合、エイリアスをパターン内の特定のエッジと関連付けたり、結び付けたりすることができないためです。
+* **最短経路のマッチング**　スターマークを使ってエッジが反復されている場合、最短経路で発見されたマッチングが選択されます。次の例をご覧ください。
 
 image::screen-shot-2019-05-19-at-2.33.35-am.png[Figure 2 Shortest Path Illustration.]
 
-In Figure 2,  or Pattern `1 -(E>*)- 4`, any of the following paths reach 4 from 1.
+図2で示している `1 - (E>*) - 4` のパターンでは、次の3種類のパスで4から1に到達することができます。
 
 * 1->2->3->4
 * 1->2->3->5->6->2->3->4
-* any path that goes through the cycle 2->3->5->6->2 two or more times and jumps out at 3.
+* 2->3->5->6->2 のサイクルを2回以上繰り返して、3で飛び出すパス
 
-The first path is shorter than the rest; it is considered the only match.
+1番上のパスが最も短いので、唯一のマッチと見なされます。
 
-== Examples of Variable Hop Queries
+== 可変ホップクエリの例
 
-In this tutorial, we will use the Interpreted Mode for GSQL so that we can skip the INSTALL step and run a query as soon as we create it.
-These one-step interpreted queries are unnamed (anonymous) and parameterless.
+このチュートリアルでは、TigerGraph 2.4で導入されたGSQLのインタプリタモードを使います。インタプリタモードではインストールステップを省略し、クエリを作成すると同時に実行し、インタラクティブなエクスペリエンスを提供することができます。ワンステップで実行できるインタプリタモードのクエリは、名前なし（無名）、パラメーターなしで、SQLと全く同じです。
 
-You can copy any of the shown GSQL scripts to a file with the file extension `.gsql` and invoke it in a Linux shell to see the results.
+**例1** 「TennisPlayer」という名前のTagClassの直接または間接のスーパークラス (自己クラスを含む) を求める。
 
-.Linux Bash
+.例1. 有向エッジパターン、無限回反復
+
+[source,gsql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  TagClass1 =  SELECT t
+               FROM TagClass:s - (IS_SUBCLASS_OF>*) - TagClass:t
+               WHERE s.name == "TennisPlayer";
+
+    PRINT  TagClass1;
+}
+----
+
+
+
+以上のGSQLスクリプトをexample1.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
 
 [source,bash]
 ----
-gsql example.gsql
-----
-
-=== Example 1
-
-Find the direct or indirect superclass (including the self class) of the tag_class whose name is "TennisPlayer".
-
-.Example 1.  Directed Edge Pattern Unconstrained Repetition 
-
-[source,gsql]
-----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1.gsql[]
+gsql example1.gsql
 ----
 
 
 
+なお、次の例で、クエリを開始する頂点TennisPlayerは、ホップ数ゼロ回のパスを使った場合でもマッチしていることに留意してください。
 
-
-
-Note below that the starting vertex s, whose name is TennisPlayer, is also a match, using a path with zero hops.
-
-.Output of Example 1
-[source,coffeescript]
-----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_1_results.json[]
-
-----
-
-
-
-=== Example 2
-
-Find the immediate superclass of the tag_class whose name is "tennis_player". (This is equivalent to a 1-hop non-repeating pattern.)
-
-.Example 2. Exactly 1 Repetition of A Directed Edge
-
-[source,gsql]
-----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2.gsql[]
-----
-
-
-
-.Output of Example 2
-[source,coffeescript]
-----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_2_results.json[]
-----
-
-
-
-=== Example 3
-
-Find the 1 to 2 hops direct and indirect superclasses of the tag_class whose name is "TennisPlayer".
-
-.Example 3.  1 to 2 Repetition Of A Directed Edge. 
-
-[source,gsql]
-----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3.gsql[]
-
-----
-
-
-
-.Output of Example 3
+. 例1の出力
 
 [source,coffeescript]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_3_results.json[]
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"TagClass2": [
+    {
+      "v_id": "211",
+      "attributes": {
+        "name": "Person",
+        "id": 211,
+        "url": "http://dbpedia.org/ontology/Person"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "0",
+      "attributes": {
+        "name": "Thing",
+        "id": 0,
+        "url": "http://www.w3.org/2002/07/owl#Thing"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "59",
+      "attributes": {
+        "name": "TennisPlayer",
+        "id": 59,
+        "url": "http://dbpedia.org/ontology/TennisPlayer"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "239",
+      "attributes": {
+        "name": "Agent",
+        "id": 239,
+        "url": "http://dbpedia.org/ontology/Agent"
+      },
+      "v_type": "TagClass"
+    }
+  ]}]
+}
 ----
 
 
 
-=== Example 4
+**例2** 「TennisPlayer」という名前のTagClassの直属スーパークラスを求める。（1ホップ反復なしのパターンと同じです。）
 
-Find the superclasses within 2 hops of the tag_class whose name is "TennisPlayer".
-
-.Example 4.  Up-to 2 Repetition Of A Directed Edge. 
+.例2. 有向エッジの1回反復
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4.gsql[]
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  TagClass1 =  SELECT t
+               FROM TagClass:s - (IS_SUBCLASS_OF>*1) - TagClass:t
+               WHERE s.name == "TennisPlayer";
+
+  PRINT TagClass1;
+}
 ----
 
 
 
-.Output of Example 4
+以上のGSQLスクリプトをexample2.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql example2.gsql
+----
+
+
+
+. 例2の出力
+
 [source,coffeescript]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_4_results.json[]
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"TagClass2": [{
+    "v_id": "149",
+    "attributes": {
+      "name": "Athlete",
+      "id": 149,
+      "url": "http://dbpedia.org/ontology/Athlete"
+    },
+    "v_type": "TagClass"
+  }]}]
+}
 ----
 
 
 
-=== Example 5
+**例3**. 「TennisPlayer」という名前のTagClassの1～2ホップで到達できる直接と間接のスーパークラスを求める。
 
-Find the superclasses at least one hop from the tag_class whose name is "TennisPlayer".
-
-.Example 5.  At Least 1 Repetition Of A Directed Edge.
+.例3.  有向エッジの1～2回の反復
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5.gsql[]
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  TagClass1 =  SELECT t
+               FROM TagClass:s - (IS_SUBCLASS_OF>*1..2) - TagClass:t
+               WHERE s.name == "TennisPlayer";
+
+    PRINT  TagClass1;
+}
 ----
 
 
 
-.Output of Example 5
+以上のGSQLスクリプトをexample3.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql example3.gsql
+----
+
+
+
+. 例3の出力
 
 [source,coffeescript]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_5_results.json[]
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"TagClass2": [
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "211",
+      "attributes": {
+        "name": "Person",
+        "id": 211,
+        "url": "http://dbpedia.org/ontology/Person"
+      },
+      "v_type": "TagClass"
+    }
+  ]}]
+}
 ----
 
 
 
-=== Example 6
+**例4** 「TennisPlayer」という名前のTagClassの2ホップ以内で到達できるスーパークラスを求める。
 
-Find the 3 most recent comments that are liked or created by Viktor Akhiezer and the total number of comments liked or created by the same person.
-
-.Example 6.  Disjunctive 1-Repetition Directed Edge. 
+.例4. 有向エッジの2回以内の反復
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6.gsql[]
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  TagClass1 =  SELECT t
+               FROM TagClass:s - (IS_SUBCLASS_OF>*..2) - TagClass:t
+               WHERE s.name == "TennisPlayer";
+
+    PRINT  TagClass1;
+}
 ----
 
 
-.Output of Example 6
+
+以上のGSQLスクリプトをexample4.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql example4.gsql
+----
+
+
+
+. 例4の出力
+
 [source,coffeescript]
 ----
-include::appendix:example$ldbc_snb/repeating_a_pattern_ex_6_results.json[]
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"TagClass2": [
+    {
+      "v_id": "211",
+      "attributes": {
+        "name": "Person",
+        "id": 211,
+        "url": "http://dbpedia.org/ontology/Person"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "59",
+      "attributes": {
+        "name": "TennisPlayer",
+        "id": 59,
+        "url": "http://dbpedia.org/ontology/TennisPlayer"
+      },
+      "v_type": "TagClass"
+    }
+  ]}]
+}
+----
 
+
+
+**例5** 「TennisPlayer」という名前のTagClassの1ホップ以上で到達できるスーパークラスを求める。
+
+.例5.  有向エッジの少なくとも1回の反復 
+
+[source,gsql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2 {
+
+  TagClass1 =  SELECT t
+               FROM TagClass:s - (IS_SUBCLASS_OF>*1..) - TagClass:t
+               WHERE s.name == "TennisPlayer";
+
+    PRINT  TagClass1;
+}
+----
+
+
+
+以上のGSQLスクリプトをexample5.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql example5.gsql
+----
+
+
+
+. 例5の出力
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"TagClass2": [
+    {
+      "v_id": "211",
+      "attributes": {
+        "name": "Person",
+        "id": 211,
+        "url": "http://dbpedia.org/ontology/Person"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "0",
+      "attributes": {
+        "name": "Thing",
+        "id": 0,
+        "url": "http://www.w3.org/2002/07/owl#Thing"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "149",
+      "attributes": {
+        "name": "Athlete",
+        "id": 149,
+        "url": "http://dbpedia.org/ontology/Athlete"
+      },
+      "v_type": "TagClass"
+    },
+    {
+      "v_id": "239",
+      "attributes": {
+        "name": "Agent",
+        "id": 239,
+        "url": "http://dbpedia.org/ontology/Agent"
+      },
+      "v_type": "TagClass"
+    }
+  ]}]
+}
+----
+
+
+
+**例6** Viktor Akhiezerが作成した、または「いいね！」した最新のコメント3件を探す。また、Viktor Akhiezerと関連する（作成した、またはいいね！した）コメントの総数を求める。
+
+.例6.  離接的な有向エッジの1回反復
+
+[source,gsql]
+----
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+  SumAccum<INT> @@commentCnt = 0;
+
+  # Viktor Akhiezerが作成した、またはいいね！した最新のコメント3件を検索し
+  # Viktor Akhiezerと関連するコメントの総数を求めます
+  Top3Comments = SELECT p
+                 FROM Person:s - ((<HAS_CREATOR|LIKES>)*1) - Comment:p
+                 WHERE s.firstName == "Viktor" AND s.lastName == "Akhiezer"
+                 ACCUM @@commentCnt += 1
+                 ORDER BY p.creationDate DESC
+                 LIMIT 3;
+
+  PRINT Top3Comments;
+  # Viktor Akhiezerと関連するコメントの総数
+  PRINT  @@commentCnt;
+}
+----
+
+
+
+以上のGSQLスクリプトをexample6.qsglと名付けたファイルにコピーしスクリプトファイルとし、Linuxから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql example6.gsql
+----
+
+
+
+. 例6の出力
+
+[source,coffeescript]
+----
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [
+    {"Top3Comments": [
+      {
+        "v_id": "2061584720640",
+        "attributes": {
+          "browserUsed": "Chrome",
+          "length": 4,
+          "locationIP": "194.62.64.117",
+          "id": 2061584720640,
+          "creationDate": "2012-09-06 06:46:31",
+          "content": "fine"
+        },
+        "v_type": "Comment"
+      },
+      {
+        "v_id": "2061586872389",
+        "attributes": {
+          "browserUsed": "Chrome",
+          "length": 90,
+          "locationIP": "31.216.177.175",
+          "id": 2061586872389,
+          "creationDate": "2012-08-28 14:54:46",
+          "content": "About Hector Berlioz, his compositions Symphonie fantastique and GraAbout Who Knew, the gu"
+        },
+        "v_type": "Comment"
+      },
+      {
+        "v_id": "2061590804929",
+        "attributes": {
+          "browserUsed": "Chrome",
+          "length": 83,
+          "locationIP": "194.62.64.117",
+          "id": 2061590804929,
+          "creationDate": "2012-09-04 16:16:56",
+          "content": "About Muttiah Muralitharan, mit by nine degrees, five degrees being thAbout Steve M"
+        },
+        "v_type": "Comment"
+      }
+    ]},
+    {"@@commentCnt": 152}
+  ]
+}
 ----
 
 

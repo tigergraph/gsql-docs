@@ -1,83 +1,93 @@
-= Example - A Recommender
+= パターンマッチを使ったソリューション - レコメンダー
 
-We have demonstrated the basic pattern match syntax. You should have mastered the basics by this point. In this section, we show two end-to-end solutions using the pattern match syntax.
+ここまでのセクションでは基本的なパターンマッチ構文を解説しました。基本はマスターされている前提で次に進みます。このセクションでは、パターンマッチの構文を使った、エンドツーエンドのソリューションを2つご紹介します。
 
-== A Recommendation Application
+== 推薦アプリケーション
 
-In this example, we want to recommend some messages (comments or posts) to the person Viktor Akhiezer.
+この例は、Viktor Akhiezerという人に、メッセージ（コメントや投稿）をレコメンドするのが目的です。
 
-How do we do this?
+さて、どのようにしたらよいでしょうか。
 
-One way is to find others who like the same messages Viktor likes, then recommend the messages that Others like but Viktor has not seen. The pattern can be sketched out as follows:
+1つの方法は、Viktorと同じメッセージにいいね！をした他の人たち（Others）を探すことです。そして、他の人たち（Others）がいいね！をしたメッセージの中からViktor がまだ見ていないメッセージをレコメンドします。この場合のパターンの概要は次のようになります。
 
-* Viktor - (Likes>) - Message - (<Likes) - Others
-* Others - (Likes>) - NewMessage
-* Recommend NewMessage to Viktor
+* Viktor - (Likes>) - Message - (<Likes) - Others（Viktor と他の人達はMessageにいいね！した）
+* Others - (Likes>) - NewMessage（他の人達はNewMessageにいいね！した）
+* Recommend NewMessage to Viktor	  (NewMessageをViktorにレコメンドする)
 
-However, this is too granular. We are overfitting the message-level data with a collaborative filtering algorithm.
+しかし、これでは粒度が細かすぎます。また、メッセージレベルのデータに協調フィルタリングのアルゴリズムが過剰適合されています。直感的に「いいね！」を押したメッセージが同じカテゴリー（タグ）である時、同じ種類のメッセージが好きな人達は、類似していると考えます。同じメッセージのセットに「いいね！」を付けた人を探すよりこの方法の方が、理にかなっていて一般的です。そこで、過剰適合を避ける方法として、1つ上のレベルで検索することができます。共通のメッセージを類似度の基準にする代わりに、共通のメッセージのタグを基準にするわけで、Person A と Person B が同じタグに属しているメッセージを好きな場合、この2人は似ていると捉えます。このスキーマを使うと、過剰適合の問題が解決できます。パターンマッチの語彙を使うと次のように表現できます。
 
-Intutively, two persons are similar to each other when their "liked" messages fall into the same category - here represented by the set of tags attached to each message.
+* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others（Viktorと他の人達は同じタグのあるMessageにいいね！した）
+* Others - (Likes>) -  NewMessage　（他の人達はNewMessageにいいね！した）
+* Recommend NewMessage to Viktor 	(NewMessageをViktorにレコメンドする)
 
-As a result, one way to avoid overfitting is to go one level upward. Instead of looking at common messages, we look at their tags. We consider Person A and Person B  similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
+**GSQL. レコメンドメッセージのアプリケーション**
 
-* Viktor - (Likes>) - Message -  (Has>) - *Tag* -  (<Has) -  Message - (<Likes) - Others
-* Others - (Likes>) -  NewMessage
-* Recommend NewMessage to Viktor
+今度は、クエリを先に作成して、パラメータを使ってクエリ名を呼び出して、クエリを解釈します。 +
+このクエリの結果が満足であれば、「INSTALL QUERY queryName」を使ってコンパイルされたクエリをインストールして、より良いパフォーマンスを得ることができます。
 
-== GSQL recommend_message Application
-
-This time, we create the query first and interpret the query by calling the query name with parameters. +
-If we are satisfied with this query, we can use `INSTALL QUERY queryName` to install the query, increasing performance.
-
-.GSQL Recommendation Algorithm 
+.GSQLの推薦アルゴリズム 
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/example_recommendation_algorithm.gsql[]
+use graph ldbc_snb
+set query_timeout=60000
+DROP QUERY RecommendMessage
 
-INTERPRET QUERY recommend_message ("Viktor", "Akhiezer")
-// try the second person with just parameter change.
-INTERPRET QUERY recommend_message ("Adriaan", "Jong")
+CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
+
+  SumAccum<int> @TagInCommon;
+  SumAccum<float> @SimilarityScore;
+  SumAccum<float> @Rank;
+  OrAccum @Liked = false;
+
+   #1. Viktorが「いいね！」したメッセージに印を付けます
+   #2. Viktorとタグレベルで同じ興味を持っている人の
+   #   ログ類似スコアを計算します
+    Others =
+       SELECT p
+       FROM Person:s-(LIKES>)-:msg - (HAS_TAG>.<HAS_TAG.<LIKES)- :p
+       WHERE s.firstName == fn AND s.lastName == ln
+       ACCUM msg.@Liked = true, p.@TagInCommon +=1
+       POST-ACCUM p.@SimilarityScore = log (1 + p.@TagInCommon);
+
+    # Viktorが今まで「いいね！」としていなかった新しいメッセージを彼に推薦します。
+    RecommendedMessage =
+             SELECT msg
+             FROM Others:o-(LIKES>) - :msg
+             WHERE  msg.@Liked == false
+             ACCUM msg.@Rank +=o.@SimilarityScore
+             ORDER BY msg.@Rank DESC
+             LIMIT 2;
+
+  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
+}
+
+
+INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
+#パラメータだけを変更し、もう1人違う人にレコメンドしてみます
+INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 
 
-.Output of App1
+
+上のGSQLスクリプトをapp1.gsqlと名付けたファイルにコピーしてスクリプトファイルとすれば、Linuxコマンドラインから呼び出すことができます。
+
+.Linuxバッシュ
+
+[source,bash]
+----
+gsql app1.gsql
+----
+
+
+
+. App1の出力
 
 [source,coffeescript]
 ----
-include::appendix:example$ldbc_snb/example_recommendation_algorithm_results.json[]
-
-----
-
-=== Install the query
-
-When you are satisfied with your query in the GSQL interpreted mode, you can install it as a generic service. This speeds up querying considerably.
-Since we have been using `CREATE QUERY ...` syntax, the query is added into the catalog, and we can set the syntax version and install it.
-
-.Prepare to Install Query
-
-[source,gsql]
-----
-// before installing the query, need to set the syntax version
-SET syntax_version="v2"
-USE GRAPH ldbc_snb
-
-// install query
-INSTALL QUERY recommend_message
-----
-
-
-
-.Run the Installed Query
-
-[source,gsql]
-----
-GSQL > INSTALL QUERY recommend_message
-Start installing queries, about 1 minute ...
-recommend_message query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/recommend_message?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
-
-[========================================================================================================] 100% (1/1)
-GSQL > run query recommend_message("Viktor", "Akhiezer")
+Using graph 'ldbc_snb'
+The query RecommendMessage is dropped.
+The query RecommendMessage has been added!
 {
   "error": false,
   "message": "",
@@ -86,20 +96,20 @@ GSQL > run query recommend_message("Viktor", "Akhiezer")
     "edition": "enterprise",
     "api": "v2"
   },
-  "results": [{"recommended_message": [
+  "results": [{"RecommendedMessage": [
     {
       "v_id": "549760294602",
       "attributes": {
-        "recommended_message.@rank": 4855.49219,
-        "recommended_message.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
+        "RecommendedMessage.@Rank": 4855.49219,
+        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
       },
       "v_type": "Post"
     },
     {
       "v_id": "549760292109",
       "attributes": {
-        "recommended_message.@rank": 4828.7251,
-        "recommended_message.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
+        "RecommendedMessage.@Rank": 4828.7251,
+        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
       },
       "v_type": "Post"
     }
@@ -107,17 +117,136 @@ GSQL > run query recommend_message("Viktor", "Akhiezer")
 }
 ----
 
-The previous example uses log-cosine as a similarity measurement. We can also use cosine similarity by using two persons' liked messages.
 
-.GSQL Recommendation Algorithm 2
+
+[discrete]
+==== クエリのインストール
+
+GSQLのインタプリタモードでクエリが満足いくものであることを確かめたら、一般的なサービスとしてインストールするとよいでしょう。クエリの処理スピードがかなり速くなります。ここまで「CREATE QUERY ..」の構文を使ってきたので、このクエリはカタログに追加され、構文のバージョンを設定してインストールすることができます。
+
+.GSQLクエリのインストール準備
+
+[source,coffeescript]
+----
+#before install the query, need to set the syntax version
+SET syntax_version="v2"
+USE GRAPH ldbc_snb
+
+#install query
+INSTALL QUERY RecommendMessage
+----
+
+
+
+.GSQLインストール済みクエリの実行
+
+[source,coffeescript]
+----
+GSQL > install query RecommendMessage
+Start installing queries, about 1 minute ...
+RecommendMessage query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/RecommendMessage?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+
+[========================================================================================================] 100% (1/1)
+GSQL > run query RecommendMessage("Viktor", "Akhiezer")
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"RecommendedMessage": [
+    {
+      "v_id": "549760294602",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4855.49219,
+        "RecommendedMessage.content": "About Indira Gandhi, Gandhi established closer relatAbout Mick Jagger, eer of the band. In 1989, he waAbout Ho Chi Minh, ce Unit and ECA International, About Ottoman Empire,  After t"
+      },
+      "v_type": "Post"
+    },
+    {
+      "v_id": "549760292109",
+      "attributes": {
+        "RecommendedMessage.@Rank": 4828.7251,
+        "RecommendedMessage.content": "About Ho Chi Minh, nam, as an anti-communist state, fought against the communisAbout Shiny Happy People, sale in the U."
+      },
+      "v_type": "Post"
+    }
+  ]}]
+}
+----
+
+
+
+.Linuxバッシュ:  システムをシャットダウンする
+
+[source,coffeescript]
+----
+#ラップトップ上でTigerGraph システムを使っていない間、
+# リソースを節約するために次のコマンドで停止することができます
+gadmin stop
+#再起動するときには、次のコマンドを使います
+gadmin start
+----
+
+
+
+上の例ではログとコサインを使って類似度を測っています。2人の人が共通のメッセージを好きだという方法を使う場合には、コサイン類似度を使うこともできます。
+
+.GSQL推薦アルゴリズム 2
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/example_recommendation_algorithm_2.gsql[]
+use graph ldbc_snb
+set query_timeout=60000
+DROP QUERY RecommendMessage
 
-INTERPRET QUERY recommend_message ("Viktor", "Akhiezer")
-// try the second person with just parameter change.
-INTERPRET QUERY recommend_message ("Adriaan", "Jong")
+CREATE QUERY RecommendMessage (String fn, String ln) SYNTAX v2{
+
+  SumAccum<int> @MsgInCommon = 0;
+  SumAccum<int> @MsgCnt = 0 ;
+  SumAccum<int> @@InputPersonMsgCnt = 0;
+  SumAccum<float> @SimilarityScore;
+  SumAccum<float> @Rank;
+  SumAccum<float> @TagCnt = 0;
+  OrAccum @Liked = false;
+  float sqrtOfInputPersonMsgCnt;
+
+   #1. インプットするユーザーがいいね！したメッセージに印を付けます
+   #2. インプットしたユーザーと別の人達に共通するいいね！されたメッセージを探します
+    Others =
+       SELECT p
+       FROM Person:s-(LIKES>)-:msg -(<LIKES)-:p
+       WHERE s.firstName == fn AND s.lastName == ln
+       ACCUM msg.@Liked = true, @@InputPersonMsgCnt += 1,
+             p.@MsgInCommon += 1;
+
+    sqrtOfInputPersonMsgCnt = sqrt(@@InputPersonMsgCnt);
+
+    #コサインの類似度を計算します
+    #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
+    Others  =
+        SELECT o
+        FROM Others:o-(LIKES>)-:msg
+        ACCUM o.@MsgCnt += 1
+        POST-ACCUM o.@SimilarityScore = o.@MsgInCommon/(sqrtOfInputPersonMsgCnt * sqrt(o.@MsgCnt));
+
+   #インプットしたユーザーが今までいいね！をしていなかった新しいメッセージをそのユーザーに推奨します
+    RecommendedMessage =
+             SELECT msg
+             FROM Others:o-(LIKES>) - :msg
+             WHERE  msg.@Liked == false
+             ACCUM msg.@Rank +=o.@SimilarityScore
+             ORDER BY msg.@Rank DESC
+             LIMIT 3;
+
+  PRINT   RecommendedMessage[RecommendedMessage.content, RecommendedMessage.@Rank];
+}
+
+INTERPRET QUERY RecommendMessage ("Viktor", "Akhiezer")
+#パラメータだけを変更し、もう1人違う人にレコメンドしてみます
+INTERPRET QUERY RecommendMessage ("Adriaan", "Jong")
 ----
 
 

@@ -1,12 +1,12 @@
-= Per Clause (Beta)
+= PER句（ベータバージョン）
 
-== Introduction
+== はじめに
 
-Pattern matching produces a virtual match table, and the ACCUM clause acts like a FOREACH loop, executing the clause's statement once for each row of the match table.
+パターンマッチングは仮想マッチテーブルを生成します。ACCUM句はFOR EACHループのように動作するので、マッチテーブルの各行で1回ずつ命令文を実行します。
 
-Patterns are paths in the graphs, and each row in the match table is a distinct path. However, paths may share some vertices or edges. Some applications do not want to do aggregations per path. Instead, they want to execute the ACCUM clause per distinct group of vertex aliases.
+パターンとはグラフ内のパスのことで、マッチテーブル内の各々の行は、重複を除いて一意化した、個別のパスを表しています。 しかし、パスは頂点やエッジを共有することもあります。アプリケーションによっては、パス単位での集約が望まれないものもあり、その代わりに、個別の頂点エイリアスグループ単位でACCUM句を実行させることが要求されます。
 
-For example, consider the following query which counts the number of paths in a simple 2-hop pattern:
+次の例で考えてみましょう。このクエリは、単純な2ホップのパターンにあるパスの数を求めています。
 
 [source,gsql]
 ----
@@ -17,29 +17,29 @@ S = SELECT t
     ACCUM @@cnt += 1;
 ----
 
-Suppose the query produces the following match table.
+ここで次のようなマッチテーブルが生成されたとします。
 
 [source,gsql]
 ----
-(s, edge1, m , edge2, t)//match table schema
-v1, e1, v3, e2, v2 //match 1
-v1, e3, v4, e4, v2 //match 2
-v5, e5, v6, e6, v7 //match 3
-v8, e7, v9, e8, v7 //match 4
+(s, edge1, m , edge2, t)//マッチテーブルのスキーマ
+v1, e1, v3, e2, v2 //マッチ 1
+v1, e3, v4, e4, v2 //マッチ 2
+v5, e5, v6, e6, v7 //マッチ 3
+v8, e7, v9, e8, v7 //マッチ 4
 ----
 
-By default, the ACCUM clause will execute the ``@@cnt += 1``statement 4 times, for each row in the match table. The result will be `@@cnt = 4`.
+ACCUM句は、デフォルトで ``@@cnt += 1``の文を4回、マッチテーブル内の各行で実行します。その結果は``@@cnt = 4``になります。
 
-For the same query, what if the user wants to
+ここで、同じクエリでユーザーが
 
-* count the number of distinct path endings in the match table? For this case, we would want to iterate on the alias `t`.
-* count the number of distinct (start, end) pairs in the match table? For that case, we would want to iterate on distinct pairs of the aliases `(s, t)`.
+* マッチテーブル内の個別のパスの終着点の数を数えたい場合はどうしたらよいでしょうか。この場合には、エイリアスの``t``に対して反復実行させます。
+* マッチテーブル内の個別の（開始、終着）ペアを数えたい場合はどうしたらよいでしょうか。この場合には、個別のペアのエイリアス``(s, t)``に対して反復実行させます。
 
-To provide users with this added flexibility and finer control over ACCUM iteration, TigerGraph 3.0 adds the PER clause to pattern matching (V2) syntax.
+このような柔軟性とACCUMの反復を細かく調整できる機能を提供するために、TigerGraph 3.0 はPER句をパターンマッチングの構文（V2）に追加しました。
 
-== Syntax
+== 構文
 
-The PER Clause is an optional clause that comes at the start of the ACCUM clause in a SELECT statement. As illustrated below, it starts with the keyword PER, and followed by a pair of parenthesis, in which user can put one or more distinct vertex aliases found in the FROM pattern.
+PER句は、SELECT文のACCUM句の始めに使える任意の句です。次の例のように、キーワードPERで始まり、次に括弧があり、その中に FROMパターン内にある個別の頂点エイリアスを入れます。
 
 [source,gsql]
 ----
@@ -56,7 +56,7 @@ selectBlock := SELECT alias
 perClause := PER (vertex_alias_1, vertex_alias_2, ...)
 ----
 
-*Examples*. Below are multiple examples of the PER Clause using the same FROM clause.
+**例**. 同じFROM句を利用した、PER句の例をいくつか示します。
 
 [source,gsql]
 ----
@@ -86,58 +86,58 @@ S5 = SELECT t
      ACCUM @@cnt += 1;
 ----
 
-== Semantics
+== 表現
 
-The PER Clause specifies a list of vertex aliases, which are used to group the rows in the match table, one group per distinct value of the alias or of the alias list. If there are N distinct groups, we will execute the ACCUM clause N times, once per distinct vertex aliases' binding. Note that the PER clause has no effect on POST-ACCUM clauses semantic, except confining the POST-ACCUM vertex alias.
+PER句は、頂点のエイリアスのリストを指定します。頂点のエイリアスはマッチテーブル内の行をグループ化するのに使われ、個別のエイリアスの値、または個別のエイリアスのリストの値毎にグループが作られます。個別のグループがN個あったとすると、ACCUM句はN回、個別の頂点エイリアスとの結合毎に1回ずつ実行されます。PER句は、POST-ACCUM内の頂点エイリアスを限定するほかは、POST-ACCUM句の内容には影響しないことに注意してください。
 
-Suppose s, m, and t are vertex aliases in a pattern. Below are some interpretations of the PER Clause based on the graph element bindings found in the match table.
+あるパターンに s と m と t の頂点エイリアスがある場合のPER句の解釈例を次にいくつか示します。各々、マッチテーブル内のグラフ要素の結合の内容によって異なります。
 
-* `PER (s) ACCUM`  means that per each distinct s vertex, execute the ACCUM clause once.
-* `PER (s,t) ACCUM`  means that per each distinct (s, t) pair, execute the ACCUM clause once.
-* `PER (s,m,t) ACCUM`  means that per each distinct (s, m, t) tuple, execute the ACCUM clause once.
+* `PER (s) ACCUM`  は、個別のs頂点毎にACCUM節を1回実行せよ、という意味です。
+* `PER (s,t) ACCUM` は、個別の (s,t) のペア毎にACCUM節を1回実行せよ、という意味です。
+* `PER (s,m,t) ACCUM` は、個別の (s,t,t) のタプル毎にACCUM節を1回実行せよ、という意味です。
 
-Examples to show PER clause semantics.
+PER句の表現の例
 
 [source,gsql]
 ----
-//match table
-(s, edge1, m , edge2, t)//schema
-v1, e1, v3, e2, v2 //match 1
-v1, e3, v4, e4, v2 //match 2
-v5, e5, v6, e6, v7 //match 3
-v8, e7, v9, e8, v7 //match 4
+//マッチテーブル
+(s, edge1, m , edge2, t)//スキーマ
+v1, e1, v3, e2, v2 //マッチ 1
+v1, e3, v4, e4, v2 //マッチ 2
+v5, e5, v6, e6, v7 //マッチ 3
+v8, e7, v9, e8, v7 //マッチ 4
 
-//since we have v1, v5, and v8 three distinct vertices bind to s,
-//we execute ACCUM clause 3 times.
+//v1とv5とv8があるので、3つの個別の頂点がsと結合しています
+//ACCUM節は3回実行されます
 S1 = SELECT s
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s)
      ACCUM @@cnt += 1;
 
-//since we have v2, v7 two distinct vertices bind to t,
-//we execute ACCUM clause twice.
+//v2とv7の2つの個別の頂点がtと結合しています
+//ACCUM節は2回実行されます
 S2 = SELECT t
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (t)
      ACCUM @@cnt += 1;
 
-//since we have v3, v4, v6, v9 four distinct vertices bind to m,
-//we execute ACCUM clause 4 times.
+//V3とv4とv6とv9があるので、4つの個別の頂点がmと結合しています
+//ACCUM節は4回実行されます
 S3 = SELECT m
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (m)
      ACCUM @@cnt += 1;
 
-//since we have (v1, v2), (v5, v7) and (v8, v7) three distinct vertex pairs
-//bind to (s,t), we execute ACCUM clause 3 times.
+//（v1、v2）と（v5、v7）と（v8、v7）の3つの個別の頂点のペアが
+//（s、t）に結合しているので、ACCUM句は3回実行されます
 S4 = SELECT t
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s, t)
      ACCUM @@cnt += 1;
 
 
-//since we have (v1, v3, v2), (v1, v4, v2), (v5, v6, v7) and (v8, v9, v7) four
-//distinct vertex groups bind to (s,m,t), we execute ACCUM clause 4 times.
+//（v1、v3、v2）、（v1、v4、v2）、（v5、v6、v7）、（v8、v9、v7）と4つの
+//個別の頂点のグループが（s、m、t）に結合しているので、ACCUM句は4回実行されます。
 S5 = SELECT t
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s, m, t)
@@ -146,26 +146,26 @@ S5 = SELECT t
 
 [NOTE]
 ====
-If the PER Clause is used in a SELECT query block, then the vertex aliases used in the SELECT, ACCUM , and POST-ACCUM clauses must be confined to the aliases that appear in the PER clause.
+PER句がSELECTクエリのブロックで使われている場合には、SELECT句やACCUM句やPOST-ACCUM句が使う頂点エイリアスは、PER句に表れるエイリアスのみに限定されます。
 ====
 
-Below are some illegal cases.
+次に規則違反の例を示します。
 
 [source,gsql]
 ----
-//semantic error. SELECT t, but t doesn't appear in PER clause.
+//セマンティックエラー SELECT tとなっていますが、tはPER句にはありません
 S1 = SELECT t
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s, m)
      ACCUM @@cnt += 1;
 
-//semantic error. ACCUM t.@cnt, but t doesn't appear in PER clause.
+//セマンティックエラー ACCUM t.@cntとなっていますが、tはPER句にはありません
 S2 = SELECT t
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s, m)
      ACCUM t.@cnt += 1;
 
-//semantic error. POST-ACCUM t.@cnt, but t doesn't appear in PER clause.
+//セマンティックエラー POST-ACCUM t.@cntとなっていますが、tはPER句にはありません
 S3 = SELECT s
      FROM S:s - (E1:edge1) - M:m -(E2:edge2) - T:t
      PER (s)
@@ -173,96 +173,289 @@ S3 = SELECT s
      POST-ACCUM t.@cnt =1;
 ----
 
-== PER Clause Examples
+== PER句の例
 
-*Example 1.* Count the number of Countries that has a City which has a resident that likes a post.
-
-[source,gsql]
-----
-include::appendix:example$ldbc_snb/per_clause_ex_1.gsql[]
-
-// results
-include::appendix:example$ldbc_snb/per_clause_ex_1_results.json[]
-
-----
-
-*Example 2.* Count the number of posts liked by a person who is located in a city that belongs to a country. (All cities are in a country, but humor us.  We are reusing the same FROM pattern in several examples.)
+**例1.** 投稿を好きだという人が住んでいる都市がある国の数を求める。
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/per_clause_ex_2.gsql[]
+//例1.
+USE GRAPH ldbc_snb
 
-//result
+INTERPRET QUERY () SYNTAX v2 {
+  SumAccum<int> @@cnt;
 
-include::appendix:example$ldbc_snb/per_clause_ex_2_results.json[]
+ R =   SELECT c
+       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
+       PER    (c)
+       ACCUM  @@cnt +=1;
 
+ PRINT @@cnt;
+}
+
+//結果
+Using graph 'ldbc_snb'
+The query AA is dropped.
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"@@cnt": 111}]
+}
 ----
 
-*Example 3.* Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country.
+**例2.** ある国に属する都市にいる人によって好かれている投稿の数を求める。（どの都市も国に属しているのは当然ですが、例に使うものとして捉えてください。ここで示している例は、すべて同じFROMパターンを基にしています。）
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/per_clause_ex_3.gsql[]
-// results
-include::appendix:example$ldbc_snb/per_clause_ex_3_results.json[]
+//例2.
+USE GRAPH ldbc_snb
 
+INTERPRET QUERY () SYNTAX v2 {
+  SumAccum<int> @@cnt;
+
+ R =   SELECT p
+       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
+       PER    (p)
+       ACCUM  @@cnt +=1;
+
+ PRINT @@cnt;
+
+//結果
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"@@cnt": 70668}]
+}
 ----
 
-*Example 4.*  Find for each country in ("Dominican_Republic","Angola", "Cambodia") the number of posts that is liked by a person living in that country. Use local accumulators this time.
+**例3.**  ドミニカ共和国、アンゴラ、カンボジア（"Dominican_Republic","Angola", "Cambodia"）に含まれる国の1つひとつで、そこの住民が好きな投稿の数を求める。
 
 [source,gsql]
 ----
-include::appendix:example$ldbc_snb/per_clause_ex_4.gsql[]
-// results
-include::appendix:example$ldbc_snb/per_clause_ex_4_results.json[]
+//例3
+USE GRAPH ldbc_snb
+
+INTERPRET QUERY () SYNTAX v2{
+
+ MapAccum<string, SumAccum<int>> @@postPerCountry;
+
+ R =   SELECT p
+       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
+       WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
+       PER    (c, p)
+       ACCUM  @@postPerCountry += (c.name -> 1);
+
+ PRINT @@postPerCountry;
+}
+
+//結果
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"@@postPerCountry": {
+    "Dominican_Republic": 395,
+    "Angola": 12,
+    "Cambodia": 4002
+  }}]
+}
 ----
 
-== Performance and Best Practices
-
-The PER Clause not only helps users to control the semantics of the ACCUM clause, it also boosts the performance of the pattern match query, as it uses the PER clause to optimize the query execution.
-
-To get the best performance, we recommend three guidelines for writing efficient queries.
-
-=== Use PER (target) If Possible
-
-Per target is in general faster than Per source. In the example below, query q2 is faster than q1. The only difference between these two queries is q2's FROM pattern is the flip of q1's FROM pattern.
+**例4.**  ドミニカ共和国、アンゴラ、カンボジア（"Dominican_Republic","Angola", "Cambodia"）に含まれる国の1つひとつで、そこの住民が好きな投稿の数を求める。この例ではローカルのアキュムレータを使う。
 
 [source,gsql]
 ----
+USE GRAPH ldbc_snb
 
-include::appendix:example$ldbc_snb/per_clause_per_source.gsql[]
+INTERPRET QUERY () SYNTAX v2{
 
-// recommended, since it does per (tgt)
-include::appendix:example$ldbc_snb/per_clause_per_target.gsql[]
+ SumAccum<int> @postCnt;
 
+ R =   SELECT c
+       FROM   Country:c -(<IS_PART_OF.<IS_LOCATED_IN.LIKES>)- Post:p
+       WHERE  c.name in  ("Dominican_Republic","Angola", "Cambodia")
+       PER    (c, p) //(country, post) 毎に、c.@postCntに１を加算
+       ACCUM  c.@postCnt += 1;
+
+ PRINT R;
+}
+
+//結果
+Using graph 'ldbc_snb'
+{
+  "error": false,
+  "message": "",
+  "version": {
+    "schema": 0,
+    "edition": "enterprise",
+    "api": "v2"
+  },
+  "results": [{"R": [
+    {
+      "v_id": "2",
+      "attributes": {
+        "@postCnt": 12,
+        "name": "Angola",
+        "id": 2,
+        "url": "http://dbpedia.org/resource/Angola"
+      },
+      "v_type": "Country"
+    },
+    {
+      "v_id": "67",
+      "attributes": {
+        "@postCnt": 4002,
+        "name": "Cambodia",
+        "id": 67,
+        "url": "http://dbpedia.org/resource/Cambodia"
+      },
+      "v_type": "Country"
+    },
+    {
+      "v_id": "11",
+      "attributes": {
+        "@postCnt": 395,
+        "name": "Dominican_Republic",
+        "id": 11,
+        "url": "http://dbpedia.org/resource/Dominican_Republic"
+      },
+      "v_type": "Country"
+    }
+  ]}]
+}
 ----
 
-=== Write Patterns with Smallest Expected Vertex Set on the Left
+== パフォーマンスとベストプラクティス
 
-The match table is built by traversing the pattern from left to right. Follow the basic principle of pruning early rather than late by orienting the query the  smaller cardinality set on the left. This practice will result in producing the least number of candidate matches during the query computation. For example, if there are fewer distinct tags than persons, then query q4 is faster than q3.
+PER句は、ACCUM句の表現のコントロールに役立つばかりでなく、クエリの実行が最適化できるので、パターンマッチクエリのパフォーマンスを大幅に引き上げます。
+
+最大のパフォーマンスを得るには、次のガイドラインに従って効率のよいクエリを作成することをお勧めします。
+
+=== 可能であればPER（ターゲット）を使う
+
+ターゲット毎の処理は、ソース毎の処理よりも一般的に速くなります。次の例では、クエリq2の方がクエリq1よりも速くなります。q2のFROMパターンはq1のFROMパターンを反転させたものであることが唯一の相違点です。
 
 [source,gsql]
 ----
+USE GRAPH ldbc_snb
 
-include::appendix:example$ldbc_snb/per_clause_large_to_small.gsql[]
+# 次はPER (src)、ソース毎の実行になるので推奨できません
+CREATE QUERY q1 () SYNTAX v2 {
 
-include::appendix:example$ldbc_snb/per_clause_small_to_large.gsql[]
+  SumAccum<int> @@cnt ;
 
+  T = SELECT c
+      FROM Comment:c - (<LIKES) - Person:ps - (IS_LOCATED_IN>) - City:city
+      WHERE year(c.creationDate) >= 2006
+      PER (c)
+      ACCUM @@cnt += 1;
+
+  PRINT @@cnt;
+}
+
+# 次はPER (tgt)、ターゲット毎の実行になるのでお勧めです
+CREATE QUERY q2 () SYNTAX v2 {
+
+  SumAccum<int> @@cnt ;
+
+  T = SELECT c
+      FROM City:city - (<IS_LOCATED_IN) - Person:ps - (LIKES>) - Comment:c
+      WHERE year(c.creationDate) >= 2006
+      PER (c)
+      ACCUM @@cnt += 1;
+
+  PRINT @@cnt;
+}
 ----
 
-=== Specify Complete Type Information
+=== 最小と思われる頂点セットが左にくるようにパターンを作る
 
-Specifying complete type information improves performance. For example, query q6 is faster than q5 even though they are known to be logically identical. `Forum` is the `CONTAINER_OF` `Post`, so it does not need to be specified in q5, but explicitly saying `Forum` in q6 speeds up performance.
+マッチテーブルは、パターンを左から右に横断して構築されます。いらないものは早めに取り除くという基本方針に従って、小さめのカーディナリティのあるセットを左側にもってくるようにクエリを記述してください。この方法を使えば、最少のマッチ候補数が生成されるので、クエリの計算負荷が軽減できます。次の例では、個別のタグの数が人の数より少ない場合、クエリq4がクエリq3より速くなります。
 
 [source,gsql]
 ----
+USE GRAPH ldbc_snb
 
-include::appendix:example$ldbc_snb/per_clause_not_specify_complete_type_info.gsql[]
+# カーディナリティが大きい頂点タイプ（Person）からパターンが始まっていて
+# カーディナリティが小さい頂点タイプ（Tag）で終わるので推奨できません
+CREATE QUERY q3 () SYNTAX v2 {
 
-include::appendix:example$ldbc_snb/per_clause_specify_complete_type_info.gsql[]
+  SumAccum<int> @cnt;
 
+  V = SELECT s
+      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-:f - (HAS_TAG>) - :t
+      PER (s)
+      ACCUM s.@cnt += 1;
+
+  PRINT V.size();
+}
+
+# カーディナリティが小さい方の (Tag) から始まって、PER がターゲットに対して指定されているのでお勧めです
+CREATE QUERY q4 () SYNTAX v2 {
+
+  SumAccum<int> @cnt;
+
+  V = SELECT s
+      FROM Tag:t-(<HAS_TAG)-Forum:f -(CONTAINER_OF>)-Post:p  - (<LIKES)- Person:s
+      PER (s)
+      ACCUM s.@cnt += 1;
+
+  PRINT V.size();
+}
 ----
 
-== LDBC Benchmark Queries
+=== タイプ情報をすべて指定する
 
-Using the PER clause and linear regular path pattern, we have translated all of the LDBC-SNB queries. You can find them on github at https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries_linear/queries. Most of the queries are installed as functions. You can find sample parameter(s) of the functions from  https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/seeds.
+タイプ情報をすべて指定するとパフォーマンスが向上されます。例えば、クエリq6とクエリq5は理論上同一なのに、q6の方が速くなります。``Forum``（サイト）は``POST``（投稿）の``CONTAINER_OF``（コンテナ）なので、q5で指定する必要はありません。しかし、q6では``Forum``を明示していることがパフォーマンスを加速させます。
+
+[source,gsql]
+----
+USE GRAPH ldbc_snb
+
+#Forumは :f の前にあえて入れません
+CREATE QUERY q5 () SYNTAX v2 {
+
+  SumAccum<int> @@person_cnt;
+
+  V = SELECT s
+      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-:f - (HAS_TAG>) - :t
+      PER (s)
+      ACCUM @@person_cnt += 1;
+
+  PRINT @@person_cnt;
+}
+
+
+#Forumをタイプの情報として挿入する、この方法をお勧めします
+CREATE QUERY q6 () SYNTAX v2 {
+
+  SumAccum<int> @@person_cnt;
+
+  V = SELECT s
+      FROM Person:s- (LIKES>)-Post:p - (<CONTAINER_OF)-Forum:f - (HAS_TAG>) - :t
+      PER (s)
+      ACCUM @@person_cnt += 1;
+
+  PRINT @@person_cnt;
+}
+----
+
+== LDBCベンチマークのクエリ
+
+すべてのLDBC-SNBのクエリを、PER句節と平面正則のパスパターンを使って解釈したものをgithub https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries_linear/queries　に掲載しました。ほとんどのクエリは関数としてインストールされています。サンプルのパラメーターは https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/seeds　にあります。

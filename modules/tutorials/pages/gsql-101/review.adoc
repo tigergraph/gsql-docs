@@ -11,7 +11,7 @@ GSQL 101 から得た知識を使って少し練習すれば、次のタスク�
 さらに詳しく
 
 * GraphStudio Visual SDKとUIから上記にあるようなタスクが実行するには、xref:3.2@gui:graphstudio:overview.adoc[TigerGraph GraphStudio UI ガイド]をご覧ください。
-* パターンマッチングについてさらに学習するには xref:pattern-matching/README.adoc[こちら].
+* パターンマッチングについてさらに学習するには xref:pattern-matching/index.adoc[こちら].
 * GSQLの他の例を見るには、 http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC]のベンチマーク https://github.com/tigergraph/ecosys/blob/ldbc/ldbc_benchmark/tigergraph/load_scripts/setup_schema.gsql[スキーマ]に基づく https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_short[IS]、 https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/interactive_complex[IC]、 https://github.com/tigergraph/ecosys/tree/ldbc/ldbc_benchmark/tigergraph/queries/business_intelligence[BI] のワークロードをご覧ください。
 
 * 他のGSQLユーザーや開発者と話し合ったり助け合うには、 https://community.tigergraph.com/[GSQLコミュニティフォーラム] にご参加ください。

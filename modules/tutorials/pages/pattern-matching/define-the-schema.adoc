@@ -1,0 +1,206 @@
+= スキーマの定義
+
+== データセット
+
+このセクションでは、 http://ldbcouncil.org/developer/snb[LDBC Social Network Benchmark] (LDBC SNB) データセットを使います。このデータセットは、典型的なSNSサイトをモデルにしており、コミュニティのユーザー同士がトピックについてメッセージを投稿できます。スケールファクターを指定して、必要に合わせてさまざまな規模のデータが生成できるデータジェネレータが附属して提供されています。スケールファクター1 は、およそ1GBの生データを生成し、スケールファクター10はおよそ10GBの生データを生成します。
+
+image::screen-shot-2019-05-15-at-5.05.00-pm.png[図1. LDBC SNB Schema]
+
+図1がLDBC SNBのスキーマです。（出典： http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC SNB 仕様書]). SNSサイトで見られる行動や人間関係をモデル化したものです。例えば、フォーラムのメンバーは、メッセージを投稿して公開することができ、ほかのメンバーが投稿にコメントしたり、またそのコメントにコメントすることができます。人（Person）の所在地は、階層（大陸>国>都市）になっています。Personは、大学や会社に所属することができます。タグを使って、フォーラム、メッセージ、インタレスト（興味・関心事）などを分類することができます。タグは、さらにTagClassによって分類できます。エンティティ間の関係性は、有向エッジとして作られていますが、例外として、人と人の関係性がKNOWSの場合（ある人が対象の人を知っている場合）のみに無向エッジとして作られています。例えば、人は「hasInterest」（関心がある）エッジによってTagに結び付くことができます。フォーラムは、hasMemberとhasModeratorという2つのエッジによって、Personと結び付きます。
+
+[NOTE]
+====
+LDBC SNB スキーマは一部の関係性を表すのに *inheritance* （継承）を使います。
+
+* *Message* （メッセージ）は、投稿とコメント (Post、Comment) のスーパークラスです。
+* *Place* （場所）は、都市、国、大陸　(City、Country、Continent) のスーパークラスです。
+* *Organization* （組織）は、大学と会社 (University、Company) のスーパークラスです。
+
+TigerGraphのグラフモデルではスーパークラスは使用しません。エンティティがスーパークラスに結び付いているエッジタイプがある場合には、そのスーパークラスの各サブクラスへエンティティを結び付けるようにエッジタイプを作成します。例えば、あるメッセージが _isLocatedIn_  (所在地) という関係性でCountryというスーパークラスに結び付いている場合、メッセージにはPostとCommentという2つのサブクラスがあります。どちらも _isLocatedIn_ という関係性でCountryとつながっているので、IS_LOCATED_INというエッジタイプを作成して、PostとCountryの頂点タイプのペアを結び付け、またCommentとCountryの頂点タイプのペアも結び付けます。この処理には、TigerGraph 3.0で提供されている **複合エッジタイプ** を使います。
+
+* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN ( *FROM* Comment, *TO* Country                                                                              | *FROM* Post,          *TO* Country )
+====
+
+[NOTE]
+====
+この新しいDDL構文により、一般的なエッジタイプを複数の頂点のペアに定義することができます。例えば、LDBCスキーマには、 _isLocatedIn_ と呼ばれる地理的な関係性が多く存在します。これらすべてを、単独のエッジタイプ IS_LOCATED_IN　で表すことができます。その結果、より簡潔なグラフモデルが形成され、パターンマッチングのクエリを表現する際の必要なGSQLコードも少なくて済みます。
+
+* *CREATE* *DIRECTED* *EDGE* IS_LOCATED_IN (*FROM* Comment, *TO* Country | *FROM* Post, *TO* Country | *FROM* Company, *TO* Country | *FROM* Person, *TO* City | *FROM* University, *TO* City) *WITH* *REVERSE_EDGE*="IS_LOCATED_IN_REVERSE"
+====
+
+== スキーマの命名規則
+
+[NOTE]
+====
+**頂点タイプ**
+
+図1の各エンティティ (四角の枠) に対して頂点タイプを作成します。エンティティの名前をUpperCamelCase（キャメルケース）で表記してた頂点タイプの名前とします。
+
+* *Person* は、フォーラムに参加している人です。
+* *Forum* は、ユーザー同士が情報交換するサイトです。
+* **City、Country、Continent** は、ほかのエンティティの地理的な場所です。
+* *Company* と *University* は、人が所属できる組織です。
+* *Comment* と *Post* は、フォーラム内の人によって作成される対話メッセージです。
+* *Tag* は、トピックまたは概念です。
+* *TagClass* は、クラスまたはカテゴリです。TagClassは一連のタグの階層を形成することができます。
+====
+
+[NOTE]
+====
+*エッジタイプ*
+
+リレーションシップの各種類に対して、エッジタイプを作成します。リレーションシップの名前を **（大文字の言葉はすべてアンダースコアによって区分けして）** エッジタイプ名とします。例えば、
+
+* *CONTAINER_OF*: フォーラムは投稿を収納する場所です。
+* *HAS_INTERESTS*: タグに関心がある人。
+* *IS_SUBCLASS_OF:* タグは他のタグのサブクラスです。
+
+図1のように、複数のリレーションシップに同じ表現が使われている場合、それらのエッジをマージして、単一の複合エッジにします。例えば
+
+* *IS_LOCATED_IN:* コメントや投稿は国にあり、会社は国にあり、人は都市にあり、大学は都市にあることを同じ表現が表しています。
+====
+
+== GSQLスキーマのDDL
+
+LDBC-SNBスキーマを定義するために使う2つのGSQLスクリプトを次に示します。必要に応じてどちらかを選択してください。同じグラフデータベースインスタンスでも別の組織が使うと、異なるスキーマになります。
+
+=== 方法 1. ボトムアップ DDL
+
+[NOTE]
+====
+この方法では、global vertex/edge typeコンテナを最初に作成して、次にそれらをグループ化してグラフを作成します。つまり、global vertex/edge typeコンテナは複数のグラフ間で共有できます
+====
+
+.#LDBC-SNBスキーマ
+
+[source,gsql]
+----
+//既存のカタログをクリアします
+// サブシステムのサービスが起動する間お待ちください
+DROP ALL
+
+//頂点タイプの作成
+
+## PostとComment
+CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING,
+    browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Post (PRIMARY_ID id UINT, imageFile STRING, creationDate DATETIME,
+    locationIP STRING, browserUsed STRING, lang STRING, content STRING,
+    length UINT) WITH primary_id_as_attribute="TRUE"
+## 組織
+CREATE VERTEX Company (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX University (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+## 場所
+CREATE VERTEX City (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Country (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Continent (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+## その他
+CREATE VERTEX Forum (PRIMARY_ID id UINT, title STRING, creationDate DATETIME) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Person (PRIMARY_ID id UINT, firstName STRING, lastName STRING, gender STRING, birthday DATETIME,
+   creationDate DATETIME, locationIP STRING, browserUsed STRING, speaks set<STRING>, email set<STRING>)
+   WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX Tag (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+CREATE VERTEX TagClass (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE"
+
+// エッジタイプの作成
+CREATE DIRECTED EDGE CONTAINER_OF (FROM Forum, TO Post) WITH REVERSE_EDGE="CONTAINER_OF_REVERSE"
+CREATE DIRECTED EDGE HAS_CREATOR (FROM Comment|Post, TO Person) WITH REVERSE_EDGE="HAS_CREATOR_REVERSE"
+CREATE DIRECTED EDGE HAS_INTEREST (FROM Person, TO Tag) WITH REVERSE_EDGE="HAS_INTEREST_REVERSE"
+CREATE DIRECTED EDGE HAS_MEMBER (FROM Forum, TO Person, joinDate DATETIME) WITH REVERSE_EDGE="HAS_MEMBER_REVERSE"
+CREATE DIRECTED EDGE HAS_MODERATOR (FROM Forum, TO Person) WITH REVERSE_EDGE="HAS_MODERATOR_REVERSE"
+CREATE DIRECTED EDGE HAS_TAG (FROM Comment|Post|Forum, TO Tag) WITH REVERSE_EDGE="HAS_TAG_REVERSE"
+CREATE DIRECTED EDGE HAS_TYPE (FROM Tag, TO TagClass) WITH REVERSE_EDGE="HAS_TYPE_REVERSE"
+CREATE DIRECTED EDGE IS_LOCATED_IN (FROM Comment, TO Country
+                                  | FROM Post, TO Country
+                                  | FROM Company, TO Country
+                                  | FROM Person, TO City
+                                  | FROM University, TO City) WITH REVERSE_EDGE="IS_LOCATED_IN_REVERSE"
+CREATE DIRECTED EDGE IS_PART_OF (FROM City, TO Country
+                               | FROM Country, TO Continent) WITH REVERSE_EDGE="IS_PART_OF_REVERSE"
+CREATE DIRECTED EDGE IS_SUBCLASS_OF (FROM TagClass, TO TagClass) WITH REVERSE_EDGE="IS_SUBCLASS_OF_REVERSE"
+CREATE UNDIRECTED EDGE KNOWS (FROM Person, TO Person, creationDate DATETIME)
+CREATE DIRECTED EDGE LIKES (FROM Person, TO Comment|Post, creationDate DATETIME) WITH REVERSE_EDGE="LIKES_REVERSE"
+CREATE DIRECTED EDGE REPLY_OF (FROM Comment, TO Comment|Post) WITH REVERSE_EDGE="REPLY_OF_REVERSE"
+CREATE DIRECTED EDGE STUDY_AT (FROM Person, TO University, classYear INT) WITH REVERSE_EDGE="STUDY_AT_REVERSE"
+CREATE DIRECTED EDGE WORK_AT (FROM Person, TO Company, workFrom INT) WITH REVERSE_EDGE="WORK_AT_REVERSE"
+
+//グラフタイプの作成
+CREATE GRAPH ldbc_snb (*)
+----
+
+
+
+=== 方法 2. トップダウン DDL
+
+[NOTE]
+====
+この方法では、空のグラフを先に作成して、次にlocal vertex/edge typeコンテナが、スキーマ変更ジョブによって空のグラフに追加されます。この方法で追加されたvertex/edge type コンテナは、グラフ固有のものになり、ほかのグラフから見ることはできません。
+====
+
+.#LDBC-SNBスキーマ
+
+[source,gsql]
+----
+//既存のカタログをクリアします
+// サブシステムのサービスが起動する間お待ちください
+DROP ALL
+
+# 1. グラフの作成
+CREATE GRAPH ldbc_snb ()
+
+# 2. schema_change jobを作成してすべてのvertex/edge typeを含みます
+CREATE SCHEMA_CHANGE JOB change_schema_of_ldbc  FOR GRAPH ldbc_snb {
+
+  ## PostとComment
+  ADD VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING,
+    browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE";
+
+  ADD VERTEX Post (PRIMARY_ID id UINT, imageFile STRING, creationDate DATETIME,
+    locationIP STRING, browserUsed STRING, lang STRING, content STRING,
+    length UINT) WITH primary_id_as_attribute="TRUE";
+  ## 組織
+  ADD VERTEX Company (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX University (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ## 場所
+  ADD VERTEX City (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Country (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Continent (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ## その他
+  ADD  VERTEX Forum (PRIMARY_ID id UINT, title STRING, creationDate DATETIME) WITH primary_id_as_attribute="TRUE";
+  ADD  VERTEX Person (PRIMARY_ID id UINT, firstName STRING, lastName STRING, gender STRING, birthday DATETIME,
+   creationDate DATETIME, locationIP STRING, browserUsed STRING, speaks set<STRING>, email set<STRING>)
+   WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX Tag (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+  ADD VERTEX TagClass (PRIMARY_ID id UINT, name STRING, url STRING) WITH primary_id_as_attribute="TRUE";
+
+  // エッジタイプの作成
+  ADD DIRECTED EDGE CONTAINER_OF (FROM Forum, TO Post) WITH REVERSE_EDGE="CONTAINER_OF_REVERSE";
+  ADD  DIRECTED EDGE HAS_CREATOR (FROM Comment|Post, TO Person) WITH REVERSE_EDGE="HAS_CREATOR_REVERSE";
+  ADD  DIRECTED EDGE HAS_INTEREST (FROM Person, TO Tag) WITH REVERSE_EDGE="HAS_INTEREST_REVERSE";
+  ADD DIRECTED EDGE HAS_MEMBER (FROM Forum, TO Person, joinDate DATETIME) WITH REVERSE_EDGE="HAS_MEMBER_REVERSE";
+  ADD DIRECTED EDGE HAS_MODERATOR (FROM Forum, TO Person) WITH REVERSE_EDGE="HAS_MODERATOR_REVERSE";
+  ADD DIRECTED EDGE HAS_TAG (FROM Comment|Post|Forum, TO Tag) WITH REVERSE_EDGE="HAS_TAG_REVERSE";
+  ADD DIRECTED EDGE HAS_TYPE (FROM Tag, TO TagClass) WITH REVERSE_EDGE="HAS_TYPE_REVERSE";
+  ADD  DIRECTED EDGE IS_LOCATED_IN (FROM Comment, TO Country
+                                  | FROM Post, TO Country
+                                  | FROM Company, TO Country
+                                  | FROM Person, TO City
+                                  | FROM University, TO City) WITH REVERSE_EDGE="IS_LOCATED_IN_REVERSE";
+  ADD DIRECTED EDGE IS_PART_OF (FROM City, TO Country
+                               | FROM Country, TO Continent) WITH REVERSE_EDGE="IS_PART_OF_REVERSE";
+  ADD DIRECTED EDGE IS_SUBCLASS_OF (FROM TagClass, TO TagClass) WITH REVERSE_EDGE="IS_SUBCLASS_OF_REVERSE";
+  ADD UNDIRECTED EDGE KNOWS (FROM Person, TO Person, creationDate DATETIME)
+  ADD DIRECTED EDGE LIKES (FROM Person, TO Comment|Post, creationDate DATETIME) WITH REVERSE_EDGE="LIKES_REVERSE";
+  ADD DIRECTED EDGE REPLY_OF (FROM Comment, TO Comment|Post) WITH REVERSE_EDGE="REPLY_OF_REVERSE";
+  ADD DIRECTED EDGE STUDY_AT (FROM Person, TO University, classYear INT) WITH REVERSE_EDGE="STUDY_AT_REVERSE";
+  ADD DIRECTED EDGE WORK_AT (FROM Person, TO Company, workFrom INT) WITH REVERSE_EDGE="WORK_AT_REVERSE";
+}
+
+# 3. schema_change jobの実行
+RUN SCHEMA_CHANGE JOB change_schema_of_ldbc
+
+# 4. schema_change jobの削除
+DROP JOB change_schema_of_ldbc
+----
+
+

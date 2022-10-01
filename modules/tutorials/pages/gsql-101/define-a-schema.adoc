@@ -1,127 +1,122 @@
-= Define a Schema - GSQL 101
-:description: GSQL 101 tutorial to define a schema.
+= スキーマの定義
 
+== はじめに
 
-This section of the tutorial uses a simple example to walk you through the steps to define a schema in GSQL.
+このチュートリアルでは、主にGSQLシェルのインタラクティブモードで操作を行います。一部分のコマンドはLinuxシェルで実行します。GSQLグラフを作成するには、まずグラフに適用するスキーマを作成します。GSQLには、頂点とエッジのタイプとグラフを形成するためのDDL (Data Definition Language) コマンドが用意されています。DDL（データ定義言語）コマンドは、SQL DDLコマンドに類似しています。
 
-The first step in creating a GSQL graph is to define its schema.
-GSQL provides a set of Data Definition Language (DDL) commands, similar to SQL DDL commands, to model vertex types, edge types and a graph.
+== 頂点タイプの作成
 
-For this tutorial, we will work mostly in the GSQL shell, in interactive mode.
-A few commands will be from a Linux shell.
+CREATE VERTEXコマンドを使い、**person**という名前の頂点タイプを定義します。ここでは、personを個別に一意的に識別するPRIMARY_IDが必要です。その他、リストには任意の属性が表示されています。属性は、各々のpersonの頂点を特徴付けるもので、形式は `+attribute_name data_type、attribute_name data_type...+` のようになります。
 
-== Create a vertex type
+.GSQLコマンド
 
-Use ``CREATE VERTEX `` to define a vertex type named `Person`.
-Here, `PRIMARY_ID` is required: each person must have a unique identifier.
-The rest is the optional list of attr ibutes which characterize each person vertex, in the format `attribute_name  data_type, attribute_name  data_type, ...`
-
-.GSQL command
 [,gsql]
 ----
-BEGIN
-CREATE VERTEX Person (
+CREATE VERTEX person (
     PRIMARY_ID name STRING,
-    name STRING,
-    age INT,
-    gender STRING,
-    state STRING
+    name STRING, age INT,
+    gender STRING, state STRING
 )
-END
 ----
 
 
 
 [NOTE]
 ====
-We show GSQL keywords in all caps to highlight them in accordance with the xref:appendix:gsql-style-guide.adoc[], but they are case-insensitive.
+以下、GSQLのキーワードは大文字を使って表記されていますが、実際には大文字と小文字が区別されます。
 ====
 
-GSQL will confirm the creation of the vertex type.
+GSQLによって頂点タイプが作成されたことが確認されます。
 
-.GSQL shell
-[.wrap,gsql]
+.GSQLシェル
+
+[,gsql]
 ----
-GSQL > CREATE VERTEX Person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
-Successfully created vertex types: [Person].
-----
-
-
-
-You can create as many vertex types as you need.
-
-== Create an edge type
-
-Next, use the `CREATE ... EDGE` command to create an edge type named `Friendship`.
-The keyword `UNDIRECTED` indicates this edge is a bidirectional edge, meaning that information can flow starting from either vertex.
-If you'd rather have a unidirectional connection where information flows only from the `FROM` vertex, use the `DIRECTED` keyword in place of `UNDIRECTED`.
-Here, `FROM` and `TO` are required to specify which two vertex types the edge type connects.
-An individual edge is specified by giving the primary_ids of its source (`FROM`) vertex and target (`TO`) vertex.
-These are followed by an optional list of attributes, just as in the vertex definition.
-
-.GSQL command
-[.wrap,gsql]
-----
-CREATE UNDIRECTED EDGE Friendship (FROM Person, TO Person, connect_day DATETIME)
-----
-
-GSQL will confirm the creation of the edge type.
-
-.GSQL shell
-[.wrap,gsql]
-----
-GSQL > CREATE UNDIRECTED EDGE Friendship (FROM Person, TO Person, connect_day DATETIME)
-Successfully created edge types: [Friendship].
+GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+The vertex type person is created.
 GSQL >
 ----
 
 
 
-You can create as many edge types as you need.
+作成できる頂点タイプの数に制限はありません。
 
-== Create a graph
+== エッジタイプの作成
 
-Next, use the `CREATE GRAPH` command to create a graph named `Social`.
-Here, we just list the vertex types and edge types that we want to include in this graph.
+次にCREATE … EDGEコマンドを使用して、**friendship**という名前のエッジタイプを定義します。キーワードのUNDIRECTED（無向）は、エッジが双方向性であることを表し、2つの頂点のどちらからも情報が流れて来る可能性を意味しています。FROMの頂点からのみ情報が流れる、一方向の接続を選ぶ場合は、UNDIRECTEDではなく、DIRECTED（有向）を使用します。ここでは、FROMとTOは、エッジタイプが結びつく2つの頂点のタイプを指定するために必要です。エッジは、情報のソース (FROM) となる頂点とターゲット (TO) となる頂点を、各々のプライマリIDで指定します。その次に、頂点の定義の場合と同じように、任意の属性のリストが並びます。
 
-.GSQL command
+.GSQLコマンド
+
 [,gsql]
 ----
-CREATE GRAPH Social (Person, Friendship)
+CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
 ----
 
 
-GSQL will confirm the creation of the first graph after several seconds, during which it pushes the catalog information to all services, such as the Graph Storage Engine (GSE), Graph Processing Engine (GPE) and TigerGraph's REST server - RESTPP.
 
-.GSQL shell
-[.wrap,gsql]
+GSQLによってエッジタイプの作成が確認されます。
+
+.GSQLシェル
+
+[,gsql]
 ----
-GSQL > CREATE GRAPH Social (Person, Friendship)
-Stopping GPE GSE RESTPP
-Successfully stopped GPE GSE RESTPP in 16.554 seconds
-Starting GPE GSE RESTPP
-Successfully started GPE GSE RESTPP in 0.119 seconds
-The graph Social is created.
+GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+The edge type friendship is created.
+GSQL >
 ----
 
 
-At this point, we have created a `Person` vertex type, a `Friendship` edge type, and a `Social` graph that includes them.
 
-You've now built your first graph schema! Take a look at the catalog by typing the `ls` command in the GSQL shell.
+作成できるエッジタイプの数に制限はありません。
 
-.GSQL shell
-[.wrap,gsql]
+== グラフの作成
+
+次に、CREATE GRAPHコマンドを使用して、**social**という名前のグラフを作ります。グラフに含む頂点タイプとエッジタイプのリストを入力するだけで作成されます。
+
+.GSQLコマンド
+
+[,gsql]
+----
+CREATE GRAPH social (person, friendship)
+----
+
+
+
+GSQLは数秒後に最初のグラフの作成を確認し、作成中にカタログ情報をGSE、GPE、RESTPPなどのすべてのサービスにプッシュします。
+
+.GSQLシェル
+
+[,gsql]
+----
+GSQL > CREATE GRAPH social (person, friendship)
+
+Restarting gse gpe restpp ...
+
+Finish restarting services in 16.554 seconds!
+The graph social is created.
+----
+
+
+
+ここまでに**person**という頂点タイプ、**friendship**というエッジタイプ、それらを含む**social**というグラフが作成されました。これで最初のグラフスキーマの作成が完了しました。では、カタログに何が入っているか、GSQLシェルで `ls` コマンドを入力して見てみましょう。
+
+.GSQLシェル
+
+[,coffeescript]
 ----
 GSQL > ls
----- Graph Social
+---- Global vertices, edges, and all graphs
 Vertex Types:
-  - VERTEX Person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+  - VERTEX person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 Edge Types:
-  - UNDIRECTED EDGE Friendship(FROM Person, TO Person, connect_day DATETIME)
+  - UNDIRECTED EDGE friendship(FROM person, TO person, connect_day DATETIME)
 
 Graphs:
-  - Graph Social(Person:v, Friendship:e)
+  - Graph social(person:v, friendship:e)
 Jobs:
-Queries:
+
+
+Json API version: v2
 ----
+
 

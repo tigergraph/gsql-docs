@@ -1,0 +1,159 @@
+= 準備
+
+== はじめに
+
+このチュートリアルでは、グラフスキーマの作成、グラフへのデータ読み込み、簡単なパラメータ化されたクエリの作成、クエリの実行方法について説明します。作業を開始する前に、TigerGraphシステムをインストールし、動作を確認し、、以前のデータがすべて削除されていることを確認してください。TigerGraphのグラフ用語に慣れると作業がしやすくなりますので習得されることをお勧めします。
+
+== グラフとは
+
+グラフは、データエンティティ（管理対象となるデータの集まり）の集合と、データ同士の結びつきです。言い換えれば、データエンティティのネットワークです。
+
+データエンティティは、よく**ノード**と呼ばれますが、TigerGraphでは**頂点**と呼びます。英語では単数の場合は**vertex**で、複数形は**vertices**です。結びつきのことをTigerGraphではエッジと呼びます。頂点とエッジは、プロパティまたは属性を持つことができます。下の図は、頂点とエッジが各々7つあるグラフを視覚的に表したものです。頂点は円で、エッジは線で表されています。
+
+image::friendship-social-graph.png[Friendship Social Graph]
+
+グラフスキーマは、グラフに表れる頂点 (ノード) とエッジ (結びつき) の**タイプ**を説明するモデルです。上のグラフには、1種類の頂点 (person) と1種類のエッジ (friendship) があります。
+
+スキーマ図は小さなグラフのように見えますが、グラフと違う点はノードが1つの頂点の**タイプ**を表し、つながりを示す線が1つのエッジの**タイプ**を表しているところです。
+
+image::friendship-social-graph-schema.png[Friendship Social Graph Schema]
+
+friendshipのループを見ると、この友人関係はpersonとpersonの間のものであることがわかります。
+
+=== データセット
+
+このチュートリアルでは、簡単なfriendshipの人間関係を表したグラフ (図のFriendship Social Graph) を作成してクエリします。このグラフのデータは2つのcsvファイル (カンマで値が区切られたファイル形式) に含まれています。次に進む前に、person.csvとfriendship.csvの2つのファイルをTigerGraphのローカルディスクに保存してください。チュートリアル内の説明では、この2つのファイルは `/home/tigergraph/` のフォルダーに格納されています。
+
+.person.csv
+
+[,coffeescript]
+----
+name,gender,age,state
+Tom,male,40,ca
+Dan,male,34,ny
+Jenny,female,25,tx
+Kevin,male,28,az
+Amily,female,22,ca
+Nancy,female,20,ky
+Jack,male,26,fl
+----
+
+
+
+.friendship.csv
+
+[,coffeescript]
+----
+person1,person2,date
+Tom,Dan,2017-06-03
+Tom,Jenny,2015-01-01
+Dan,Jenny,2016-08-03
+Jenny,Amily,2015-06-08
+Dan,Nancy,2016-01-03
+Nancy,Jack,2017-03-02
+Dan,Kevin,2015-12-30
+----
+
+
+
+=== TigerGraph環境の準備 +++<a id="GSQL101-dropallPrepareYourTigerGraphEnvironment">++++++</a>+++
+
+最初に、GSQLにアクセスできることを確認しましょう。
+
+. Linux シェルを開きます。
+. 次のようにgsqlと入力します。次のようなGSQLシェルプロンプトが表示されます。
++
+.Linuxシェル
++
+[,bash]
+----
+$ gsql
+GSQL >
+----
++
+
+
+. GSQLシェルが起動しない場合は、gadmin start allコマンドでシステムを再設定してください。それでもうまくいかない場合には、xref:3.2@tigergraph-server:gadmin:management-with-gadmin.adoc[gadminによるTigerGraphの管理]を参照してください。
+
+今回、GSQLを初めて使うのであれば、TigerGraphのデータストアは多分空です。しかし、他の方がシステムを使っていた場合など、データベースがすでに存在している可能性があります。lsのコマンドで、データベースのカタログをリストアップして確認ができます。データストアが空の場合は次のように表示されます。
+
+.GSQLシェル - 空のデータベースカタログ
+
+[,text]
+----
+GSQL > ls
+---- Global vertices, edges, and all graphs
+Vertex Types:
+Edge Types:
+
+Graphs:
+Jobs:
+
+Json API version: v2
+----
+
+
+
+データストアが空でない場合は、まず空にしてからチュートリアルを進めてください。削除にあたって、他の方の許可を得ていると仮定します。DROP ALLのコマンドを使って、データベースにあるデータ、スキーマ、関連する定義をすべて削除します。このコマンドの実行には1分程かかります。
+
+.GSQLシェル - DROP ALL
+
+[,text]
+----
+GSQL > drop all
+
+Dropping all, about 1 minute ...
+Abort all active loading jobs
+[ABORT_SUCCESS] No active Loading Job to abort.
+
+Shutdown restpp gse gpe ...
+Graph store /usr/local/tigergraph/gstore/0/ has been cleared!
+Everything is dropped.
+----
+
+
+
+[CAUTION]
+====
+*TigerGraphの再起動*
+
+何らかの理由でTigerGraphを再起動しなければならない場合には次のコマンドシーケンスを使います。
+
+.Linuxシェル - TigerGraphサービスの再起動
+
+[,bash]
+----
+# インストール時に設定したユーザーアカウントに切り替えます
+# デフォルトは user=tigergraph、password=tigergraph
+$ su tigergraph
+Password:tigergraph
+
+# すべてのサービスを起動します
+$ gadmin restart -y
+----
+
+
+====
+
+[NOTE]
+====
+*LinuxからGSQLコマンドを実行する場合*
+
+LinuxシェルからGSQLコマンドを実行することもできます。単独のコマンドの場合は、コマンドラインの先頭に「gsql」と挿入して、コマンド本体を一重引用符でくくります。(引用符は、構文の解析が明確な場合は必要ありませんが、使う方が無難です。) 例えば、
+
+.Linuxシェル - LinuxシェルからGSQLコマンドを実行する
+
+[,bash]
+----
+# "-g graphname"が対象のグラフには必要です
+gsql -g social 'ls'
+gsql 'drop all'
+gsql 'ls'
+----
+
+
+
+ファイルに保管してある一連のコマンドを実行する場合には、単に「gsql」を呼び出して次にファイル名を入力します。
+====
+
+以上の作業が完了したら、quitのコマンドでGSQLシェルを終了します。

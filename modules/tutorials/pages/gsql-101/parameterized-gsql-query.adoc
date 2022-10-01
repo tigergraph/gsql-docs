@@ -1,110 +1,86 @@
-= Develop Parameterized Queries - GSQL 101
-:description: Develop, install, and run parameterized GSQL queries
+= パラメーター化されたクエリの作成
+:description: パラメータ化されたGSQLクエリの開発、インストール、および実行
 
-We just saw how easy and quick it is to run simple built-in queries. 
-However, you'll undoubtedly want to create more customized or complex queries.  GSQL puts maximum power in your hands through parameterized vertex set queries. 
+単純なビルトインクエリがいかに簡単にすばやく実行できるか見てきました。ここから、クエリをさらにカスタマイズしたり、複雑なクエリを作成することについて、説明します。GSQLでは、複数の頂点を対象とする（頂点セットの）パラメーター化されたクエリによりを、ユーザーに最大のパワーを提供しています。パラメーター化されたクエリは、ある頂点のセットから近隣の頂点のセットに行き来して、それを何度も繰り返す間、システムに作り込まれている並行処理機能と便利な集合処理機能を使って計算と集合を実行します。1つのクエリから別のクエリを呼び出すこともできます。まず、基本的な例から始めましょう。
 
-Parameterized queries let you traverse the graph from one vertex set to an adjacent set of vertices, again and again, performing computations along the way, with built-in parallel execution and handy aggregation operations. You can even have one query call another query.  But we'll start simple.
+GSQLのパラメーター化されたクエリには3つのステップがあります。
 
-A GSQL parameterized query has three steps.
+. GSQLでクエリを定義する。GSQLで定義されたクエリは、GSQLのカタログに追加されます。
+. カタログに、1つ以上のクエリをインストールする。各クエリに対してRESTエンドポイントが生成されます。
+. インストール済みのクエリを実行する。適切なパラメーターを挿入して、GSQLコマンドとして実行、またはRESTエンドポイントへHTTPリクエストを送信して実行します。
 
-. Define your query in GSQL. This query will be added to the GSQL catalog.
-. Install one or more queries in the catalog, generating a REST endpoint for each query.
-. Run an installed query, supplying appropriate parameters, either as a GSQL command or by sending an HTTP request to the REST endpoint.
+== 基本的な1ホップのクエリ
 
-== A simple 1-hop query
+最初のGSQLクエリを作成してみましょう。あるpersonのパラメーターを入力して、そのpersonの隣にある（1ホップの）頂点をすべて表示させます。
 
-Now, let's write our first GSQL query.
-We'll display all the direct (1-hop) neighbors of a person, given as an input parameter.
+.GSQLコマンド
 
-If you run this query in interactive mode, you'll need to add `BEGIN` and `END` statements.
-However, just examine it for now. You will save this query to a file and run it from the GSQL shell.
-
-.GSQL command
 [source,gsql]
 ----
-USE GRAPH Social
-
-SET syntax_version="v2"
-
-CREATE QUERY hello (VERTEX<Person> p) {
-  start = {p};
-  result = SELECT tgt
-           FROM start:s -(Friendship:e)- Person:tgt;
-  PRINT result;
+USE GRAPH social
+CREATE QUERY hello(VERTEX<person> p) {
+  Start = {p};
+  Result = SELECT tgt
+           FROM Start:s-(friendship:e) ->person:tgt;
+  PRINT Result;
 }
 ----
 
 
 
-This query features one `SELECT` statement.
-The query starts by seeding a vertex set `start` with the person vertex identified by parameter _p_ passed in from the query call.
-The curly braces tell GSQL to construct a set containing the enclosed items.
+このクエリでは1つのSELECT文を使用します。ここで使うSELECT文は、ビルトインのクエリよりもはるかに強力で、次のように構成されています。まずクエリのコールで渡されたパラメーター _p_ によって特定されたpersonの頂点を、「Start」という頂点セットのシード値として与えます。中括弧 ({ }) がGSQLに、括弧内の項目を含むセットを作成するように指示しています。
 
-Next, the `SELECT` statement describes a 1-hop traversal according to the pattern described in the `FROM` clause:
+次に、SELECT文は、FROM句で説明されているパターンに従って1ホップのトラバースを説明しています。
 
-`start:s -(Friendship:e)- Person:tgt`
+`+Start:s -(friendship:e)-> person:tgt+`
 
-The pattern means we select all edges beginning from the given source set (`start`), which have the given undirected edge type (`Friendship`) and which end at the given vertex type (`Person`).
-The `FROM` clause defines vertex and edge set aliases using `:<alias>`:
+この構文は、基本的にビルトインクエリでエッジを選択したときと同じです。つまり、指定されたソースのセット（Start）から始まるすべてのエッジの中から、指定されたエッジタイプ（Friendship）であり、かつ、指定された頂点タイプ（Person）で終わっているものを選択します。ここで新しく登場した機能は、頂点セットとエッジセットのエイリアスを「:alias:」として定義できることで、「s」は、ソース頂点セットのエイリアス、「e」はエッジセットのエイリアスで、「tgt」はターゲットとなる頂点セットのエイリアスです。
 
-* `s` is the alias for the source vertex,
-* `e` is the edge alias
-* `tgt` is the target vertex alias.
+最初の句に戻って、句に何が割り当てられているか見てください ("[.code]``Result = SELECT tgt``")。 ここではターゲットのセットのエイリアスに「tgt」が指定されています。従って、SELECT文は、（SELECTクエリブロック内のすべての句のセットがフィルタリングして処理して得られた）ターゲットの頂点セットを返し、出力された頂点セットをResultという変数に割り当てていることを意味します。
 
-Refer back to the initial clause and the assignment (`result = SELECT tgt`).
-Here we see the target set's alias `tgt`.
-This means that the `SELECT` statement returns the target vertex set (as filtered and processed by the full set of clauses in the `SELECT` query block) and assign that output set to the variable called `result`.
+最後に、Resultの頂点セットをJSON形式で出力します。
 
-Last, we print out the `result` vertex set, in JSON format.
+== クエリの作成
 
-== Create a query
+クエリは、インタラクティブモードで定義しなくてもファイルで保管すれば、GSQLシェルの中から@filenameの構文を使って呼び出すことができます。上のクエリを次のファイル `/home/tigergraph/hello.gsql` に貼り付けます。次に、GSQLシェルに入って、``@hello.qsql``を使って呼び出します。（なお、``/home/tigergraph``フォルダ以外からGSQLを開く場合には、次の例のような絶対パスを使ってGSQLファイルを呼び出すことができます。例： `@/home/tigergraph/hello.gsql`）次に、``ls``コマンドを実行して、クエリがカタログに登録されているかを確認します。
 
-Rather than defining our query in interactive mode, we can store the query in a file and invoke the file from within the GSQL shell, using the `@filename` syntax. Copy and paste the above query into a file `/home/tigergraph/hello.gsql`. Then, enter the GSQL shell and invoke the file using `@hello.qsql`.
+.GSQLシェル
 
-[NOTE]
-If you are not in the `/home/tigergraph` folder when you start GSQL, you can use the absolute path to invoke a `.gsql` file. e.g., `@/home/tigergraph/hello.gsql`
-
-Run the `ls` command to see that the query is now in the catalog.
-
-.GSQL shell
 [source,gsql]
 ----
 GSQL > @hello.gsql
-Using graph 'Social'
-Successfully created queries: [hello].
+Using graph 'social'
+The query hello has been added!
 GSQL > ls
----- Graph Social
+---- Graph social
 Vertex Types:
-  - VERTEX Person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+  - VERTEX person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 Edge Types:
-  - UNDIRECTED EDGE Friendship(from Person, to Person, connect_day DATETIME)
+  - UNDIRECTED EDGE friendship(from person, to person, connect_day DATETIME)
 
 Graphs:
-  - Graph Social(Person:v, Friendship:e)
+  - Graph social(person:v, friendship:e)
 Jobs:
-  - CREATE LOADING JOB load_Social FOR GRAPH Social {
+  - CREATE LOADING JOB load_social FOR GRAPH social {
       DEFINE FILENAME file2 = "/home/tigergraph/friendship.csv";
       DEFINE FILENAME file1 = "/home/tigergraph/person.csv";
 
-      LOAD file1 TO VERTEX Person VALUES($"name", $"name", $"age", $"gender", $"state") USING SEPARATOR=",", HEADER="true", EOL="\n";
-      LOAD file2 TO EDGE Friendship VALUES($0, $1, $2) USING SEPARATOR=",", HEADER="true", EOL="\n";
+      LOAD file1 TO VERTEX person VALUES($"name", $"name", $"age", $"gender", $"state") USING SEPARATOR=",", HEADER="true", EOL="\n";
+      LOAD file2 TO EDGE friendship VALUES($0, $1, $2) USING SEPARATOR=",", HEADER="true", EOL="\n";
     }
 
 Queries:
-  - hello(vertex<Person> p)
-
-SessionParameters:
-  - syntax_version: v2
+  - hello(vertex<person> p)
 ----
 
 
 
-== Install a query
+== クエリのインストール
 
-However, the query is not installed yet. In the GSQL shell, type the following command to install the newly-added query "hello".
+これからクエリをインストールして実行できるようにします。GSQLシェルで次のコマンドを入力して、今作成した「hello」というクエリをインストールします。
 
-.GSQL command
+.GSQLコマンド
+
 [source,gsql]
 ----
 INSTALL QUERY hello
@@ -112,39 +88,39 @@ INSTALL QUERY hello
 
 
 
-.GSQL shell
-[.wrap,gsql]
+.GSQLシェル
+
+[source,gsql]
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
 hello query: curl -X GET 'http://127.0.0.1:9000/query/social/hello?p=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
-Select 'm1' as compile server, now connecting ...
-Node 'm1' is prepared as compile server.
 
 [========================================================================================================] 100% (1/1)
 ----
 
 
-It takes about 1 minute for the database to install this new query. Be patient!
-For queries on large datasets, this small investment pays off many times over in faster query execution, particularly if you will run the query many times, with different parameters.
-The installation will generate machine instructions and a REST endpoint.
-After the progress bar reaches 100%, we are ready to run this query.
 
-== Run a query in GSQL
+約1分でデータベースが新しいクエリをインストールします。気長に待ちましょう。大規模なデータセットに対するクエリの場合、インストールが待ちきれないように感じられても、将来クエリの実行時間が短縮されるので、何倍もの時間が節約できます。特に、パラメーターを入れ替えて何回も繰り返し実行する場合に効果的です。インストール処理は、マシンに対する指示とRESTエンドポイントを生成します。プログレスバーが100%になったら、クエリを実行することができます。
 
-To run a query in GSQL, use `RUN QUERY` followed by the query name and a set of parameter values.
+== Run a Query in GSQL
 
-.GSQL command - run query examples
+GSQLでクエリを実行するには、「RUN QUERY」を使い、続いてクエリ名と一連のパラメーター値を入力します。
 
-[.wrap,gsql]
+.GSQLコマンド - クエリ実行の例
+
+[source,coffeescript]
 ----
 RUN QUERY hello("Tom")
 ----
 
-The result is presented in JSON format.  Tom has two 1-hop neighbors, namely Dan and Jenny.
 
-.GSQL shell
-[source,console]
+
+結果はJSON形式で表示されます。Tomには、DanとJennyという、1ホップで隣り合わせの人が2人いることがわかりました。
+
+.GSQLシェル
+
+[source,coffeescript]
 ----
 GSQL > RUN QUERY hello("Tom")
 {
@@ -164,7 +140,7 @@ GSQL > RUN QUERY hello("Tom")
         "state": "ny",
         "age": 34
       },
-      "v_type": "Person"
+      "v_type": "person"
     },
     {
       "v_id": "Jenny",
@@ -174,7 +150,7 @@ GSQL > RUN QUERY hello("Tom")
         "state": "tx",
         "age": 25
       },
-      "v_type": "Person"
+      "v_type": "person"
     }
   ]}]
 }
@@ -182,150 +158,112 @@ GSQL > RUN QUERY hello("Tom")
 
 
 
-== Run a query as a REST endpoint
+== エンドポイントとしてクエリの実行
 
-Under the hood, installing a query will also generate a REST endpoint, so that the parameterized query can be invoked by an HTTP call. In Linux, the `curl` command is the most popular way to submit an HTTP request.
+クエリのインストールが実行されると、処理の一部としてRESTエンドポイントも生成されます。このエンドポイントを使えば、HTTPコールによってパラメーター化されたクエリを呼び出すことができます。Linuxでは、curlコマンドが最も一般的なHTTPリクエストの送信方法です。次の例では、すべてのクエリで標準的な部分は太字 _**_; で表記されています。太字でない表記が、この特定のクエリとパラメーター値の部分です。JSONの結果は、Linuxシェルの標準出力で返されます。これでパラメーター化されたクエリがHTTPサービスになって使えるようになりました。
 
-The JSON result will be returned to the Linux shell's standard output.
-Our parameterized query thus becomes an HTTP service.
+.Linuxシェル
 
-.Linux shell
 [source,bash]
 ----
-curl -X GET 'http://localhost:9000/query/Social/hello?p=Tom'
+curl -X GET 'http://localhost:9000/query/social/hello?p=Tom'
 ----
 
-Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.
-
-Congratulations! At this point, you have gone through the whole process of defining, installing, and running a query.
-
-== Running anonymous queries without installing
-
-Installing a query will give the fastest query speed, but the user needs to wait for the installation overhead.
-
-The Interpreted Mode for GSQL lets us skip the `INSTALL` step, and even run a query as soon as we create it, to offer a more interactive experience.
-These one-step interpreted queries are unnamed (anonymous) and parameterless, just like SQL.
-Please refer to xref:tutorials:pattern-matching/get-set.adoc[Pattern Matching] for this mode.
 
 
-== Query with accumulators
+最後に、次のコマンドを使って、カタログにあるクエリのGSQLテキストを見ることができます。
 
-Now, let's write a more advanced query.
-This time, we are going to learn to use the powerful built-in accumulators, which serve as the runtime attributes (properties) attachable to each vertex visited during our traversal on the graph.
-
-"Runtime" means they exist only while the query is running; they are called accumulators because they are specially designed to gather (accumulate) data during the implicitly parallel processing of the query.
-
-Say we need to write a query to find all the persons which are exactly 2 hops away from the parameterized input Person.
-Just for fun, let's also compute the average age of those 2-hop neighbors.
-
-=== Method
-To get all `Person` vertices that are two hops away from the starting vertex, we can use the following logic:
-
-. From the starting vertex, visit vertices that are one stop away from the starting vertex, and mark every vertex we visit as visited, including the starting vertex.
-This gives us the neighbors that are 1 hop away from the starting vertex.
-. Now that we have the 1-hop neighbors, we can find vertices that are 1-hop away from those neighbors, excluding all vertices that we have already visited in the previous step.
-This gives us all vertices that are exactly two hops away from the original vertex.
-As we visit the 2-hop neighbors, we can also calculate their average age.
-
-=== Query
-
-We will use a `SELECT` statement to perform the first hop from the starting vertex.
-In order to keep track of vertices that have been visited, we declare a vertex-attached accumulator of the type `OrAccum`, also called a _boolean accumulator_.
-In addition, we also need to declare an `AvgAccum` to calculate the average age of the final vertex set.
-
-To declare a vertex-attached accumulator, prefix an identifier name with a single `@` symbol.
-After you declare the accumulator, they are attached to vertices in the query, and you can access its value in an `ACCUM` or `POST-ACCUM` clause of the `SELECT` statement by using the dot``.`` operator following a vertex alias as if they are an attribute of the vertices.
-
-After the first hop, we use another `SELECT` statement to perform a second hop, and filter out all vertices that we have visited previously.
-This gives us the neighbors that are exactly two hops away, and we can use the `AvgAccum` to calculate the average age of the 2-hop neighbors.
+.GSQLコマンド - クエリを表示する例
 
 [source,gsql]
 ----
-CREATE QUERY hello2 (VERTEX<Person> p) {
-    OrAccum  @visited = FALSE;
-    AvgAccum @@avg_age;
-    start = {p};
-
-    first_neighbors = SELECT tgt
-        FROM start:s -(Friendship:e)- Person:tgt
-        ACCUM tgt.@visited += TRUE, s.@visited += TRUE; <1> <2>
-
-    second_neighbors = SELECT tgt <3>
-        FROM first_neighbors -(:e)- :tgt <4>
-        WHERE tgt.@visited == FALSE <5>
-        POST-ACCUM @@avg_age += tgt.age; <6>
-
-    PRINT second_neighbors;
-    PRINT @@avg_age;
-}
+#SHOW QUERY query_name. E.g.
+SHOW QUERY hello
 ----
-<1> After defining the Start set, we then have our first one 1-hop traversal.
-The `SELECT` and `FROM` clauses are the same as in our first example, but there is an additional `ACCUM` clause.
-<2> The statements in the `ACCUM` clause are executed once for each edge matching the `FROM` clause.
-The `+=` operator within an `ACCUM` clause means that for each edge matching the `FROM` clause pattern, we accumulate the right-hand-side expression (`true`) to the left-hand-accumulator (`tgt.@visited` as well as `s.@visited`).
-<3> The second `SELECT` block will do one hop further, starting from the `first_neighbors` vertex set variable, and reaching the 2-hop neighbors.
-<4> Types are omitted in this `FROM` clause, which is interpreted to be all types.
-<5> The `WHERE` clause filters out the vertices which have been marked as visited before (the 1-hop neighbors and the starting vertex _p_ ).
-<6> `POST_ACCUM` traverses the vertex sets instead of the edge sets, guaranteeing that we do not double-count any vertices.
-Here, we accumulate the ages of the 2-hop neighbors to get their average.
 
 
-Note that a source vertex or target vertex may be visited multiple times in the first `SELECT` statement.
-Referring to Figure 1, if we start at vertex Tom, there are two edges incidental to Tom, so the `ACCUM` clause in the first `SELECT` statement will visit Tom twice.
-Since the accumulator type is `OrAccum`, the cumulative effect of the two traversals is the following:
 
-`Tom.@visited = (initial value: false) OR (true) OR (true)`
+お疲れ様でした。この時点で、クエリの定義、インストール、実行のすべてのプロセスが終了しました。
 
-We can see it does not matter which of the two edges was processed first.
-The net effect is that as long as a vertex is visited at least once, it will end up with `@visited = true`.
+== インストールなしで無名のクエリを実行
 
+クエリをインストールすれば、最も迅速な処理速度が得られますが、ユーザーにはインストール時間の負荷がかかります。
 
-=== Run query from a GSQL script
+TigerGraph 2.4で導入されたGSQLのインタプリタモードは、INSTALLステップを省いてクエリを作成するとすぐに実行できる機能です。インタラクティブなエクスペリエンスを提供します。このワンステップで実行できるインタプリタモードのクエリは、名前 なし（無名）、パラメーターなしで、SQLと全く同じです。このモードについて詳しくは、xref:tutorials:pattern-matching/get-set.adoc[パターンマッチング]を参照してください。
 
-This time, we put all following GSQL commands into one file hello2.gsql:
+== より高度なクエリ
 
-.GSQL command file - hello2.gsql
+次により高度なクエリを実行しましょう。今度は、強力な、ビルトインのアキュムレータの使い方を説明します。アキュムレータは、クエリがグラフをトラバースしながらアクセスする各頂点に付加できるランタイム属性（プロパティ）の役割を果たします。ランタイムとは、クエリが実行されている時間だけに存在する属性という意味で使われています。アキュムレータは、クエリが暗黙的に並列処理されている間にデータを収集 (蓄積) するために特別に設計されているため、「蓄積するもの（アキュムレータ）」と呼ばれています。
+
+.GSQLコマンドファイル - hello2.gsql
+
 [source,gsql]
 ----
-USE GRAPH Social
-CREATE QUERY hello2 (VERTEX<Person> p) {
-    OrAccum  @visited = FALSE;
-    AvgAccum @@avg_age;
-    start = {p};
+USE GRAPH social
+CREATE QUERY hello2 (VERTEX<person> p) {
+  OrAccum  @visited = false;
+  AvgAccum @@avgAge;
+  Start = {p};
 
-    first_neighbors = SELECT tgt
-        FROM start:s -(Friendship:e)- Person:tgt
-        ACCUM tgt.@visited += TRUE, s.@visited += TRUE; <1> <2>
+  FirstNeighbors = SELECT tgt
+                   FROM Start:s -(friendship:e)-> person:tgt
+                   ACCUM tgt.@visited += true, s.@visited += true;
 
-    second_neighbors = SELECT tgt <3>
-        FROM first_neighbors -(:e)- :tgt <4>
-        WHERE tgt.@visited == FALSE <5>
-        POST-ACCUM @@avg_age += tgt.age;
+  SecondNeighbors = SELECT tgt
+                    FROM FirstNeighbors -(:e)-> :tgt
+                    WHERE tgt.@visited == false
+                    POST_ACCUM @@avgAge += tgt.age;
 
-    PRINT second_neighbors;
-    PRINT @@avg_age;
+  PRINT SecondNeighbors;
+  PRINT @@avgAge;
 }
 INSTALL QUERY hello2
 RUN QUERY hello2("Tom")
 ----
 
-We can execute this full set of commands _without_ entering the GSQL shell.
-Please copy and paste the above GSQL commands into a Linux file named `/home/tigergraph/hello2.gsql`.
 
-In a Linux shell, under `/home/tigergraph`, type the following to create, install, and execute the query:
+このクエリでは、パラメーターで入力されたpersonから2ホップの距離にあるpersonをすべて検索します。お遊びで、この2ホップの隣接者の平均年齢も計算してみます。
 
-.Linux shell
+このようなグラフ探索アルゴリズムの標準的なアプローチでは、ブール値の変数を使用し、アルゴリズムが頂点を初回「訪問」したことを記録して、その後は訪問しても回数を数えないようにさせます。そのように動作させるには、OrAccumという種類のローカルアキュムレータを使います。ローカルアキュムレータの宣言には、その名称の前に「@」（アットマーク）を1つ、接頭文字として付けます。どのアキュムレータの種類にも、デフォルトで初期値が設定されています。アキュミュレーターのデフォルトの論理値はfalseです。また、ユーザーが初期値を指定することもできます。
+
+ここでは、平均値も計算したいので、グローバルのAvgAccumを定義します。グローバルのアキュムレータの接頭文字は、「@」2つです。
+
+「Start」セットを定義した後、最初の1ホップ探索が実行されます。SELECTとFROMの句は、上の最初の例と同じですが、そのほかにACCUM句が追加されています。ACCUM句の中にある+=演算子は、FROM句のパターンと一致するエッジ各辺について、右辺の式（true）を左側のアキュムレータ（tgt.@visited と s.@visitedの両方）に蓄積していくことを意味します。ソース頂点またはターゲット頂点は複数回訪問される可能性があることに注意してください。図1の場合、頂点Tomから始めると、関連するエッジが2本あるので、最初のSELECT文にあるACCUM句はTomを2回訪問します。アキュムレータの種類はOrAccumなので、この2回のトラバースが蓄積された結果は、次のようになります。
+
+Tom.@visited <== (初期値: false) OR (true) OR (true)
+
+2本のエッジのどちらが先に処理されても結果には影響しないので、この演算は、マルチスレッドの並行処理に適しています。ベースラインは、頂点が最低1回でも訪問されれば、結果は@visited = trueになるということです。この最初のSELECT文の結果は、変数FirstNeighborsに割り当てられます。
+
+2番目のSELECTのブロックは、もう1回ホップします。FirstNeighborsの頂点セットの変数から始めて、2ホップ先の頂点に到達します。ここでは、エッジタイプfriendshipとターゲットの頂点タイプpersonがFROM句から省かれていますが、エイリアスはそのままであることに注意してください。エイリアスにタイプが指定されていない場合は、ALLタイプが対象であると解釈されます。このグラフには頂点タイプとエッジタイプが各々1つしかないので、論理的にタイプを指定した場合と同じ結果になります。WHERE句は、訪問済と記録されている頂点（1ホップ先の頂点とスタート頂点__p__）を除外します。このSELECT文では、ACCUMではなく、POST_ACCUMを使います。その理由は、POST_ACCUMはエッジセットではなく頂点セットをトラバースするからで、従って頂点の重複カウントを避けることが保証できます。ここでは、2ホップ隣接の人達の年齢を蓄積して平均値を出します。
+
+最後に、pのSecondNeighborsが出力されます。
+
+次に、以下のすべてのGSQLコマンドを1つのファイルhello2.gsqlに入れます。
+
+* USE GRAPH social
+* クエリの定義
+* クエリのインストール
+* クエリの実行
+
+このコマンド一式をGSQLシェルを使わずに実行することができます。上のGSQLコマンドを/home/tigergraph/hello2.gsqlという名前のLinuxファイルにコピー、貼り付けてください。
+
+Linuxシェルで、/home/tigergraphから次のように入力します。
+
+.Linuxシェル
+
 [,bash]
 ----
 gsql hello2.gsql
 ----
 
 
-== GSQL query summary
 
-* Queries are installed in the catalog and can have one or more input parameters, enabling reuse of queries.
-* A GSQL query consists of a series of SELECT query blocks, each generating a named vertex set.
-* Each SELECT query block can start traversing the graph from any of the previously defined vertex sets (that is, the sequence does not have to form a linear chain).
-* Accumulators are runtime variables with built-in accumulation operations, for efficient multithreaded computation.
-* Query can call another query.
-* Output is in JSON format.
+[discrete]
+==== GSQLクエリのまとめ
+
+* クエリはカタログにインストールされます。また、1つ以上のパラメーターが入力でき、再利用が可能です。
+* GSQLクエリは、一連のSELECTクエリのブロックによって構成され、各々のブロックから名前が指定された頂点セットが生成されます。
+* 各SELECTクエリのブロックは、すでに定義されてある頂点セットのどれからでもグラフのトラバースを開始することができます。（頂点の定義の順に制約されません。）
+* アキュムレータは実行時の変数で、マルチスレッドで効率よく計算できるように、積算演算が作り込まれています。
+* クエリは別のクエリを呼び出すことができます。
+* 出力はJSON形式です。

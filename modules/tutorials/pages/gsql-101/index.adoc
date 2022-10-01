@@ -1,164 +1,17 @@
 = GSQL 101
-:description: A beginner tutorial to get started with GSQL.
-:page-aliases: tutorials:gsql-101/readme.adoc, tutorials:gsql-101/README.adoc, tutorials:gsql-101/get-set.adoc
 
-In this tutorial, we will introduce core concepts in creating and querying graph databases.
-We will show you how to create a graph schema, load data, write simple parameterized queries, and run your queries.
+このチュートリアルでは、GSQL作成に必要な3つのステップ - スキーマの定義、データの読み込み、クエリの作成 -　について解説します。
 
-== Prerequisites
+ユーザーが本書を読みながら TigerGraph システムで手順を実行できるように作成されています。
 
-* A running TigerGraph installation or Docker container.
+* xref:tutorials:gsql-101/get-set.adoc[]
 
-NOTE: If you want to use a xref:cloud:solutions:README.adoc[TigerGraph Cloud solution] for this tutorial, it needs to be a paid solution so that you have xref:cloud:access-solution:gsql-web-shell.adoc[GSQL access].
-Every free TigerGraph Cloud account has $25 in free credits you can use to provision a paid solution.
+* xref:tutorials:gsql-101/define-a-schema.adoc[]
 
-This tutorial includes commands that are designed to run in the Linux shell and in the GSQL command-line interface.
-Some sequences of commands are lengthy and have been included as downloadable scripts, either bundled with the Docker container or as standalone files.
+* xref:tutorials:gsql-101/load-data-gsql-101.adoc[]
 
-If you choose to use the provided scripts, we recommend carefully examining each line of the script to understand its function.
+* xref:tutorials:gsql-101/built-in-select-queries.adoc[]
 
-== What is a graph?
+* xref:tutorials:gsql-101/parameterized-gsql-query.adoc[]
 
-A graph is a network of data entities and the connections between them.
-
-Many people call a data entity a *node*; at TigerGraph we call it a *vertex*.
-A connection between two vertices is an *edge*.
-
-Every graph has a *schema*, or a model describing the types of vertices and edges that appear in a graph.
-
-Consider a graph showing a group of friends and when each of them met.
-The graph schema would have a single type of vertex, a *Person*, and a single type of edge, the *Friendship*.
-
-image::friendship-social-graph-schema.png[Illustration of a Person vertex with a Friendship edge]
-
-In this schema image, the Friendship edge connects a Person vertex to a Person vertex.
-This is not saying that a person is friends with themselves. Rather, it answers the question, "What type of entity is connected by friendship?"
-
-The attributes appear under the type of vertex or edge.
-Here, a Person vertex has the attributes of ID, gender, age and state, while the Friendship edge has the attribute of connect_day.
-
-Now we see a visual representation of the entire graph.
-It contains seven *Person* vertices, representing seven people in the friend group.
-Not all of the people are friends with all of the others.
-The Friendship edges reveal which people in the group are friends.
-
-image::friendship-social-graph.png[Diagram of seven Person vertices and seven Friendship edges]
-
-A graph schema is always smaller and simpler than the full graph diagram because the schema shows only the categories of data in the graph, not all data points.
-
-=== Data set
-
-For this tutorial, we will create and query the simple friendship social graph shown in the previous section.
-The data for this graph consists of two files in csv (comma-separated values) format.
-
-To follow along with this tutorial, please save these two files, person.csv and friendship.csv, to your TigerGraph local disk.
-If you downloaded the Docker container, these files can be found in `/home/tigergraph/tutorial/3.x/gsql101/`.
-
-In our running example, we use the `/home/tigergraph/` folder to store the two csv files.
-
-.person.csv
-[,csv]
-----
-name,gender,age,state
-Tom,male,40,ca
-Dan,male,34,ny
-Jenny,female,25,tx
-Kevin,male,28,az
-Amily,female,22,ca
-Nancy,female,20,ky
-Jack,male,26,fl
-----
-
-
-.friendship.csv
-[,csv]
-----
-person1,person2,date
-Tom,Dan,2017-06-03
-Tom,Jenny,2015-01-01
-Dan,Jenny,2016-08-03
-Jenny,Amily,2015-06-08
-Dan,Nancy,2016-01-03
-Nancy,Jack,2017-03-02
-Dan,Kevin,2015-12-30
-----
-
-=== Prepare your TigerGraph environment
-
-First, let's make sure that you can access GSQL.
-
-. Open a Linux shell.
-. Type `gsql` as below. A GSQL shell prompt should appear as below.
-+
-.Linux Shell
-+
-[,console]
-----
-$ gsql
-GSQL >
-----
-+
-. If the GSQL shell does not launch, try resetting the system with `gadmin start all`.
-
-If this is your first time using GSQL, the TigerGraph data store is empty.
-However, if you or someone else has already been working on the system, there may already be a database.
-You can check by listing out the database catalog with the `ls` command.
-This is what it should look like if it is empty:
-
-.GSQL shell - an empty database catalog
-[,console]
-----
-GSQL > ls
----- Global vertices, edges, and all graphs
-Vertex Types:
-Edge Types:
-
-Graphs:
-Jobs:
-
-Json API version: v2
-Syntax version: v2
-----
-
-If the data catalog is not empty, run the command `DROP ALL` to delete all the database data, its schema, and all related definitions.
-This command takes about a minute to run.
-
-.GSQL shell - DROP ALL
-[,console]
-----
-GSQL > DROP ALL
-
-Dropping all, about 1 minute ...
-Abort all active loading jobs
-[ABORT_SUCCESS] No active Loading Job to abort.
-
-Shutdown restpp gse gpe ...
-Graph store /usr/local/tigergraph/gstore/0/ has been cleared!
-Everything is dropped.
-----
-
-When you are done, you can exit the GSQL shell with the command `quit`.
-
-Having prepared your environment, you are now ready to start the following sequence to get started with GSQL 101:
-
-* xref:tutorials:gsql-101/define-a-schema.adoc[Define a schema]
-* xref:tutorials:gsql-101/load-data-gsql-101.adoc[Load data]
-* xref:tutorials:gsql-101/built-in-select-queries.adoc[Run built-in queries]
-* xref:tutorials:gsql-101/parameterized-gsql-query.adoc[Develop parameterized queries]
-* xref:tutorials:gsql-101/review.adoc[Review]
-
-== Restarting TigerGraph
-
-If you need to restart TigerGraph for any reason, use the following command sequence:
-
-.Linux Shell - Restarting TigerGraph services
-[,bash]
-----
-# Switch to the user account set up during installation
-# The default is user=tigergraph, password=tigergraph
-$ su tigergraph
-Password:tigergraph
-
-# Start all services
-$ gadmin restart -y
-----
+* xref:tutorials:gsql-101/review.adoc[]

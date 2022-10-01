@@ -1,32 +1,31 @@
-= Run Built-in Queries - GSQL 101
+= 組み込みのクエリの実行
 
-You now have a graph with data!  You can run some queries using the built-in REST endpoint calls.
+データが読み込まれたグラフが完成しました。次にビルトインのRESTエンドポイントコールを使って、クエリを実行してみましょう。
 
-== Get vertex/edge statistics
+== 頂点とエッジに関する統計データを取得する
 
-Here we call two functions, `stat_vertex_number` and `stat_edge_number` to return the number of vertices and edges of each vertex and edge type.
+ここでは、次の2つの関数、stat_vertex_numberとstat_edge_numberを呼び出して、各頂点タイプと各エッジタイプのカーディナリティを調べます。
 
 [NOTE]
 ====
-REST endpoints return results in JSON format.
-However, JSON data can't be read easily from JSON files by using bash script like other normal files.
-The `jq` tool is used to solve this problem.
+RESTエンドポイントの結果は、JSON形式で応答されます。JSONデータはさまざまな用途に使われますが、ほかの普通のファイルのようにbashスクリプトを使ってJSONファイルから簡単に読むことはできません。代わりに**jq**ツールを使ってください。
 
-We recommend you install jq and redirect the REST call result to jq before it is output.
+jqをインストールして、RESTコールの結果が出力される前に、jqに転送することをお勧めします。 +
 ====
 
-.Linux Shell
-[.wrap,bash]
+.Linuxシェル
+
+[,gsql]
 ----
-// Get vertex cardinality
-curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
+#頂点のカーディナリティを取得する
+curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
 
 
-[,javascript]
+[,gsql]
 ----
-// results
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -37,23 +36,26 @@ curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_vert
   "message": "",
   "results": [
     {
-      "v_type": "Person",
+      "v_type": "person",
       "count": 7
     }
   ]
 }
 ----
 
-.Linux Shell
+.Linuxシェル
 
-[.wrap,bash]
+[,gsql]
 ----
-# get edge cardinality
-curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
+#エッジのカーディナリティを取得する
+curl -X POST 'http://localhost:9000/builtins/social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
 ----
 
-[,javascript]
+
+
+[,gsql]
 ----
+#結果
 {
   "version": {
     "edition": "enterprise",
@@ -64,37 +66,40 @@ curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_edge
   "message": "",
   "results": [
     {
-      "e_type": "Friendship",
+      "e_type": "friendship",
       "count": 7
     }
   ]
 }
 ----
 
-== Select vertices
+== 頂点を選択する
 
-If you want to look up the details about a vertex with its primary ID, you can use the following REST call.
+任意の頂点のプライマリIDの詳細を調べたいときには、次のRESTコールを使います。
 
-.Linux Shell
-[.wrap,bash]
+.Linuxシェル
+
+[,gsql]
 ----
 curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
 ----
 
 
 
-*Example*. Find a Person vertex whose `primary_id` is "Tom".
+*例* プライマリIDが「Tom」というpersonの頂点を検索する
 
-.Linux Shell
-[.wrap,bash]
+.Linuxシェル
+
+[,gsql]
 ----
- curl -X GET "http://localhost:9000/graph/Social/vertices/Person/Tom" | jq .
+ curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom" | jq .
 ----
 
 
 
-[,javascript]
+[,gsql]
 ----
+ #結果
  {
   "version": {
     "edition": "enterprise",
@@ -106,7 +111,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
   "results": [
     {
       "v_id": "Tom",
-      "v_type": "Person",
+      "v_type": "person",
       "attributes": {
         "name": "Tom",
         "age": 40,
@@ -118,69 +123,70 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 }
 ----
 
-== Select edges
+== エッジを選択する
 
-In similar fashion, we can see details about edges.
-To describe an edge, you name the types of vertices and edges in the two parts or three parts of a URL.
+上の例と同様に、エッジの詳細を表示できます。エッジを特定するには、URLの2つまたは3つの部分で、頂点タイプとエッジタイプの名前を指定します。
 
-.Linux Shell
-[.wrap,bash]
+.Linuxシェル
+
+[,gsql]
 ----
-#two parts
+#2つの部分を使う場合
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
 
-#three parts
+#3つの部分を使う場合
 curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}"
 ----
 
 
 
-*Example*. Find all friendship edges whose source vertex's `primary_id` is "Tom".
+*例* ソース頂点のprimary_idが「Tom」であるfriendshipのエッジを検索する
 
-.Linux Shell
-[.wrap,bash]
+.Linuxシェル
+
+[,gsql]
 ----
-curl -X GET "http://localhost:9000/graph/Social/edges/Person/Tom/Friendship/" | jq .
+curl -X GET "http://localhost:9000/graph/social/edges/person/Tom/friendship/" | jq .
 ----
 
 
 
 [,gsql]
 ----
-// results
+#結果
 {
-    "version": {
-        "edition": "enterprise",
-        "api": "v2",
-        "schema": 0
-    },
-    "error": false,
-    "message": "",
-    "results": [
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
     {
-        "e_type": "Friendship",
-        "directed": false,
-        "from_id": "Tom",
-        "from_type": "Person",
-        "to_id": "Dan",
-        "to_type": "Person",
-        "attributes": {
+      "e_type": "friendship",
+      "directed": false,
+      "from_id": "Tom",
+      "from_type": "person",
+      "to_id": "Dan",
+      "to_type": "person",
+      "attributes": {
         "connect_day": "2017-06-03 00:00:00"
-        }
+      }
     },
     {
-        "e_type": "Friendship",
-        "directed": false,
-        "from_id": "Tom",
-        "from_type": "Person",
-        "to_id": "Jenny",
-        "to_type": "Person",
-        "attributes": {
+      "e_type": "friendship",
+      "directed": false,
+      "from_id": "Tom",
+      "from_type": "person",
+      "to_id": "Jenny",
+      "to_type": "person",
+      "attributes": {
         "connect_day": "2015-01-01 00:00:00"
-        }
+      }
     }
-    ]
+  ]
 }
 ----
 
-For more built-in REST endpoints, visit the xref:tigergraph-server:API:built-in-endpoints.adoc[Built-in Endpoints page].
+この他のビルトインのRESTエンドポイントは、xref:3.2@tigergraph-server:API:built-in-endpoints.adoc[ビルトインエンドポイント]のページに記載されています。

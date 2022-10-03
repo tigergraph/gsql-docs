@@ -126,7 +126,7 @@ For a list of allowed data types for query parameters, see xref:data-types.adoc#
 This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
 
 `RETURNS` clause::
-The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETRUN` statement of the subquery.
+The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETURN` statement of the subquery.
 For more information, see xref:operators-and-expressions.adoc#_subqueries[Subqueries].
 
 `API v2`:: Specifies the JSON output format.

@@ -1,4 +1,4 @@
-* Tutorials
+* チュートリアル
 ** xref:gsql-101/index.adoc[]
 *** xref:gsql-101/define-a-schema.adoc[]
 *** xref:gsql-101/load-data-gsql-101.adoc[]
@@ -6,14 +6,13 @@
 *** xref:gsql-101/parameterized-gsql-query.adoc[]
 *** xref:gsql-101/review.adoc[]
 ** xref:pattern-matching/index.adoc[]
-
 *** xref:pattern-matching/one-hop-patterns.adoc[]
 *** xref:pattern-matching/repeating-a-pattern.adoc[]
 *** xref:pattern-matching/multiple-hop-and-accumulation.adoc[]
 *** xref:pattern-matching/example.adoc[]
-*** xref:pattern-matching/adv/index.adoc[]
+*** xref:pattern-matching/adv/README.adoc[]
 **** xref:pattern-matching/adv/per-clause.adoc[]
 **** xref:pattern-matching/adv/conjunctive-pattern-matching.adoc[]
 **** xref:pattern-matching/adv/dml.adoc[]
-*** xref:pattern-matching/summary.adoc[Summary]
+*** xref:pattern-matching/summary.adoc[]
 ** xref:accumulators-tutorial.adoc[]

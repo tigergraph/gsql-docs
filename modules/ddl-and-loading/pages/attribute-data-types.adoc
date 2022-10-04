@@ -1,5 +1,5 @@
 = Attribute Data Types
-:
+:description: An overview of data types supported by vertex and edge attributes in TigerGraph.
 
 In a TigerGraph instance, a graph consists of different types of vertices and edges.
 Each type of vertex and edge can have attributes associated with that type.
@@ -10,7 +10,7 @@ This page describes the different data types that can be stored in vertex and ed
 
 == Primitive types
 
-Primitive types are the most basic data types available within the GSQL.
+Primitive types are the most basic data types available within GSQL.
 They can also be used to construct other complex data types.
 
 |===
@@ -119,7 +119,11 @@ Due to multithreaded GSQL loading, the initial order of elements loaded into a l
 
 == User-defined tuples
 
-A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields of the same or different types. The supported field types are listed below. Each field in a UDT has a fixed size. A `STRING` field must be given a size in characters, and the loader will only load the first given number of characters. An `INT` or `UINT` field can optionally be given a size in bytes.
+A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields of the same or different types.
+The supported field types are listed below.
+Each field in a UDT has a fixed size.
+A `STRING` field must be given a size in characters, and the loader will only load the first given number of characters.
+An `INT` or `UINT` field can optionally be given a size in bytes.
 
 .TYPEDEF TUPLE syntax
 
@@ -173,11 +177,11 @@ A UDT must be defined before being used as a field in a vertex type or edge type
 To define a UDT, use the `TYPEDEF TUPLE` statement. Here is an example of a `TYPEDEF TUPLE` statement:
 
 .UDT Definition
-
-[source,gsql]
+[source.wrap,gsql]
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> My_Tuple
 ----
 
-In the above example, `My_Tuple` is the name of the UDT. It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.
+In the above example, `My_Tuple` is the name of the UDT.
+It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.
 

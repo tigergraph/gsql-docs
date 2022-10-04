@@ -1,0 +1,145 @@
+= GSQL Language Reference
+:page-aliases: intro.adoc
+
+The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.
+In short, TigerGraph users do most of their work via the GSQL program.
+This document presents the syntax and features of the GSQL language.
+
+The GSQL Language Reference is divided into two major parts:
+
+* xref:ddl-and-loading:system-and-language-basics.adoc[Data Definition and Loading (DDL) Language] describes system basics, defining a graph schema, and loading data.
+* xref:querying:index.adoc[GSQL Query Language] describes querying.
+
+
+The
+
+
+== Documentation notation
+
+This guide uses conventional notation for software documentation.
+In particular, note the following:
+
+=== Long lines
+
+For more convenient display, long statements in this guide may sometimes be displayed on multiple lines.
+This is for display purposes only; the actual code must be entered as a single line (unless the multi-line mode is used).
+When necessary, the examples may show a shell prompt before the start of a statement, to clearly mark where each statement begins.
+
+Example: A `SELECT` query is grammatically a single statement, so GSQL requires that it be entered as a single line.
+
+.Long statement displayed as one line
+[source,gsql]
+----
+SELECT *|attribute_name FROM vertex_type_name [WHERE conditions] [ORDER BY attribute1,attribute2,...] [LIMIT k]
+----
+
+However, the statement is easier to read and to understand when displayed one clause per line:
+
+.Long statement displayed on multiple lines but with only one prompt
+
+[source,gsql]
+----
+SELECT *|attribute_name
+    FROM vertex_type_name
+    [WHERE conditions]
+    [ORDER BY attribute1,attribute2,...]
+    [LIMIT k]
+----
+
+
+
+=== Repeated zero or more times
+In template code, it is sometimes desirable to show that a term is repeated an arbitrary number of times.
+For example, a vertex definition contains zero or more user-defined attributes. A loading job contains one or more LOAD statements.
+In formal template code, if an asterisk (Kleene star) immediately follows option brackets, then the bracketed term can be repeated zero or more times.
+
+For example:
+
+[source,gsql]
+----
+TO VERTEX|EDGE object_name VALUES ( id_expr [, attr_expr ]*)
+----
+
+The previous template code means that the `VALUES` list contains at least one attribute expression.
+It may be followed by any number of additional attribute expressions.
+Each additional attribute expression must be preceded by a comma.
+
+=== Optional content
+
+Square brackets are used to enclose a portion that is optional.
+Options can be nested.
+Square brackets themselves are rarely used as part of the GSQL language itself.
+Example: In the `RUN JOB` statement, the -n flag is optional.
+If used, -n is to be followed by a value.
+
+[source,gsql]
+----
+RUN JOB [-n count ] job_name
+----
+
+Sometimes, options are nested, which means that an inner option can only be used if the  outer option is used:
+
+[source,gsql]
+----
+RUN JOB [-n [ first_line_num , ] last_line_num ] job_name
+----
+
+means that _first_line_num_ may be specified if and only if _last_line_num_ is specified first. These options provide three possible forms for this statement:
+
+[source,gsql]
+----
+RUN JOB job_name
+RUN JOB -n last_line_num job_name
+RUN JOB -n first_line_num , last_line_num job_name
+----
+
+=== Quotation Marks
+When quotation marks are shown, they are to be typed as shown (unless stated otherwise).
+A placeholder for a string value will not have quotation marks in the template code, but if a template is converted to actual code, quotation marks should be used around string values.
+
+=== Choices
+The vertical bar | is used to separate the choices, when the syntax requires that the user choose one out of a set of values.
+Example:  Either the keyword `VERTEX` or `EDGE` is to be used.
+Also, note the inclusion of quotation marks.
++
+Template:
+
+[source,gsql]
+----
+LOAD " file_path " TO VERTEX|EDGE object_type_name VALUES (id_expr, attr_expr1 , attr_expr2 ,...)
+----
+
+Possible actual values:
+
+[source,gsql]
+----
+LOAD "data/users.csv" TO VERTEX user VALUES ($0, $1, $2)
+----
+
+The user-defined identifiers are _edge_type_ name_ , _vertex_type_name1_, _vertex_type_name2_,      _attribute_name_ and _default_value_ . As explained in the Create Vertex section, *type* is one of the attribute data types.
+
+=== Placeholder identifiers and values
+In template code, any token that is not a keyword, a literal value, or punctuation is a placeholder identifier or a placeholder value.  Example:
+
+[source,gsql]
+----
+CREATE UNDIRECTED EDGE edge_type_name (FROM vertex_type_name1 , TO vertex_type_name2 ,
+attribute_name type [DEFAULT default_value ],...)
+----
+
+[WARNING]
+====
+In a very few cases, some option keywords are case-sensitive. For example, in the command to delete all data from the graph store, +
+clear graph store -HARD
+
+the option -HARD must be in all capital letters.
+====
+
+=== Shell prompts
+Most of the examples in this document take place within the GSQL shell.
+When clarity is needed, a GSQL shell prompt is represented by a greater-than arrow: `>`
+When a command is to be issued from the operating system, outside the GSQL shell, the prompt is the following: `$`
+
+=== Keywords
+In the GSQL language, keywords are not case-sensitive, but user-defined identifiers are case-sensitive.
+In code examples, keywords are in all caps to make clear the distinction between keywords and user-defined identifiers.

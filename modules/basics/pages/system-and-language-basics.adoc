@@ -1,16 +1,27 @@
 = System & Language Basics
 :pp: {plus}{plus}
 
+This page describes the basic elements that make up the GSQL Data Definition and Loading as well as the GSQL Query Language, as well as how to run GSQL commands through the GSQL shell.
+
 == Language basics
 
-* *Identifiers*. Identifiers are user-defined names.
-An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.  Identifiers cannot begin with a digit.
-* *Keywords and Reserved Words*. Keywords are words with a predefined semantic meaning in the language. Keywords are not case-sensitive. Reserved words are set aside for use by the language, either now or in the future.
+* *Identifiers*.
+Identifiers are user-defined names.
+An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.
+Identifiers cannot begin with a digit.
+* *Keywords and Reserved Words*.
+Keywords are words with a predefined semantic meaning in the language.
+Keywords are not case-sensitive.
+Reserved words are set aside for use by the language, either now or in the future.
 Reserved words may not be reused as user-defined identifiers.
 In most cases, a keyword is also a reserved word.
 For example, `VERTEX` is a keyword.
 It is also a reserved word, so `VERTEX` may not be used as an identifier.
-* *Statements*. Each line corresponds to one statement (except in multi-line mode). Usually, there is no punctuation at the end of a top-level statement. Some statements, such as `CREATE LOADING JOB`, are block statements which enclose a set of statements within themselves. Some punctuation may be needed to separate the statements within a block.
+* *Statements*.
+Each line corresponds to one statement (except in multi-line mode).
+Usually, there is no punctuation at the end of a top-level statement.
+Some statements, such as `CREATE LOADING JOB`, are block statements which enclose a set of statements within themselves.
+Some punctuation may be needed to separate the statements within a block.
 * *Comments*  Within a command file, comments are text that is ignored by the language interpreter.
 Single-line comments begin with either `#` or `//`.
 A comment may be on the same line as interpreted code.
@@ -19,7 +30,8 @@ Multi-line comment blocks begin with `/*` and end with `*/`.
 
 == Running GSQL
 
-To enter the GSQL shell and work in interactive mode, type *`gsql`* from an operating system shell prompt. A username, password, and a graph name may also be provided on the command line.
+To enter the GSQL shell and work in interactive mode, type `gsql` from an operating system shell prompt.
+A username, password, and a graph name may also be provided on the command line.
 
 .GSQL command syntax for entering interactive mode
 [source,gsql]
@@ -38,7 +50,7 @@ Password for victor : ***
 GSQL >
 ----
 
-If a username is not given, then GSQL will assume that you are attempting to log in as the default `tigergraph` user, and will prompt for the default password of `tigergraph`:
+If a username is not given, GSQL assumes that you are attempting to log in as the default `tigergraph` user, and prompts for the default password of `tigergraph`:
 
 .Login example without username
 [source,gsql]
@@ -48,9 +60,7 @@ Password for tigergraph : *****
 GSQL >
 ----
 
-
-
-To exit the GSQL shell, type either ``exit``or ``quit``at the GSQL prompt:
+To exit the GSQL shell, type either `exit` or  `quit` at the GSQL prompt:
 
 `GSQL> EXIT`  or `GSQL> QUIT`
 
@@ -108,19 +118,24 @@ Alternately, the `ABORT` command exits multi-line mode and discards the multi-li
 
 === Command files and inline commands
 
-A command file is a text file containing a series of GSQL statements.  Blank lines and comments are ignored. By convention, GSQL command files end with the suffix `.gsql` , but this is not a requirement.
-Command files are always run in multi-line mode, so `BEGIN` and `END` statements are not needed. Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
+A command file is a text file containing a series of GSQL statements.
+Blank lines and comments are ignored.
+By convention, GSQL command files end with the suffix `.gsql` , but this is not a requirement.
+
+Command files are always run in multi-line mode, so `BEGIN` and `END` statements are not needed.
+Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
 
 `GSQL> @file.gsql`
 
 or from the operating system (i.e., a Linux shell) by giving the filename as the argument after gsql:
 
-`os$ gsql file.gsql`
+`$ gsql file.gsql`
 
-Similarly, a single GSQL command can be run by enclosing the command string in quotation marks and placing it at the end of the GSQL statement.  Either single or double quotation marks.  It is recommended to use single quotation marks to enclose the entire command and double quotation marks to enclose any strings within the command.
+Similarly, a single GSQL command can be run by enclosing the command string in quotation marks and placing it at the end of the GSQL statement.
+Either single or double quotation marks.
+It is recommended to use single quotation marks to enclose the entire command and double quotation marks to enclose any strings within the command.
 
 .Login example with inline command or command file
-
 [source,gsql]
 ----
 gsql [-u username] [-g graphname] ['command_string' | command_file]
@@ -131,12 +146,11 @@ gsql [-u username] [-g graphname] ['command_string' | command_file]
 In the example below, the file name_query.gsql contains the multi-line `CREATE QUERY` block to define the query `names_similar`.
 
 .Example using command files and inline commands
-
-[source,gsql]
+[source,console]
 ----
-os$ gsql pagerank_query.gsql
-os$ gsql 'INSTALL QUERY names_similar'
-os$ gsql 'RUN QUERY names_similar (0,"michael","jackson",100)'
+$ gsql pagerank_query.gsql
+$ gsql 'INSTALL QUERY names_similar'
+$ gsql 'RUN QUERY names_similar (0,"michael","jackson",100)'
 ----
 
 
@@ -153,7 +167,8 @@ The `ls` command displays the _catalog_: all the vertex types, edge types, graph
 
 === --reset option
 
-The `--reset` option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.  The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
+The `--reset` option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.
+The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
 
 [source,gsql]
 ----
@@ -210,21 +225,12 @@ The tables below summarize the basic commands introduced so far.
 | Clear the graph store and erase the dictionary.
 |===
 
-[NOTE]
-====
-Notes on the `LS` command
-
-Starting with v1.2, the output of the `LS` command is sensitive to the user and the active graph:
-
-. If the user has not set an active graph or specified `USE GLOBAL`:
- .. If the user is a superuser, then `LS` displays global vertices, global edges, and all graph schemas.
- .. If the user is not a superuser, then `LS` displays nothing (null).
-. If the user has set an active graph, then `LS` displays the schema, jobs, queries, and other definitions for that particular graph.
-====
 
 == Session parameters
 
-Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.When running a command file, the session lasts during the execution of the command file.
+Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.
+In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.
+When running a command file, the session lasts during the execution of the command file.
 
 Use the `SET` command to set the value of a session parameter:
 
@@ -269,11 +275,19 @@ a| `single_gpr` | Changes the internal engine framework for single queries to th
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 |===
 
-.Example of exit_on_error = FALSE
+=== Examples
 
-[source,gsql]
+[tabs]
+====
+File::
++
+--
+The following is example file that contains semantic errors.
+If a file is correct in syntax, the command file continues even after encountering semantically incorrect statements.
+
+.Example of exit_on_error = FALSE
+[source.wrap,gsql]
 ----
-# exitOnError.gsql
 SET exit_on_error = FALSE
 
 CREATE VERTEX v(PRIMARY_ID id INT, name STRING)
@@ -285,12 +299,14 @@ CREATE UNDIRECTED EDGE e1 (FROM v, TO v)
 CREATE GRAPH g(v) // error 3: no graph definition has no edge type
 CREATE GRAPH g2(*)
 ----
+--
 
-
-.Results
+Results::
++
+--
 [source,gsql]
 ----
-os$ gsql exitOnError.gsql
+$ gsql exitOnError.gsql
 
 The vertex type v is created.
 Semantic Check Fails: The vertex name v is used by another object! Please use a different name.
@@ -306,7 +322,8 @@ Restarting gse gpe restpp ...
 Finish restarting services in 11.955 seconds!
 The graph g2 is created.
 ----
-
+--
+====
 
 
 [#_attribute_data_types]
@@ -405,12 +422,11 @@ Additionally, GSQL also supports the following complex data types:
  ** Default value: an empty list `[]`
  ** Supported element types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`
  ** To declare a list type, use angle brackets `<>` to enclose the element type, e.g. `LIST<STRING>.`
-
++
 [WARNING]
 ====
 Due to multithreaded GSQL loading, the initial order of elements loaded into a list might be different from their order in the input data.
 ====
-
 * `SET`: A set is an *unordered* collection of *unique* elements of the same type.
  ** Default value: an empty set `()`
  ** Supported element types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`.

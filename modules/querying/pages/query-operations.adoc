@@ -65,6 +65,7 @@ See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details
 
 There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
+[#_create_query]
 == `CREATE QUERY`
 
 [source,ebnf]
@@ -615,11 +616,12 @@ The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_stat
 
 WARNING: This feature is deprecated and support for it will be dropped in a future version.
 
-Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The names of the individual queries are not needed. This operation optimizes all previously installed queries, reducing their run times by about 20%. Optimize a query if query run time is more important to you than query installation time.
+Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.The names of the individual queries are not needed.This operation optimizes all previously installed queries, reducing their run times by about 20%.Optimize a query if query run time is more important to you than query installation time.
 
+[#_run_query]
 == RUN QUERY
 
-The `RUN QUERY` command runs an installed query. To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses. Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
+The `RUN QUERY` command runs an installed query.To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses.Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
 You can also run an installed query through REST requests - see xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 

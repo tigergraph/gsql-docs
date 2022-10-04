@@ -31,7 +31,6 @@ END
 ----
 
 
-
 [NOTE]
 ====
 We show GSQL keywords in all caps to highlight them in accordance with the xref:appendix:gsql-style-guide.adoc[], but they are case-insensitive.
@@ -46,9 +45,12 @@ GSQL > CREATE VERTEX Person (PRIMARY_ID name STRING, name STRING, age INT, gende
 Successfully created vertex types: [Person].
 ----
 
-
-
 You can create as many vertex types as you need.
+
+*Maximum Size*
+
+A vertex primary key has a length limit of 16384 bytes.
+The size of a vertex, including all of its attributes, cannot exceed 10 megabytes.
 
 == Create an edge type
 

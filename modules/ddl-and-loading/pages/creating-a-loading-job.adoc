@@ -818,7 +818,7 @@ REDUCE(reducer_function (input_expr))
 Each reducer function is overloaded so that one function can be used for several data types:
 
 * For primitive data types, the output type is the same as the type of the input expression `input_expr`.
-* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:attribute-data-types.adoc#_collection_types[allowed element types] for these containers.
 The output is the entire container.
 
 |===

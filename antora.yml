@@ -1,11 +1,12 @@
 name: gsql-ref
 title: GSQL Language Reference
 version: 3.7
-start_page: intro:intro.adoc
+start_page: intro:index.adoc
 
 nav:
 - modules/intro/nav.adoc
 - modules/tutorials/nav.adoc
+- modules/basics/nav.adoc
 - modules/ddl-and-loading/nav.adoc
 - modules/querying/nav.adoc
 - modules/appendix/nav.adoc

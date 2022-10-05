@@ -317,7 +317,8 @@ In both cases, the leading sign ("+" or "-") is optional. The exponent, using "e
 
 === Loading a `DATETIME` attribute
 
-When loading data into a `DATETIME` attribute, the GSQL loader will automatically read a string representation of DateTime information and convert it to internal DateTime representation.  The loader accepts any of the following string formats:
+When loading data into a `DATETIME` attribute, the GSQL loader automatically reads a string representation of DateTime information and convert it to internal DateTime representation.
+The loader accepts any of the following string formats:
 
 * `%Y-%m-%d %H:%M:%S` (e.g., 2011-02-03 01:02:03)
 * `%Y/%m/%d %H:%M:%S` (e.g., 2011/02/03 01:02:03)
@@ -332,9 +333,11 @@ Format notation:
 
 %m and %s are a month (1 to 12) and a day (1 to 31), respectively.  Leading zeroes are optional.
 
-%H, %M, %S are hours (0 to 23), minutes (0 to 59) and seconds (0 to 59), respectively. Leading zeroes are optional.
+%H, %M, %S are hours (0 to 23), minutes (0 to 59) and seconds (0 to 59), respectively.
+Leading zeroes are optional.
 
-When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range. If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
+When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range.
+If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
 
 ==== Load static `DATETIME` values
 
@@ -343,7 +346,7 @@ However, if you want to load static `DATETIME` values, you need to use `to_datet
 
 Once the strings have been converted to `DATETIME` values, you can use other `DATETIME` functions to modify the value you want loaded to the attribute.
 
-For example, the following destination clause always loads the difference in the number of seconds between `"2020-01-01 00:00:00"` and `"2020-01-01 04:13:12"`.
+For example, the following destination clause always loads the difference in the number of seconds (the first value minus the second value) between `"2020-01-01 00:00:00"` and `"2020-01-01 04:13:12"`, which is -2866392.
 
 [.wrap,gsql]
 ----

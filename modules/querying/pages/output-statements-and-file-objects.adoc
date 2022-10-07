@@ -634,7 +634,7 @@ For subqueries to return a xref:querying:accumulators.adoc#_heapaccum[`HeapAccum
 .Subquery Returning HeapAccum Example
 [source.wrap,gsql]
 ----
-include::appendix:example$social_net/output_statements_passing_file_object.gsql[]
+include::appendix:example$social_net/output_statements_return_subqueries.gsql[]
 ----
 
 

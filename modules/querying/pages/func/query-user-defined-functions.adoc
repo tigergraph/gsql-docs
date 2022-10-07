@@ -5,8 +5,11 @@ In GSQL, users can supplement the language by defining their own query user-defi
 
 This page introduces the process to define a query UDF. Once defined, the new functions are added into GSQL automatically the next time GSQL is executed.
 
-UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`. 
-ExprFunctions is used for functions that are called directly in GSQL queries, while ExprUtil contains structs or helper functions that used called by the functions in ExprFunctions.
+UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`:
+
+* ExprFunctions is used for functions that are called directly in GSQL queries.
+* ExprUtil contains structs or helper functions that used called by the functions in ExprFunctions.
+The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
 
 These files are stored as `.hpp` files in `AppRoot/dev/gdk/gsql/src/QueryUdf/` in a TigerGraph Server installation.
 
@@ -79,7 +82,7 @@ You can configure GSQL to read from a GitHub repository for ExprFunctions and Ex
 If GitHub access is configured, GSQL will retrieve user source code files from GitHub before files added via `PUT`, so long as the files exist.
 
 [NOTE]
-TigerGraph only allows one UDF file at a time. Files on GitHub take priority. If GitHub is connected but files are missing, TigerGraph will look for an UDF file added via `PUT`.
+TigerGraph only allows one UDF file at a time. Files on GitHub take priority. If GitHub is connected but files are missing, TigerGraph will look for a UDF file added via `PUT`.
 
 New additions to the files in the GitHub repository are instantly available in GSQL.
 
@@ -107,7 +110,7 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
 | `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
 |===
 
-Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
+Use the xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 
 Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters. 
 If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the UDFs become available.

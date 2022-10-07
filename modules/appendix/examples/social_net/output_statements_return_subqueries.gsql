@@ -1,9 +1,9 @@
-TYPEDEF tuple<name string, friends int> My_Tuple
+TYPEDEF TUPLE<name STRING, friends INT> My_Tuple
 TYPEDEF HeapAccum<My_Tuple>(3, friends DESC) My_Heap
 
 CREATE QUERY sub_query_1() FOR GRAPH Social_Net RETURNS (My_Heap){
 	My_Heap @@heap;  	// Define the heap accumulator at the global level
-	SumAccum<int> @friends;
+	SumAccum<INT> @friends;
 	Start = {Person.*};
 	Start = SELECT s from Start:s-(Friend:e)-:t
         ACCUM s.@friends += 1

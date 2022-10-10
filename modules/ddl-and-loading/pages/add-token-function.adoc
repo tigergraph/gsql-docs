@@ -60,7 +60,7 @@ named exactly as such, and are used to describe the input tokens:
 * `iTokenLen` is an array of the lengths of the string tokens
 * `iTokenNum` is the number of tokens
 
-Token functions for attribute types `STRING` or have a C{pp} function return type of `void`.
+Token functions for attribute types `STRING` have a C{pp} function return type of `void`.
 Use the parameter `oToken` to store the string you want returned, and
 in GSQL the token function will return the string stored in `oToken`:
 

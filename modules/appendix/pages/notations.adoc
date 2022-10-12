@@ -80,7 +80,7 @@ RUN JOB -n first_line_num , last_line_num job_name
 
 == Quotation Marks
 When quotation marks are shown, they are to be typed as shown (unless stated otherwise).
-A placeholder for a string value will not have quotation marks in the template code, but if a template is converted to actual code, quotation marks should be used around string values.
+A placeholder for a string value does not have quotation marks in the template code, but if a template is converted to actual code, quotation marks should be used around string values.
 
 == Choices
 The vertical bar | is used to separate the choices when the syntax requires that the user choose one out of a set of values.

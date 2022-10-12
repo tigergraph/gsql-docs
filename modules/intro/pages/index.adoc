@@ -17,7 +17,7 @@ GSQL’s similarity to SQL, high-level syntax, Turing completeness, and built-in
 
 === Designed for analytics
 GSQL is designed for complex graph analytics.
-By taking advantage of a unique feature of the GSQL query language - accumulators, users can leverage TigerGraph's Massively Parallel Processing (MPP) capability without the pain and fuss traditionally associated with parallel programming.
+By taking advantage of a unique feature of the GSQL query language - accumulators - users can leverage TigerGraph's Massively Parallel Processing (MPP) capability without the pain and fuss traditionally associated with parallel programming.
 
 
 === Turing-complete

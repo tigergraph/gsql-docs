@@ -83,7 +83,7 @@ When quotation marks are shown, they are to be typed as shown (unless stated oth
 A placeholder for a string value will not have quotation marks in the template code, but if a template is converted to actual code, quotation marks should be used around string values.
 
 == Choices
-The vertical bar | is used to separate the choices, when the syntax requires that the user choose one out of a set of values.
+The vertical bar | is used to separate the choices when the syntax requires that the user choose one out of a set of values.
 Example:  Either the keyword `VERTEX` or `EDGE` is to be used.
 Also, note the inclusion of quotation marks.
 

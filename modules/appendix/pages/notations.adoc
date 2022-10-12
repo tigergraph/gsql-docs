@@ -101,7 +101,7 @@ Possible actual values:
 LOAD "data/users.csv" TO VERTEX user VALUES ($0, $1, $2)
 ----
 
-The user-defined identifiers are _edge_type_ name_ , _vertex_type_name1_, _vertex_type_name2_,      _attribute_name_ and _default_value_ . As explained in the Create Vertex section, *type* is one of the attribute data types.
+The user-defined identifiers are _edge_type_name_ , _vertex_type_name1_, _vertex_type_name2_,      _attribute_name_ and _default_value_ . As explained in the Create Vertex section, *type* is one of the attribute data types.
 
 == Placeholder identifiers and values
 In template code, any token that is not a keyword, a literal value, or punctuation is a placeholder identifier or a placeholder value.  Example:

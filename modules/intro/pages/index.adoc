@@ -22,7 +22,7 @@ By taking advantage of a unique feature of the GSQL query language - accumulator
 
 === Turing-complete
 GSQL is Turing-complete with full support for imperative and procedural programming, ideal for algorithmic computation.
-The Turing completeness of the language, especially with the conventional xref:querying:control-flow-statements.adoc[control flow statements], allow users to describe any algorithm with GSQL.
+The Turing completeness of the language, especially with the conventional xref:querying:control-flow-statements.adoc[control flow statements], allows users to describe any algorithm with GSQL.
 
 TigerGraph offers an xref:graph-ml:intro:index.adoc[open-source data science library of algorithms] implemented entirely in GSQL, including xref:graph-ml:community-algorithms:louvain.adoc[Louvain algorithm for community detection] and the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm], demonstrating GSQL's ability to describe complex algorithms.
 

@@ -178,7 +178,7 @@ primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 . Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type or DATETIME attributes only)
@@ -231,21 +231,29 @@ See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs
 
 There are two forms of the `CREATE EDGE` statement, one for directed edges and one for undirected edges.
 Each edge type must specify that it connects FROM one vertex type TO another vertex type.
-Additional pairs of `FROM` and `TO` vertex types may be added.
-Then additional attributes may be added.
-Each attribute follows the same requirements as described in the Attribute List subsection for the `CREATE VERTEX` section.
+You can also add more endpoint vertex pairs to an edge type
+
+A `CREATE EDGE` statement must specify at least one pair of source and target vertex types, that is, the vertex types on both ends of the edge.
+In GSQL, they are often referred to as `FROM` vertex and `TO` vertex, respectively, to reflect the keywords used to define the edge type.
+
+By default, only one instance of an edge type is allowed between two vertices.
+You can add a discriminator to the edge type definition to allow for multiple instances of one edge type between two vertices.
+
 
 [tabs]
 ====
 CREATE UNDIRECTED EDGE::
 +
 --
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 CREATE UNDIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
-   ["," attribute_name type [DEFAULT default_value]]* ")"
+   [ ( attribute_name type DISCRIMINATOR ) |
+     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
+   ["," attribute_name type [DEFAULT default_value]]*
+")"
 ----
 --
 CREATE DIRECTED EDGE::
@@ -256,27 +264,44 @@ CREATE DIRECTED EDGE::
 CREATE DIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
+   [ ( attribute_name type DISCRIMINATOR ) |
+     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
    ["," attribute_name type [DEFAULT default_value]]* ")"
    [WITH REVERSE_EDGE="Rev_Name"]
 ----
 --
 ====
 
-A single edge type can be defined between multiple pairs of vertex types, e.g.
+A single edge type can be defined between multiple pairs of vertex types.
+For example:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org,
-                               joined DATETIME)
+CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined DATETIME)
 ----
 
-Note that edges do not have a `PRIMARY_ID` field.
-Instead, each edge is uniquely identified by a FROM vertex, a TO vertex, and optionally other attributes.
-The edge type may also be a distinguishing characteristic. For example, as shown in Figure 2 above, there are two types of edges between User and Book.  Therefore, both types would have attribute lists which begin `+(FROM User, To Book,...).+`
+=== `DISCRIMINATOR`
+The `DISCRIMINATOR` keyword defines a discriminator in an edge type definition to allow multiple instances of an edge type between two vertices.
 
-=== Creating an Edge from or to Any Vertex Type
+By default, edges are uniquely identified by the combination of the edge type, source vertex, and target vertex.
+Between two vertices, only one instance of a certain edge type is allowed to exist if the edge definition does not include a discriminator.
 
-An edge type can be defined which connects FROM and/or TO any of the currently defined types of vertices.  Use the wildcard symbol `*` to indicate "any vertex type". For example, the Any_Edge type below can connect from any vertex to any other vertex:
+Define the edge type and specify a discriminator to allow multiple instances of an edge type between two vertices.
+Only `INT`, `UINT` , `DATETIME` and `STRING` types are allowed to be discriminators for edge types.
+
+For example, the following `CREATE EDGE` statement specifies that the edge can be uniquely identified by the combination of their `class_year` and `class_month` attributes:
+
+[source.wrap,gsql]
+----
+CREATE DIRECTED EDGE Study_At(From Person, To University, DISCRIMINATOR(class_year INT, class_month INT), major STRING))
+----
+
+
+=== Create an edge from or to any vertex type
+
+An edge type can be defined whose source and target types can be any vertex type.
+Use the wildcard symbol `*` to indicate "any vertex type".
+For example, the following `Any_Edge` type can connect from any vertex to any other vertex:
 
 .Wildcard edge type
 [source,gsql]
@@ -284,11 +309,14 @@ An edge type can be defined which connects FROM and/or TO any of the currently d
 CREATE DIRECTED EDGE Any_Edge (FROM *, TO *, label STRING)
 ----
 
-
 [CAUTION]
 ====
-If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard. That is, `*` is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
+If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard.
+That is, `*` is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
 ====
+
+
+
 
 === `WITH REVERSE_EDGE`
 
@@ -335,7 +363,7 @@ Every time the GSQL loader creates a *`Sequel_Of`* edge, it will also automatica
 
 User-defined tuple types defined in a query cannot be used outside their queries or across queries.
 To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema.
-User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
+User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:attribute-data-types.adoc[attribute data type].
 
 `TYPEDEF` statements can be used outside a query to define tuple types, GroupBy accumulator types, and heap accumulator types.
 Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.

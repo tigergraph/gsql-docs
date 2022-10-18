@@ -982,12 +982,11 @@ In contrast, the  `POST-ACCUM` clause executes *for each vertex* in one vertex s
 
 You can think of the matching result of the `FROM` clause and the `WHERE` clause as a virtual table.
 The columns of this matching table are the alias variables from the `FROM` clause pattern, and the rows are each possible set of vertex and edge aliases (e.g. a path) which fit the pattern.
-A `POST-ACCUM` clause acts like a `FOREACH` loop on the one of the columns of vertex result set specified in the `SELECT` clause and only occurs once for each vertex.
+A `POST-ACCUM` clause acts like a `FOREACH` loop on the columns of the vertex result set specified in the `SELECT` clause and only occurs once for each vertex.
 
-If you want to perform per-vertex updates for more than one vertex alias, you should use a separate `POST-ACCUM` clause for each vertex alias.
+To perform per-vertex updates for more than one vertex alias, use a separate `POST-ACCUM` clause for each vertex alias.
 
 For example, below we have three `POST-ACCUM` clauses.
-
 
 [source,gsql]
 ----
@@ -1255,7 +1254,7 @@ However, if the condition in the `HAVING` clause could change within the `ACCUM`
 ----
 include::appendix:example$social_net/select_statement_index_having_vs_where.gsql[]
 ----
---qio0
+
 
 Results::
 +
@@ -1323,7 +1322,7 @@ If neither is specified, then ascending order is used.
 Each expression must refer to the attributes or accumulators of a member of the result set, and the expression must evaluate to a sortable value (e.g., a number or a string).
 
 `ORDER BY` offers hierarchical sorting by allowing a comma-separated list of expressions, sorting first by the leftmost expr.
-It uses the next expression only to sort items where the current sort expr results in identical values.
+It uses the next expression only to sort items where the current sort expression results in identical values.
 Any items in the result set which cannot be sorted (because the sort expressions do not pertain to them) will appear at the end of the set, after the sorted items.
 
 
@@ -1335,7 +1334,7 @@ The returned vertex set is first ordered by the number of friends of the vertex,
 Query::
 +
 --
-This query finds the most popular people, sorting first based on the number of friends and then in case of a tie by the number of coworkers
+This query finds the most popular people, sorting first based on the number of friends, then (in case of a tie) by the number of coworkers.
 
 .Sort results in descending order
 [source,gsql]
@@ -1365,7 +1364,8 @@ The optional `LIMIT` clause sets constraints on the number and ranking of items 
 limitClause := LIMIT ( expr | expr "," expr | expr OFFSET expr )
 ----
 
-Each of the expression must evaluate to a non-negative integer.
+Each of the expressions must evaluate to a non-negative integer.
+
 To understand `LIMIT`, note that the tentative result set is held in the computer as a list of vertices.
 If the query has an `ORDER BY` clause, the order is specified; otherwise the list order is unknown.
 Assume we number the vertices as `v_1` , `v_2` , ..., `v_n`.
@@ -1386,31 +1386,32 @@ result = SELECT v FROM S -(:e)- :v LIMIT k OFFSET j; <3>
 
 Case 1: `LIMIT k`
 
-* When a single expr is provided, `LIMIT` returns the first k elements from the tentative result set.
+* When a single expression is provided, `LIMIT` returns the first k elements from the tentative result set.
 If there are fewer than *k* elements available, then all elements will be returned in the result set.
-If k=5 and the tentative result set has at least 5 items, then the final result list will be [ v_1 , v_2 , v_3 , v_4 , v_5 ].
+If k=5 and the tentative result set has at least 5 items, then the final result list is `[v_1, v_2, v_3, v_4, v_5]`.
 
 Case 2: `LIMIT j, k`
 
 * When a comma separates two expressions, `LIMIT` treats the first expression *j* as an offset.
 That is, it skips the first *j* items in the list.
-The second expr *k* tells the maximum number of items to include. If the list has at least 7 items, then `LIMIT 2, 5` would return `[ v_3 , v_4 , v_5, v_6  _,_ v_7 ]`.
+The second expression *k* tells the maximum number of items to include.
+If the list has at least 7 items, then `LIMIT 2, 5` returns `[v_3, v_4, v_5, v_6, v_7]`.
 
 Case 3: `LIMIT k OFFSET j`
 
 * The behavior of Case 3 is the same as that of Case 2, except that the syntax is different.
 The keyword `OFFSET` separates the two expressions, and the count comes before the offset, rather than vice versa.
-If the list has at least 7 items, then `LIMIT 5 OFFSET 2` would return `[ v_3 , v_4 , v_5, v_6 , v_7 ]`.
+If the list has at least 7 items, then `LIMIT 5 OFFSET 2` returns `[v_3, v_4, v_5, v_6, v_7]`.
 
 If any of the expressions evaluate to a negative integer, the results are undefined.
 
 [NOTE]
 ====
 `OFFSET` is intended for result sets which are in a known order.
-It is a compile-time error to use OFFSET without the ORDER BY clause.
+Using `OFFSET` without the `ORDER BY` clause results in a compile-time error.
 ====
 
-The following examples demonstrate the various forms of the LIMIT clause.
+The following examples demonstrate the various forms of the `LIMIT` clause.
 
 The first example shows the `LIMIT` clause when used as an upper limit. It returns a result set with a maximum size of 4 elements in the set.
 
@@ -1470,7 +1471,7 @@ include::appendix:example$friend_net/select_statement_index_limit_lower_bound_an
 
 The following example shows the alternative syntax for a result size limit with an offset.
 This time we try larger values for offset and size.
-In a large data set, `limitTest(5,20)` might return 20 vertices, but since we don't have 25 vertices in the original data, the output is fewer than 20 vertices.
+In a large data set, `limitTest(5,20)` might return 20 vertices, but since we don't have 20 vertices in the original data, the output is fewer than 20 vertices.
 
 [tabs]
 ====

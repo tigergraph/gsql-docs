@@ -286,35 +286,26 @@ will produce the following result:
 == `INSERT INTO` Statement
 
 The `INSERT INTO` statement adds edges or vertices to the graph.
-When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, then the new values will overwrite the old values. To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query.
+When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, the new values will overwrite the old values.
+To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query.
 The `INSERT INTO` statement can be used as a query-body-level statement or a DML-sub statement.
 
 Like any other data modification in a query, the insertion does not take effect until the entire query is completed.
 
-.EBNF
 [source,ebnf]
 ----
 insertStmt := insertVertexStmt | insertEdgeStmt
 insertVertexStmt := INSERT INTO (vertexType | name)
                  ["(" PRIMARY_ID ["," attrName]* ")"]
                  VALUES "(" ( "_" | expr ) ["," ("_" | expr)]*] ")"
-
 insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)
-                 ["(" FROM "," TO ["," attrName]* ")"]
+                 ["("
+                    FROM "," TO “,”
+                    [(DISCRIMINATOR "(" attrName ("," attrName)* ")") ]
+                 ")"]
                  VALUES "(" ( "_" | expr ) [vertexType]
                  ["," ( "_" | expr ) [vertexType] ["," ("_" | expr)]*] ")"
 ----
-
-
-
-[NOTE]
-====
-*Dynamic Query Support*
-The vertex or edge type in an `INSERT` statement can either be set statically (`vertexType` or `edgeType`), or it can be written as a string variable (`name`), with the value being set at run time, to make a xref:querying:query-operations.adoc#_dynamic_querying[Dynamic DML query].
-*`INSERT INTO`* `+(vertexType | name) ...+` +
-Note that to insert an edge type dynamically, the keyword `EDGE` is required:
-`INSERT INTO` `(edgeType |` `EDGE` `+name) ...+`
-====
 
 There are two options for specifying the attributes of the vertex or edge type for the values provided:
 
@@ -322,14 +313,17 @@ There are two options for specifying the attributes of the vertex or edge type f
 +
 .INSERT with implicit attribute names
 +
-[source,gsql]
+[source.wrap,gsql]
 ----
 INSERT INTO vertex_or_edge_type VALUES (full_list_of_parameter_values)
 ----
 +
 
 
-* Name the specific attributes to be set, and then provide a corresponding list of values. The attributes can be in any order, with the exception that the IDs must come first.  That is, to insert a vertex, the first attribute name must be `PRIMARY_ID`.  To insert an edge, the first two attribute names must be `FROM` and `TO`.
+* Name the specific attributes to be set, and then provide a corresponding list of values.
+The attributes can be in any order, with the exception that the IDs must come first.
+That is, to insert a vertex, the first attribute name must be `PRIMARY_ID`.
+To insert an edge, the first two attribute names must be `FROM` and `TO`.
 +
 .INSERT with explicit attribute names
 +
@@ -344,7 +338,6 @@ VALUES (value_for_from_vertex, value_for_to_vertex, <1>
 ----
 <1> `value_for_from_vertex` and `value_for_to_vertex` can either be the ID of the vertex followed by the vertex type, separated by a space or a vertex variable.
 +
-
 For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type.
 The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
@@ -357,7 +350,6 @@ The following query illustrates query-body level `INSERT` statements: insert new
 ----
 include::appendix:example$work_net/data_modification_querybody_insert.gsql[]
 ----
-
 
 The following query can be used to check the effect of the previous query.
 Prior to running `insertEx`, running `whoWorksForCompany("gsql")` will find 0 `companies` called `"gsql"` and 0 `Works_For` edges for company `"gsql"`.
@@ -382,7 +374,14 @@ CREATE QUERY who_works_for_company(STRING comp) FOR GRAPH Works_Net {
 }
 ----
 
+To insert an edge with a discriminator value specified, use the `DISCRIMINATOR` keyword to specify the discriminator attributes and specify the values in order.
+For example, the following statement inserts an edge between two vertices with the discriminator values being 2019 and 01, respectively.
 
+[.wrap,console]
+----
+INSERT INTO Study_At (FROM, TO, DISCRIMINATOR(class_year, class_month))
+    VALUES ("Alice" Person, "CMU" University, (2019, 01));
+----
 
 === DML-sub INSERT
 

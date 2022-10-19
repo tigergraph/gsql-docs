@@ -20,7 +20,7 @@ which is the concatenation of all the input strings.
 |`STRING`
 |Returns a version-4 UUID.
 
-|gsql_split_by_space(_in_string_)
+|xref:functions/token/gsql_split_by_space.adoc[gsql_split_by_space(_in_string_)]
 |`STRING`
 |Returns a modified version
 of _in_string_, in which each space character is replaced with ASCII 30
@@ -54,12 +54,12 @@ the string resulting from replacing all substrings in the input string
 that match the given _regex_ token with the substitute string.
 
 |xref:functions/token/gsql_regex_match.adoc[gsql_regex_match(_str_, _regex_)]
-|bool
+|`BOOL`
 |Returns true if the given
 string token matches the given regex token and false otherwise.
 
 |xref:functions/token/gsql_to_bool.adoc[gsql_to_bool(_in_string_)]
-|bool
+|`BOOL`
 |Returns true if the _in_string_ is
 either "t" or "true", with case-insensitive checking. Returns false
 otherwise.

@@ -93,7 +93,7 @@ bash ./load_data.sh
 [source,bash]
 ----
 tigergraph/gsql_102$ ./load_data.sh
-[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobbed" to track the loading progress again]
+[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS jobid" to track the loading progress again]
 [Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB jobid"]
 Starting the following job, i.e.
   JobName: load_ldbc_snb, jobid: ldbc_snb.load_ldbc_snb.file.m1.1558053156447

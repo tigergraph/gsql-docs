@@ -1,0 +1,21 @@
+= gsql_split_by_space()
+
+Replaces all spaces in the input string with the ASCII record separator character (ASCII decimal 30).
+
+== Syntax
+`gsql_split_by_space(in_string)`
+
+== Parameters
+in_string::
+The input string to split.
+
+== Return type
+`STRING`
+
+== Example
+
+In most text rendering applications, the record separator character appears as a blank space.
+
+----
+gsql_split_by_space("Four score and seven years ago") -> "Fourscoreandsevenyearsago"
+----

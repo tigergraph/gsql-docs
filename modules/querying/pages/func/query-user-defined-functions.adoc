@@ -71,8 +71,12 @@ inline string reverse(string str){
 There are three ways to modify these files to add user-defined functions to GSQL:
 
 * Store UDF files in a GitHub repository, and configure GSQL to read from the repository.
+** This is the recommended approach.
+It also takes the highest precedence.
+If GSQL is configured to read from GitHub for UDFs, and the configurations are valid, local UDF files are ignored.
 * Use `gadmin` commands to upload a local UDF file to GSQL.
-* Use `GET` and `PUT` commands to download, modify, and store the files directly from GSQL.
+** Use this approach when your server does not have access to the internet and cannot access GitHub.
+* Use `GET` and `PUT` commands to download, and upload the files directly through GSQL shell.
 ** For security reasons, this method is disabled by default.
 See <<_upload_a_udf_file_using_gsql_put_commands>> for how to enable it.
 ** The `GET` command requires the xref:tigergraph-server:user-access:access-control-model.adoc#_privileges[`READ_FILE` privilege].
@@ -264,6 +268,16 @@ CREATE QUERY udf_example() FOR GRAPH Minimal_Net {
   PRINT y;
 }
 ----
+
+After you are done uploading UDFs, it is strongly recommended that you disable uploading UDFs through GSQL until you need to modify the UDFs again:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnablePutExpr false
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
 
 == Example
 

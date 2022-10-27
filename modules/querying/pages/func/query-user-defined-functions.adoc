@@ -274,7 +274,7 @@ CREATE QUERY udf_example() FOR GRAPH Minimal_Net {
 }
 ----
 
-WARNING: If you set `GSQL.UDF.EnablePutExpr` to `false` after uploading UDFs using the `PUT` command, GSQL ignores the functions uploaded through the `PUT` command and reads those functions from `GSQL.UDF.ExprUti` and `GSQL.UDF.ExprFunctions` instead.
+WARNING: If you set `GSQL.UDF.EnablePutExpr` to `false` after uploading UDFs using the `PUT` command, GSQL ignores the functions uploaded through the `PUT` command and reads those functions from `GSQL.UDF.ExprUtil` and `GSQL.UDF.ExprFunctions` instead.
 
 == Example
 

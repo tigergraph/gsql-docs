@@ -11,7 +11,7 @@ Once defined, the new functions are added into GSQL automatically the next time 
 UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`:
 
 * ExprFunctions is used for functions that are called directly in GSQL queries.
-* ExprUtil contains structs or helper functions that used called by the functions in ExprFunctions.
+* ExprUtil contains structs or helper functions that are used by the functions in ExprFunctions.
 The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
 
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
@@ -181,6 +181,8 @@ Replace `<path_to_file>` with the path of the UDF file:
 [.wrap,console]
 ----
 $ gadmin config set GSQL.UDF.ExprFunctions   @<path_to_file>
+$ gadmin config apply
+$ gadmin restart gsql
 ----
 
 
@@ -189,6 +191,8 @@ For example:
 [.wrap,console]
 ----
 $ gadmin config set GSQL.UDF.ExprFunctions   @/home/tmpExprFunctions.hpp
+$ gadmin config apply
+$ gadmin restart gsql
 ----
 
 [#_upload_a_udf_file_using_gsql_put_commands]
@@ -208,6 +212,7 @@ $ gadmin config set GSQL.UDF.EnablePutExpr true
 $ gadmin config apply
 $ gadmin restart gsql
 ----
+
 
 ==== Modify current query UDF file
 
@@ -269,15 +274,7 @@ CREATE QUERY udf_example() FOR GRAPH Minimal_Net {
 }
 ----
 
-After you are done uploading UDFs, it is strongly recommended that you disable uploading UDFs through GSQL until you need to modify the UDFs again:
-
-[source.wrap,console]
-----
-$ gadmin config set GSQL.UDF.EnablePutExpr false
-$ gadmin config apply
-$ gadmin restart gsql
-----
-
+WARNING: If you set `GSQL.UDF.EnablePutExpr` to `false` after uploading UDFs using the `PUT` command, GSQL ignores the functions uploaded through the `PUT` command and reads those functions from `GSQL.UDF.ExprUti` and `GSQL.UDF.ExprFunctions` instead.
 
 == Example
 

@@ -3,25 +3,16 @@
 
 In GSQL, users can supplement the language by defining their own query user-defined functions (query UDFs) in C{pp}. Query UDFs can be called in queries and subqueries to perform a set of defined actions and return a value like the built-in functions.
 
-This page introduces the process to define a query UDF. Once defined, the new functions are added into GSQL automatically the next time GSQL is executed.
+This page introduces the process to define a query UDF.
+Once defined, the new functions are added into GSQL automatically the next time GSQL is executed.
+
+== UDF files
 
 UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`:
 
 * ExprFunctions is used for functions that are called directly in GSQL queries.
 * ExprUtil contains structs or helper functions that used called by the functions in ExprFunctions.
 The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
-
-These files are stored as `.hpp` files in `AppRoot/dev/gdk/gsql/src/QueryUdf/` in a TigerGraph Server installation.
-
-There are two ways to modify these files to add user-defined functions to GSQL:
-
-* Store the files in a GitHub repository, and configure GSQL to read from the repository.
-* Use `GET` and `PUT` commands to download, modify, and store the files locally.
-** The `GET` command requires the xref:tigergraph-server:user-access:access-control-model.adoc#_privileges[`READ_FILE` privilege].
-** The `PUT` command requires the `WRITE_FILE` privilege.
-
-WARNING: It is strongly recommended that you enable GSQL user authentication by changing the password of the default user `tigergraph` to protect your UDF files.
-If you don't enable user authentication, anyone with GSQL shell access can log in as the default user with `superuser` privileges and modify your files.
 
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
 
@@ -75,14 +66,29 @@ inline string reverse(string str){
 }
 ----
 
-== Use GitHub to store UDFs
+== Upload UDFs
+
+There are three ways to modify these files to add user-defined functions to GSQL:
+
+* Store UDF files in a GitHub repository, and configure GSQL to read from the repository.
+* Use `gadmin` commands to upload a local UDF file to GSQL.
+* Use `GET` and `PUT` commands to download, modify, and store the files directly from GSQL.
+** For security reasons, this method is disabled by default.
+See <<_upload_a_udf_file_using_gsql_put_commands>> for how to enable it.
+** The `GET` command requires the xref:tigergraph-server:user-access:access-control-model.adoc#_privileges[`READ_FILE` privilege].
+** The `PUT` command requires the `WRITE_FILE` privilege.
+
+
+=== Use GitHub to store UDFs
 
 You can configure GSQL to read from a GitHub repository for ExprFunctions and ExprUtil.
+This is TigerGraph's recommended approach to managing UDFs.
 
-If GitHub access is configured, GSQL will retrieve user source code files from GitHub before files added via `PUT`, so long as the files exist.
+If GitHub access is configured, GSQL retrieves user source code files from GitHub before local files, so long as the files exist on GitHub.
 
 [NOTE]
-TigerGraph only allows one UDF file at a time. Files on GitHub take priority. If GitHub is connected but files are missing, TigerGraph will look for a UDF file added via `PUT`.
+TigerGraph only allows one UDF file at a time.
+Files on GitHub take priority. If GitHub is connected but files are missing, TigerGraph will look for a UDF file added locally.
 
 New additions to the files in the GitHub repository are instantly available in GSQL.
 
@@ -90,7 +96,8 @@ You can retrieve ExprFunctions.hpp and ExprUtil.hpp from `AppRoot/dev/gdk/gsql/s
 
 [NOTE]
 ====
-When the files are hosted on GitHub, the `typedef` statements and `include` directives must be part of the `.hpp` files. These are included by default in the files located in the `/QueryUDF/` folder.
+When the files are hosted on GitHub, the `typedef` statements and `include` directives must be part of the `.hpp` files.
+These are included by default in the files located in the `/QueryUDF/` folder.
 ====
 
 The file names must be `ExprFunctions.hpp` and `ExprUtil.hpp`. 
@@ -112,8 +119,9 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
 
 Use the xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 
-Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters. 
-If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the UDFs become available.
+The following is an example configuration.
+Remember to run `gadmin config apply` after changing the parameters.
+If GSQL is already running, run `gadmin restart all` to restart GSQL before the UDFs become available.
 
 [source]
 ----
@@ -126,10 +134,78 @@ gadmin config apply
 
 After the parameters are successfully configured, you can access your UDFs in new queries right away.
 
+=== Upload a local UDF file through `gadmin`
 
-== Store a UDF file locally
+You can configure `gadmin` to upload a local file to the GSQL server.
+Once uploaded, the UDF file is available to all nodes in a TigerGraph cluster.
+Moving the local file after uploading does not affect the UDF available to GSQL.
 
-=== Step 1: Modify current query UDF file
+==== Modify current query UDF file
+
+Run the following command to retrieve the current UDF file to a specified location on the server.
+Replace `<path_to_file>` with the filepath where you want the UDF file:
+
+[.wrap,console]
+----
+$ gadmin config get GSQL.UDF.ExprFunctions  >  <path_to_file> <1>
+$ gadmin config get GSQL.UDF.ExprUtil > <path_to_file> <2>
+----
+<1> This retrieves `ExprFunctions` where the UDFs are defined.
+<2> This retrieves `ExprUtil`, where helper functions are defined.
+
+For example:
+
+[.wrap,console]
+----
+$ gadmin config get GSQL.UDF.ExprFunctions  >  /home/tmpExprFunctions.hpp
+----
+
+==== Define your function
+
+Write your function in ExprFunctions and any helper functions in ExprUtil.
+
+[CAUTION]
+====
+If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
+====
+
+==== Upload query UDF file
+
+After modifying the file, run the following command to upload the modified file.
+Replace `<path_to_file>` with the path of the UDF file:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.UDF.ExprFunctions   @<path_to_file>
+----
+
+
+For example:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.UDF.ExprFunctions   @/home/tmpExprFunctions.hpp
+----
+
+[#_upload_a_udf_file_using_gsql_put_commands]
+=== Upload a UDF file using GSQL `PUT` commands
+
+TigerGraph also offers the ability to upload UDFs directly from GSQL.
+This allows authorized users to upload UDF files without having to access the server file system.
+For security reasons, this option is disabled by default and must be turned on by the TigerGraph Linux user.
+
+==== Enable uploading UDFs through GSQL
+
+Run the following command to enable uploading query UDFs to GSQL:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnablePutExpr true
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+==== Modify current query UDF file
 
 Use the `GET ExprFunctions` command in GSQL to copy the current set of functions into a local file. 
 The path can be absolute or relative to your current directory, but the file extension must be `.hpp`:
@@ -148,7 +224,7 @@ If your query UDF requires a user-defined struct or helper function, also use th
 GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 ----
 
-=== Step 2: Define your function
+==== Define your function
 
 Write your function in ExprFunctions and any helper functions in ExprUtil.
 
@@ -157,7 +233,7 @@ Write your function in ExprFunctions and any helper functions in ExprUtil.
 If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
 ====
 
-=== Step 3: Store the updated query UDF file
+==== Upload the updated query UDF file
 
 After you have defined the function, use the `PUT` command to store the files you modified.
 
@@ -171,13 +247,14 @@ PUT ExprUtil successfully.
 
 The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain UDFs.
 
-Once the files are stored, you will be able to call the Query UDF the next time GSQL is executed. This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell. If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
+Once the files are stored, you will be able to call the Query UDF the next time GSQL is executed.
+This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
+If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
 
 .Example of a GSQL query that uses the UDF
-
 [source,gsql]
 ----
-CREATE QUERY udfExample() FOR GRAPH minimalNet {
+CREATE QUERY udf_example() FOR GRAPH Minimal_Net {
   DOUBLE x;
   BOOL y;
 
@@ -185,26 +262,26 @@ CREATE QUERY udfExample() FOR GRAPH minimalNet {
   PRINT greater_than_three(x);
   y = greater_than_three(2.5);
   PRINT y;
-
 }
 ----
 
 == Example
 
-Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1. In this example, suppose you want to modify the ExprFunctions file locally rather than using GitHub.
+Suppose you are working in a distributed environment and want to add a function `rng()` that that returns a random double between 0 and 1.
+In this example, suppose you want to modify the ExprFunctions file locally rather than using GitHub.
 
-Start by downloading the current UDF file with the `GET` command. In this example, we will place our download in the working directory and use the name `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`, to illustrate the flexibility of the naming scheme.
+Start by downloading the current UDF file with.
+In this example, we place our download in the working directory and use the name `udf.hpp` in contrast to above, where it was named `ExprFunctions.hpp`, to illustrate the flexibility of the naming scheme.
 
-[source,gsql]
+[source,console]
 ----
-GSQL > GET ExprFunctions TO "./udf.hpp"
+$ gadmin config get GSQL.UDF.ExprFunctions  >  ./udf.hpp
 ----
 
-In the downloaded file, add the function definition for the `rng()` function.
+In the downloaded file, add the function definition for the `rng()` function in C++.
 
 .udf.hpp
-
-[source,c++]
+[source.wrap,c++]
 ----
 inline double rng() {
     std::random_device rd;
@@ -212,46 +289,19 @@ inline double rng() {
     std::uniform_real_distribution < double > distribution(0.0, 1.0);
 
     return distribution(gen);
-    }
-
-----
-
-After adding your query, use the `PUT` command to store the file in all nodes in a cluster:
-
-[source,gsql]
-----
-GSQL > PUT ExprFunctions FROM "./udf.hpp"
-PUT ExprFunctions successfully.
-----
-
-The file has been stored and the UDF has now been added to GSQL. You can add it to a query, then run the commands `INSTALL QUERY` and `RUN QUERY` to test the `rng()` function.
-
-The following commands demonstrate the process with a one-line query called `rngExample` that simply prints the output of the new function `rng()`.
-
-[source,gsql]
-----
-GSQL > CREATE QUERY rngExample() FOR GRAPH example_graph {PRINT rng();}
-Successfully created queries: [rngExample].
-
-GSQL > INSTALL QUERY rngExample
-Start installing queries, about 1 minute ...
-rngExample query: curl -X GET 'http://127.0.0.1:9000/query/example_graph/rngExample'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
-Select 'm1' as compile server, now connecting ...
-Node 'm1' is prepared as compile server.
-
-[=========================================================================================] 100% (1/1)
-Query installation finished.
-
-GSQL > RUN QUERY rngExample()
-{
-  "error": false,
-  "message": "",
-  "version": {
-    "schema": 0,
-    "edition": "enterprise",
-    "api": "v2"
-  },
-  "results": [{"rng()": 0.51352}]
 }
 ----
+
+After adding your function, upload the file with `gadmin`:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.ExprFunctions   @/home/tmpExprFunctions.hpp
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+The file has been uploaded and the UDF has now been added to GSQL.
+You can now use this function in a GSQL query.
+
 

@@ -286,7 +286,7 @@ Between two vertices, only one instance of a certain edge type is allowed to exi
 A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.
 The discriminator must be unique between edges of the same type between two vertices.
 They *do not* have to be unique within the edge type as a whole.
-For example, an edge type `Study_At` with the `class_month` and `class_year` attributes as the discriminator can have multiple edge instances with the same `class_month` and `class_year`, as long as those edge instances are not between the same two vertices.
+For example, an edge type `Study_At` with the `class_month` and `class_year` attributes as discriminators can have multiple edge instances with the same `class_month` and `class_year`, as long as those edge instances are not between the same two vertices.
 
 Define the edge type and specify a discriminator to allow multiple instances of an edge type between two vertices.
 Only `INT`, `UINT` , `DATETIME` and `STRING` types are allowed to be discriminators for edge types.

@@ -261,14 +261,16 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 A STRING token is never considered missing; if there are no characters, then the string is the empty string
 ====
 
-* *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).  For example,
+* *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).
+You can not skip the primary key attributes for vertices or discriminator attributes for edges.
+
+For example, the following statement skips the next-to-last attribute.
+This technique is used when it is known that the input data file does not contain data for every attribute.
 
 [source,gsql]
 ----
 LOAD TO VERTEX Person VALUES ($0, $1, _, $2)
 ----
-
-means to skip the next-to-last attribute. This technique is used when it is known that the input data file does not contain data for every attribute.
 
 . If the load operation is creating a new vertex or edge, then the skipped attribute will be assigned the default value.
 . If the load operation is overwriting an existing vertex or edge, then the skipped attribute will retain its existing value.
@@ -1077,14 +1079,9 @@ include::partial$flatten_json_object.adoc[]
 [#_delete_statement]
 == DELETE statement
 
-In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement.
-DELETE cannot be used in offline loading.
-Just as a LOAD statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a DELETE statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
+In addition to loading data, a loading job can be used to perform the opposite operation: deleting vertices and edges, using the `DELETE` statement.
 
-[WARNING]
-====
-In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
-====
+Just as a `LOAD` statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a `DELETE` statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
 
 There are four variations of the DELETE statement.The syntax of the four cases is shown below.
 
@@ -1093,16 +1090,16 @@ There are four variations of the DELETE statement.The syntax of the four cases i
 ----
 CREATE LOADING JOB abc FOR GRAPH Graph_Name {
   DEFINE FILENAME f;
-  // 1. Delete each vertex which has the given vertex type and primary id.
+  // Delete each vertex which has the given vertex type and primary id.
   DELETE VERTEX vertex_type_name (PRIMARY_ID id_expr) FROM f [WHERE condition] ;
 
-  // 2. Delete each edge which has the given edge type, source vertex id, and destination vertex id.
-  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr) FROM f [WHERE condition] ;
+  // Delete each edge which has the given edge type, source vertex id, target vertex id, and discriminator value if provided.
+  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr, DISCRIMINATOR (id_expr)) FROM f [WHERE condition] ;
 
-  // 3. Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
+  // Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
   DELETE EDGE edge_type_name (FROM id_expr) FROM f [WHERE condition] ;
 
-  // 4. Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
+  // Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
   DELETE EDGE * (FROM id_expr vertex_type_name) FROM f [WHERE condition] ;
 }
 ----
@@ -1126,8 +1123,16 @@ RUN LOADING JOB clean_user_occupation USING f="./data/User_Occupation_update.dat
 RUN LOADING JOB load_user_occupation USING f="./data/User_Occupation_update.dat"
 ----
 
+The following example shows how to delete edge instances that match the discriminator value from the data file:
+
+[source.wrap,gsql]
+----
+DELETE EDGE Study_At (from $"person_id", to $"university_id",
+    DISCRIMINATOR($"class_year", $"class_month")) from f;
+----
 
 [NOTE]
 ====
-There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete. In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
+There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete.
+In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
 ====

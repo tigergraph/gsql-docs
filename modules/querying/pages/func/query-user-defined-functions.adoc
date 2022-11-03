@@ -16,9 +16,10 @@ The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
 
 This section first explains how to define a query UDF, then how to integrate query UDFs into GSQL.
 
+[#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}
 
-User-defined functions are C{pp} functions with a certain set of allowed data types. 
+User-defined functions are C{pp} functions with a certain set of allowed data types.
 The function definition must include the keyword `inline`.
 
 .Sample user-defined function
@@ -68,7 +69,7 @@ inline string reverse(string str){
 
 == Upload UDFs
 
-There are three ways to modify these files to add user-defined functions to GSQL:
+There are two ways to modify these files to add user-defined functions to GSQL:
 
 * Store UDF files in a GitHub repository, and configure GSQL to read from the repository.
 ** This is the recommended approach.
@@ -76,12 +77,9 @@ It also takes the highest precedence.
 If GSQL is configured to read from GitHub for UDFs, and the configurations are valid, local UDF files are ignored.
 * Use `gadmin` commands to upload a local UDF file to GSQL.
 ** Use this approach when your server does not have access to the internet and cannot access GitHub.
-* Use `GET` and `PUT` commands to download, and upload the files directly through GSQL shell.
-** For security reasons, this method is disabled by default.
-See <<_upload_a_udf_file_using_gsql_put_commands>> for how to enable it.
-** The `GET` command requires the xref:tigergraph-server:user-access:access-control-model.adoc#_privileges[`READ_FILE` privilege].
-** The `PUT` command requires the `WRITE_FILE` privilege.
 
+NOTE: There is a legacy method of xref:func/upload-udf-legacy.adoc[uploading] UDFs through GSQL.
+For security reasons, the legacy method is not recommended.
 
 === Use GitHub to store UDFs
 
@@ -195,84 +193,6 @@ $ gadmin config apply
 $ gadmin restart gsql
 ----
 
-[#_upload_a_udf_file_using_gsql_put_commands]
-=== Upload a UDF file using GSQL `PUT` commands
-
-TigerGraph also offers the ability to upload UDFs directly from GSQL.
-This allows authorized users to upload UDF files without having to access the server file system.
-For security reasons, this option is disabled by default and must be turned on by the TigerGraph Linux user.
-
-==== Enable uploading UDFs through GSQL
-
-Run the following command to enable uploading query UDFs to GSQL:
-
-[source.wrap,console]
-----
-$ gadmin config set GSQL.UDF.EnablePutExpr true
-$ gadmin config apply
-$ gadmin restart gsql
-----
-
-
-==== Modify current query UDF file
-
-Use the `GET ExprFunctions` command in GSQL to copy the current set of functions into a local file. 
-The path can be absolute or relative to your current directory, but the file extension must be `.hpp`:
-
-[source,gsql]
-----
-GSQL > GET ExprFunctions TO "/example/path/to/ExprFunctions.hpp"
-GSQL > GET ExprFunctions TO "./ExprFunctions.hpp"
-
-----
-
-If your query UDF requires a user-defined struct or helper function, also use the `GET ExprUtil` command to download the current `ExprUtil` file:
-
-[source,gsql]
-----
-GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
-----
-
-==== Define your function
-
-Write your function in ExprFunctions and any helper functions in ExprUtil.
-
-[CAUTION]
-====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
-====
-
-==== Upload the updated query UDF file
-
-After you have defined the function, use the `PUT` command to store the files you modified.
-
-[source,gsql]
-----
-GSQL > PUT ExprFunctions FROM "/path/to/udf_file.hpp"
-PUT ExprFunctions successfully.
-GSQL > PUT ExprUtil FROM "/path/to/utils_file.hpp"
-PUT ExprUtil successfully.
-----
-
-The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain UDFs.
-
-Once the files are stored, you will be able to call the Query UDF the next time GSQL is executed.
-This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
-If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
-
-.Example of a GSQL query that uses the UDF
-[source,gsql]
-----
-CREATE QUERY udf_example() FOR GRAPH Minimal_Net {
-  DOUBLE x;
-  BOOL y;
-
-  x = 3.5;
-  PRINT greater_than_three(x);
-  y = greater_than_three(2.5);
-  PRINT y;
-}
-----
 
 WARNING: If you set `GSQL.UDF.EnablePutExpr` to `false` after uploading UDFs using the `PUT` command, GSQL ignores the functions uploaded through the `PUT` command and reads those functions from `GSQL.UDF.ExprUtil` and `GSQL.UDF.ExprFunctions` instead.
 

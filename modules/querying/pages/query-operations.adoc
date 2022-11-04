@@ -102,7 +102,7 @@ However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph
 +
 [NOTE]
 ====
-The difference between `CREATE OR REPLACE` and dropped the query and recreating a query are the following:
+The difference between `CREATE OR REPLACE` and dropping and recreating a query are the following:
 
 * Only the query owner is allowed to run `CREATE OR REPLACE` on a query directly, while anyone with the `WRITE_QUERY` privilege on the corresponding graph and drop and recreate the query.
 * The ACLs on the original query are dropped when you drop the query.

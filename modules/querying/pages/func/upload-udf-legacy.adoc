@@ -7,7 +7,7 @@ This allows authorized users to upload UDF files without having to access the se
 
 For security reasons, this option is disabled by default and must be turned on by the TigerGraph Linux user.
 Once enabled, UDFs are no longer managed by `gadmin`.
-If your host machine is not completely secure, it is strongly recommended that you upload UDFs through `gadmin` instead of the steps on this page.
+If your host machine is not completely secure, it is strongly recommended that you xref:func/query-user-defined-functions.adoc[upload UDFs through `gadmin`] instead, which ensures that UDFs can only be modified by users with sufficient access to the underlying file system of the server.
 
 
 == Enable uploading UDFs through GSQL

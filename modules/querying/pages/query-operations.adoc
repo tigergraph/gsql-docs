@@ -65,6 +65,7 @@ See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details
 
 There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
+[#_create_query]
 == `CREATE QUERY`
 
 [source,ebnf]
@@ -101,7 +102,7 @@ However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph
 +
 [NOTE]
 ====
-The difference between `CREATE OR REPLACE` and dropped the query and recreating a query are the following:
+The difference between `CREATE OR REPLACE` and dropping and recreating a query are the following:
 
 * Only the query owner is allowed to run `CREATE OR REPLACE` on a query directly, while anyone with the `WRITE_QUERY` privilege on the corresponding graph and drop and recreate the query.
 * The ACLs on the original query are dropped when you drop the query.
@@ -126,7 +127,7 @@ For a list of allowed data types for query parameters, see xref:data-types.adoc#
 This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
 
 `RETURNS` clause::
-The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETRUN` statement of the subquery.
+The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETURN` statement of the subquery.
 For more information, see xref:operators-and-expressions.adoc#_subqueries[Subqueries].
 
 `API v2`:: Specifies the JSON output format.
@@ -180,6 +181,17 @@ To specify the default value for a parameter, use the assignment operator (`=`) 
 [source.wrap,gsql]
 ----
 include::appendix:example$social_net/query_operations_example_create_query_defaults.gsql[]
+----
+
+To specify the default value of a `DATETIME` type parameter, use the `to_datetime()` function.
+You cannot use other functions that return a `DATETIME` value to specify the default value.
+For example, the following query definition sets the default value of `d1` to `2019-01-19 00:00:00`.
+
+[.wrap,gsql]
+----
+CREATE QUERY print_default(DATETIME d1 = to_datetime("2019-01-19 00:00:00")) {
+    PRINT d1;
+}
 ----
 
 
@@ -614,17 +626,16 @@ This is a Preview feature and should not be used in production.
 
 WARNING: This feature is deprecated and support for it will be dropped in a future version.
 
-Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The names of the individual queries are not needed. This operation optimizes all previously installed queries, reducing their run times by about 20%. Optimize a query if query run time is more important to you than query installation time.
+Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.The names of the individual queries are not needed.This operation optimizes all previously installed queries, reducing their run times by about 20%.Optimize a query if query run time is more important to you than query installation time.
 
+[#_run_query]
 == RUN QUERY
 
-The `RUN QUERY` command runs an installed query. To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses. Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
+The `RUN QUERY` command runs an installed query.To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses.Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
-You can also run an installed query through REST requests - see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
+You can also run an installed query through REST requests - see xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 
 === Syntax
-
-.RUN QUERY syntax
 
 [source,ebnf]
 ----
@@ -720,7 +731,23 @@ RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 
 === Complex type parameter passing
 
-This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`. More details about all parameter types are described in Section "xref:data-types.adoc#_query_parameter_types[Query Parameter Types]".
+This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`.
+
+More details about all parameter types are described in xref:data-types.adoc#_query_parameter_types[Query Parameter Types].
+
+[NOTE]
+====
+If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_composite_keys[composite key], use a comma to separate the different attributes to denote their ID.
+
+For example, if you have the following vertex definition:
+
+[.wrap,gsql]
+----
+CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
+----
+
+A vertex ID would be `"Tom,456"`, consisting of the `name` attribute and the `id` attribute.
+====
 
 ==== Parameter list
 
@@ -798,7 +825,9 @@ curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL
 
 ==== Detached mode -async option
 
-Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries. Starting with TigerGraph 3.1, you can run queries in Detached Mode to enable background execution of long-running queries.
+Typically, the GSQL `RUN QUERY` command runs in the foreground and does not produce output until the query completes, which is inconvenient in the case of long-running queries.
+
+You can run queries in Detached Mode to enable background execution of long-running queries.
 
 Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:tigergraph-server:API:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
@@ -811,7 +840,7 @@ GSQL > RUN QUERY -async <queryName>
 
 You will receive a JSON response immediately containing a query ID (`request_id`):
 
-[source,json]
+[source.wrap,json]
 ----
 {
   "error": false,
@@ -828,6 +857,7 @@ $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<que
 ----
 
 To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
+
 
 == GSQL Query output format
 

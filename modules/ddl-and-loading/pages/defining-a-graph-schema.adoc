@@ -75,7 +75,7 @@ More specifically, the syntax is as follows, assuming that the vertex ID is list
 .CREATE VERTEX Syntax
 [source,ebnf]
 ----
-CREATE VERTEX Vertex_Type_Name "(" primary_id_name_type
+CREATE VERTEX Vertex_Type_Name "(" PRIMARY_ID id_name id_type
     ["," attribute_name type [DEFAULT default_value] ]* ")"
     [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
 ----
@@ -85,21 +85,18 @@ CREATE VERTEX Vertex_Type_Name "(" primary_id_name_type
 
 === Keys and Attributes
 
-[NOTE]
-====
-Beginning with v2.3, there are two syntaxes for specifying the primary id/key:
+There are two ways of specifying the primary ID/key:
 
-Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additional options and additional flexibility:
+. `PRIMARY_ID` and `WITH primary_id_as attribute`
+. `PRIMARY KEY` syntax.
+This syntax is modeled after SQL.
 
-. PRIMARY_ID and WITH primary_id_as attribute
-. PRIMARY KEY syntax.  This syntax is modeled after SQL.
-====
 
 ==== `PRIMARY_ID`  and `WITH primary_id_as_attribute`
 
 The `primary_id` is a required field whose purpose is to uniquely identify each vertex instance.
 GSQL creates a hash index on the primary id with O(1) time complexity.
-Its data type may be `STRING`, `INT`, or `UINT`.
+Its data type may be `STRING`, `INT`, `UINT`, or `DATETIME`.
 The syntax for the `primary_id_name_type` term is as follows:
 
 [source,ebnf]
@@ -113,7 +110,7 @@ The functional consequence of this difference is that a query cannot read the `p
 
 Example:
 
-[source,ruby]
+[source,gsql]
 ----
 CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
     WITH primary_id_as_attribute="true"
@@ -121,17 +118,17 @@ CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
 
 ==== `PRIMARY KEY`
 
-Instead of the legacy `PRIMARY_ID` syntax, starting with v2.3, GSQL now offers another option for specifying the primary key.
+Instead of the legacy `PRIMARY_ID` syntax, GSQL offers another option for specifying the primary key.
 Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attribute list to make the attribute the primary key.
 It is conventional for the primary key to be the first attribute.
-Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity.
+Each vertex instance must have a unique value for the primary key attribute.
+GSQL creates a hash index on the `PRIMARY KEY` attribute with O(1) time complexity.
 The primary key data type should `STRING`, `INT`, or `UINT`.
 
 [source,ebnf]
 ----
 primary_id_name_type := id_name_id_type PRIMARY KEY
 ----
-
 
 Example:
 
@@ -144,6 +141,11 @@ CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ====
 PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
 ====
+
+*Maximum Size*
+
+A vertex primary key has a length limit of 16384 bytes.
+The size of a vertex, including all of its attributes, cannot exceed 10 megabytes.
 
 ==== Composite keys
 
@@ -177,7 +179,7 @@ primary_id_name_type
 [, attribute_name type [DEFAULT default_value ] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 . Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type or DATETIME attributes only)
@@ -204,13 +206,13 @@ There are two* options.
 * If `outdegree_by_edgetype` is chosen, then each vertex records a list of degree count values, one value for each type of edge in the schema.
 * If "none" is chosen, then no degree statistics are recorded with each vertex. If the `WITH STATS` clause is not used, the loader acts as if `outdegree_by_edgetype` were selected.
 
-The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
+The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edge type name as a string parameter.  To get the total outdegree, omit the parameter.
 
 .Illustration of outdegree stats
 image::comms-graph-outdegree.png["Diagram of a graph with five person vertices. Andy is connected to Bobby with a phone_call edge. Bobby is connected to three other person vertices, Casey, Dean and Emory with a text, phone_call, and text edges respectively."]
 
 |===
-| WITH STATS option (case insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")
+| WITH STATS option (case-insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")
 
 | "none"
 | not available
@@ -228,23 +230,27 @@ image::comms-graph-outdegree.png["Diagram of a graph with five person vertices. 
 `CREATE EDGE` defines a new global edge type. Data loaded to a global edge type in one graph will be shared across all graphs that use that edge type.
 See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for instructions on creating local edges.
 
-There are two forms of the `CREATE EDGE` statement, one for directed edges and one for undirected edges.
-Each edge type must specify that it connects FROM one vertex type TO another vertex type.
-Additional pairs of `FROM` and `TO` vertex types may be added.
-Then additional attributes may be added.
-Each attribute follows the same requirements as described in the Attribute List subsection for the `CREATE VERTEX` section.
+A `CREATE EDGE` statement must specify at least one pair of source and target vertex types, that is, the vertex types on both ends of the edge.
+In GSQL, they are often referred to as `FROM` vertex and `TO` vertex, respectively, to reflect the keywords used to define the edge type.
+
+By default, only one instance of an edge type is allowed between two vertices.
+You can add a discriminator to the edge type definition to allow for multiple instances of one edge type between two vertices.
+
 
 [tabs]
 ====
 CREATE UNDIRECTED EDGE::
 +
 --
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 CREATE UNDIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
-   ["," attribute_name type [DEFAULT default_value]]* ")"
+   [ ( attribute_name type DISCRIMINATOR ) |
+     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
+   ["," attribute_name type [DEFAULT default_value]]*
+")"
 ----
 --
 CREATE DIRECTED EDGE::
@@ -255,27 +261,52 @@ CREATE DIRECTED EDGE::
 CREATE DIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
+   [ ( attribute_name type DISCRIMINATOR ) |
+     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
    ["," attribute_name type [DEFAULT default_value]]* ")"
    [WITH REVERSE_EDGE="Rev_Name"]
 ----
 --
 ====
 
-A single edge type can be defined between multiple pairs of vertex types, e.g.
+A single edge type can be defined between multiple pairs of vertex types.
+For example:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
-CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org,
-                               joined DATETIME)
+CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined DATETIME)
 ----
 
-Note that edges do not have a `PRIMARY_ID` field.
-Instead, each edge is uniquely identified by a FROM vertex, a TO vertex, and optionally other attributes.
-The edge type may also be a distinguishing characteristic. For example, as shown in Figure 2 above, there are two types of edges between User and Book.  Therefore, both types would have attribute lists which begin `+(FROM User, To Book,...).+`
+=== `DISCRIMINATOR`
+The `DISCRIMINATOR` keyword defines a discriminator in an edge type definition to allow multiple instances of an edge type between two vertices.
 
-=== Creating an Edge from or to Any Vertex Type
+By default, edges are uniquely identified by the combination of the edge type, source vertex, and target vertex.
+Between two vertices, only one instance of a certain edge type is allowed to exist if the edge type definition does not include a discriminator.
 
-An edge type can be defined which connects FROM and/or TO any of the currently defined types of vertices.  Use the wildcard symbol `*` to indicate "any vertex type". For example, the Any_Edge type below can connect from any vertex to any other vertex:
+A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.
+The discriminator must be unique between edges of the same type between two vertices.
+They *do not* have to be unique within the edge type as a whole.
+For example, an edge type `Study_At` with the `class_month` and `class_year` attributes as discriminators can have multiple edge instances with the same `class_month` and `class_year`, as long as those edge instances are not between the same two vertices.
+
+Define the edge type and specify a discriminator to allow multiple instances of an edge type between two vertices.
+Only `INT`, `UINT` , `DATETIME` and `STRING` types are allowed to be discriminators for edge types.
+The specification of the discriminator must come before other 
+
+For example, the following `CREATE EDGE` statement specifies that edges of type `Study_At` can be uniquely identified by the combination of their `class_year` and `class_month` attributes:
+
+[source.wrap,gsql]
+----
+CREATE DIRECTED EDGE Study_At(From Person, To University, DISCRIMINATOR(class_year INT, class_month INT), major STRING))
+----
+
+With the previous edge type definition, there can be multiple `Study_At` edges between two vertices.
+
+
+=== Create an edge from or to any vertex type
+
+An edge type can be defined whose source and target types can be any vertex type.
+Use the wildcard symbol `*` to indicate "any vertex type".
+For example, the following `Any_Edge` type can connect from any vertex to any other vertex:
 
 .Wildcard edge type
 [source,gsql]
@@ -283,11 +314,14 @@ An edge type can be defined which connects FROM and/or TO any of the currently d
 CREATE DIRECTED EDGE Any_Edge (FROM *, TO *, label STRING)
 ----
 
-
 [CAUTION]
 ====
-If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard. That is, `*` is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
+If new vertex types are added after a wildcard edge type is defined, the new vertex types are NOT included in the wildcard.
+That is, `*` is an alias for the vertex types that existed at the point in time that the CREATE EDGE statement is executed.
 ====
+
+
+
 
 === `WITH REVERSE_EDGE`
 
@@ -334,7 +368,7 @@ Every time the GSQL loader creates a *`Sequel_Of`* edge, it will also automatica
 
 User-defined tuple types defined in a query cannot be used outside their queries or across queries.
 To use a user-defined tuple or an accumulator that uses a user-defined tuple across queries (such as for the return type of a xref:querying:operators-and-expressions.adoc#_subqueries[subquery] ), the tuple and the accumulator type must be defined on the catalog level as part of the schema.
-User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:system-and-language-basics.adoc#_attribute_data_types[attribute data type].
+User-defined types at the catalog level can only be used for query return value types, and cannot be used as an xref:attribute-data-types.adoc[attribute data type].
 
 `TYPEDEF` statements can be used outside a query to define tuple types, GroupBy accumulator types, and heap accumulator types.
 Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.
@@ -379,7 +413,7 @@ CREATE GLOBAL SCHEMA_CHANGE job <job-name>
 };
 ----
 
-*Example:*
+Example:
 
 `ALTER VERTEX User ADD INDEX user_country_index ON (country);`
 
@@ -420,7 +454,7 @@ CREATE GRAPH Empty_Graph ()
 Create graph `Book_rating` for the edge and vertex types defined for the below:
 
 .A schema for a User-Book-Rating graph
-image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
+image::user-book-rating-schema.png[A schema for a User-Book-Rating graph]
 
 .Full definition for the Expanded User-Book-Rating graph
 [source,gsql]
@@ -451,7 +485,7 @@ This command can only be run on the base graph and requires the user to have the
 <tag_expr> := <tag> ("&" <tag_expr>)*
 ----
 
-The syntax for creating tag-based graphs is the same as creating a regular graph except that a base graph must be specified with the `AS` clause after the `CREATE GRAPH` command, and the definition of the graph must include at least one tagged vertex type. Edges are not tagged in a tag-based graph, but edges with either a source or a target outside of the tag-based graph are not visible to users of the tag-based graph.
+The syntax for creating tag-based graphs is the same as creating a regular graph except that a base graph must be specified with the `AS` clause after the `CREATE GRAPH` command, and the definition of the graph must include at least one tagged vertex type. Edges are not tagged in a tag-based graph, but edges with either a source or a target outside the tag-based graph are not visible to users of the tag-based graph.
 
 ==== Include vertices with multiple tags
 
@@ -503,7 +537,7 @@ DROP GRAPH Graph_Name
 `WRITE_SCHEMA`
 
 
-The `DROP GRAPH` command deletes the logical definition of the named graph. It will also delete all local vertex or edge types. Local vertex and edge types are created by an `xref:modifying-a-graph-schema.adoc#_add_vertex_edge_local[ADD VERTEX/EDGE]` statement within a `xref:modifying-a-graph-schema.adoc#_create_schema_change_job_local[SCHEMA_CHANGE JOB]` and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see `DROP VERTEX | EDGE` in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
+The `DROP GRAPH` command deletes the logical definition of the named graph. It will also delete all local vertex or edge types. Local vertex and edge types are created by an `xref:modifying-a-graph-schema.adoc#_add_vertex_edge[ADD VERTEX/EDGE]` statement within a `xref:modifying-a-graph-schema.adoc#_create_schema_change_job[SCHEMA_CHANGE JOB]` and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see `DROP VERTEX | EDGE` in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
 == `DROP ALL`
 

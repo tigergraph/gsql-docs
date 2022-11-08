@@ -1,77 +1,57 @@
-= Introduction
+= GSQL Query Language
 :page-aliases: introduction-query.adoc
+:description: Overview of the GSQL Query Language.
 
-The GSQL ® Query Language is a language for the exploration and analysis of large scale graphs. The high-level language makes it easy to perform powerful graph traversal queries in the TigerGraph system. By combining features familiar to database users and programmers with highly expressive new capabilities, the GSQL query language offers both easy authoring and powerful execution. A GSQL query contains one or more SELECT statements, where each SELECT statement describes a traversal over a set of vertices and edges in the graph or describes a selection of a subset of vertices.  By combining multiple SELECT statements, the user can map out query patterns to answer a virtually unlimited set of real-life data questions.
+The GSQL ® Query Language is a language for the exploration and analysis of large scale graphs.
+The high-level language makes it easy to perform powerful graph traversal queries in the TigerGraph system.
+By combining features familiar to database users and programmers with highly expressive new capabilities, the GSQL query language offers both easy authoring and powerful execution.
 
-This document focuses on the formal specification for the GSQL Query Language. It includes example queries that demonstrate the language, each of which works on one of the following six graphs:**`workNet`, `socialNet`, `friendNet`, `computerNet`, `minimalNet`,** and *`investmentNet`* . Their schemas are shown below. Appendix D lists the full command and data files to create and load these graphs with small sets of data (~10 to 20 vertices). The data sets are small so that you can understand the result of each query example. The tarball file *`gsql_ref_examples_2.0.tar.gz`* (linked below) contains all graph schemas, data files, and queries.
+== What is a GSQL query?
 
-link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download Graph files and loading script].
+A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation.
+Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data.
+A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing.
 
-== Schemas for example graphs
-
-.Graph Schema: socialNet
-
-[source,gsql]
-----
-CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
-CREATE UNDIRECTED EDGE friend(FROM person, TO person)
-CREATE VERTEX post(PRIMARY_ID postId UINT, subject STRING, postTime DATETIME)
-CREATE DIRECTED EDGE posted(FROM person, TO post)
-CREATE DIRECTED EDGE liked(FROM person, TO post, actionTime DATETIME)
-----
+Though GSQL is SQL-like, an important distinction between SQL and GSQL queries is that a GSQL query is a sequence of statements defined as a single operation, while a SQL query tends to be a single statement that executes directly against a database.
 
 
+== Query syntax versions
 
-.Graph Schema: workNet
+The current default syntax version for GSQL queries is Syntax V2.
+Most documentation in this section describes the language in Syntax V2.
+To see the different between the legacy version and V2, see xref:querying:syntax-versions.adoc[].
 
-[source,gsql]
-----
-CREATE VERTEX person(PRIMARY_ID personId STRING, id STRING, locationId STRING, skillSet SET<INT>, skillList LIST<INT>, interestSet SET<STRING>, interestList LIST<STRING>)
-CREATE VERTEX company(PRIMARY_ID clientId STRING, id STRING, country STRING)
-CREATE UNDIRECTED EDGE worksFor(FROM person, TO company, startYear INT, startMonth INT, fullTime BOOL)
-----
+== Query operations
 
+A typical workflow for working with GSQL queries is to xref:query-operations.adoc#_create_query[create the query], xref:query-operations.adoc#_install_query[install the query], and then xref:query-operations.adoc#_run_query[run the query].
 
+GSQL also supports xref:query-operations.adoc#interpret-a-created-query[interpreting a query], which allows users to skip query installation and execute the query directly.
 
-.Graph Schema: friendNet
+== Syntax
 
-[source,gsql]
-----
-CREATE VERTEX person(PRIMARY_ID personId UINT, id STRING)
-CREATE UNDIRECTED EDGE friend(FROM person, TO person)
-CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
-----
+The following pages describes the syntax of the GSQL Query Language:
 
+* xref:data-types.adoc[]
+* xref:query-operations.adoc[]
+* xref:data-types.adoc[]
+* xref:accumulators.adoc[]
+* xref:operators-and-expressions.adoc[]
+* xref:func/index.adoc[]
+* xref:declaration-and-assignment-statements.adoc[]
+* xref:select-statement/index.adoc[]
+* xref:select-statement/sql-like-select-statement.adoc[]
+* xref:control-flow-statements.adoc[]
+* xref:data-modification-statements.adoc[]
+* xref:output-statements-and-file-objects.adoc[]
+* xref:exception-statements.adoc[]
+* xref:comments.adoc[]
 
+== Example graphs
 
-.Graph Schema: computerNet
+It includes example queries that demonstrate the language, each of which works on one of the following six graphs: `Work_Net`, `Social_Net`, `Friend_Net`, `Computer_Net`, `Minimal_Net`, and `Investment_Net`.
 
-[source,gsql]
-----
-CREATE VERTEX computer(PRIMARY_ID compID STRING, id STRING)
-CREATE DIRECTED EDGE connected(FROM computer, TO computer, connectionSpeed INT)
-----
+The data sets are small so that you can understand the result of each query example.
+The following file `gsql_ref_examples_2.0.tar.gz`) contains all graph schemas, data files, and queries.
 
-
-
-.Graph Schema: minimalNet
-
-[source,gsql]
-----
-CREATE VERTEX testV(PRIMARY_ID id STRING)
-CREATE UNDIRECTED EDGE testE(FROM testV, TO testV)
-----
-
-
-
-.Graph Schema: investmentNet
-
-[source,gsql]
-----
-TYPEDEF TUPLE < age UINT (4), mothersName STRING(20) > SECRET_INFO
-CREATE VERTEX person(PRIMARY_ID personId STRING, portfolio MAP<STRING, DOUBLE>, secretInfo SECRET_INFO)
-CREATE VERTEX stockOrder(PRIMARY_ID orderId STRING, ticker STRING, orderSize UINT, price FLOAT)
-CREATE UNDIRECTED EDGE makeOrder(FROM person, TO stockOrder, orderTime DATETIME)
-----
-
+link:{attachmentsdir}/gsql_ref_examples_2.0.tar.gz[Download graph files and loading script].
 

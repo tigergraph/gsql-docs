@@ -276,7 +276,7 @@ The `LIKE` operator is used for string pattern matching and can only be used in 
 
 Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. `string_pattern` cannot be the result of concatenating other strings, nor can it be a function call.
 
-A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (``<char_list>``indicates a placeholder):
+A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (`<char_list>` indicates a placeholder):
 
 |===
 | Character or syntax | Description | Example
@@ -313,6 +313,23 @@ A `string_pattern` can contain characters as well as the following wildcard and 
 | (Special syntax within a char list) matches the character `]` No special treatment is needed for [ inside a char list.
 | ``%[\\]!]``matches any string which ends with either `]` or `!`
 |===
+
+.Matching backslashes
+[NOTE]
+====
+When you load a string that contains a backslash into TigerGraph, the backslash itself is escaped with another backslash.
+In a string pattern, two backslashes match one backslash in an input string.
+This applies to both backslashes - the one used to escape the other and the one being escaped.
+
+For example, if the string `\abc` is loaded into `Vertex.attribute`.
+Then:
+
+* The actual value of `Vertex.attribute` in the graph is `"\\abc"`.
+The size of the string is 4, because the first backslash is used to escape the second backslash and doesn't count towards the size of the string.
+* `Vertex.attribute == "\\abc"` returns true, because a backslash is required to escape the other backslash. 
+* `Vertex.attribute LIKE "\\\\abc"` returns true, because it takes two backslashes in a string pattern to match one backslash in a string.
+
+====
 
 ==== `ESCAPE escape_char`
 
@@ -536,6 +553,12 @@ Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` state
 
 A subquery must be created before the query that calls the subquery.
 A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
+
+[CAUTION]
+====
+* A xref:distributed-query-mode.adoc[distributed query] cannot call another distributed query
+* A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause
+====
 
 .Main Components of a Subquery
 [source,gsql]

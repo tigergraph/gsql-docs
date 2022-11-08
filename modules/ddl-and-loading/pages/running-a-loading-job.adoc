@@ -146,14 +146,15 @@ Job "demo_graph_m1.1523663024967" loading status
 
 
 
-By default, an active loading job will display periodic updates of its progress.  There are two ways to inhibit these automatic output displays:
+By default, an active loading job will display periodic updates of its progress.
+There are two ways to inhibit these automatic output displays:
 
-. Run the loading job with the `-noprint` option.
-. After the loading job has started, enter CTRL+C. This will abort the output display process, but the loading job will continue.
+* Run the loading job with the `-noprint` option.
+* After the loading job has started, enter CTRL+C. This will abort the output display process, but the loading job will continue.
 
 === `SHOW LOADING STATUS`
 
-The command `SHOW LOADING JOB` shows the current status of either a specified loading job or all current jobs:
+The command `SHOW LOADING STATUS` shows the current status of either a specified loading job or all current jobs:
 
 .SHOW LOADING JOB syntax
 [source,gsql]
@@ -161,9 +162,8 @@ The command `SHOW LOADING JOB` shows the current status of either a specified lo
 SHOW LOADING STATUS job_id|ALL
 ----
 
-
-
-The display format is the same as that displayed during the periodic progress updates of the RUN LOADING JOB command. If you do not know the job id, but you know the job name and possibly the machine, then the ALL option is a handy way to see a list of active job ids.
+The display format is the same as that displayed during the periodic progress updates of the <<_run_loading_job,`RUN LOADING JOB` command>>.
+If you do not know the job id, but you know the job name and possibly the machine, then the ALL option is a handy way to see a list of active job ids.
 
 === `ABORT LOADING JOB`
 
@@ -345,12 +345,11 @@ Passed condition lines:  4
 Failed condition lines:  2 (e.g. 4,5)
 ----
 
-
-
-There are a total of 7 data lines. The report shows that
+There are a total of 7 data lines.
+The report shows that
 
 * Six of the lines are valid data lines
-* One line (Line 7) does not have enough tokens.
+* One line - Line 7 - does not have enough tokens.
 
 Of the 6 valid lines,
 

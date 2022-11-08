@@ -1,0 +1,332 @@
+= System & Language Basics
+:pp: {plus}{plus}
+:page-aliases: ddl-and-loading:system-and-language-basics.adoc
+
+This page describes the basic elements that make up the GSQL Data Definition and Loading as well as the GSQL Query Language, as well as how to run GSQL commands through the GSQL shell.
+
+== Language basics
+
+* *Identifiers*.
+Identifiers are user-defined names for types and variables.
+An identifier is case-sensitive and consists of letters, digits, and the underscore character `_`.
+Identifiers cannot begin with a digit.
+* *Keywords and Reserved Words*.
+Keywords are words with a predefined semantic meaning in the language.
+Keywords are not case-sensitive.
+Reserved words are set aside for use by the language, either now or in the future.
+Reserved words may not be reused as user-defined identifiers.
+In most cases, a keyword is also a reserved word.
+For example, `VERTEX` is a keyword.
+It is also a reserved word, so `VERTEX` may not be used as an identifier.
+* *Statements*.
+Each line corresponds to one statement (except in multi-line mode).
+Usually, there is no punctuation at the end of a top-level statement.
+Some statements, such as `CREATE LOADING JOB`, are block statements which enclose a set of statements within themselves.
+Some punctuation may be needed to separate the statements within a block.
+* *Comments*  Within a command file, comments are text that is ignored by the language interpreter.
+Single-line comments begin with either `#` or `//`.
+A comment may be on the same line as interpreted code.
+Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.
+Multi-line comment blocks begin with `/*` and end with `*/`.
+
+== Running GSQL
+
+To enter the GSQL shell and work in interactive mode, type `gsql` from an operating system shell prompt.
+A username, password, and a graph name may also be provided on the command line.
+
+.GSQL command syntax for entering interactive mode
+[source,gsql]
+----
+gsql [-u username] [-p password] [-g gname]
+----
+
+
+If a username is provided but not a password, the GSQL system will then ask for the user's password:
+
+.Login example with username
+[source,gsql]
+----
+os$ gsql -u victor
+Password for victor : ***
+GSQL >
+----
+
+If a username is not given, GSQL assumes that you are attempting to log in as the default `tigergraph` user, and prompts for the default password of `tigergraph`:
+
+.Login example without username
+[source,gsql]
+----
+os$ gsql
+Password for tigergraph : *****
+GSQL >
+----
+
+To exit the GSQL shell, type either `exit` or  `quit` at the GSQL prompt:
+
+`GSQL> EXIT`  or `GSQL> QUIT`
+
+=== GSQL client session timeout
+
+For added security, you can configure your GSQL client session to automatically timeout after a period of inactivity.
+Set the `GSQL_CLIENT_IDLE_TIMEOUT_SEC` bash environment variable to be the desired number of seconds before timeout.
+Then every time you start a GSQL session, the idle timeout will be applied.
+To disable the timeout, omit `<num_sec>`.  The default setting is no timeout.
+
+.Using the Linux export command to set the environment variable:
+[source,gsql]
+----
+tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=10
+tigergraph@123:~$ gsql
+Welcome to TigerGraph.
+GSQL > Session timeout after 10 seconds idle.
+tigergraph@123:~$ export GSQL_CLIENT_IDLE_TIMEOUT_SEC=
+tigergraph@123:~$ gsql
+Welcome to TigerGraph.
+GSQL >
+----
+
+=== Multiple shell sessions
+
+Multiple shell sessions of GSQL may be run at the same time.
+This feature can be used to have multiple clients (human or machine) using the system to perform concurrent operations.
+A basic locking scheme is used to maintain isolation and consistency.
+
+=== Multi-line mode - BEGIN, END, ABORT
+
+In interactive mode, the default behavior is to treat each line as one statement; the GSQL interpreter will activate as soon as the End-Of-Line character is entered.
+
+Multi-line mode allows the user to enter several lines of text without triggering immediate execution.
+This is useful when a statement is very long and the user would like to split it into multiple lines.
+It is also useful when defining a job, because jobs typically contain multiple statements.
+
+To enter multi-line mode, use the command `BEGIN`.  The end-of-line character is now disabled from triggering execution.
+The shell remains in multi-line mode until the command `END` is entered, which will trigger the execution of the multi-line block.
+In the example below, `BEGIN` and `END` are used to allow the `SELECT` statement to be split into several lines:
+
+.Example: BEGIN and END defining a multi-line block
+
+[source,gsql]
+----
+BEGIN
+SELECT member_id, last_name, first_name, date_joined, status
+    FROM Member
+    WHERE age >= 21
+    ORDER BY last_name, first_name
+END
+----
+
+Alternately, the `ABORT` command exits multi-line mode and discards the multi-line block.
+
+=== Command files and inline commands
+
+A command file is a text file containing a series of GSQL statements.
+Blank lines and comments are ignored.
+By convention, GSQL command files end with the suffix `.gsql` , but this is not a requirement.
+
+Command files are always run in multi-line mode, so `BEGIN` and `END` statements are not needed.
+Command files may be run either from within the GSQL shell by prefixing the filename with an @ symbol:
+
+`GSQL> @file.gsql`
+
+or from the operating system (i.e., a Linux shell) by giving the filename as the argument after gsql:
+
+`$ gsql file.gsql`
+
+Similarly, a single GSQL command can be run by enclosing the command string in quotation marks and placing it at the end of the GSQL statement.
+Either single or double quotation marks.
+It is recommended to use single quotation marks to enclose the entire command and double quotation marks to enclose any strings within the command.
+
+.Login example with inline command or command file
+[source,gsql]
+----
+gsql [-u username] [-g graphname] ['command_string' | command_file]
+----
+
+
+
+In the example below, the file name_query.gsql contains the multi-line `CREATE QUERY` block to define the query `names_similar`.
+
+.Example using command files and inline commands
+[source,console]
+----
+$ gsql pagerank_query.gsql
+$ gsql 'INSTALL QUERY names_similar'
+$ gsql 'RUN QUERY names_similar (0,"michael","jackson",100)'
+----
+
+
+
+=== Help and information
+
+The `help` command displays a summary of the available GSQL commands:
+
+`GSQL> HELP [BASIC|QUERY]`
+
+Note that the HELP command has options for showing more details about certain categories of commands.
+
+The `ls` command displays the _catalog_: all the vertex types, edge types, graphs, queries, jobs, and session parameters which have been defined by the user.
+
+=== --reset option
+
+The `--reset` option will clear the entire graph data store and erase all related definitions (graph schema, loading jobs, and queries) from the Dictionary.
+The data deletion cannot be undone; use with extreme caution. The REST{pp}, GPE, and GSE modules will be turned off.
+
+[source,gsql]
+----
+$ gsql --reset
+
+Resetting the catalog.
+
+Shutdown restpp gse gpe ...
+Graph store /home/tigergraph/tigergraph/gstore/0/ has been cleared!
+The catalog was reset and the graph store was cleared.
+----
+
+=== Summary
+
+The tables below summarize the basic commands introduced so far.
+
+==== GSQL commands
+
+|===
+| Command | Description
+
+| `HELP[BASIC\|QUERY]`
+| Display the help menu for all or a subset of the commands
+
+| `LS`
+| Display the catalog, which records all the vertex types, edge types, graphs, queries, jobs, and session parameters that have been defined for the current active graph. See notes below concerning graph- and role-dependent visibility of the catalog.
+
+| `BEGIN`
+| Enter multi-line edit mode (only for console mode within the shell)
+
+| `END`
+| Finish multi-line edit mode and execute the multi-line block.
+
+| `ABORT`
+| Abort multi-line edit mode and discard the multi-line block.
+
+| `@file.gsql`
+| Run the gsql statements in the command file `file.gsql` from within the GSQL shell.
+|===
+
+==== System shell commands
+
+|===
+| Command | Description
+
+
+| `gsql file.gsql`
+| Run the gsql statements in the command file `file.gsql` from an operating system shell.
+
+| `gsql 'command_string'`
+| Run a single gsql statement from the operating system shell.
+
+| `gsql --reset`
+| Clear the graph store and erase the dictionary.
+|===
+
+
+== Session parameters
+
+Session parameters are built-in system variables whose values are valid during the current session; their values do not endure after the session ends.
+In interactive command mode, a session starts and ends when entering and exiting interactive mode, respectively.
+When running a command file, the session lasts during the execution of the command file.
+
+Use the `SET` command to set the value of a session parameter:
+
+[source,gsql]
+----
+SET session_parameter = value
+----
+
+[width="100%",cols="23%,77%",options="header",]
+|===
+|Session Parameter |Meaning and Usage
+|`sys.data_root` |The value should be a string, representing the absolute
+or relative path to the folder where data files are stored. After the
+parameter has been set, a loading statement can reference this parameter
+with `$sys.data_root`.
+
+|`gsql_src_dir` |The value should be a string, representing the absolute
+or relative path to the root folder for the GSQL system installation.
+After the parameter has been set, a loading statement can reference this
+parameter with `$gsql_src_dir`.
+
+|`exit_on_error` a|When this parameter is `true` (default), if a semantic error occurs while running a GSQL command file, the GSQL shell will terminate.
+
+Accepted parameter values: `true`, `false` (case-insensitive). If
+the parameter is set to `false`, then a command file which is
+syntactically correct will continue running, even if certain runtime errors in these commands occur:
+
+* `CREATE QUERY`
+* `INSTALL QUERY`
+* `RUN JOB`
+
+Semantic errors include a reference to a nonexistent entity or an improper reuse of an entity.
+
+This session parameter does not affect GSQL interactive mode; GSQL interactive mode does not exit on any error.
+This session parameter does not affect syntactic errors: GSQL will always exit on a syntactic error.
+
+| `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
+
+| `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
+a| `single_gpr` | Changes the internal engine framework for single queries to the engine framework currently used for distributed queries, also known as GPR. Enabling this mode may increase performance in certain cases. Default value is `false`.
+
+The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
+
+|`cost-opt`| Whether to use xref:querying:query-optimizer/index.adoc[cost-based optimization] when installing a query.
+If set to true, query installation during this session uses cost-based optimization.
+|===
+
+=== Examples
+
+[tabs]
+====
+File::
++
+--
+The following is example file that contains semantic errors.
+If a file is correct in syntax, the command file continues even after encountering semantically incorrect statements.
+
+.Example of exit_on_error = FALSE
+[source.wrap,gsql]
+----
+SET exit_on_error = FALSE
+
+CREATE VERTEX v(PRIMARY_ID id INT, name STRING)
+CREATE VERTEX v(PRIMARY_ID id INT, weight FLOAT) // error 1: can't define VERTEX v
+
+CREATE UNDIRECTED EDGE e2 (FROM u, TO v) // error 2: vertex type u doesn't exist
+CREATE UNDIRECTED EDGE e1 (FROM v, TO v)
+
+CREATE GRAPH g(v) // error 3: no graph definition has no edge type
+CREATE GRAPH g2(*)
+----
+--
+
+Results::
++
+--
+[source,gsql]
+----
+$ gsql exitOnError.gsql
+
+The vertex type v is created.
+Semantic Check Fails: The vertex name v is used by another object! Please use a different name.
+failed to create the vertex type v
+Semantic Check Fails: FROM or TO vertex type does not exist!
+failed to create the edge type e2
+The edge type e1 is created.
+Semantic Check Fails: There is no edge type specified! Please specify at least one edge type!
+The graph g could not be created!
+
+Restarting gse gpe restpp ...
+
+Finish restarting services in 11.955 seconds!
+The graph g2 is created.
+----
+--
+====
+
+

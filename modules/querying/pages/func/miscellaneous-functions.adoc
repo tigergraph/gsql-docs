@@ -1,32 +1,34 @@
 = Miscellaneous Functions
+:description: A list of miscellaneous functions.
+:page-toclevel: 1
 
 This page lists the functions in the GSQL query language that are not tied to any single data type.
 
 == `coalesce()`
 
-[discrete]
+
 === Syntax
 
 `+coalesce( exp [, exp ...] )+`
 
-[discrete]
+
 === Description
 
 Returns the first expression that isn't `NULL`.
 
 This function requires all its arguments have the same data type (`BOOL`, `INT`,  `FLOAT,` `DOUBLE`, `STRING`, or `VERTEX`). The only exception is that different numeric types can be used together. In this case, all values are converted into the first argument type.
 
-[discrete]
+
 === Return type
 
 `BOOL`, `INT`,  `FLOAT,` `DOUBLE`, `STRING`, or `VERTEX`
 
-[discrete]
+
 === Parameters
 
 The function takes a number of parameters and returns the first one that does not evaluate to `NULL`
 
-[discrete]
+
 === Example
 
 [source,gsql]
@@ -69,12 +71,12 @@ GSQL > RUN QUERY coalesceFuncEx(1,2)
 
 == `evaluate()`
 
-[discrete]
+
 === Syntax
 
 `evaluate( expressionStr, typeStr )`
 
-[discrete]
+
 === Description
 
 Takes a string argument and interprets it as an expression which is evaluated during run-time. This enables users to create a general purpose query instead of separate queries for each specific computation.
@@ -96,12 +98,12 @@ If any of the following conditions occur, the query may continue running, but th
 . The expression uses an operator for non-compatible operation. For example, 123 == "xyz".
 ====
 
-[discrete]
+
 === Return type
 
 Type indicated by `typeStr`
 
-[discrete]
+
 === Parameters
 
 [width="100%",cols="1,5,1",options="header",]
@@ -130,7 +132,7 @@ literal for a primitive data type, e.g., one of `+"int"+`, `+"float"+`,
 The default value is `+"bool"+`. |`+STRING+`
 |===
 
-[discrete]
+
 === Example
 
 .Example query

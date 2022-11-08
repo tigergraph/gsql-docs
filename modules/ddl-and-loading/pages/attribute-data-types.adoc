@@ -1,0 +1,187 @@
+= Attribute Data Types
+:description: An overview of data types supported by vertex and edge attributes in TigerGraph.
+
+In a TigerGraph instance, a graph consists of different types of vertices and edges.
+Each type of vertex and edge can have attributes associated with that type.
+For example, a Book vertex could have title, author, publication year, genre, and language attributes.
+
+Each attribute of a vertex or edge has an assigned data type.
+This page describes the different data types that can be stored in vertex and edge attributes.
+
+== Primitive types
+
+Primitive types are the most basic data types available within GSQL.
+They can also be used to construct other complex data types.
+
+|===
+| Name | Default value | Valid input format (regex) | Range and precision | Description
+
+| `INT`
+| 0
+| [-+]?[0-9]+
+| --2{caret}63 to +2{caret}63 - 1 (-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)
+| 8-byte signed integer
+
+| `UINT`
+| 0
+| [0-9]+
+| 0 to 2{caret}64 - 1 (18,446,744,073,709,551,615)
+| 8-byte unsigned integer
+
+| `FLOAT`
+| 0.0
+| [ -+ ] ? [ 0 - 9 ] * . ? [ 0 - 9 ] +( [ eE ] [ -+ ] ? [ 0 - 9 ] + ) ?
+| +/- 3.4 E +/-38, ~7 bits of precision
+| 4-byte single-precision floating point number  Examples: 3.14159, .0065e14, 7E23  See note below.
+
+| `DOUBLE`
+| 0.0
+| [ -+ ] ? [ 0 - 9 ] * . ? [ 0 - 9 ] +( [ eE ] [ -+ ] ? [ 0 - 9 ] + ) ?
+| +/- 1.7 E +/-308, ~15 bits of precision
+| 8-byte double-precision floating point number.
+Has the same input and output format as FLOAT, but the range and precision are greater. See note below.
+
+| `BOOL`
+| false
+| true, false (case insensitive), 1, 0
+| true, false
+| Boolean true and false, represented within GSQL as _true_ and _false_ , and represented in input and output as 1 and 0
+
+| `STRING`
+| Empty string
+| .*
+| UTF-8 encoding.
+A string attribute does not have a maximum length limit by itself.
+However, the size of all attributes of a vertex or edge combined cannot exceed 10 MB.
+| Character string.
+The string value can optionally be enclosed by single quote marks or double quote marks.
+|===
+
+[WARNING]
+====
+For `FLOAT` and `DOUBLE` values, the GSQL Loader supports exponential notation as shown (e.g., 1.25 E-7).
+
+The GSQL Query Language only reads values without exponents. It may display output values with exponential notation, however.
+====
+
+[WARNING]
+====
+Some numeric expressions may return a non-numeric string result, such as "inf" for Infinity or "NaN" for Not a Number.
+====
+
+== Advanced types
+[width="100%",cols="30%,5%,19%,19%,27%",options="header",]
+|===
+|Name |Default value |Supported data format |Range and Precision
+|Description
+
+|`DATETIME` |UTC time 0 |See xref:ddl-and-loading:creating-a-loading-job.adoc#_loading_a_datetime_attribute[Loading `DATETIME` Attribute]
+|1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC) as the
+number of seconds elapsed since the start of Jan 1, 1970. Time zones are
+not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
+
+|`FIXED_BINARY(*n*)` |N/A | |N/A |Stream of n binary-encoded
+bytes
+|===
+
+[NOTE]
+====
+The legacy data type `STRING COMPRESS` has been deprecated since TigerGraph Server 3.0.
+You can no longer create new schema with the type `STRING COMPRESS`.
+As such, we have removed `STRING COMPRESS` from the documentation.
+
+Existing schemas that are using `STRING COMPRESS` can continue to function normally.
+If you need reference for `STRING COMPRESS`, please refer to GSQL Language Reference version 3.5 or older.
+====
+
+Additionally, GSQL also supports the following complex data types:
+
+== Collection types
+
+* `LIST`: A list is an *ordered* collection of elements of the same type.
+** Default value: an empty list `[]`
+** Supported element types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`
+** To declare a list type, use angle brackets `<>` to enclose the element type, e.g. `LIST<STRING>.`
++
+[WARNING]
+====
+Due to multithreaded GSQL loading, the initial order of elements loaded into a list might be different from their order in the input data.
+====
+* `SET`: A set is an *unordered* collection of *unique* elements of the same type.
+** Default value: an empty set `()`
+** Supported element types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`.
+** To declare a set type, use angle brackets `<>` to enclose the element type, e.g. `SET<INT>`
+* `MAP`: A map is a collection of key-value pairs. It cannot contain duplicate keys and each key maps to one value.
+** Default value: an empty map
+** Supported key types: `INT`, `STRING`, and `DATETIME`
+** Supported value types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`.
+** To declare a map type, use `<>` to enclose the types, with a comma to separate the key and value types, e.g., `MAP<INT, DOUBLE>`.
+
+== User-defined tuples
+
+A *User-Defined Tuple (UDT)*  represents an ordered structure of several fields of the same or different types.
+The supported field types are listed below.
+Each field in a UDT has a fixed size.
+A `STRING` field must be given a size in characters, and the loader will only load the first given number of characters.
+An `INT` or `UINT` field can optionally be given a size in bytes.
+
+.TYPEDEF TUPLE syntax
+
+[source,gsql]
+----
+TYPEDEF TUPLE "<" field_name field_type ["(" field_size ")"]
+                  ( "," field_name field_type ["(" field_size ")"] )* ">" Tuple_Name
+----
+
+
+|===
+| Field type | User-specified size | Size | Range (N is size)
+
+| `INT`
+| Optional
+| 1, 2, 4 (default), or 8 bytes
+| 0 to 2{caret}(N*8) - 1
+
+| `UINT`
+| Optional
+| 1, 2, 4 (default), or 8 bytes
+| -2{caret}(N*8 - 1) to 2{caret}(N*8 - 1) - 1
+
+| `FLOAT`
+| No
+| 4 bytes
+| -3.4 E-38 to 3.4 E38
+
+| `DOUBLE`
+| No
+| 8 bytes
+| -1.7 E-308 to 1.7 E308
+
+| `DATETIME`
+| No
+|
+| 1582-10-15 00:00:00 to 9999-12-31 23:59:59
+
+| `BOOL`
+| No
+|
+| `true` or `false`
+
+| `STRING`
+| Required
+| Any number of characters
+| Any string under N characters
+|===
+
+A UDT must be defined before being used as a field in a vertex type or edge type.
+To define a UDT, use the `TYPEDEF TUPLE` statement. Here is an example of a `TYPEDEF TUPLE` statement:
+
+.UDT Definition
+[source.wrap,gsql]
+----
+TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> My_Tuple
+----
+
+In the above example, `My_Tuple` is the name of the UDT.
+It contains four fields: an 1-byte `INT` field named `field1`, a 4-byte `UINT` field named `field2`, a 10-character `STRING` field named `field3`, and an (8-byte) `DOUBLE` field named `field4`.
+

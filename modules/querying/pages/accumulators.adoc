@@ -27,7 +27,7 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
        | "AndAccum"
        | "BitwiseOrAccum"
        | "BitwiseAndAccum"
-       | "ListAccum" "<" type ">"
+       | "ListAccum" "<" elementType ">"
        | "SetAccum"  "<" elementType ">"
        | "BagAccum"  "<" elementType ">"
        | "MapAccum"  "<" elementType "," (baseType | accumType | tupleType) ">"
@@ -122,7 +122,7 @@ The accumulation operation for global accumulators in an `ACCUM` clause executes
 * if the `FROM` clause uses an edge-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each edge in the selected edge set.
 * If the `FROM` clause uses a vertex-induced selection (introduced in Section "`SELECT` Statement"), the `ACCUM` clause executes one process for each vertex in the selected vertex set.
 
-Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see the xref:declaration-and-assignment-statements.adoc#_declaration-statements[Declaration Statements] section for more details) in an `ACCUM` clause.
+Since global accumulators are shared in a mutually exclusive manner among processes, they behave very differently than a non-accumulator variable (see the xref:declaration-and-assignment-statements.adoc#_declaration_statements[Declaration Statements] section for more details) in an `ACCUM` clause.
 
 Take the following code example. The global accumulator `@@globalRelationshipCount` is accumulated for every `Works_For` edge traversed since it is shared among processes. Conversely, `Relationship_Count` appears to have only been incremented once.
 
@@ -788,7 +788,7 @@ The element type can be any base type or tuple.
 For SetAccum, the `+= arg` operation adds a non-duplicate element or set of elements to the set.
 If an element is already represented in the set, then the SetAccum state does not change.
 
-SetAccum also can be used with the three canonical set operators: `UNION`, `INTERSECT`, and `MINUS` (see the xref:operators-and-expressions.adoc#_setbag-expression-and-operators[Set/Bag Expression and Operators] section for more details).
+SetAccum also can be used with the three canonical set operators: `UNION`, `INTERSECT`, and `MINUS` (see the xref:operators-and-expressions.adoc#_setbag_expression_and_operators[Set/Bag Expression and Operators] section for more details).
 
 SetAccum also supports the following class functions.
 

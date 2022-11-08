@@ -190,12 +190,14 @@ DEFINE HEADER header_name = " column_name "[," column_name "]*;
 
 === `DEFINE INPUT_LINE_FILTER`
 
+NOTE: This statement is not supported in a xref:tigergraph-server:data-loading:kafka-loader/index.adoc[Kafka loading job].
+
 The `DEFINE INPUT_LINE_FILTER` statement defines a named Boolean expression whose value depends on column attributes from a row of input data.
 When combined with a `USING reject_line_rule` clause in a `LOAD` statement, the filter determines whether an input line is ignored or not.
 
-[source,ebnf]
+[source.wrap,ebnf]
 ----
-DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables ;
+DEFINE INPUT_LINE_FILTER filter_name = boolean_expression_using_column_variables;
 ----
 
 include::partial$load-statement.adoc[]
@@ -259,14 +261,16 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 A STRING token is never considered missing; if there are no characters, then the string is the empty string
 ====
 
-* *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).  For example,
+* *Skipping an attribute*: A `LOAD` statement can specify that a particular attribute should *not* be loaded by using the special character _ (underscore) as its attribute expression (attr_expr).
+You can not skip the primary key attributes for vertices or discriminator attributes for edges.
+
+For example, the following statement skips the next-to-last attribute.
+This technique is used when it is known that the input data file does not contain data for every attribute.
 
 [source,gsql]
 ----
 LOAD TO VERTEX Person VALUES ($0, $1, _, $2)
 ----
-
-means to skip the next-to-last attribute. This technique is used when it is known that the input data file does not contain data for every attribute.
 
 . If the load operation is creating a new vertex or edge, then the skipped attribute will be assigned the default value.
 . If the load operation is overwriting an existing vertex or edge, then the skipped attribute will retain its existing value.
@@ -315,7 +319,8 @@ In both cases, the leading sign ("+" or "-") is optional. The exponent, using "e
 
 === Loading a `DATETIME` attribute
 
-When loading data into a `DATETIME` attribute, the GSQL loader will automatically read a string representation of DateTime information and convert it to internal DateTime representation.  The loader accepts any of the following string formats:
+When loading data into a `DATETIME` attribute, the GSQL loader automatically reads a string representation of DateTime information and convert it to internal DateTime representation.
+The loader accepts any of the following string formats:
 
 * `%Y-%m-%d %H:%M:%S` (e.g., 2011-02-03 01:02:03)
 * `%Y/%m/%d %H:%M:%S` (e.g., 2011/02/03 01:02:03)
@@ -330,9 +335,26 @@ Format notation:
 
 %m and %s are a month (1 to 12) and a day (1 to 31), respectively.  Leading zeroes are optional.
 
-%H, %M, %S are hours (0 to 23), minutes (0 to 59) and seconds (0 to 59), respectively. Leading zeroes are optional.
+%H, %M, %S are hours (0 to 23), minutes (0 to 59) and seconds (0 to 59), respectively.
+Leading zeroes are optional.
 
-When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range. If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
+When loading data, the loader checks whether the values of year, month, day, hour, minute, second are out of the valid range.
+If any invalid value is present, e.g. '2010-13-05' or '2004-04-31 00:00:00', the attribute is invalid and the object (vertex or edge) is not created.
+
+==== Load static `DATETIME` values
+
+GSQL automatically converts correctly formatted strings in a data source file into `DATETIME` values during loading.
+However, if you want to load static `DATETIME` values, you need to use `to_datetime()` to convert the strings into `DATETIME` values.
+
+Once the strings have been converted to `DATETIME` values, you can use other `DATETIME` functions to modify the value you want loaded to the attribute.
+
+For example, the following destination clause always loads the difference in the number of seconds (the first value minus the second value) between `"2020-01-01 00:00:00"` and `"2020-01-01 04:13:12"`, which is -2866392.
+
+[.wrap,gsql]
+----
+TO EDGE date_time_edge VALUES ($"account_id", $"account_id",
+        datetime_diff(to_datetime("2020-01-01 00:00:00"), to_datetime("2020-02-03 04:13:12"))
+----
 
 === Loading a `BOOL` attribute
 
@@ -798,7 +820,7 @@ REDUCE(reducer_function (input_expr))
 Each reducer function is overloaded so that one function can be used for several data types:
 
 * For primitive data types, the output type is the same as the type of the input expression `input_expr`.
-* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:system-and-language-basics.adoc#_collection_types[allowed element types] for these containers.
+* For `LIST`, `SET`, and `MAP` containers, the _input_expr_ type is one of the xref:attribute-data-types.adoc#_collection_types[allowed element types] for these containers.
 The output is the entire container.
 
 |===
@@ -1057,14 +1079,9 @@ include::partial$flatten_json_object.adoc[]
 [#_delete_statement]
 == DELETE statement
 
-In addition to loading data, a LOADING JOB can be used to perform the opposite operation: deleting vertices and edges, using the DELETE statement.
-DELETE cannot be used in offline loading.
-Just as a LOAD statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a DELETE statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
+In addition to loading data, a loading job can be used to perform the opposite operation: deleting vertices and edges, using the `DELETE` statement.
 
-[WARNING]
-====
-In the v2.0 syntax, there is now a " `FROM (filepath_string | filevar)` " clause just before the WHERE clause.
-====
+Just as a `LOAD` statement uses the tokens from each input line to set the id and attribute values of a vertex or edge to be created, a `DELETE` statement uses the tokens from each input line to specify the id value of the item(s) to be deleted.
 
 There are four variations of the DELETE statement.The syntax of the four cases is shown below.
 
@@ -1073,16 +1090,16 @@ There are four variations of the DELETE statement.The syntax of the four cases i
 ----
 CREATE LOADING JOB abc FOR GRAPH Graph_Name {
   DEFINE FILENAME f;
-  // 1. Delete each vertex which has the given vertex type and primary id.
+  // Delete each vertex which has the given vertex type and primary id.
   DELETE VERTEX vertex_type_name (PRIMARY_ID id_expr) FROM f [WHERE condition] ;
 
-  // 2. Delete each edge which has the given edge type, source vertex id, and destination vertex id.
-  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr) FROM f [WHERE condition] ;
+  // Delete each edge which has the given edge type, source vertex id, target vertex id, and discriminator value if provided.
+  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr, DISCRIMINATOR (id_expr)) FROM f [WHERE condition] ;
 
-  // 3. Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
+  // Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
   DELETE EDGE edge_type_name (FROM id_expr) FROM f [WHERE condition] ;
 
-  // 4. Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
+  // Delete all edges which have the given source vertex id. (Edge type and destination vertex id are left open.)
   DELETE EDGE * (FROM id_expr vertex_type_name) FROM f [WHERE condition] ;
 }
 ----
@@ -1106,8 +1123,16 @@ RUN LOADING JOB clean_user_occupation USING f="./data/User_Occupation_update.dat
 RUN LOADING JOB load_user_occupation USING f="./data/User_Occupation_update.dat"
 ----
 
+The following example shows how to delete edge instances that match the discriminator value from the data file:
+
+[source.wrap,gsql]
+----
+DELETE EDGE Study_At (from $"person_id", to $"university_id",
+    DISCRIMINATOR($"class_year", $"class_month")) from f;
+----
 
 [NOTE]
 ====
-There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete. In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
+There is a separate DELETE statement in the GSQL Query Language. The query delete statement can leverage the query language's ability to explore the graph and to use complex conditions to determine which items to delete.
+In contrast, the loading job delete statement requires that the id values of the items to be deleted must be specified in advance in an input file.
 ====

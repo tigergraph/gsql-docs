@@ -100,6 +100,7 @@ $ curl -s --user tigergraph:tigergraph -X POST \
 -d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}'
 ----
 
+
 === Retrieve histogram statistics
 
 `GET :14240/gsqlserver/gsql/stats/histogram`
@@ -143,7 +144,14 @@ The following request retrieves the histogram statistics for the `first_name` at
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=firstName"
+$ curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=firstName"
+----
+
+The following request retrieves the histogram statistics for the `creationDate` attribute of the refined edge type `LIKES` between `Person` and `Comment`:
+
+[.wrap,console]
+----
+$ curl --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
 ----
 
 === Delete histogram statistics
@@ -191,4 +199,11 @@ The following request deletes the histogram statistics for the graph `ldbc_snb`:
 [.wrap,console]
 ----
 curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb
+----
+
+The following request deletes the histogram statistics for the `creationDate` attribute of the refined edge type `LIKES` between `Person` and `Comment`:
+
+[.wrap,console]
+----
+$ curl --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
 ----

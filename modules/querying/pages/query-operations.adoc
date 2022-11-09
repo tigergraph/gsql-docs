@@ -589,7 +589,7 @@ Installing takes several seconds for each query. The current version does not su
 Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
 ====
 
-=== Options for `INSTALL QUERY`
+=== Options
 
 The following options are available:
 
@@ -598,7 +598,7 @@ The following options are available:
 |Option|Effect
 
 |`-FORCE`
-|Reinstall the query even if the system indicates the
+|Re-installs the query even if the system indicates the
 query is already installed. This is useful for overwriting an
 installation that is corrupted or otherwise outdated, without having to
 drop and then recreate the query. If this option is not used, the GSQL
@@ -608,6 +608,16 @@ a|`-SINGLE`
 |Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters page.]
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
+
+a|`-COST`
+|Installs and optimizes the query using xref:query-optimizer/index.adoc[cost-based optimization].
+The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
+You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
+
+This option can be used together with other options, but it must come after the other options.
+For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`
+
+This is a Preview feature and should not be used in production.
 |===
 
 === Optimize installed queries

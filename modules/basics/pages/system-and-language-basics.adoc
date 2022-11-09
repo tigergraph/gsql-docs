@@ -274,6 +274,9 @@ This session parameter does not affect syntactic errors: GSQL will always exit o
 a| `single_gpr` | Changes the internal engine framework for single queries to the engine framework currently used for distributed queries, also known as GPR. Enabling this mode may increase performance in certain cases. Default value is `false`.
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
+
+|`cost-opt`| Whether to use xref:querying:query-optimizer/index.adoc[cost-based optimization] when installing a query.
+If set to true, query installation during this session uses cost-based optimization.
 |===
 
 === Examples

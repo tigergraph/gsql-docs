@@ -1,0 +1,110 @@
+[#_compute_cardinality_statistics]
+=== Compute cardinality statistics
+
+`POST :14240/gsqlserver/gsql/stats/card`
+
+This endpoint computes the cardinality statistics for the vertex and edge types specified in the request.
+The cardinality statistics describe the number of vertices of a specified type, and the number of edges of a specified type between a specified pair of vertex types.
+
+==== Parameters
+
+
+|===
+|Parameter |Description |Type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+
+|`vertex`
+|Vertex type to compute statistics for.
+You must provide either the `vertex` or `edge` parameter.
+|`STRING`
+
+|`edge`
+|Edge type to compute statistics for.
+You must provide either the `vertex` or `edge` parameter, but not both.
+If you provided it an edge type, you also need to provide the `from` and `to` parameters.
+|`STRING`
+
+|`from`
+|The source vertex type of an edge.
+Required if `edge` is provided.
+|`STRING`
+
+|`to`
+|The target vertex type of an edge.
+Required if `edge` is provided.
+|`STRING`
+|===
+
+==== Examples
+
+The following request computes cardinality for vertex type `Person` in the graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
+----
+
+The following request computes cardinality for edge type `LIKES` from `Person` to `Post` in the graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Post"
+----
+
+=== Retrieve cardinality statistics
+
+`GET :14240/gsqlserver/gsql/stats/card`
+
+This endpoint retrieves the cardinality statistics of a graph.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+|===
+
+
+==== Examples
+
+The following request retrieves the cardinality data for graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb"
+----
+
+=== Delete cardinality statistics
+
+`DELETE :14240/gsqlserver/gsql/stats/card`
+
+This endpoint deletes the cardinality statistics of a graph.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+|===
+
+
+==== Examples
+
+The following request deletes the cardinality data for graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb"
+----

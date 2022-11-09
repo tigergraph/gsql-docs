@@ -1,0 +1,130 @@
+[#_compute_histogram_statistics]
+=== Compute histogram statistics
+
+`POST :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint computes histograms for a specified attribute of a vertex type.
+
+==== Parameters
+
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+
+
+|`vertex`
+|Name of the vertex type.
+Required.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+Required.
+|`STRING`
+
+|`bucket`
+|The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
+Required.
+
+It is recommended that each bucket have at least 100 values.
+Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
+For example, if the vertex type has 100,000 vertices, set this parameter to no higher than 1000.
+A standard value for this parameter is 256.
+|`INT`
+
+|`compute`
+|Whether to compute histogram for the attribute.
+If set to `false`, the request is equivalent to a `GET` request.
+Defaults to `true`.
+|`BOOL`
+|===
+
+==== Examples
+
+The following request computes the histogram data for attribute `first_name` of vertex type `Person` on graph `ldbc_snb`:
+
+[.wrap,console]
+----
+$ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=first_name&buckets=10&compute=true"
+----
+
+=== Retrieve histogram statistics
+
+`GET :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint retrieves histogram data for a specified attribute of a vertex type.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+
+
+|`vertex`
+|Name of the vertex type.
+Required.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+Required.
+|`STRING`
+|===
+
+==== Examples
+
+The following request retrieves the histogram statistics for the `first_name` attribute of the vertex type `Person`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=firstName"
+----
+
+=== Delete histogram statistics
+
+`DELETE :14240/gsqlserver/gsql/stats/histogram`
+
+This endpoint deletes histogram data for a graph.
+This includes histogram data on all vertex attributes in that graph.
+
+==== Parameters
+
+|===
+|Parameter |Description |Data type
+
+|`graph`
+|Name of the graph.
+Required.
+|`STRING`
+
+
+|`vertex`
+|Name of the vertex type.
+Required if an attribute is specified.
+If not provided, the request deletes histogram data on all attributes in the graph.
+|`STRING`
+
+|`attribute`
+|Name of the attribute.
+Optional.
+|`STRING`
+|===
+
+==== Examples
+
+The following request deletes the histogram statistics for the graph `ldbc_snb`:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb
+----

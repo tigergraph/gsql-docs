@@ -539,6 +539,7 @@ Since the `PRINT` statements are placed at the end of query, the two vertex sets
 There is one difference: `company3` is not included in after_sample because none of the sample-selected edges reached company3.
 ====
 
+[#_where]
 == `WHERE`
 
 The `WHERE` clause is an optional clause that constrains edges and vertices specified in the `FROM` and `SAMPLE` clauses.

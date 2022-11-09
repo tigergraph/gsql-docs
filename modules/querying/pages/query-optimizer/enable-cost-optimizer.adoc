@@ -12,7 +12,19 @@ This page walks you through the steps to enable cost-based optimization.
 The following is the procedure to enable cost-based optimization when installing a query.
 
 === Identify referenced types and attributes
-You need to identify the vertex and edge attributes for which you need to compute histogram statistics, which refers to the distribution of values for an attribute.
+You need to identify the vertex and edge types for which you need to compute the following statistics:
+
+* Cardinality: the number of instances for each type
+* Histogram: the distribution of values for an attribute
+
+==== Cardinality
+You need to compute cardinality data for the following vertex and edge types:
+
+* Any vertex type referenced in the path pattern of a `FROM` clause.
+* Any _refined edge type_.
+A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types as well as their reverse edge types if they exist.
+
+==== Histogram
 
 You need to compute histograms for the following attributes:
 
@@ -42,6 +54,25 @@ You need the following histogram statistics:
 ** `gender` attribute of type `Person`
 ** `id` attribute of type `Tag`
 ** `creationDate` attribute of type `LIKES` from `Person` to `Comment`.
+
+=== Compute cardinality data
+To compute cardinality data (the count of each type), use the xref:query-optimizer/stats-api.adoc#_compute_cardinality_statistics[`POST :14240/gsqlserver/gsql/stats/card` endpoint].
+
+For example, to compute the cardinality data of the vertex `Person` in graph `ldbc_snb`, make the following request:
+
+[source.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
+----
+
+For another example, to compute the cardinality data of the refined edge type `LIKES` from a `Person` vertex to a `Comment` vertex, make the following request:
+
+[.wrap,console]
+----
+curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Comment"
+----
+
+For best results, compute the cardinality data for every type you identified in the previous step, each with its own request.
 
 === Compute histogram data
 To compute histogram data, use the xref:query-optimizer/stats-api.adoc#_compute_histogram_statistics[`POST :14240/gsqlserver/gsql/stats/histogram` endpoint].

@@ -3,6 +3,12 @@
 The endpoints on this page calculate histogram statistics for a vertex or refined edge type.
 The statistics are required for effective optimization.
 
+== Cardinality
+
+The following endpoints compute, fetch and delete vertex and edge counts (cardinality) of a graph.
+
+
+include::partial$cardinality-api.adoc[]
 
 == Histogram
 

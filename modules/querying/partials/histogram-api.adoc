@@ -102,7 +102,6 @@ $ curl --user tigergraph:tigergraph -X POST \
 -d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}'
 ----
 
-
 === Retrieve histogram statistics
 
 `GET :14240/gsqlserver/gsql/stats/histogram`
@@ -154,6 +153,125 @@ The following request retrieves the histogram statistics for the `creationDate` 
 [.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
+----
+
+=== Upload histogram statistics
+
+If you have pre-computed histogram for an attribute, you can upload the statistics instead of computing them.
+
+==== Parameters
+No query string parameters.
+Provide a request body instead.
+
+==== Request body
+
+In the request body, provide the attribute for which the histogram statistics are specific to along with the histogram data itself.
+
+==== Example
+
+For example, you retrieved the histogram data for the `creationDate` attribute data in the following request:
+
+[tabs]
+====
+Request::
++
+--
+[.wrap,console]
+----
+$ curl --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
+----
+--
+Response::
++
+--
+[.wrap,json]
+----
+{
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "histogram": [
+        {
+          "ndv": 1,
+          "upperBound": "A",
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 129,
+          "upperBound": "Alejandro",
+          "rowsUpper": 26,
+          "rowsTotal": 786
+        },
+        {
+          "ndv": 124,
+          "upperBound": "Arun",
+          "rowsUpper": 32,
+          "rowsTotal": 769
+        },
+        {
+          "ndv": 123,
+          "upperBound": "Chan",
+          "rowsUpper": 7,
+          "rowsTotal": 769
+        },
+        {
+          "ndv": 142,
+          "upperBound": "Ernst",
+          "rowsUpper": 15,
+          "rowsTotal": 774
+        },
+        {
+          "ndv": 146,
+          "upperBound": "Ilias",
+          "rowsUpper": 3,
+          "rowsTotal": 766
+        },
+        {
+          "ndv": 70,
+          "upperBound": "Jozef",
+          "rowsUpper": 2,
+          "rowsTotal": 766
+        },
+        {
+          "ndv": 101,
+          "upperBound": "Manju",
+          "rowsUpper": 1,
+          "rowsTotal": 765
+        },
+        {
+          "ndv": 137,
+          "upperBound": "Peter",
+          "rowsUpper": 29,
+          "rowsTotal": 793
+        },
+        {
+          "ndv": 120,
+          "upperBound": "Taufik",
+          "rowsUpper": 19,
+          "rowsTotal": 780
+        },
+        {
+          "ndv": 102,
+          "upperBound": "พงศธร สุภิญโญ",
+          "rowsUpper": 1,
+          "rowsTotal": 683
+        }
+      ]
+    }
+  ]
+}
+----
+--
+====
+
+You can upload the histogram data with the following request:
+
+[.wrap,console]
+----
+$ curl --user tigergraph:tigergraph -X PUT "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10, "histogram": [{"ndv":1,"upperBound":"2010-05-10 22:30:29","rowsUpper":1,"rowsTotal":1},{"ndv":72178,"upperBound":"2012-01-18 18:34:43","rowsUpper":1,"rowsTotal":73171},{"ndv":71842,"upperBound":"2012-04-23 07:25:39","rowsUpper":1,"rowsTotal":73171},{"ndv":71773,"upperBound":"2012-06-16 22:01:27","rowsUpper":1,"rowsTotal":73171},{"ndv":71709,"upperBound":"2012-07-29 09:09:41","rowsUpper":2,"rowsTotal":73172},{"ndv":71615,"upperBound":"2012-08-31 07:27:07","rowsUpper":1,"rowsTotal":73171},{"ndv":71294,"upperBound":"2012-09-24 06:15:18","rowsUpper":1,"rowsTotal":73171},{"ndv":70819,"upperBound":"2012-10-16 11:46:55","rowsUpper":1,"rowsTotal":73171},{"ndv":70903,"upperBound":"2012-11-02 19:24:15","rowsUpper":1,"rowsTotal":73171},{"ndv":70031,"upperBound":"2012-11-17 08:12:27","rowsUpper":1,"rowsTotal":73171},{"ndv":68982,"upperBound":"2012-11-29 02:52:46","rowsUpper":1,"rowsTotal":73169}]}'
 ----
 
 === Delete histogram statistics

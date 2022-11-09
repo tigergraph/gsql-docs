@@ -12,12 +12,12 @@ This page walks you through the steps to enable cost-based optimization.
 The following is the procedure to enable cost-based optimization when installing a query.
 
 === Identify referenced types and attributes
-You need to identify the vertex and edge types for which you need to compute histogram statistics, which refers to the distribution of values for an attribute.
+You need to identify the vertex and edge attributes for which you need to compute histogram statistics, which refers to the distribution of values for an attribute.
 
 You need to compute histograms for the following attributes:
 
 * Any vertex attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
-* Any _refined edge type_ attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query between every referenced endpoint vertex pair.
+* Any _refined edge type_ attribute referenced in a xref:select-statement/index.adoc#_where[`WHERE` clause] in a `SELECT` statement in the query.
 ** A _refined edge type_ means an edge type with a specified pair of `from` and `to` vertex types as well as their reverse edge types if they exist.
 
 If you are not sure which types and attributes you need to compute histogram data for a query, you can try <<_install_query_with_cost_option,installing that query with the cost-based optimizer enabled>> first.
@@ -50,10 +50,12 @@ For example, to compute the histogram data for attribute `gender` of vertex type
 
 [.wrap,console]
 ----
-$ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=gender&buckets=256"
+$ $ curl --user tigergraph:tigergraph -X POST \
+"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"gender", "buckets":10}'
 ----
 
-To compute the histogram data for attribute `creationDate`  from vertex type `Person` to vertex type `Comment`, make the following request:
+To compute the histogram data for attribute `creationDate` of refined edge type `LIKES` from vertex type `Person` to vertex type `Comment`, make the following request:
 
 [.wrap,console]
 ----
@@ -62,7 +64,7 @@ $ curl -s --user tigergraph:tigergraph -X POST \
 -d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}' | jq .
 ----
 
-For best results, compute the histogram data for every vertex attribute referenced in a `WHERE` clause of a `SELECT` statement.
+For best results, compute the histogram data for every attribute referenced in a `WHERE` clause of a `SELECT` statement.
 
 [#_install_query_with_cost_option]
 === Install query with `-cost` option

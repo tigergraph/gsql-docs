@@ -84,18 +84,20 @@ A standard value for this parameter is 256.
 
 ==== Examples
 
-The following request computes the histogram data for attribute `first_name` of vertex type `Person` on graph `ldbc_snb`:
+The following request computes the histogram data for attribute `firstName` of vertex type `Person` on graph `ldbc_snb`:
 
 [.wrap,console]
 ----
-$ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=first_name&buckets=10&compute=true"
+$ curl --user tigergraph:tigergraph -X POST \
+"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"firstName", "buckets":10}'
 ----
 
 To compute the histogram data for attribute `creationDate`  from vertex type `Person` to vertex type `Comment`, make the following request:
 
 [.wrap,console]
 ----
-$ curl -s --user tigergraph:tigergraph -X POST \
+$ curl --user tigergraph:tigergraph -X POST \
 "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
 -d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}'
 ----

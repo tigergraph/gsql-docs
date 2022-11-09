@@ -6,30 +6,66 @@
 This endpoint computes histograms for a specified attribute of a vertex type.
 
 ==== Parameters
+No URL parameters.
+Provide parameters in the request body.
 
+==== Request body
+
+The request body expects a JSON object with the following schema:
+
+[tabs]
+====
+Vertex attribute::
++
+--
+----
+{
+    "graph": <graph_name>,
+    "vertex": <vertex_type_name>
+    "attribute": <attribute_name>
+    "bucket" <bucket_number>
+}
+----
+--
+Edge attribute::
++
+--
+----
+{
+    "graph": <graph_name>,
+    "edge": <edge_type_name>,
+    "attribute": <attribute_name>,
+    "bucket" <bucket_number>,
+    "from`: <source_vertex_type>,
+    "to": <target_vertex_type>
+}
+----
+--
+====
 
 |===
 |Parameter |Description |Data type
 
 |`graph`
 |Name of the graph.
-Required.
 |`STRING`
 
 
 |`vertex`
 |Name of the vertex type.
-Required.
+|`STRING`
+
+|`edge`
+|Name of the refined edge type.
+
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
-Required.
 |`STRING`
 
 |`bucket`
 |The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
-Required.
 
 It is recommended that each bucket have at least 100 values.
 Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
@@ -37,11 +73,13 @@ For example, if the vertex type has 100,000 vertices, set this parameter to no h
 A standard value for this parameter is 256.
 |`INT`
 
-|`compute`
-|Whether to compute histogram for the attribute.
-If set to `false`, the request is equivalent to a `GET` request.
-Defaults to `true`.
-|`BOOL`
+|`from`
+|Source vertex type of a refined edge type.
+|`STRING`
+
+|`to`
+|Target edge type of a refined edge type.
+|`STRING`
 |===
 
 ==== Examples
@@ -51,6 +89,15 @@ The following request computes the histogram data for attribute `first_name` of 
 [.wrap,console]
 ----
 $ curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=first_name&buckets=10&compute=true"
+----
+
+To compute the histogram data for attribute `creationDate`  from vertex type `Person` to vertex type `Comment`, make the following request:
+
+[.wrap,console]
+----
+$ curl -s --user tigergraph:tigergraph -X POST \
+"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}'
 ----
 
 === Retrieve histogram statistics
@@ -66,18 +113,27 @@ This endpoint retrieves histogram data for a specified attribute of a vertex typ
 
 |`graph`
 |Name of the graph.
-Required.
 |`STRING`
 
 
 |`vertex`
 |Name of the vertex type.
-Required.
+|`STRING`
+
+|`edge`
+|Name of the refined edge type.
+|`STRING`
+
+|`from`
+|Source vertex type of a refined edge type.
+|`STRING`
+
+|`to`
+|Target edge type of a refined edge type.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
-Required.
 |`STRING`
 |===
 
@@ -104,19 +160,27 @@ This includes histogram data on all vertex attributes in that graph.
 
 |`graph`
 |Name of the graph.
-Required.
 |`STRING`
 
 
 |`vertex`
 |Name of the vertex type.
-Required if an attribute is specified.
-If not provided, the request deletes histogram data on all attributes in the graph.
+|`STRING`
+
+|`edge`
+|Name of the refined edge type.
+|`STRING`
+
+|`from`
+|Source vertex type of a refined edge type.
+|`STRING`
+
+|`to`
+|Target edge type of a refined edge type.
 |`STRING`
 
 |`attribute`
 |Name of the attribute.
-Optional.
 |`STRING`
 |===
 

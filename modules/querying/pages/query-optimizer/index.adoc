@@ -15,13 +15,13 @@ This happens automatically during the installation of a query.
 
 However, since heuristics-based optimization does not take the actual distribution of data into account, it sometimes would produce less-than-optimal traversal plans.
 
-== Cost-based optimization (Preview)
-TigerGraph 3.7 adds the capability of performing cost-based optimization to the query optimizer.
+== Cost-based optimization
+You can perform cost-based optimization during the installation of a query.
 
 In cost-based optimization, the query optimizer utilizes various pre-computed statistics describing the data distribution of the types referenced in the query.
 It then optimizes the execution plan to traverse the graph based on those statistics to minimize the cost of executing the query.
 
-As of 3.7, the Preview version of cost-based optimization is focused on reducing query execution time.
+The current version of cost-based optimization is focused on reducing query execution time.
 
 To enable cost-based optimization, see xref:query-optimizer/enable-cost-optimizer.adoc[].
 

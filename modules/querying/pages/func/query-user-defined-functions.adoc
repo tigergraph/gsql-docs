@@ -131,12 +131,12 @@ gadmin config apply
 
 After the parameters are successfully configured, you can access your UDFs in new queries right away.
 
-
 === Upload UDFs with GSQL `PUT` command
 TigerGraph offers the ability to upload UDFs directly from GSQL.
 This allows authorized users to upload UDF files without having to access the server file system.
 
 For security reasons, this option is disabled by default and must be turned on by the TigerGraph Linux user.
+After making modifications to your UDF files, you should disable the ability to upload UDF files until you need to modify the files again.
 
 ==== Enable uploading UDFs through GSQL
 
@@ -148,8 +148,6 @@ $ gadmin config set GSQL.UDF.EnablePutExpr true
 $ gadmin config apply
 $ gadmin restart gsql
 ----
-
-
 
 ==== Modify current query UDF file
 
@@ -256,5 +254,14 @@ PUT ExprFunctions successfully.
 
 The file has been stored and the UDF has now been added to GSQL.
 You can add it to a query, then run the commands `INSTALL QUERY` and `RUN QUERY` to test the `rng()` function.
+
+After making modifications, you should disable the ability to upload UDFs to secure your server:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnablePutExpr false
+$ gadmin config apply
+$ gadmin restart gsql
+----
 
 

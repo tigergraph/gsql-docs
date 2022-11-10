@@ -1,6 +1,6 @@
 = Statistics REST APIs
 
-The endpoints on this page calculate histogram statistics for a vertex or refined edge type.
+The endpoints on this page calculate cardinality and histogram statistics of vertex and edge types and attributes.
 The statistics are required for effective optimization.
 
 == Cardinality

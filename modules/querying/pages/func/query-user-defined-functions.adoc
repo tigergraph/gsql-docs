@@ -135,8 +135,8 @@ After the parameters are successfully configured, you can access your UDFs in ne
 TigerGraph offers the ability to upload UDFs directly from GSQL.
 This allows authorized users to upload UDF files without having to access the server file system.
 
-For security reasons, this option is disabled by default and must be turned on by the TigerGraph Linux user.
-After making modifications to your UDF files, you should disable the ability to upload UDF files until you need to modify the files again.
+This command is securely managed by xref:tigergraph-server:system-management:management-commands.adoc[ the management tool `gadmin`] and is disabled by default, requiring a Tigergraph Linux user with gadmin access to enable it.
+After making modifications to your UDF files, it is recommended that you disable the ability to upload UDF files using `PUT` until you need to modify the files again
 
 ==== Enable uploading UDFs through GSQL
 

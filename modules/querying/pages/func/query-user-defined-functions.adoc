@@ -1,5 +1,7 @@
 = Query User-Defined Functions
 :pp: {plus}{plus}
+:sectnums:
+:description: Instructions to define UDFs in the GSQL Query language.
 
 In GSQL, users can supplement the language by defining their own query user-defined functions (query UDFs) in C{pp}.
 Query UDFs can be called in queries and subqueries to perform a set of defined actions and return a value like the built-in functions.
@@ -128,7 +130,7 @@ After making modifications to your UDF files, it is recommended that you disable
 
 ==== Enable uploading UDFs through GSQL
 
-Run the following command to enable uploading query UDFs to GSQL:
+Run the following command to enable uploading query UDFs through the GSQL `PUT` command:
 
 [source.wrap,console]
 ----
@@ -158,7 +160,7 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 ==== Define your function
 
-Write your function in ExprFunctions and any helper functions in ExprUtil as described in xref:func/query-user-defined-functions.adoc#_define_a_query_udf_in_cpp[Query User-Defined Functions].
+Write your function in ExprFunctions and any helper functions in ExprUtil as described in <<_define_a_query_udf_in_cpp>>.
 
 [CAUTION]
 ====
@@ -167,7 +169,7 @@ If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error,
 
 ==== Upload the updated query UDF file
 
-After you have defined the function, use the `PUT` command to store the files you modified.
+After you have defined the function, use the `PUT` command to upload the files you modified.
 
 [source,gsql]
 ----
@@ -177,11 +179,11 @@ GSQL > PUT ExprUtil FROM "/path/to/utils_file.hpp"
 PUT ExprUtil successfully.
 ----
 
-The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain UDFs.
+The `PUT` command automatically uploads the files in all nodes in a cluster and updates all existing files.
 
-Once the files are stored, you will be able to call the Query UDF the next time GSQL is executed.
+Once the files are stored, you can call the UDFs in a query the next time GSQL is executed.
 This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
-If you are using GraphStudio, however, you will be able to use the queries without needing to refresh the page.
+If you are using GraphStudio, you can use the queries without needing to refresh the page.
 
 .Example of a GSQL query that uses the UDF
 [source,gsql]

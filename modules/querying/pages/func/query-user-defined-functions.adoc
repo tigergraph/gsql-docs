@@ -70,22 +70,23 @@ inline string reverse(string str){
 
 == Upload UDFs
 
-There are two ways to modify the UDF files to add user-defined functions to GSQL:
+There are two ways to modify the UDF files to add user-defined functions to GSQL.
+Both are secured by `gadmin` and require administrator-level access:
 
 * Store UDF files in a GitHub repository, and configure GSQL to read from the repository.
 ** This is the recommended approach.
 It also takes the highest precedence.
-If GSQL is configured to read from GitHub for UDFs, and the configurations are valid, local UDF files are ignored.
+If GSQL is configured to read from GitHub for UDFs and the configurations are valid, UDFs in other sources are ignored.
 * Use the GSQL `PUT` command to upload UDFs.
-** This method is disabled by default, and must be enabled by the TigerGraph Linux user first.
+** For security reasons, this method is disabled by default, and can only be enabled by the TigerGraph Linux user with access to `gadmin`.
 
 === Use GitHub to store UDFs
 
 You can configure GSQL to read from a GitHub repository for ExprFunctions and ExprUtil.
 This is TigerGraph's recommended approach to managing UDFs.
 
-If GitHub access is configured, GSQL retrieves user source code files from GitHub before local files, so long as the files exist on GitHub.
-If GitHub is connected but files are missing, TigerGraph looks for a UDF file added locally.
+If GitHub access is configured, GSQL retrieves user source code files from GitHub before other sources, so long as the files exist on GitHub.
+If GitHub is connected but files are missing, TigerGraph looks for a UDF file added locally with the `PUT` command.
 
 New additions to the files in the GitHub repository are instantly available in GSQL.
 

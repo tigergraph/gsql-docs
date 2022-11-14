@@ -278,19 +278,19 @@ CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined D
 ----
 
 === `DISCRIMINATOR`
+A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.
 The `DISCRIMINATOR` keyword defines a discriminator in an edge type definition to allow multiple instances of an edge type between two vertices.
 
 By default, edges are uniquely identified by the combination of the edge type, source vertex, and target vertex.
 Between two vertices, only one instance of a certain edge type is allowed to exist if the edge type definition does not include a discriminator.
 
-A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.
 The discriminator must be unique between edges of the same type between two vertices.
 They *do not* have to be unique within the edge type as a whole.
 For example, an edge type `Study_At` with the `class_month` and `class_year` attributes as discriminators can have multiple edge instances with the same `class_month` and `class_year`, as long as those edge instances are not between the same two vertices.
 
 Define the edge type and specify a discriminator to allow multiple instances of an edge type between two vertices.
 Only `INT`, `UINT` , `DATETIME` and `STRING` types are allowed to be discriminators for edge types.
-The specification of the discriminator must come before other 
+The specification of the discriminator must come before other attributes.
 
 For example, the following `CREATE EDGE` statement specifies that edges of type `Study_At` can be uniquely identified by the combination of their `class_year` and `class_month` attributes:
 

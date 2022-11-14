@@ -17,6 +17,18 @@ UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`:
 * ExprUtil contains structs or helper functions that are used by the functions in ExprFunctions.
 The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
 
+== UDF security
+
+The TigerGraph database implements a number of security measures to prevent unauthorized installation and modification of UDFs.
+
+* For self-managed databases, there are two methods for installing a UDF:
+** Via a set of gadmin config operations.
+Since gadmin can only be executed by the TigerGraph Linux user directly on the database server, this method has inherent privilege restrictions.
+** Via the GSQL shell `GET` and `PUT` commands.
+This is disabled by default and can only be enabled by the TigerGraph Linux user.
+* UDF installation is not available as a self-service feature in TigerGraph Cloud at this time.
+Cloud customers can request an UDF installation as a TigerGraph support service.
+
 [#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}
 

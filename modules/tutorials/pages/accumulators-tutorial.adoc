@@ -3,9 +3,9 @@
 
 GSQL is a Turing complete Graph Database query language. Comparing to other graph query languages, the biggest advantages is its support of accumulators -- global or vertex local.
 
-In addition to xref:tutorials:pattern-matching/index.adoc[pattern matching] syntax, which is easy to master, GSQL supports vertex-attached accumulators, which are run-time vertex attributes as well as global state variables called global accumulators.
+In addition to xref:tutorials:pattern-matching/index.adoc[pattern matching] syntax, which is easy to understand, GSQL supports vertex-attached accumulators, which are run-time vertex attributes as well as global state variables called global accumulators.
 
-This short tutorial aims to shorten the learning curve of accumulator. Supposedly, after reading this article, everyone can master the essence of accumulator by heart, and start solving real-life graph problems with this handy language feature.
+This short tutorial aims to shorten the learning curve of accumulator. In theory, after reading this article, anyone can start solving real-life graph problems with this handy language feature.
 
 == *What is an Accumulator?*
 
@@ -52,7 +52,7 @@ ACCUM and POST-ACCUM clauses are computed in stages, where-in a SELECT-FROM-WHER
 
 == *Conclusion*
 
-We have explained the mechanism of accumulators, their types, and the two different scopes--global and local. We also elaborate the ACCUM and POST-ACCUM clause semantics. Once you master the basics, the rest is to practice more. We have made available 46 queries based on the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC] schema. These 46 queries are divided into three groups.
+We have explained the mechanism of accumulators, their types, and the two different scopes--global and local. We also elaborate the ACCUM and POST-ACCUM clause semantics. Once you take care of the basics, the only remaining task is to practice more. We have made available 46 queries based on the http://ldbc.github.io/ldbc_snb_docs/ldbc-snb-specification.pdf[LDBC] schema. These 46 queries are divided into three groups.
 
 * *IS:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_short[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_short*]
 * *IC:* https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex[*https://github.com/tigergraph/ecosys/tree/master/tools/ldbc_benchmark/tigergraph/queries_pattern_match/interactive_complex*]

@@ -137,7 +137,8 @@ Returns the position of a string within a list of strings separated by commas.
 
 If `string` is not found in `string_list`, this function returns -1.
 
-NOTE: `find_in_set` does _not_ ignore whitespace after the comma. For example, `find_in_set("a", "b a, a") = 0`, indicating that `a` is not an element in the list. This happens because the second and third elements of the list are `space+a`, rather than `a`.
+NOTE: `find_in_set` does _not_ ignore whitespace after a comma.
+For example, `find_in_set("a", "b, a, a") = -1`, indicating that `a` is not an element in the list. This happens because the second and third elements of the list are `space+a`, rather than `a`.
 
 
 ===  Return type
@@ -164,9 +165,9 @@ NOTE: `find_in_set` does _not_ ignore whitespace after the comma. For example, `
 
 [source,text]
 ----
-find_in_set("a","") => 0
-find_in_set("a","b,c,d") => 0
-find_in_set("a","b,a,d") => 2
+find_in_set("a","b,c,d") => -1
+find_in_set("a","a,b,c") => 0
+find_in_set("a","b,a,d") => 1
 ----
 
 == gsql_uuid_v4()

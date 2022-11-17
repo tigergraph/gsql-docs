@@ -1,0 +1,248 @@
+= Managing and Inspecting a Loading Job
+
+This page describes the commands to check loading job status, abort a loading job and, restart a loading job.
+
+== Job ID and status
+
+When a loading job starts, the GSQL server assigns it a job id and displays it for the user to see.
+The job id format is typically the name of the graph, followed by the machine alias, following by a code number, e.g., `gsql_demo_m1.1525091090494`
+
+.Example of `SHOW LOADING STATUS` output
+[source,console]
+----
+Kick off the following job, i.e.
+  JobName: load_test1, jobid: demo_graph_m1.1523663024967
+  Loading log: '/home/tigergraph/tigergraph/logs/restpp/restpp_loader_logs/demo_graph/demo_graph_m1.1523663024967.log'
+
+Job "demo_graph_m1.1523663024967" loading status
+
+[RUNNING] m1 ( Finished: 3 / Total: 4 )
+  [LOADING] /data/output/company.data
+  [=============                        ]  20%, 200 kl/s
+  [LOADED]
+  +-------------------------------------------------------------------+
+  |               FILENAME |   LOADED LINES |   AVG SPEED |   DURATION|
+  | /data/output/movie.dat |            100 |     100 l/s |     1.00 s|
+  |/data/output/person.dat |            100 |     100 l/s |     1.00 s|
+  | /data/output/roles.dat |            200 |     200 l/s |     1.00 s|
+  +-------------------------------------------------------------------+
+[RUNNING] m2 ( Finished: 1 / Total: 2 )
+  [LOADING] /data/output/company.data
+  [==========================           ]  60%, 200 kl/s
+  [LOADED]
+  +-------------------------------------------------------------------+
+  |               FILENAME |   LOADED LINES |   AVG SPEED |   DURATION|
+  | /data/output/movie.dat |            100 |     100 l/s |     1.00 s|
+  +-------------------------------------------------------------------+
+----
+
+By default, an active loading job will display periodic updates of its progress.
+There are two ways to inhibit these automatic output displays:
+
+* Run the loading job with the `-noprint` option.
+* After the loading job has started, enter CTRL+C. This will abort the output display process, but the loading job will continue.
+
+== `SHOW LOADING STATUS`
+
+The command `SHOW LOADING STATUS` shows the current status of either a specified loading job or all current jobs:
+
+.SHOW LOADING JOB syntax
+[source,gsql]
+----
+SHOW LOADING STATUS job_id|ALL
+----
+
+The display format is the same as that displayed during the periodic progress updates of the xref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[`RUN LOADING JOB` command].
+If you do not know the job ID, but you know the job name and possibly the machine, then the `ALL` option is a handy way to see a list of active job ids.
+
+== `ABORT LOADING JOB`
+
+The command ABORT LOADING JOB aborts either a specified load job or all active loading jobs:
+
+.ABORT LOADING JOB syntax
+
+[source,gsql]
+----
+ABORT LOADING JOB job_id|ALL
+----
+
+
+
+The output will show a summary of aborted loading jobs.
+
+.ABORT LOADING JOB example
+
+[source,gsql]
+----
+gsql -g demo_graph "abort loading job all"
+
+Job "demo_graph_m1.1519111662589" loading status
+[ABORT_SUCCESS] m1
+[SUMMARY] Finished: 0 / Total: 2
+  +--------------------------------------------------------------------------------------+
+  |                  FILENAME |   LOADED LINES |   AVG SPEED  |   DURATION |   PERCENTAGE|
+  | /home/tigergraph/data.csv |       23901701 |     174 kl/s |   136.83 s |         65 %|
+  |/home/tigergraph/data1.csv |              0 |        0 l/s |     0.00 s |          0 %|
+  +--------------------------------------------------------------------------------------+
+
+Job "demo_graph_m2.1519111662615" loading status
+[ABORT_SUCCESS] m2
+[SUMMARY] Finished: 0 / Total: 2
+  +--------------------------------------------------------------------------------------+
+  |                  FILENAME |   LOADED LINES |   AVG  SPEED |   DURATION |   PERCENTAGE|
+  | /home/tigergraph/data.csv |       23860559 |     175 kl/s |   136.23 s |         65 %|
+  |/home/tigergraph/data1.csv |              0 |        0 l/s |     0.00 s |          0 %|
+  +--------------------------------------------------------------------------------------+
+----
+
+
+
+== `RESUME LOADING JOB`
+
+The command RESUME LOADING JOB will restart a previously-run job which ended for some reason before completion.
+
+.RESUME LOADING JOB syntax
+
+[source,gsql]
+----
+RESUME LOADING JOB job_id
+----
+
+
+
+If the job is finished, this command will do nothing. The RESUME command should pick up where the previous run ended; that is, it should not load the same data twice.
+
+.RESUME LOADING JOB example
+[source,gsql]
+----
+gsql -g demo_graph "RESUME LOADING JOB demo_graph_m1.1519111662589"
+[RESUME_SUCCESS] m1
+[MESSAGE] The current job got resummed
+----
+
+
+
+== Verifying and debugging a loading job
+
+Every loading job creates a log file.
+When the job starts, GSQL display the location of the log file.
+
+This file contains the following information which most users will find useful:
+
+* A list of all the parameter and option settings for the loading job
+* A copy of the status information that is printed
+* Statistics report on the number of lines successfully read and parsed
+
+The statistics report include how many objects of each type is created, and how many lines are invalid due to different reasons. This report also shows which lines cause the errors.
+
+There are two types of statistics shown in the report:
+
+* File-level: The number of lines
+* Data-object-level: The number of objects
+
+If a file level error occurs, e.g., a line does not have enough columns, this line of data is skipped for all LOAD statements in this loading job. If an object level error or failed condition occurs, only the corresponding object is not created, i.e., all other objects in the same loading job are still created if no object level error or failed condition for each corresponding object.
+
+|===
+| File level statistics | Explanation
+
+| Valid lines
+| The number of valid lines in the source file
+
+| Reject lines
+| The number of lines which are rejected by reject_line_rules
+
+| Invalid Json format
+| The number of lines with invalid JSON format
+
+| Not enough token
+| The number of lines with missing column(s)
+
+| Oversize token
+| The number of lines with oversize token(s). Please increase "OutputTokenBufferSize" in the `tigergraph/app/<VERSION_NUM>/dev/gdk/gsql/config` file.
+|===
+
+|===
+| Object level statistics | Explanation
+
+| Valid Object
+| The number of objects which have been loaded successfully
+
+| No ID found
+| The number of objects in which PRIMARY_ID is empty
+
+| Invalid Attributes
+| The number of invalid objects caused by wrong data format for the attribute type
+
+| Invalid primary id
+| The number of invalid objects caused by wrong data format for the PRIMARY_ID type
+
+| incorrect fixed binary length
+| The number of invalid objects caused by the mismatch of the length of the data to the type defined in the schema
+|===
+
+Note that failing a `WHERE` clause is not necessarily a bad result.
+If the user's intent for the `WHERE` clause is to select only certain lines, then it is natural for some lines to pass and some lines to fail.
+
+Below is an example.
+
+[source.wrap,gsql]
+----
+CREATE VERTEX Movie (PRIMARY_ID id UINT, title STRING, country STRING, year UINT)
+CREATE DIRECTED EDGE Sequel_Of (FROM Movie, TO Movie)
+CREATE GRAPH Movie_Graph(*)
+CREATE LOADING JOB load_movie FOR GRAPH Movie_Graph{
+  DEFINE FILENAME f
+  LOAD f TO VERTEX Movie VALUES ($0, $1, $2, $3) WHERE to_int($3) < 2000;
+}
+RUN LOADING JOB load_movie USING f="movie.dat"
+----
+
+.movie.dat
+[source,gsql]
+----
+0,abc,USA,-1990
+1,abc,CHN,1990
+2,abc,CHN,1990
+3,abc,FRA,2015
+4,abc,FRA,2005
+5,abc,USA,1990
+6,abc,1990
+----
+
+
+
+The above loading job and data generate the following report
+
+.load_output.log (tail)
+
+[source,gsql]
+----
+--------------------Statistics------------------------------
+Valid lines:             6
+Reject lines:            0
+Invalid Json format:     0
+Not enough token:        1 [ERROR] (e.g. 7)
+Oversize token:          0
+
+Vertex:                  Movie
+Valid Object:            3
+No ID found:             0
+Invalid Attributes:      1 [ERROR] (e.g. 1:year)
+Invalid primary id:      0
+Incorrect fixed
+binary length:           0
+Passed condition lines:  4
+Failed condition lines:  2 (e.g. 4,5)
+----
+
+There are a total of 7 data lines.
+The report shows that
+
+* Six of the lines are valid data lines
+* One line - Line 7 - does not have enough tokens.
+
+Of the 6 valid lines,
+
+* Three of the 6 valid lines generate valid movie vertices.
+* One line has an invalid attribute  (Line 1: year)
+* Two lines (Lines 4 and 5) do not pass the WHERE clause.

@@ -171,6 +171,15 @@ We support the standard Boolean operators and standard order of precedence: `AND
 
 Bit operators (`<<` `>>` `&` `|`) operate on integers and return an integer.
 
+TigerGraph implements bit operators in the same way that C++ does.
+This returns an undefined result in the following situations:
+
+* If you left-shift a signed number so that the sign bit is affected
+* If the additive expression is negative
+* If the additive expression is greater than or equal to the number of bits in the (promoted) shift expression
+
+See Microsoft's documentation on link:https://learn.microsoft.com/en-us/cpp/cpp/left-shift-and-right-shift-operators-input-and-output[C++ bit shift operators] for more information.
+
 .Bit Operators
 [source,gsql]
 ----

@@ -162,7 +162,7 @@ baseType := INT
 The default value of each base type is shown in the table below.
 The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions.
 
-The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[_GSQL Language Reference, Part 1_].
+The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference, Part 1_].
 
 |===
 | Type | Default value | Literal
@@ -211,6 +211,9 @@ The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `
 | An empty array: `[]`
 | No literal. Can be converted from a correctly formatted string with xref:querying:func/type-conversion-functions.adoc#_parse_json_array[`parse_json_array()`].
 |===
+
+The `FLOAT` and `DOUBLE` data types have the same precision limits as in C++.
+See xref:appendix:common-errors-and-problems.adoc[] for more details.
 
 [WARNING]
 ====

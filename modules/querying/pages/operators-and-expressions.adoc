@@ -601,6 +601,12 @@ A subquery's return value can be any xref:declaration-and-assignment-statements.
 * If the return type is a `HeapAccum` or `GroupByAccum` that has a user-defined tuple as an element, the user-defined tuple must be xref:ddl-and-loading:defining-a-graph-schema.adoc#_typedef[defined at the catalog level].
 * If the return type is a `BagAccum`, `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.
 
+A `HeapAccum` with a catalog-level tuple can be returned anonymously by a subquery, just like `BagAccum`, `SetAccum`, and `ListAccum`.
+
+If the capacity of the `HeapAccum` is declared, the returned `HeapAccum` will be resized according to the capacity upon returning.
+The subquery will not return more tuples than the declared `HeapAccum` capacity.
+This resize only happens upon returning the value and will not affect the query body.
+
 ==== Example
 
 The following query uses a subquery that returns an anonymous tuple:

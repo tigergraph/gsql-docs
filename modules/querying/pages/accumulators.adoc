@@ -1251,6 +1251,12 @@ The sort key hierarchy is from left to right, with the leftmost key being the pr
 The keywords `ASC` and `DESC` indicate Ascending (lowest value first) or Descending (highest value first) sort order.
 Ascending order is the default.
 
+HeapAccum supports comparison with the `==` and the `!=` operators.
+Comparison (and assignment with the `+=` operator) is only possible if two HeapAccums hold the same types of tuple and have the same sort order and direction.
+
+HeapAccum capacity does not affect comparison.
+Only the actual contents of are evaluated during comparison.
+
 ==== Functions
 HeapAccum also supports the following class functions.
 

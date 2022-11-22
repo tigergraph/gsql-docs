@@ -1252,9 +1252,9 @@ The keywords `ASC` and `DESC` indicate Ascending (lowest value first) or Descend
 Ascending order is the default.
 
 HeapAccum supports comparison with the `==` and the `!=` operators.
-If two HeapAccums hold the same types of tuple, and have the same sort order and direction, they are considered equivalent.
+Comparison (and assignment with the `+=` operator) is only possible if two HeapAccums hold the same types of tuple and have the same sort order and direction.
 
-Capacity of the HeapAccum does not affect comparison.
+HeapAccum capacity does not affect comparison.
 Only the actual contents of are evaluated during comparison.
 
 ==== Functions

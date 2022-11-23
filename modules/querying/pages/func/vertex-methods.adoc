@@ -182,8 +182,13 @@ Returns the value of a vertex attribute on the vertex.
 | Parameter | Description | Data type
 
 | `attrName`
-| A vertex attribute
-| `STRING`
+| The name of an attribute. This can be a query parameter, constant string, or global string variable.
+| Base types: `STRING`, `INT`, `UINT,` `DATETIME`, `DOUBLE`, `FLOAT`, `BOOL`
+
+Container types: `LIST<INT>`, `LIST<DATETIME>`, `LIST<DOUBLE>`, `LIST<STRING>`, `SET<INT>`, `SET<DATETIME>`, `SET<DOUBLE>`, `SET<STRING>`
+
+Type conversion is supported between numerical values and between `LIST` and `SET` types.
+For example, a vertex with an attribute of type `LIST<INT>` can be retrieved as `SET<DOUBLE>`.
 
 | `attrType`
 | The type of the attribute value
@@ -327,6 +332,13 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 
 Sets the specified attribute of a vertex to a new value.
 
+Type conversion is not allowed for `setAttr()`.
+The input variable types must match the types in the attribute or the accumulator equivalent.
+
+For example, suppose you run `v.setAttr("emails", @@emails)`.
+If `v.emails` is type `SET<STRING>`, `@@emails` must be type `SET<STRING>` or `SetAccum<STRING>`.
+
+`SetAccum<STRING>` does not support declaring a set or list inside `setAttr()`.
 
 ====  Return type
 
@@ -339,7 +351,7 @@ No return value.
 | Parameter | Description | Data type
 
 | `attrName`
-| The name of an attribute
+| The name of an attribute. This can be a query parameter, constant string, or global string variable.
 | `STRING`
 
 

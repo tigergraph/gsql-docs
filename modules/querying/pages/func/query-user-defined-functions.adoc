@@ -67,6 +67,10 @@ You can write your functions in the `ExprFunctions` file provided as a sample in
 
 If your function requires a user-defined struct or helper function, that struct or helper function must be defined in a separate `ExprUtil` file.
 
+C{pp} supports changing the value of a `for` loop variable within a loop.
+However, C{pp} UDFs in TigerGraph do not have this functionality.
+Use a different structure such as a `while` loop if your function requires more complicated variable iteration.
+
 Below is an example of a short `ExprFunctions` file containing a single UDF that reverses a string. Note the `include` statement on the first line.
 
 .New code in ExprFunctions.hpp

@@ -98,15 +98,15 @@ $ curl -s --user tigergraph:tigergraph -X POST \
 For best results, compute the histogram data for every attribute referenced in a `WHERE` clause of a `SELECT` statement.
 
 [#_install_query_with_cost_option]
-=== Install query with `-cost` option
+=== Install query with `-COST` option
 
 Now that the relevant statistics are available to the query optimizer, you can install the query with cost-based optimization.
-To use the cost-based optimization during installation, use the xref:query-operations.adoc#_install_query[`-cost` option] when installing the query.
+To use the cost-based optimization during installation, use the xref:query-operations.adoc#_install_query[`-COST` option] when installing the query.
 
-For example, to install the query `example3`, run `INSTALL QUERY example3 -cost`.
+For example, to install the query `example3`, run `INSTALL QUERY -COST example3`.
 
 Alternatively, set xref:basics:system-and-language-basics.adoc#_session_parameters[the `cost_opt` session parameter] to true by running `set cost_opt = true` in the GSQL shell.
 This enables cost-based optimization for the rest of your GSQL session.
-You no long need to supply the `-cost` option when installing queries if the `cost_opt` parameter is set to true.
+You no longer need to supply the `-COST` option when installing queries if the `cost_opt` parameter is set to true.
 
 If you missed any cardinality or histogram data, the optimizer warns you about which types are missing, so you can compute the data for any missing type or attribute.

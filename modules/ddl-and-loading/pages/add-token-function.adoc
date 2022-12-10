@@ -173,7 +173,18 @@ After the parameters are successfully configured, you can access your user-defin
 
 == Store token functions locally
 
-=== Step 1: Modify the current TokenBank file
+=== Step 1: Enable adding a TokenBank with PUT
+
+Run the following commands to enable uploading a TokenBank through the GSQL `PUT` command:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnableTokenBank true
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+=== Step 2: Modify the current TokenBank file
 
 Use the `GET TokenBank` command in GSQL to download
 the current UDF file to any location on your machine. The path after the
@@ -191,7 +202,7 @@ GET TokenBank successfully.
 If you only supply a directory but not a filename, the file will be
 created with the default filename `TokenBank.cpp`.
 
-=== Step 2: Define your token function
+=== Step 3: Define your token function
 
 Write your function in `TokenBank.cpp`.
 
@@ -200,7 +211,7 @@ Write your function in `TokenBank.cpp`.
 If any code in `TokenBank.cpp` causes a compilation error, GSQL will be unable to run _any_ loading jobs, whether containing user-defined token functions or not.
 ====
 
-=== Step 3: Store the modified TokenBank.cpp file
+=== Step 4: Store the modified TokenBank.cpp file
 
 After defining the token function, use the `PUT TokenBank` command to store the file so that GSQL can read it.
 The path after the keyword `FROM` is the absolute path to the `TokenBank.cpp` file.
@@ -214,3 +225,14 @@ PUT TokenBank successfully.
 The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain token functions.
 Once the file is stored, you will be able to call the user-defined token function the next time GSQL is executed.
 This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
+
+=== Step 5: Enable adding a TokenBank with PUT
+
+For best security practices, run the following commands to once more disable uploading a TokenBank through the GSQL `PUT` command:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnableTokenBank false
+$ gadmin config apply
+$ gadmin restart gsql
+----

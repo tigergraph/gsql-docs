@@ -179,7 +179,7 @@ Run the following commands to enable uploading a TokenBank through the GSQL `PUT
 
 [source.wrap,console]
 ----
-$ gadmin config set GSQL.UDF.EnableTokenBank true
+$ gadmin config set GSQL.UDF.EnablePutTokenBank true
 $ gadmin config apply
 $ gadmin restart gsql
 ----
@@ -187,11 +187,11 @@ $ gadmin restart gsql
 === Step 2: Modify the current TokenBank file
 
 Use the `GET TokenBank` command in GSQL to download
-the current UDF file to any location on your machine. The path after the
+the current file to any location on your machine. The path after the
 keyword `TO` specifies the path where the `file` will be output to.
 
-The file and the directories will be created if they do not exist, and
-the file must end with the file extension `.cpp`.
+The file must end with the file extension `.cpp`.
+The file and the directories will be created if they do not exist.
 
 [source,gsql]
 ----
@@ -226,13 +226,13 @@ The `PUT` command will automatically store the files in all nodes in a cluster, 
 Once the file is stored, you will be able to call the user-defined token function the next time GSQL is executed.
 This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
 
-=== Step 5: Enable adding a TokenBank with PUT
+=== Step 5: Disable adding a TokenBank with PUT
 
 For best security practices, run the following commands to once more disable uploading a TokenBank through the GSQL `PUT` command:
 
 [source.wrap,console]
 ----
-$ gadmin config set GSQL.UDF.EnableTokenBank false
+$ gadmin config set GSQL.UDF.EnablePutTokenBank false
 $ gadmin config apply
 $ gadmin restart gsql
 ----

@@ -760,23 +760,25 @@ A vertex ID would be `"Tom,456"`, consisting of the `name` attribute and the `id
 |Set or bag of primitives |Use square brackets to enclose the collection
 of values. |A set of integers: `[1,5,10]`
 
-|`VERTEX<type>` |If the vertex type is specified in the query
+|Typed vertex parameter: `VERTEX<type>` |If the vertex type is specified in the query
 definition, then the vertex argument is `**vertex_id**` |The vertex type
 is `person` and the desired ID is `person2`. `"person2"`
 
-|`VERTEX`(type not pre-specified) |If the type is not defined in the
-query definition, then the argument must provide both the id and type in
-parentheses:*(vertex_id, vertex_type)* |A vertex with ID `"person1"` and
-`type="person`: `("person1","person")`
+|Generic vertex parameter: `VERTEX` |If the type is not defined in the
+query definition, then the argument must be a tuple of strings with both the id and type: `("vertex_id", "vertex_type")` |A vertex with ID `"person1"` and
+`type="person"`: `("person1","person")`
 
-|Set or bag of `VERTEX<type>` |Same as a SET or BAG of primitives, where
+|Set or bag of typed vertex parameters `VERTEX<type>` |Same as a SET or BAG of primitives, where
 the primitive type is vertex_id. |`[ "person3", "person4" ]`
 
-|Set or bag of `VERTEX`(type not pre-specified) |Same as a SET or BAG of
+|Set or bag of generic `VERTEX` parameters |Same as a SET or BAG of
 vertices, with vertex type not pre-specified. Square brackets enclose a
-comma-separated list of vertex (id, type) pairs. Mixed types are
+comma-separated list of vertex (id, type) tuples. Mixed types are
 permitted. |`[ ("person1","person"),("11","post") ]`
 |===
+
+Note that there is a difference between a typed and a generic `VERTEX` parameter.
+Queries that could take any vertex type as input usually require generic `VERTEX` parameters so that the user specifies the ID and the type.
 
 ==== Parameter JSON object
 

@@ -762,23 +762,24 @@ of values. |A set of integers: `[1,5,10]`
 
 |Typed vertex parameter: `VERTEX<type>` |If the vertex type is specified in the query
 definition, then the vertex argument is `**vertex_id**` |The vertex type
-is `person` and the desired ID is `person2`. `"person2"`
+is `Person` and the desired ID is `person2`. `"person2"`
 
 |Generic vertex parameter: `VERTEX` |If the type is not defined in the
-query definition, then the argument must be a tuple of strings with both the id and type: `("vertex_id", "vertex_type")` |A vertex with ID `"person1"` and
-`type="person"`: `("person1","person")`
+query definition, then the argument must be a tuple of strings with both the id and type: `("vertex_id", "vertex_type")` |A vertex with ID `person1` and
+type `Person`: `("person1","Person")`
 
-|Set or bag of typed vertex parameters `VERTEX<type>` |Same as a SET or BAG of primitives, where
-the primitive type is vertex_id. |`[ "person3", "person4" ]`
+|Set or bag of typed vertex parameters `VERTEX<type>` |Same as a set or bag of primitives, where
+the primitive type is the vertex ID. |`[ "person3", "person4" ]`
 
-|Set or bag of generic `VERTEX` parameters |Same as a SET or BAG of
+|Set or bag of generic `VERTEX` parameters |Same as a set or bag of
 vertices, with vertex type not pre-specified. Square brackets enclose a
 comma-separated list of vertex (id, type) tuples. Mixed types are
-permitted. |`[ ("person1","person"),("11","post") ]`
+permitted. |`[ ("person1","Person"),("11","Post") ]`
 |===
 
-Note that there is a difference between a typed and a generic `VERTEX` parameter.
-Queries that could take any vertex type as input usually require generic `VERTEX` parameters so that the user specifies the ID and the type.
+
+Queries that could take any vertex type as input should be written using generic `VERTEX` parameters.
+Users who call these queries will provide `("id", "type")` tuple arguments for these parameters.
 
 ==== Parameter JSON object
 
@@ -791,17 +792,17 @@ Queries that could take any vertex type as input usually require generic `VERTEX
 |Set or bag of primitives |Use a JSON array containing the primitive
 values |`["a", "list", "of", "args"]`
 
-|`VERTEX<type>` |Since the type is already specified in the query, you only need to use a JSON object containing the field
+|`VERTEX<type>` (typed vertex parameter) |Since the type is already specified in the query, you only need to use a JSON object containing the field
 `"id"` for the vertex ID |`{"id": "person1"}`
 
-|`VERTEX` (type not specified)
+|`VERTEX` (generic vertex parameter)
 
 |Use a JSON object containing a field `"id"` for the
 vertex ID and a field `"type"` for the type of the vertex.
-|`{"id": "person1","type": "person"}`
+|`{"id": "person1","type": "Person"}`
 
 |Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
-JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`
+JSON `VERTEX<type>` objects |`[{"id": "person1"}, {"id": "person2"}]`
 |===
 
 === Options

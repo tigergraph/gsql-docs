@@ -242,6 +242,9 @@ All vertices have a built-in attribute `type`. The built-in attribute is of type
 
 For example, if you declare a vertex variable `VERTEX<person> personVertex`, then `personVertex.type` returns `"person"`.
 
+When you run a query with a vertex type, the syntax is different for typed vertex parameters and generic vertex parameters.
+See the xref:query-operations.adoc#parameter-list[RUN QUERY parameter list] for details.
+
 
 === Edge
 `EDGE` is considered a base type in the GSQL query language.

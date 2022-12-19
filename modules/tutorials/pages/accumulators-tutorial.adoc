@@ -1,11 +1,10 @@
 = Accumulators Tutorial
 
 
-GSQL is a Turing complete Graph Database query language. Comparing to other graph query languages, the biggest advantages is its support of accumulators -- global or vertex local.
+GSQL is a Turing-complete Graph Database query language.
+Compared to other graph query languages, its biggest advantage is its support of accumulators -- global or vertex local.
 
-In addition to xref:tutorials:pattern-matching/index.adoc[pattern matching] syntax, which is easy to understand, GSQL supports vertex-attached accumulators, which are run-time vertex attributes as well as global state variables called global accumulators.
-
-This short tutorial aims to shorten the learning curve of accumulator. In theory, after reading this article, anyone can start solving real-life graph problems with this handy language feature.
+This short tutorial aims to shorten the learning curve of accumulators. In theory, after reading this article, anyone can start solving real-life graph problems with this handy language feature.
 
 == *What is an Accumulator?*
 
@@ -25,12 +24,14 @@ In Figure 1's left box, from line 3 to line 8, six different accumulator variabl
 
 == *Global vs. Vertex-attached Accumulator*
 
-At this point, we have seen that accumulators are special typed variable in GSQL language. We are ready to explain their global and local scopes.
+At this point, we have seen that accumulators are special typed variables in GSQL.
+We are ready to explain their global and local scopes.
 
-Global accumulator belongs to the entire query. Anywhere in a query, a statement can update its value. Local accumulator belongs to each vertex.  It can only be updated when its owning vertex is accessible. To differentiate them, we use special prefixes in the identifier when we declare them.
+Global accumulators belong to the entire query. Anywhere in a query, a statement can update their value. Local accumulators belong to each vertex.
+They can only be updated when their owning vertex is accessible. To differentiate them, we use special prefixes in the identifier when we declare them.
 
-* *@@* prefix is used for declaring global accumulator variable. It is always used stand-alone. E.g  _**_`@@cnt +=1`
-* *@* prefix is used for declaring local accumulator variable. It must be used with a vertex alias in a query block. E.g. `v.@cnt += 1,` where v is a vertex alias specified in a FROM clause of a SELECT-FROM-WHERE query block.
+* *@@* is used for declaring global accumulator variables. It is always used stand-alone. E.g  _**_`@@cnt +=1`
+* *@* is used for declaring local accumulator variables. It must be used with a vertex alias in a query block. E.g. `v.@cnt += 1,` where v is a vertex alias specified in a FROM clause of a SELECT-FROM-WHERE query block.
 
 .A Social graph with 7 Person vertices and 7 Friendship edges connecting them.
 image::https://lh6.googleusercontent.com/zBXxBe-6iSKX2RJZ9ITyC1wLf-gcbuJbzHlqnGCFV6uwjkYHrTYXtW56HzAn2uA-YYw4TQNt2-MFe-nbGXDnNml0K1sRYVdAKlc3SxMYZ5UsRnlWTb4R-fHIcXJillIGsyffAO2H[]

@@ -110,7 +110,8 @@ The difference between `CREATE OR REPLACE` and dropping and recreating a query a
 ====
 `DISTRIBUTED`::
 The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
-If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
+If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.
+For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
 
 `queryName`:: Name of the query.
 
@@ -172,7 +173,6 @@ You can specify default values for parameters of primitive types when creating a
 * `DOUBLE`
 * `STRING`
 * `BOOL`
-* `STRING`
 * `DATETIME`
 
 To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
@@ -185,11 +185,11 @@ include::appendix:example$social_net/query_operations_example_create_query_defau
 
 To specify the default value of a `DATETIME` type parameter, use the `to_datetime()` function.
 You cannot use other functions that return a `DATETIME` value to specify the default value.
-For example, the following query definition sets the default value of `d1` to `2019-01-19 00:00:00`.
+For example, the following query definition sets the default value of `d1` to `2023-01-01 00:00:00`.
 
 [.wrap,gsql]
 ----
-CREATE QUERY print_default(DATETIME d1 = to_datetime("2019-01-19 00:00:00")) {
+CREATE QUERY print_default(DATETIME d1 = to_datetime("2023-01-01 00:00:00")) {
     PRINT d1;
 }
 ----
@@ -200,11 +200,13 @@ CREATE QUERY print_default(DATETIME d1 = to_datetime("2019-01-19 00:00:00")) {
 === Dynamic querying
 
 TigerGraph 3.0+ supports Dynamic Querying.
-This means the query can be written and installed as a saved procedure without referencing a particular graph.Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
+This means the query can be written and installed as a saved procedure without referencing a particular graph.
+Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
 
 Here are the ingredients for a dynamic query:
 
-* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already, either when entering gsql: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
+* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already.
+The graph name can be specified either when entering GSQL: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
 * *Vertex type and edge type in `SELECT` statements*.
 Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
 String or string set parameters can be used for edge and target types instead.
@@ -244,13 +246,16 @@ include::appendix:example$test-schema/query_operations_dynamic_querying.gsql[]
 [#_statement_types]
 === Statement types
 
-A _statement_ is a standalone instruction that expresses an action to be carried out.The most common statements are _data manipulation language (DML) statements_.
+A _statement_ is a standalone instruction that expresses an action to be carried out.
+The most common statements are _data manipulation language (DML) statements_.
 DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
 
 A GSQL query has two levels of statements.
 The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.
-This statement type is part of either the top-level block or a query-body control flow block.For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
-If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.Each query-body statement ends with a semicolon.
+This statement type is part of either the top-level block or a query-body control flow block.
+For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
+If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.
+Each query-body statement ends with a semicolon.
 
 The lower-level statement type is called _DML-sub-level statement_ or _DML-sub statement_ for short.
 This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.
@@ -564,7 +569,8 @@ installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," quer
 
 `INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
-Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
+Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
+The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
 
 If a query calls a xref:querying:operators-and-expressions.adoc#_subqueries[subquery], the query can only be installed after one of the following conditions is met:
 
@@ -626,12 +632,17 @@ This is a Preview feature and should not be used in production.
 
 WARNING: This feature is deprecated and support for it will be dropped in a future version.
 
-Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.The names of the individual queries are not needed.This operation optimizes all previously installed queries, reducing their run times by about 20%.Optimize a query if query run time is more important to you than query installation time.
+Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.
+The names of the individual queries are not needed.
+This operation optimizes all previously installed queries, reducing their run times by about 20%.
+Optimize a query if query run time is more important to you than query installation time.
 
 [#_run_query]
 == RUN QUERY
 
-The `RUN QUERY` command runs an installed query.To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses.Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
+The `RUN QUERY` command runs an installed query.
+To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses.
+Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
 You can also run an installed query through REST requests - see xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 
@@ -787,7 +798,7 @@ Users who call these queries will provide `("id", "type")` tuple arguments for t
 |===
 |Parameter type |Syntax |Example
 |`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
-|`"2019-02-19 19:19:19"`
+|`"2023-01-01 00:00:00"`
 
 |Set or bag of primitives |Use a JSON array containing the primitive
 values |`["a", "list", "of", "args"]`
@@ -875,10 +886,14 @@ Beginning with version 2 (v2) of the output specification, an additional top-lev
 [width="100%",cols="14%,86%",options="header",]
 |===
 |Field |Description
-|`api` |String specifying the output API version. Values are specified
+|`api` a|String specifying the output API version. Values are specified
 as follows:``v1'': Output API used in TigerGraph platform v0.8 through
-v1.0. *NOTE: ``v1'' support is no longer available as of TigerGraph
-v3.0.*”v2” (default): Output API introduced in TigerGraph platform v1.1
+v1.0.
+
+* "v1" support is no longer available as of TigerGraph
+v3.0.
+
+* ”v2” (default): Output API introduced in TigerGraph platform v1.1
 This is the latest API.
 
 |`edition` |String indicating the edition of the product.

@@ -621,7 +621,7 @@ The optimizer uses various statistics to generate an efficient traversal plan wh
 You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
 
 This option can be used together with other options, but it must come after the other options.
-For example, you cannot run `INSTALL QUERY ALL -COST -FORCE`, it must be `INSTALL QUERY ALL -FORCE -COST`
+For example, you cannot run `INSTALL QUERY -COST -FORCE ALL`, it must be `INSTALL QUERY -FORCE -COST ALL`
 
 This is a Preview feature and should not be used in production.
 |===

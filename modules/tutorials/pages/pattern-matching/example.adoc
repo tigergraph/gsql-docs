@@ -16,7 +16,7 @@ One way is to find others who like the same messages Viktor likes, then recommen
 
 However, this is too granular. We are overfitting the message-level data with a collaborative filtering algorithm.
 
-Intutively, two persons are similar to each other when their "liked" messages fall into the same category - here represented by the set of tags attached to each message.
+Intuitively, two persons are similar to each other when their "liked" messages fall into the same category - here represented by the set of tags attached to each message.
 
 As a result, one way to avoid overfitting is to go one level upward. Instead of looking at common messages, we look at their tags. We consider Person A and Person B  similar if they like messages that belong to the same tag. This scheme fixes the overfitting problem. In pattern match vocabulary, we have
 

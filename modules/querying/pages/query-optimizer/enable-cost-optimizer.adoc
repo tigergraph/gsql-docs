@@ -83,7 +83,7 @@ For example, to compute the histogram data for attribute `gender` of vertex type
 ----
 $ $ curl --user tigergraph:tigergraph -X POST \
 "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"gender", "buckets":10}'
+-d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"gender", "buckets":128}'
 ----
 
 To compute the histogram data for attribute `creationDate` of refined edge type `LIKES` from vertex type `Person` to vertex type `Comment`, make the following request:
@@ -92,7 +92,7 @@ To compute the histogram data for attribute `creationDate` of refined edge type 
 ----
 $ curl -s --user tigergraph:tigergraph -X POST \
 "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}' | jq .
+-d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":128}' | jq .
 ----
 
 For best results, compute the histogram data for every attribute referenced in a `WHERE` clause of a `SELECT` statement.

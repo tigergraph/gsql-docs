@@ -1,11 +1,12 @@
 = Managing and Inspecting a Loading Job
+:experimental:
 
-This page describes the commands to check loading job status, abort a loading job and, restart a loading job.
+This page describes the commands to check loading job status, abort a loading job, and restart a loading job.
 
 == Job ID and status
 
-When a loading job starts, the GSQL server assigns it a job id and displays it for the user to see.
-The job id format is typically the name of the graph, followed by the machine alias, following by a code number, e.g., `gsql_demo_m1.1525091090494`
+When a loading job starts, the GSQL server assigns it a job ID and displays it for the user to see.
+The job ID format is typically the name of the graph, followed by the machine alias, following by a code number, e.g., `gsql_demo_m1.1525091090494`
 
 .Example of `SHOW LOADING STATUS` output
 [source,console]
@@ -37,10 +38,11 @@ Job "demo_graph_m1.1523663024967" loading status
 ----
 
 By default, an active loading job will display periodic updates of its progress.
-There are two ways to inhibit these automatic output displays:
+There are two ways to prevent these automatic output displays from appearing:
 
 * Run the loading job with the `-noprint` option.
-* After the loading job has started, enter CTRL+C. This will abort the output display process, but the loading job will continue.
+* After the loading job has started, enter kbd:[CTRL+C].
+This will abort the output display process, but the loading job will continue.
 
 == `SHOW LOADING STATUS`
 
@@ -53,7 +55,7 @@ SHOW LOADING STATUS job_id|ALL
 ----
 
 The display format is the same as that displayed during the periodic progress updates of the xref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[`RUN LOADING JOB` command].
-If you do not know the job ID, but you know the job name and possibly the machine, then the `ALL` option is a handy way to see a list of active job ids.
+If you do not know the job ID, but you know the job name and possibly the machine, then the `ALL` option is a handy way to see a list of active job IDs.
 
 == `ABORT LOADING JOB`
 
@@ -125,22 +127,24 @@ gsql -g demo_graph "RESUME LOADING JOB demo_graph_m1.1519111662589"
 == Verifying and debugging a loading job
 
 Every loading job creates a log file.
-When the job starts, GSQL display the location of the log file.
+When the job starts, GSQL displays the location of the log file.
 
 This file contains the following information which most users will find useful:
 
 * A list of all the parameter and option settings for the loading job
 * A copy of the status information that is printed
-* Statistics report on the number of lines successfully read and parsed
+* A report on the number of lines successfully read and parsed
 
-The statistics report include how many objects of each type is created, and how many lines are invalid due to different reasons. This report also shows which lines cause the errors.
+The report includes how many objects of each type are created, and how many lines are invalid due to different reasons.
+This report also shows which lines cause the errors.
 
 There are two types of statistics shown in the report:
 
 * File-level: The number of lines
 * Data-object-level: The number of objects
 
-If a file level error occurs, e.g., a line does not have enough columns, this line of data is skipped for all LOAD statements in this loading job. If an object level error or failed condition occurs, only the corresponding object is not created, i.e., all other objects in the same loading job are still created if no object level error or failed condition for each corresponding object.
+If a file level error occurs, e.g., a line does not have enough columns, this line of data is skipped for all LOAD statements in this loading job.
+If an object level error or failed condition occurs, only the corresponding object is not created, i.e., all other objects in the same loading job are still created if there is no object level error or failed condition for each corresponding object.
 
 |===
 | File level statistics | Explanation
@@ -158,7 +162,7 @@ If a file level error occurs, e.g., a line does not have enough columns, this li
 | The number of lines with missing column(s)
 
 | Oversize token
-| The number of lines with oversize token(s). Please increase "OutputTokenBufferSize" in the `tigergraph/app/<VERSION_NUM>/dev/gdk/gsql/config` file.
+| The number of lines with oversize token(s). Please increase `OutputTokenBufferSize` in the `tigergraph/app/<VERSION_NUM>/dev/gdk/gsql/config` file.
 |===
 
 |===
@@ -181,9 +185,7 @@ If a file level error occurs, e.g., a line does not have enough columns, this li
 |===
 
 Note that failing a `WHERE` clause is not necessarily a bad result.
-If the user's intent for the `WHERE` clause is to select only certain lines, then it is natural for some lines to pass and some lines to fail.
-
-Below is an example.
+If the user's intent for the `WHERE` clause is to select only certain lines, then it is natural for some lines to pass and some lines to fail:
 
 [source.wrap,gsql]
 ----
@@ -191,7 +193,7 @@ CREATE VERTEX Movie (PRIMARY_ID id UINT, title STRING, country STRING, year UINT
 CREATE DIRECTED EDGE Sequel_Of (FROM Movie, TO Movie)
 CREATE GRAPH Movie_Graph(*)
 CREATE LOADING JOB load_movie FOR GRAPH Movie_Graph{
-  DEFINE FILENAME f
+  DEFINE FILENAME f;
   LOAD f TO VERTEX Movie VALUES ($0, $1, $2, $3) WHERE to_int($3) < 2000;
 }
 RUN LOADING JOB load_movie USING f="movie.dat"
@@ -210,8 +212,7 @@ RUN LOADING JOB load_movie USING f="movie.dat"
 ----
 
 
-
-The above loading job and data generate the following report
+The above loading job and data generate the following report:
 
 .load_output.log (tail)
 

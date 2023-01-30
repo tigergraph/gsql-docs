@@ -151,7 +151,7 @@ Calculates a new `DATETIME` from a specified datepart multiplied by a specified 
 
 [source,text]
 ----
-datetime_add(to_datetime("1970-02-01 00:00:00"), INTERVAL 1 MONTH) -> 1970-01-01 00:00:00
+datetime_sub(to_datetime("1970-02-01 00:00:00"), INTERVAL 1 MONTH) -> 1970-01-01 00:00:00
 ----
 
 == `datetime_to_epoch()`

@@ -30,7 +30,14 @@ xref:defining-a-graph-schema.adoc#_drop_all[`DROP ALL`] clears both the data and
 
 == Running a Loading Job
 
-Running a loading job executes a previously installed loading job.  The job reads lines from an input source, parses each line into data tokens, and applies loading rules and conditions to create new vertex and edge instances to store in the graph data store. The input sources could be defined in the load job or could be provided when running the job. Additionally, loading jobs can also be run by submitted an HTTP request to the REST{pp} server.
+Running a loading job executes a previously installed loading job.  The job reads lines from an input source, parses each line into data tokens, and applies loading rules and conditions to create new vertex and edge instances to store in the graph data store.
+
+The input sources could be defined in the loading job or could be provided when running the job. Additionally, loading jobs can also be run by submitting an HTTP request to the REST{pp} server.
+
+[NOTE]
+User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
+A user can create and run loading jobs even without the privileges to modify vertex and edge data.
+For more information, see xref:tigergraph-server:user-access:access-control-model.adoc[].
 
 [#_run_loading_job]
 === RUN LOADING JOB

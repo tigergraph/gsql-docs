@@ -28,6 +28,11 @@ The structure of a loading job will be presented hierarchically, top-down:
 *All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_token_functions>>).
 ====
 
+[NOTE]
+User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
+A user can create and run loading jobs even without the privileges to modify vertex and edge data.
+For more information, see xref:tigergraph-server:user-access:access-control-model.adoc[].
+
 == Loading job capabilities
 
 TigerGraph's syntax for defining and running loading jobs offers several advantages:

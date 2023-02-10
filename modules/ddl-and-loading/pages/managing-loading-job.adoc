@@ -21,20 +21,18 @@ Job "demo_graph_m1.1523663024967" loading status
   [LOADING] /data/output/company.data
   [=============                        ]  20%, 200 kl/s
   [LOADED]
-  +-------------------------------------------------------------------+
-  |               FILENAME |   LOADED LINES |   AVG SPEED |   DURATION|
-  | /data/output/movie.dat |            100 |     100 l/s |     1.00 s|
-  |/data/output/person.dat |            100 |     100 l/s |     1.00 s|
-  | /data/output/roles.dat |            200 |     200 l/s |     1.00 s|
-  +-------------------------------------------------------------------+
+  +--------------------------------------------------------------------------------------+
+  |                  FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION|
+  |/home/tigergraph/movie.dat |       6 |         3 |        2 |      60 l/s |     0.10 s|
+  +--------------------------------------------------------------------------------------+
 [RUNNING] m2 ( Finished: 1 / Total: 2 )
   [LOADING] /data/output/company.data
   [==========================           ]  60%, 200 kl/s
   [LOADED]
-  +-------------------------------------------------------------------+
-  |               FILENAME |   LOADED LINES |   AVG SPEED |   DURATION|
-  | /data/output/movie.dat |            100 |     100 l/s |     1.00 s|
-  +-------------------------------------------------------------------+
+  +--------------------------------------------------------------------------------------+
+  |                  FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION|
+  |/home/tigergraph/movie.dat |       6 |         3 |        2 |      60 l/s |     0.10 s|
+  +--------------------------------------------------------------------------------------+
 
 ----
 

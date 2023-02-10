@@ -20,12 +20,16 @@ A schema change will invalidate any loading jobs or query jobs which relate to a
 Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
 ====
 
-Jobs and queries for unaltered parts of the schema will still be available and do not need to be reinstalled.  However, even though these jobs are valid (e.g., they *can* be run), the user may wish to examine whether they still perform the preferred operations (e.g., do you *want* to run them?)
+Jobs and queries for unaltered parts of the schema will still be available and do not need to be reinstalled.
+However, even though these jobs are valid (e.g., they *can* be run), consider whether they will still perform the desired operations after the change (e.g., do you *want* to run them?).
 
 [WARNING]
 ====
 Load or query operations which begin before the schema change will be completed based on the pre-change schema. Load or query operations which begin after the schema change, and which have not been invalidated, will be completed based on the post-change schema.
 ====
+
+Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
+It is considered good practice to perform schema changes during times of low graph activity.
 
 [#_global_vs_local_schema_changes]
 == Global vs. local schema changes

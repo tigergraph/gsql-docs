@@ -4,11 +4,11 @@ After a graph schema has been created , it can be modified. Data already stored 
 
 To safely update the graph schema, the user should follow this procedure:
 
-* Create a SCHEMA_CHANGE JOB, which defines a sequence of ADD, ALTER and/or DROP statements.
-* Run the SCHEMA_CHANGE JOB (i.e. *`RUN SCHEMA_CHANGE JOB job_name`*), which will do the following:
-* Attempt the schema change.
-* If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema.
-* if the change is unsuccessful, report the failure and return to the state before the attempt.
+* Create a schema change job, which defines a sequence of `ADD`, `ALTER` and/or `DROP` statements.
+* Run the schema change job (using *`RUN SCHEMA_CHANGE JOB <job name>`*), which will do the following:
+** Attempt the schema change.
+** If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema.
+** if the change is unsuccessful, report the failure and return to the state before the attempt.
 
 [WARNING]
 ====
@@ -19,9 +19,6 @@ A schema change will invalidate any loading jobs or query jobs which relate to a
 
 Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
 ====
-
-Jobs and queries for unaltered parts of the schema will still be available and do not need to be reinstalled.
-However, even though these jobs are valid (e.g., they *can* be run), consider whether they will still perform the desired operations after the change (e.g., do you *want* to run them?).
 
 [WARNING]
 ====

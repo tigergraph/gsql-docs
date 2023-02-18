@@ -23,7 +23,7 @@ Job "demo_graph_m1.1523663024967" loading status
   [LOADED]
   +--------------------------------------------------------------------------------------+
   |                  FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION|
-  |/home/tigergraph/movie.dat |       6 |         3 |        2 |      60 l/s |     0.10 s|
+  |/data/output/company.data |       6 |         3 |        2 |      60 l/s |     0.10 s|
   +--------------------------------------------------------------------------------------+
 [RUNNING] m2 ( Finished: 1 / Total: 2 )
   [LOADING] /data/output/company.data
@@ -31,7 +31,7 @@ Job "demo_graph_m1.1523663024967" loading status
   [LOADED]
   +--------------------------------------------------------------------------------------+
   |                  FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION|
-  |/home/tigergraph/movie.dat |       6 |         3 |        2 |      60 l/s |     0.10 s|
+  |/data/output/company.data |       6 |         3 |        2 |      60 l/s |     0.10 s|
   +--------------------------------------------------------------------------------------+
 
 ----
@@ -80,21 +80,20 @@ gsql -g demo_graph "abort loading job all"
 Job "demo_graph_m1.1519111662589" loading status
 [ABORT_SUCCESS] m1
 [SUMMARY] Finished: 0 / Total: 2
-  +--------------------------------------------------------------------------------------+
-  |                  FILENAME |   LOADED LINES |   AVG SPEED  |   DURATION |   PERCENTAGE|
-  | /home/tigergraph/data.csv |       23901701 |     174 kl/s |   136.83 s |         65 %|
-  |/home/tigergraph/data1.csv |              0 |        0 l/s |     0.00 s |          0 %|
-  +--------------------------------------------------------------------------------------+
+  +--------------------------------------------------------------------------------------------------+
+  |                  FILENAME |          LINES |      OBJECTS |     ERRORS |   AVG SPEED |   DURATION|
+  | /home/tigergraph/data.csv |              6 |            3 |          2 |      60 l/s |     0.10 s|
+  |/home/tigergraph/data1.csv |              6 |            3 |          2 |      60 l/s |     0.10 s|
+  +--------------------------------------------------------------------------------------------------+
 
 Job "demo_graph_m2.1519111662615" loading status
 [ABORT_SUCCESS] m2
 [SUMMARY] Finished: 0 / Total: 2
-  +--------------------------------------------------------------------------------------+
-  |                  FILENAME |   LOADED LINES |   AVG  SPEED |   DURATION |   PERCENTAGE|
-  | /home/tigergraph/data.csv |       23860559 |     175 kl/s |   136.23 s |         65 %|
-  |/home/tigergraph/data1.csv |              0 |        0 l/s |     0.00 s |          0 %|
-  +--------------------------------------------------------------------------------------+
-
+  +--------------------------------------------------------------------------------------------------+
+  |                  FILENAME |          LINES |      OBJECTS |     ERRORS |   AVG SPEED |   DURATION|
+  | /home/tigergraph/data.csv |              6 |            3 |          2 |      60 l/s |     0.10 s|
+  |/home/tigergraph/data1.csv |              6 |            3 |          2 |      60 l/s |     0.10 s|
+  +--------------------------------------------------------------------------------------------------+
 ----
 
 
@@ -155,7 +154,7 @@ If an object level error or failed condition occurs, only the corresponding obje
 | Reject lines
 | The number of lines which are rejected by reject_line_rules
 
-| Invalid Json format
+| Invalid JSON format
 | The number of lines with invalid JSON format
 
 | Not enough token
@@ -245,7 +244,7 @@ Lines successfully tokenized: 6
 ----
 
 There are a total of 7 data lines.
-The report shows that
+The report shows that:
 
 * One line - Line 7 - does not have enough tokens.
 * Six of the lines are valid data lines and were successfully tokenized.
@@ -254,4 +253,7 @@ Of the 6 valid lines,
 
 * Three of the 6 valid lines generate valid movie vertices.
 * One line has an invalid attribute  (Line 1: year).
-* Two lines (Lines 4 and 5) do not pass the WHERE clause.
+* Two lines (Lines 4 and 5) do not pass the `WHERE` clause.
+
+The errors that appear are the first line with an error in each batch in the loading job.
+Up to 100 sample lines showing errors appear in the log.

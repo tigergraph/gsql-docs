@@ -496,6 +496,47 @@ Here is a descriptive list of DML-sub-statements:
 | See "Output Statements"
 |===
 
+=== Draft queries
+
+GSQL internally has two statuses for queries, `DRAFT` and `VALID`.
+
+If your query passes the semantic checks upon running the `CREATE QUERY` command, it is saved automatically in `VALID` status.
+If not, along with the error statement, a message appears to indicate the draft status.
+
+In this example, the first query gets saved upon running `CREATE QUERY`, while the second one remains a draft.
+
+[source, gsql]
+----
+GSQL > CREATE QUERY valid_query(){   print 1; }
+Successfully created queries: [valid_query].
+
+
+GSQL > BEGIN
+GSQL > CREATE QUERY draft_query(){
+GSQL >   PRINT;
+GSQL >   PRINT "I am a draft"
+GSQL > }
+GSQL > END
+line 2:7 mismatched input ';' expecting {ABORT, AND, ANY, AVG, BY, COALESCE, COMMIT, COUNT, DATETIME_ADD, DATETIME_SUB, DISTINCT, FALSE, FILE, GROUP, INSERT, ISEMPTY, LASTHOP, LIST, LOG, MAP, MATCH, MAX, MIN, NOT, NOW, OR, PATH, PER, RANGE, REPLACE, SELECT_VERTEX, SET, SRC, SUM, TGT, TO_DATETIME, TRIM, TRUE, UPDATE, GSQL_INT_MAX, GSQL_INT_MIN, GSQL_UINT_MAX, '__ENGINE__E_ATTR', '__ENGINE__SRC_ATTR', '__ENGINE__TGT_ATTR', '__ENGINE__V_ATTR', '__ENGINE__SRC_VAL', '__ENGINE__TGT_VAL', '__ENGINE__V_VAL', '__ENGINE__MESSAGE', '__ENGINE__CONTEXT', '__ENGINE__REQUEST', '__ENGINE__SERVICEAPI', '(', '[', '-', '.', '_', CONST_INT, CONST_STR, NAME, GACCNAME}
+line 4:0 mismatched input '}' expecting {TO_CSV, WHERE, ',', ';'}
+Parsing encountered 2 syntax error(s)
+
+Saved as draft query with type/semantic error: [draft_query].
+----
+
+Because the query status is determined and saved internally, there are no commands for users to choose to save valid queries as `DRAFT` status.
+
+Queries are not saved as drafts in the following situations:
+
+* The user does not have the correct permissions to create a query.
+* An existing valid query has the same name, and there is no `REPLACE` command used while creating the new query.
+* An existing valid query is called by another query.
+** The new query will change its signature (parameters or return type).
+* A circular call is detected, where `queryA` calls `queryB and `queryB` calls `queryA`.
+** However, a recursive call (A calls A) is allowed.
+
+If a query is saved as a draft before it reaches valid status, any queries that call it are also set to draft status.
+
 == `INTERPRET QUERY`
 
 `INTERPRET QUERY` runs a query by translating it line-by-line.
@@ -970,9 +1011,64 @@ This statement sets a persistent system parameter. Each version of the TigerGrap
 showQuery := SHOW QUERY queryName
 ----
 
-To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`. See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
+To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`.
+See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
 
-Additionally, the `ls` GSQL command lists all created queries and identifies which queries have been installed.
+Additionally, the `ls` GSQL command lists all created queries and identifies which queries have been installed as well as their draft or valid status.
+
+
+[source, gsql]
+----
+LS                         <--- show all queries
+
+Queries:
+  - draft1() (draft)
+  - valid1() (installed v2)
+  ...
+
+SHOW QUERY *                <--- the flags are same as above
+
+CREATE QUERY valid1(){          <-- no status is shown for a valid query that has not been installed
+  PRINT 1;
+}
+
+# draft                          <-- a query that is set to DRAFT status because it calls a query with DRAFT status
+CREATE QUERY draft_callDraft2(){
+  draft2();
+  PRINT "I am a draft too";
+}
+
+# installed v2                 <-- query is valid and has been installed successfully
+CREATE QUERY valid2(){
+  PRINT 1;
+}
+
+# deprecated                  <-- the query is deprecated if it is incompatible with the schema after a schema change
+CREATE QUERY valid3(){
+  v = SELECT src
+      FROM unexistentType:src;
+}
+
+# blocked                    <-- the query is blocked by the file output policy
+CREATE QUERY blockedQuery(){
+  FILE f("/root");
+}
+
+# disabled                   <-- the query is disabled if it calls a deleted sub-query.
+CREATE QUERY disabledQuery(){
+  deletedQuery();
+}
+
+# pendingInstall            <-- the query is installing
+CREATE QUERY valid3(){
+  PRINT 1;
+}
+
+# failedCompilation         <-- query installation failed
+CREATE QUERY valid3(){
+  PRINT 1;
+}
+----
 
 == DROP QUERY
 
@@ -981,7 +1077,10 @@ Additionally, the `ls` GSQL command lists all created queries and identifies whi
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
 
-To drop a query, run `DROP QUERY query_name` __. The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
+To drop a query, run `DROP QUERY query_name`.
+The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
+
+Both valid and draft queries can be dropped.
 
 To drop all queries, either of the following commands can be used: +
 

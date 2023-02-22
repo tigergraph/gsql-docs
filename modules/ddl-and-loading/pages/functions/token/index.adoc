@@ -173,7 +173,7 @@ time, which is the number of seconds since Jan. 1, 1970.
 |Returns the ASCII (numeric) position of the first character in a string.
 If the argument is an empty string, returns `0`.
 
-|xref:querying:func/string-functions.adoc#chr[chr( _n_ )]
+|xref:querying:func/string-functions.adoc#chr[chr(_n_)]
 |`STRING`
 | Converts an integer to a character according to its ASCII position.
 If the input value `n` is greater than 255, returns the character at the position of the modulo of `n / 256`.
@@ -202,28 +202,28 @@ If the input value `n` is greater than 255, returns the character at the positio
 |`STRING`
 |Extracts a number of characters from a string starting from the last character and capturing right to left.
 
-|xref:querying:func/string-functions.adoc#lpad[lpad(str, padded_length [, pad_str] )]
+|xref:querying:func/string-functions.adoc#lpad[lpad(str, padded_length [, pad_str])]
 |`STRING`
 |Pads the left side of a string with another pad string.
 If the pad string pad_str is omitted, it will pad with white space.
 
-|xref:querying:func/string-functions.adoc#rpad[rpad(str, padded_length [, pad_str] )]
+|xref:querying:func/string-functions.adoc#rpad[rpad(str, padded_length [, pad_str])]
 |`STRING`
 |Pads the right side of a string (str) with another pad string.
 If the pad string (pad_str) is omitted, it will pad with white space.
 
 
-|xref:querying:func/string-functions.adoc#_soundex[soundex( str )]
+|xref:querying:func/string-functions.adoc#_soundex[soundex(str)]
 |`STRING`
 |Returns a character string containing the Soundex code of str.
 
 
-|xref:querying:func/string-functions.adoc#space[space( n )]
+|xref:querying:func/string-functions.adoc#space[space(_n_)]
 |`STRING`
 |Returns a string that contains the specified number of space characters.
 
 
-|xref:querying:func/string-functions.adoc#translate[translate(str_origin, characters, translations )]
+|xref:querying:func/string-functions.adoc#translate[translate(str_origin, characters, translations)]
 |`STRING`
 |Replaces specified characters in a string with a different set of specified characters.
 

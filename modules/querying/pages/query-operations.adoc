@@ -1014,12 +1014,12 @@ showQuery := SHOW QUERY queryName
 To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`.
 See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
 
-Additionally, the `ls` GSQL command lists all created queries and identifies which queries have been installed as well as their draft or valid status.
+Additionally, the `ls` GSQL command lists all items on the graph and their statuses, including queries.
 
-
+In this example, the output of the `ls` command has been truncated to show only the query statuses.
 [source, gsql]
 ----
-LS                         <--- show all queries
+ls                       <--- show all queries
 
 Queries:
   - draft1() (draft)
@@ -1078,7 +1078,39 @@ dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
 
 To drop a query, run `DROP QUERY query_name`.
-The query will be uninstalled (if it has been installed) and removed from the dictionary.  The GSQL language will refuse to drop an installed query if another query is installed which calls query Q.  That is, all calling queries must be dropped before or at the same time that their called subqueries are dropped.
+The query will be uninstalled (if it has been installed) and removed from the dictionary.
+If a subquery is dropped, the main query is marked as disabled.
+
+In this example, using a graph `g`, a test query `A` is created, followed by a test query `B` that calls `A()`.
+After `A` is dropped, `B` is disabled.
+
+[source.wrap, gsql]
+----
+GSQL > create query A(){print 1;}
+Successfully created queries: [A].
+
+GSQL > create query B(){ A();}
+Successfully created queries: [B].
+
+GSQL > install query *
+Start installing queries, about 1 minute ...
+<....>
+Query installation finished.
+
+GSQL > drop query A
+Successfully dropped queries on the graph 'g': [A].
+
+GSQL > ls
+---- Graph g
+Vertex Types:
+Edge Types:
+
+Graphs:
+  - Graph g()
+Jobs:
+Queries:
+  - B() (disabled)
+----
 
 Both valid and draft queries can be dropped.
 

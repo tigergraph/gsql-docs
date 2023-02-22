@@ -100,7 +100,7 @@ Each primitive data type supports constant values:
 | `"atoz@com"`  `"0.25"`
 |===
 
-`GSL_UINT_MAX` = 2 {caret} 64 - 1 = 18446744073709551615
+`GSQL_UINT_MAX` = 2 {caret} 64 - 1 = 18446744073709551615
 
 `GSQL_INT_MAX` = 2 {caret} 63 - 1 =  9223372036854775807
 
@@ -112,12 +112,14 @@ An operator is a keyword token that performs a specific computational function t
 
 [NOTE]
 ====
-Tip: The operators listed in this section are designed to behave like the operators in MySQL.
+The operators listed in this section are designed to behave like the operators in MySQL.
 ====
 
 === Mathematical Operators and Expressions
 
-We support the following standard mathematical operators and meanings. The latter four (`<<` `>>`  `&` `|`) are for bitwise operations.  See the section below: "Bit Operators".
+We support the following standard mathematical operators and meanings.
+The latter four (`<<` `>>`  `&` `|`) are for bitwise operations.
+See the <<bit-operators>> section below.
 
 [source,ebnf]
 ----
@@ -262,7 +264,7 @@ include::appendix:example$minimal_net/operators_expressions_is_null_example_3.js
 
 [WARNING]
 ====
-Every attribute value stored in GSQL is a valid value, so IS NULL and IS NOT NULL is only effective for query parameters.
+Every attribute value stored in GSQL is a valid value, so IS NULL and IS NOT NULL are only effective for query parameters.
 ====
 
 === LIKE
@@ -375,7 +377,10 @@ name "." attrName // read/write. Accesses attribute called attrName
 The name of the attribute can be parameterized using the *getAttr* and *setAttr* xref:querying:func/vertex-methods.adoc[vertex functions], described later in this section. This allows you to write xref:querying:query-operations.adoc#_dynamic_querying[dynamic query] procedures where the attribute names are specified when you run the query.
 ====
 
-For example, the following code snippet shows two different SELECT statements which produce equivalent results. The first uses the dot operator on the vertex variable *v* to access the "subject" attribute, which is defined in the graph schema. The FROM clause in the first SELECT statement necessitates that any target vertices will be of type "post" (also defined in the graph schema). The second SELECT schema checks that the vertex variable v's type is a "post" vertex by using the dot operator to access the built-in *type* attribute.
+For example, the following code snippet shows two different `SELECT` statements which produce equivalent results.
+The first uses the dot operator on the vertex variable `v` to access the `subject` attribute, which is defined in the graph schema.
+The `FROM` clause in the first `SELECT` statement necessitates that any target vertices will be of type `Post` (also defined in the graph schema).
+The second `SELECT` schema checks that the vertex variable ``v``'s type is a `Post` vertex by using the dot operator to access the built-in `type` attribute.
 
 ==== Example
 [tabs]
@@ -404,7 +409,8 @@ include::appendix:example$social_net/operators_expressions_access_vertex_variabl
 
 === Accumulator Functions
 
-This section describes functions that apply to all or most accumulators. Other accumulator functions for each accumulator type are illustrated in the "Accumulator Type" section.
+This section describes functions that apply to all or most accumulators.
+Other accumulator functions for each accumulator type are illustrated in the "Accumulator Type" section.
 
 ==== Previous value of accumulator
 

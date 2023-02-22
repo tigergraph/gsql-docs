@@ -54,12 +54,12 @@ the string resulting from replacing all substrings in the input string
 that match the given _regex_ token with the substitute string.
 
 |xref:functions/token/gsql_regex_match.adoc[gsql_regex_match(_str_, _regex_)]
-|bool
+|`BOOL`
 |Returns true if the given
 string token matches the given regex token and false otherwise.
 
 |xref:functions/token/gsql_to_bool.adoc[gsql_to_bool(_in_string_)]
-|bool
+|`BOOL`
 |Returns true if the _in_string_ is
 either "t" or "true", with case-insensitive checking. Returns false
 otherwise.
@@ -168,62 +168,62 @@ time, which is the number of seconds since Jan. 1, 1970.
 |Returns day (1-31) from Unix epoch
 time, which is the number of seconds since Jan. 1, 1970.
 
-|ascii(_in_string_)
+|xref:querying:func/string-functions.adoc#ascii[ascii(_in_string_)]
 |`INT`
 |Returns the ASCII (numeric) position of the first character in a string.
 If the argument is an empty string, returns `0`.
 
-|chr( _n_ )
+|xref:querying:func/string-functions.adoc#chr[chr( _n_ )]
 |`STRING`
 | Converts an integer to a character according to its ASCII position.
 If the input value `n` is greater than 255, returns the character at the position of the modulo of `n / 256`.
 
-|difference(_str1_, _str2_)
+|xref:querying:func/string-functions.adoc#difference[difference(_str1_, _str2_)]
 |`INT`
 |Compares the Soundex codes of two strings and returns an integer from 0 to 4 indicating the similarity between the input strings' phonetic representation values.
 
-|find_in_set(_str_, _str_list_)
+|xref:querying:func/string-functions.adoc#find_in_set[find_in_set(_str_, _str_list_)]
 |`INT`
 |Returns the position of a string within a list of strings separated by commas.
 
-|insert(_str1_, _position_[, _number_], _str2_)
+|xref:querying:func/string-functions.adoc#insert[insert(_str1_, _position_[, _number_], _str2_)]
 |`STRING`
 |Inserts a string within a string at the specified position and for a certain number of characters, and replaces a specified number of characters starting from the insertion position.
 
-|instr (_str_, _substr_ [, _position_, _occurrence_])
+|xref:querying:func/string-functions.adoc#instr[instr (_str_, _substr_ [, _position_, _occurrence_])]
 |`INT`
 |Searches a string `str` for a substring `substr` and returns the position of the first character of the substring.
 
-|left(str, number_of_chars)
+|xref:querying:func/string-functions.adoc#left[left(str, number_of_chars)]
 |`STRING`
 |Extracts a number of characters from a string starting from position 0 and capturing left to right.
 
-|right(str, number_of_chars)
+|xref:querying:func/string-functions.adoc#right[right(str, number_of_chars)]
 |`STRING`
 |Extracts a number of characters from a string starting from the last character and capturing right to left.
 
-|lpad(str, padded_length [, pad_str] )
+|xref:querying:func/string-functions.adoc#lpad[lpad(str, padded_length [, pad_str] )]
 |`STRING`
 |Pads the left side of a string with another pad string.
 If the pad string pad_str is omitted, it will pad with white space.
 
-|rpad(str, padded_length [, pad_str] )
+|xref:querying:func/string-functions.adoc#rpad[rpad(str, padded_length [, pad_str] )]
 |`STRING`
 |Pads the right side of a string (str) with another pad string.
 If the pad string (pad_str) is omitted, it will pad with white space.
 
 
-|soundex( str )
+|xref:querying:func/string-functions.adoc#_soundex[soundex( str )]
 |`STRING`
 |Returns a character string containing the Soundex code of str.
 
 
-|space( n )
+|xref:querying:func/string-functions.adoc#space[space( n )]
 |`STRING`
 |Returns a string that contains the specified number of space characters.
 
 
-|translate(str_origin, characters, translations )
+|xref:querying:func/string-functions.adoc#translate[translate(str_origin, characters, translations )]
 |`STRING`
 |Replaces specified characters in a string with a different set of specified characters.
 

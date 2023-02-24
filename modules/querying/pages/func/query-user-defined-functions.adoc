@@ -29,6 +29,9 @@ This is disabled by default and can only be enabled by the TigerGraph Linux user
 * UDF installation is not available as a self-service feature in TigerGraph Cloud at this time.
 Cloud customers can request an UDF installation as a TigerGraph support service.
 
+All UDF files are scanned by the system to ensure that they comply with the UDF file policy as set in TigerGraph Server.
+For more details, see xref:3.9@tigergraph-server:security:index.adoc[TigerGraph Server - Security].
+
 [#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}
 

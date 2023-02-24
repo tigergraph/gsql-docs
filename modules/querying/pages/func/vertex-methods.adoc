@@ -813,7 +813,7 @@ Query::
 [,gsql]
 ----
 CREATE QUERY getvid_ex () FOR GRAPH socialNet {
-MinAccum<int> @cc_id = 0;       //each vertex's tentative component id
+MinAccum<int> @cc_id;       //each vertex's tentative component id
 
   Start = {person.*};
   # Initialize: Label each vertex with its own internal ID

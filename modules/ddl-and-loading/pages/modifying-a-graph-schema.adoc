@@ -8,7 +8,7 @@ To safely update the graph schema, the user should follow this procedure:
 * Run the schema change job (using *`RUN SCHEMA_CHANGE JOB <job name>`*), which will do the following:
 ** Attempt the schema change.
 ** If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema.
-** If the change is unsuccessful, report the failure and return to the state before the attempt.
+** if the change is unsuccessful, report the failure and return to the state before the attempt.
 
 [WARNING]
 ====

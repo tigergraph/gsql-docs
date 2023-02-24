@@ -1109,7 +1109,6 @@ CREATE LOADING JOB abc FOR GRAPH Graph_Name {
 }
 ----
 
-
 An example using Book_Rating data is shown below:
 
 .DELETE example
@@ -1135,6 +1134,25 @@ The following example shows how to delete edge instances that match the discrimi
 DELETE EDGE Study_At (from $"person_id", to $"university_id",
     DISCRIMINATOR($"class_year", $"class_month")) from f;
 ----
+
+Multiple edges that match certain criteria can be deleted at the same time.
+
+.DELETE example for multiple edges
+[source, gsql]
+----
+// Delete all edges matching a from_id
+GSQL > DELETE FROM Medium-(signIn)->Account WHERE from_id=="3076"
+
+// Delete all edges matching a from_id and a to_id
+GSQL > DELETE FROM Medium-(signIn)->Account WHERE from_id=="3076" AND to_id=="40348"
+
+// Delete a certain number of edges matching a pattern using ORDER BY …  and LIMIT
+GSQL > DELETE FROM Medium-(signIn)->Account WHERE from_id=="3076" AND to_id=="40348" ORDER BY creationDate DESC LIMIT 1
+----
+
+In the last example, the `LIMIT` keyword is used with `ORDER BY` to remove the top result.
+If `LIMIT` were set greater than `1`, it would remove additional results, starting at the most recent `creationDate` and moving down.
+
 
 [NOTE]
 ====

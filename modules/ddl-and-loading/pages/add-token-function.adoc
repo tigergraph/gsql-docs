@@ -173,6 +173,10 @@ After the parameters are successfully configured, you can access your user-defin
 
 == Store token functions locally
 
+All UDF files are scanned by the system to ensure that they comply with the UDF file policy as set by configuration commands in TigerGraph Server.
+For more details, see xref:tigergraph-server:security:index.adoc[TigerGraph Server - Security].
+
+
 === Step 1: Enable adding a TokenBank with PUT
 
 Run the following commands to enable uploading a TokenBank through the GSQL `PUT` command:

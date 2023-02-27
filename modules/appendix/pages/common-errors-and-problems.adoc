@@ -27,7 +27,7 @@ If a query has a vertex parameter (`VERTEX` or `VERTEX<vType>`), and if the ID f
 
 * to_vertex(): See Section "Miscellaneous Functions".
 
-However, if the parameter is a vertex set (`SET<VERTEX>` or `SET<VERTEX<vType>>`), and one or more nonexistent IDs are given when running the query, a warning message is shown, but the query still runs, ignoring those nonexistent IDs. Therefore, if all given IDs are nonexistent, the parameter becomes an empty set. T his is also the response when calling a function to convert a set of vertex IDs to a set of vertices :
+However, if the parameter is a vertex set (`SET<VERTEX>` or `SET<VERTEX<vType>>`), and one or more nonexistent IDs are given when running the query, a warning message is shown, but the query still runs, ignoring those nonexistent IDs. Therefore, if all given IDs are nonexistent, the parameter becomes an empty set. This is also the response when calling a function to convert a set of vertex IDs to a set of vertices :
 
 * to_vertex_set(): See Section " Miscellaneous Functions ".
 * SelectVertex(): See Section " Miscellaneous Functions ".

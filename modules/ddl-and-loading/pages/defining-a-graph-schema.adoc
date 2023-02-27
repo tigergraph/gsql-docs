@@ -493,7 +493,7 @@ Use the ampersand operator (`&`) to express vertices with multiple tags:
 
 [source,gsql]
 ----
-CREATE GRAPH Mixed_Net AS Social_Net(person:public&vip, post:public&tech&dummy,
+CREATE GRAPH Mixed_Net AS Social_Net(person:public&vip, post:public&tech&default,
 friend, posted, liked)
 ----
 

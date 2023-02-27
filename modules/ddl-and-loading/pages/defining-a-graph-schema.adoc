@@ -559,10 +559,12 @@ The `SHOW` command can be used to show certain aspects of the graph, instead of 
 
 [source,text]
 ----
-SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> [ <name> | <glob> | -r <regex> ]
+SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> | <PACKAGE> [ <name> | <glob> | -r <regex> ]
 ----
 
-`SHOW GRAPH` lists vertices and edges without giving their properties, and is also a way to check the JSON API and syntax versions of the graph, as well as any loading jobs. `SHOW VERTEX` and `SHOW EDGE` list the properties of the desired vertex or edge respectively.
+`SHOW GRAPH` lists vertices and edges without giving their properties, and is also a way to check the JSON API and syntax versions of the graph, as well as any loading jobs.
+`SHOW VERTEX` and `SHOW EDGE` list the properties of the desired vertex or edge respectively.
+`SHOW PACKAGE` lists the packages that are available, such as the packaged template queries. See xref:graph-ml:using-an-algorithm:index.adoc#packaged-template-queries[Using an Algorithm - Packaged template queries] for more information.
 
 This feature supports the `?` and `*` from linux globbing operations, and also regular expression matching.
 Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.

@@ -9,7 +9,7 @@ We will show you how to create a graph schema, load data, write simple parameter
 
 * A running TigerGraph installation or Docker container.
 
-NOTE: If you want to use a xref:cloud:solutions:README.adoc[TigerGraph Cloud solution] for this tutorial, it needs to be a paid solution so that you have xref:cloud:access-solution:gsql-web-shell.adoc[GSQL access].
+NOTE: If you want to use a xref:cloud:solutions:README.adoc[TigerGraph Cloud solution] for this tutorial, it needs to be a paid solution so that you have xref:cloud:solutions:access-solution/gsql-web-shell.adoc[GSQL access].
 Every free TigerGraph Cloud account has $25 in free credits you can use to provision a paid solution.
 
 This tutorial includes commands that are designed to run in the Linux shell and in the GSQL command-line interface.

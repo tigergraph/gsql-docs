@@ -30,13 +30,21 @@ This is disabled by default and can only be enabled by the TigerGraph Linux user
 Cloud customers can request an UDF installation as a TigerGraph support service.
 
 All UDF files are scanned by the system to ensure that they comply with the UDF file policy as set by configuration commands in TigerGraph Server.
-For more details, see xref:tigergraph-server:security:index.adoc[TigerGraph Server - Security].
+
+* Macros with replacement are not allowed.
+* There is a file header allowlist that restricts the possible file headers to a customizable list.
+* Additional C{plus}{plus} features are disabled for security reasons.
+
+For more details, see xref:{page-component-version}@tigergraph-server:security:index.adoc#_udf_file_scanning[Security - UDF file scanning].
 
 [#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}
 
 User-defined functions are C{pp} functions with a certain set of allowed data types.
 The function definition must include the keyword `inline`.
+
+Beginning in TigerGraph version 3.9, user-defined functions may not begin with the prefix `tg_`.
+
 
 .Sample user-defined function
 ====

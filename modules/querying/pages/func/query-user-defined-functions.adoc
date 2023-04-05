@@ -191,11 +191,6 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 Write your function in ExprFunctions and any helper functions in ExprUtil as described in <<_define_a_query_udf_in_cpp>>.
 
-[CAUTION]
-====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
-====
-
 ==== Upload the updated query UDF file
 
 After you have defined the function, use the `PUT` command to upload the files you modified.

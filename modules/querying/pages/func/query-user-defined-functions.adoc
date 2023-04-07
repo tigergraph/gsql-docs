@@ -152,11 +152,6 @@ GSQL > GET ExprUtil TO "/example/path/ExprUtil.hpp"
 
 Write your function in ExprFunctions and any helper functions in ExprUtil.
 
-[CAUTION]
-====
-If any code in `ExprFunctions.hpp` or `ExprUtil.hpp` causes a compilation error, GSQL will be unable to install _any_ new queries, whether containing user-defined functions or not.
-====
-
 === Step 3: Store the updated query UDF file
 
 After you have defined the function, use the `PUT` command to store the files you modified.

@@ -530,21 +530,14 @@ Instead of the `USE GRAPH` command, gsql can be invoked with the `-g <graph_name
 === Syntax
 [source,gsql]
 ----
-DROP GRAPH Graph_Name [CASCADE]
+DROP GRAPH Graph_Name
 ----
 
 === Required privilege
 `WRITE_SCHEMA`
 
 
-The `DROP GRAPH` command deletes the logical definition of the named graph.
-It will also delete all local vertex or edge types of that graph.
-Local vertex and edge types are created by an `xref:modifying-a-graph-schema.adoc#_add_vertex_edge[ADD VERTEX/EDGE]` statement within a `xref:modifying-a-graph-schema.adoc#_create_schema_change_job[SCHEMA_CHANGE JOB]` and so belong only to that graph.
-Any shared types are unaffected.
-To delete only selected vertex types or edge types, see `DROP VERTEX | EDGE` in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
-
-If the `CASCADE` option is included, then `DROP GRAPH` will first drop any queries and jobs belonging to the graph, then drop the graph itself.
-Without the `CASCADE` option, `DROP GRAPH` will only execute if the graph has no queries or jobs.
+The `DROP GRAPH` command deletes the logical definition of the named graph. It will also delete all local vertex or edge types. Local vertex and edge types are created by an `xref:modifying-a-graph-schema.adoc#_add_vertex_edge[ADD VERTEX/EDGE]` statement within a `xref:modifying-a-graph-schema.adoc#_create_schema_change_job[SCHEMA_CHANGE JOB]` and so belong only to that graph. Any shared types are unaffected. To delete only selected vertex types or edge types, see `DROP VERTEX | EDGE` in the Section "xref:modifying-a-graph-schema.adoc[Modifying a Graph Schema]".
 
 == `DROP ALL`
 

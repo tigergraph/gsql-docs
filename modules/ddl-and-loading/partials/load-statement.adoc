@@ -121,7 +121,8 @@ LOAD file2 TO EDGE Visit VALUES ($0, $2 $1, $3) USING SEPARATOR=",";
 
 [WARNING]
 ====
-Known issue: you must include a `USING clause` when loading data into edge types with different `FROM-TO` vertex pairs, even if all options are default.
+*Known issue*: When loading data into edge types defined with multiple `FROM-TO` vertex pairs, the load statement must include a `USING` clause, even if all options are default.
+"Multiple `FROM-TO` vertex pairs" means something like this: `CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined DATETIME)`
 ====
 
 === WHERE clause

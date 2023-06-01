@@ -4,29 +4,27 @@
 
 This page lists the vertex functions that are available in the GSQL query language. The functions are divided into three categories.
 
-* Vertex alias methods
- ** Methods available to vertex aliases
-* Vertex-level access control(VLAC) vertex alias methods
- ** Methods available to vertex aliases that are related to vertex tags.
-* Vertex functions
+* Dot-syntax methods
+ ** Object-oriented methods that are invoked on a vertex or vertex alias.
+* Vertex-level access control (VLAC) vertex alias methods
+ ** Object-oriented methods available to vertex aliases that are related to vertex tags.
+* Other vertex functions
  ** Functions that return a vertex or vertex set, or functions that are closely related to certain attributes of `VERTEX` type variables.
 
-== Vertex alias methods
+[#vertex_alias_methods]
+== Dot-syntax methods
 
-This section lists the built-in methods of vertex aliases. Methods can be accessed by the dot (`.`) operator.
+This section lists the built-in methods of vertex aliases. Methods can be accessed by the dot (`.`) operator. When noted, a method may also be available to statement-level vertex variables, not just SELECT-body aliases.
 
 === `edgeAttribute()`
-
 
 ====  Syntax
 
 `v.edgeAttribute( edgeType, attrName )`
 
-
 ====  Description
 
 From a vertex, traverse edges of a specified type and return the bag of values for a specified edge attribute.
-
 
 ====  Return type
 
@@ -297,6 +295,12 @@ v.neighbors() -> ["Dan", "Amily", "Tom"]
 
 Returns the number of outgoing or undirected edges connected to the vertex. If edge types are provided, it will only return the number of edges of the specified types.
 
+[NOTE]
+====
+(for 3.9.2+) `outdegree()` is also available for vertex input parameters.
+In this case, outdegree() can be used in a xref:querying:query-operations.adoc#_statement_types[query-body statement].
+====
+
 
 ====  Return type
 
@@ -319,6 +323,23 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 *Note on outdegree()*: This function reads a metadata value stored with each vertex, to avoid traversing the graph and thus have a fast response. The snapshot transaction semantics means that outdegree() may sometimes read an old value if there are concurrent write transactions. To guarantee an accurate count, traverse the neighboring edges and count them with a SumAccum, or use a function like neighbors() and then use size() on the set.
 
 ==== 
+
+====  Examples
+
+Vertex alias:
+[source,wrap]
+----
+result = SELECT v FROM Members.v
+    ACCUM @@num_friends += v.outdegree("is_friend");
+----
+
+Query-body level:
+[source,wrap]
+----
+CREATE QUERY outdegree_statement(VERTEX v1) {
+  PRINT v1.outdegree();
+}
+----
 
 === `setAttr()`
 
@@ -770,6 +791,8 @@ CREATE QUERY removetagsFromPerson() {
 
 The functions in this section either have return values of vertex or vertex set type or are closely related to vertex attributes.
 
+
+
 === `getvid()`
 
 
@@ -885,7 +908,8 @@ Result::
 ----
 --
 
-==== 
+====
+
 
 [#_selectvertex]
 === `selectVertex()`

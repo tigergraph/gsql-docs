@@ -297,7 +297,7 @@ Returns the number of outgoing or undirected edges connected to the vertex. If e
 
 [NOTE]
 ====
-(for 3.9.2+) `outdegree()` is also available for vertex input parameters.
+[For 3.9.2+] `outdegree()` is also available for vertex input parameters.
 In this case, outdegree() can be used in a xref:querying:query-operations.adoc#_statement_types[query-body statement].
 ====
 

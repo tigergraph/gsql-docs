@@ -11,7 +11,8 @@ This page lists the vertex functions that are available in the GSQL query langua
 * Other vertex functions
  ** Functions that return a vertex or vertex set, or functions that are closely related to certain attributes of `VERTEX` type variables.
 
-[#vertex_alias_methods]
+[#_vertex_alias_methods]
+[#_dot_syntax_methods]
 == Dot-syntax methods
 
 This section lists the built-in methods of vertex aliases. Methods can be accessed by the dot (`.`) operator. When noted, a method may also be available to statement-level vertex variables, not just SELECT-body aliases.

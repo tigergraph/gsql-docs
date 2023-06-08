@@ -3,13 +3,13 @@
 
 Below is the listing of the graph create&load command files and data files to generate the six example graphs used in this document: `Work_Net` , `Social_Net`, `Friend_Net`, `Computer_Net` , `Minimal_Net` , and `Investment_Net`.
 
-The tar-gzip file `gsql_ref_examples_2.0.gz` contains all of these files. Each graph has its own folder.
+The zip file `example_graphs_v3.zip` contains all of these files. Each graph has its own folder.
 
 To create a particular graph, go in its folder and run the following command:
 
 `gsql graph_create.gsql`
 
-link:{attachmentsdir}/example_graphs.tar.gz[Download Example Graph files]
+link:{attachmentsdir}/example_graphs_v3.zip[Download Example Graph files]
 
 == Work_Net
 
@@ -113,7 +113,7 @@ person12,company4,2014,1,1
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX Person(PRIMARY_ID person_id UINT, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
 CREATE UNDIRECTED EDGE Friend(FROM Person, TO Person)
 CREATE VERTEX Post(PRIMARY_ID post_id UINT, subject STRING, post_time DATETIME)
 CREATE DIRECTED EDGE Posted(FROM Person, TO Post)
@@ -251,7 +251,7 @@ person8,4,2010-01-11 03:26:05
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX Person(PRIMARY_ID person_id UINT, id STRING)
+CREATE VERTEX Person(PRIMARY_ID person_id STRING, id STRING)
 CREATE UNDIRECTED EDGE Friend(FROM Person, TO Person)
 CREATE UNDIRECTED EDGE Coworker(FROM Person, TO Person)
 CREATE GRAPH Friend_Net(*)
@@ -355,7 +355,7 @@ person12,person7
 [source,gsql]
 ----
 DROP ALL
-CREATE VERTEX Computer(PRIMARY_ID comp_id UINT, id STRING)
+CREATE VERTEX Computer(PRIMARY_ID comp_id STRING, id STRING)
 CREATE DIRECTED EDGE Connected(FROM Computer, TO Computer, connection_speed DOUBLE, security_level INT)
 CREATE GRAPH Computer_Net(*)
 

@@ -420,7 +420,7 @@ CREATE GRAPH Empty_Graph ()
 Create graph `Book_rating` for the edge and vertex types defined for the below:
 
 .A schema for a User-Book-Rating graph
-image::a302a6bb8595a591c65b91c372daaa1f_560070806.png[A schema for a User-Book-Rating graph]
+image::user-book-rating-schema.png[A schema for a User-Book-Rating graph]
 
 .Full definition for the Expanded User-Book-Rating graph
 [source,gsql]

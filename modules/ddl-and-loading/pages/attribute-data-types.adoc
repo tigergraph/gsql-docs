@@ -31,13 +31,12 @@ They can also be used to construct other complex data types.
 | `FLOAT`
 | 0.0
 | [ -+ ] ? [ 0 - 9 ] * . ? [ 0 - 9 ] +( [ eE ] [ -+ ] ? [ 0 - 9 ] + ) ?
-| +/- 3.4 E +/-38, ~7 bits of precision
+| +/- 3.4 E +/-38, ~7 decimal digits of precision.
 | 4-byte single-precision floating point number  Examples: 3.14159, .0065e14, 7E23  See note below.
-
 | `DOUBLE`
 | 0.0
 | [ -+ ] ? [ 0 - 9 ] * . ? [ 0 - 9 ] +( [ eE ] [ -+ ] ? [ 0 - 9 ] + ) ?
-| +/- 1.7 E +/-308, ~15 bits of precision
+| +/- 1.7 E +/-308, ~15 decimal digits of precision
 | 8-byte double-precision floating point number.
 Has the same input and output format as FLOAT, but the range and precision are greater. See note below.
 
@@ -57,11 +56,17 @@ However, the size of all attributes of a vertex or edge combined cannot exceed 1
 The string value can optionally be enclosed by single quote marks or double quote marks.
 |===
 
-[WARNING]
+[NOTE]
 ====
-For `FLOAT` and `DOUBLE` values, the GSQL Loader supports exponential notation as shown (e.g., 1.25 E-7).
+[For v3.9.2+] FLOAT and DOUBLE values are displayed with up to 7 and 15 digits of precision, respectively.
+====
 
-The GSQL Query Language only reads values without exponents. It may display output values with exponential notation, however.
+[IMPORTANT]
+.Exponential notation
+====
+For `FLOAT` and `DOUBLE` values, the GSQL Loader can read input values in exponential notation (e.g., 1.25 E-7), but the GSQL query language cannot.
+
+GSQL may display output values with exponential notation, however.
 ====
 
 [WARNING]

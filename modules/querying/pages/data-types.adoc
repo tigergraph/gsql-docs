@@ -177,11 +177,11 @@ The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `
 
 | `FLOAT`
 | `0`
-| A decimal: `3.14159`
+| A decimal precise up to about 7 digits: `3.14159`
 
 | `DOUBLE`
 | `0`
-| A decimal with greater precision than `FLOAT`
+| A decimal precise up to about 15 digits.
 
 | `BOOL`
 | `false`

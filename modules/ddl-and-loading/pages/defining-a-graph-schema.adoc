@@ -164,7 +164,7 @@ Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attr
 It is conventional for the primary key to be the first attribute.
 The primary key data type must be `STRING`, `INT`, or `UINT`.
 
-Its syntax for the `primary_id_name_type` term is as follows:
+Its syntax for the `id_and_attribute_list` term is as follows:
 
   [attribute_list ", "] id_attribute_name key_type PRIMARY KEY ["," attribute_list]
 
@@ -186,7 +186,7 @@ GSQL supports composite keys - grouping multiple attributes to create a primary 
 To specify a composite key, first definite all the vertex type's attributes.
 Follow that with the keyword PRIMARY KEY and then the parenthesized list of attributes that form the composite key.
 
-Its syntax for the `primary_id_name_type` term is as follows:
+Its syntax for the `id_and_attribute_list` term is as follows:
 
 [source.wrap,ebnf]
 ----

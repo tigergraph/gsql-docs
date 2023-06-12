@@ -75,11 +75,11 @@ CREATE VERTEX vertex_type_name "("id_and_attribute_list")" [vertex_options]
 
 There are three variations of `id_and_attribute_list`, based on whether the key is to be treated as an attribute and whether the key is a composite key:
 
-. Using the PRIMARY_ID keyword.
+. Using xref:_primary_id[`PRIMARY_ID`] to define the ID.
  By default, the ID is not considered an attribute, so it cannot be read and used in expressions with the same flexible as regular attributes.
  The advantage of this mode is that vertices are stored more compactly.
-. Using the `PRIMARY KEY` phrase with an attribute.
-. Using the `PRIMARY KEY` phrase with a parenthesized list of attributes, to create a compound key out of attributes.
+. Using xref:_primary_key[`PRIMARY KEY`] to designate an attribute as the ID.
+. Using xref:_composite_key_using_primary_key[`PRIMARY KEY`] with a parenthesized list of attributes, to create a compound key.
 
 [TIP]
 ====
@@ -115,15 +115,15 @@ An empty string is not a valid value for a vertex primary ID. Beginning with v3.
 A vertex primary key has a length limit of 16384 bytes.
 The size of a vertex, including all of its attributes, cannot exceed 10 megabytes.
 
-The following sections going into detail for each of the primary id/key options, attribute lists, and the vertex options.
+The following sections go into detail for each of the primary id/key options, attribute lists, and the vertex options.
 
-=== PRIMARY_ID option
+=== PRIMARY_ID
 
 This is GSQL's original syntax and semantics.
 Its data type may be `STRING`, `INT`, `UINT`, or `DATETIME`.
-The syntax for the `primary_id_name_type` term is as follows:
+Its syntax for the `id_and_attribute_list` term is as follows:
 
- PRIMARY_ID id_name id_type
+ PRIMARY_ID id_name id_type "," attribute_list
 
 Example:
 
@@ -132,23 +132,23 @@ Example:
 CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
 
-By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID as a regular vertex. For example, if the ID's field name is `serial_no`, neither of the following syntaxes are valid:
+By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID as a regular attribute. For example, if the ID's field name is `serial_num`, neither of the following syntaxes are valid:
 
 [source.wrap]
 ----
+  v.serial_num  //  error: not supported
   v.id  //  error: id is not a built-in function or field name
-  v.serial_no  //  error: not supported
 ----
 
 If you want to retreive a vertex having a specific ID, you can use the `to_vertex(id, type)` function.
 
-See the next section to see how to treat the primary ID as attribute.
+See the next section to see how to override the default behavior and treat the primary ID as attribute.
 
-=== PRIMARY_ID and WITH primary_id_as_attribute
+=== PRIMARY_ID and `WITH primary_id_as_attribute`
 If the `WITH ... primary_id_as_attribute="true"` option is declared, then the ID can be treated as a readable attribute.
 Internally, the ID is being stored a second time, once as an ID and once as a write-once attribute.
 This is exactly the same way that PRIMARY KEY allows the ID to be treated as a vertex.
-Using this option eliminates the storage efficiency of `PRIMARY_ID` in exchange for greater flexible in query operations.
+Using this option eliminates the storage advantage of `PRIMARY_ID` in exchange for greater flexible in query operations.
 
 Example:
 
@@ -157,17 +157,16 @@ Example:
 CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT) WITH primary_id_as_attribute="true"
 ----
 
-=== PRIMARY KEY option with a single attribute
+=== PRIMARY KEY
 
 Instead of the legacy `PRIMARY_ID` syntax, GSQL offers another option for specifying the primary key.
 Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attribute list to make the attribute the primary key.
 It is conventional for the primary key to be the first attribute.
 The primary key data type must be `STRING`, `INT`, or `UINT`.
 
-Syntax:
+Its syntax for the `primary_id_name_type` term is as follows:
 
-  id_name key_type PRIMARY KEY
-
+  [attribute_list ", "] id_attribute_name key_type PRIMARY KEY ["," attribute_list]
 
 Example:
 
@@ -178,22 +177,20 @@ CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 
 [WARNING]
 ====
-PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type in GraphStudio.
+PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to use that vertex type or the global schema in GraphStudio.
 ====
 
-
-
-=== PRIMARY KEY option with a composite key
+=== Composite Key using `PRIMARY KEY`
 
 GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex.
-To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
-For a compound key, the PRIMARY KEY clause should come at the end of the attribute list.
+To specify a composite key, first definite all the vertex type's attributes.
+Follow that with the keyword PRIMARY KEY and then the parenthesized list of attributes that form the composite key.
 
-Syntax:
+Its syntax for the `primary_id_name_type` term is as follows:
 
 [source.wrap,ebnf]
 ----
-composite_id_name_type := PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
+attribute_list "," PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
 ----
 
 Example:
@@ -205,7 +202,7 @@ CREATE VERTEX Movie (id UINT, title STRING, year UINT, PRIMARY KEY (title,year,i
 
 [WARNING]
 ====
-Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
+Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to use that vertex type or the global schema in GraphStudio.
 ====
 
 === Vertex Attribute List
@@ -222,7 +219,7 @@ attribute_list :=
 The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
-. There is no maximum number of attributes, but there is a maximum storage size for a xref:defining-a-graph-schema.adoc#_create_vertex[vertex].
+. There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].
 
 Example:
 
@@ -230,7 +227,7 @@ Example:
 
 .Vertex definitions for User-Book-Rating graph
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 include::appendix:example$book_rating/d_schema_vertex_attributes.gsql[]
 ----
@@ -246,7 +243,7 @@ WITH [STATS="none"|"outdegree_by_edgetype"]
 [primary_id_as_attribute="false"]
 ----
 
-The xref:defining-a-graph-schema.adoc#_primary_id_and_with_primary_id_as_attribute[primary_id_as_attribute] option was described with PRIMARY ID.
+The xref:#_primary_id_and_with_primary_id_as_attribute[primary_id_as_attribute] option was described with PRIMARY ID.
 
 
 ==== `WITH STATS`

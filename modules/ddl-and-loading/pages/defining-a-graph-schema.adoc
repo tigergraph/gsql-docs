@@ -58,129 +58,168 @@ To learn more about permission and privileges, see xref:tigergraph-server:user-a
 
 == `CREATE VERTEX`
 
-The `CREATE VERTEX` statement defines a new global vertex type with a name and an attribute list.
+*Required privilege*: `WRITE_SCHEMA`
+
+The `CREATE VERTEX` statement defines a new global vertex type with a name, primary key, and an attribute list.
 
 Data loaded to a global vertex type in one graph will be shared across all graphs that use that vertex type.
 See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for instructions on creating local vertices.
+At a high level, the `CREATE VERTEX` syntax is as follows:
 
-At a high level of abstraction, the format is
-
-[source,text]
+[sourc.wrap,text]
 ----
-CREATE VERTEX Vertex_Type_Name (id_and_attribute_list) [ vertex_options ]
+CREATE VERTEX vertex_type_name "("id_and_attribute_list")" [vertex_options]
 ----
 
-More specifically, the syntax is as follows, assuming that the vertex ID is listed first:
+=== Primary ID/key options
+
+There are three variations of `id_and_attribute_list`, based on whether the key is to be treated as an attribute and whether the key is a composite key:
+
+. xref:_primary_id[Using `PRIMARY_ID`] to define the ID.
+ By default, the ID is not considered an attribute, so it cannot be read and used in expressions with the same flexible as regular attributes.
+ The advantage of this mode is that vertices are stored more compactly.
+. xref:_primary_key[Using `PRIMARY KEY`] to designate one attribute as the primary key.
+. xref:_composite_key_using_primary_key[Using `PRIMARY KEY` to create a composite key].
+
+[TIP]
+====
+If you have a single attribute which serves as your primary key, use the `PRIMARY_ID` syntax, along with the WITH `primary_id_as_attribute="true"` vertex option.
+This gives you the flexibility of option 2 with the GraphStudio compatibility of option 1.
+====
+
+Regardless of which option is selected, GSQL automatically creates a hash index of the key for fast O(1) searches.
+
+The syntax for the three options are summarized below.
 
 .CREATE VERTEX Syntax
-[source,ebnf]
+[source.wrap,enbf]
 ----
-CREATE VERTEX Vertex_Type_Name "(" primary_id_name_type
-    ["," attribute_name type [DEFAULT default_value] ]* ")"
-    [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
-----
+id_and_attribute_list :=
+  PRIMARY_ID id_name id_type ["," attribute_list] // <1>
+  | id_name id_type PRIMARY KEY ["," attribute_list] // <2>
+  | attribute list "," PRIMARY KEY "("key_list")" // <3>
 
-=== Required privilege
-`WRITE_SCHEMA`
-
-=== Keys and Attributes
-
-[NOTE]
-====
-Beginning with v2.3, there are two syntaxes for specifying the primary id/key:
-
-Legacy PRIMARY_ID syntax: The legacy syntax remains valid, but there are additional options and additional flexibility:
-
-. PRIMARY_ID and WITH primary_id_as attribute
-. PRIMARY KEY syntax.  This syntax is modeled after SQL.
-====
-
-==== `PRIMARY_ID`  and `WITH primary_id_as_attribute`
-
-The `primary_id` is a required field whose purpose is to uniquely identify each vertex instance.
-GSQL creates a hash index on the primary id with O(1) time complexity.
-Its data type may be `STRING`, `INT`, or `UINT`.
-The syntax for the `primary_id_name_type` term is as follows:
-
-[source,ebnf]
-----
-primary_id_name_type := PRIMARY_ID id_name id_type
+attribute_list :=
+  attribute_name type [DEFAULT default_value]
+  ["," attribute_name type [DEFAULT default_value] ]*
 ----
 
-NOTE: By default, the `primary_id` field is not one of the attribute fields.
-The purpose of this distinction is to minimize storage space for vertices.
-The functional consequence of this difference is that a query cannot read the `primary_id` or use it as part of an expression.
+`id_type` may be `STRING`, `INT`, `UINT`, or `DATETIME`.
+Once a vertex is inserted, its ID value cannot be modified. Every vertex must have a unique ID value, of course.
+
+[IMPORTANT]
+An empty string is not a valid value for a vertex primary ID. Beginning with v3.6.3, GSQL will reject attempts to insert or load a vertex whose ID is an empty string.
+
+*Maximum Size*
+
+A vertex primary key has a length limit of 16384 bytes.
+The size of a vertex, including all of its attributes, cannot exceed 10 megabytes.
+
+The following sections go into detail for each of the primary id/key options, attribute lists, and the vertex options.
+
+=== PRIMARY_ID
+
+This is GSQL's original syntax and semantics.
+Its data type may be `STRING`, `INT`, `UINT`, or `DATETIME`.
+Its syntax for the `id_and_attribute_list` term is as follows:
+
+ PRIMARY_ID id_name id_type "," attribute_list
 
 Example:
 
-[source,ruby]
+[source.wrap,ebnf]
 ----
-CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
-    WITH primary_id_as_attribute="true"
+CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
 
-==== `PRIMARY KEY`
+By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID as a regular attribute. For example, if the ID's field name is `serial_num`, neither of the following syntaxes are valid:
 
-Instead of the legacy `PRIMARY_ID` syntax, starting with v2.3, GSQL now offers another option for specifying the primary key.
+[source.wrap]
+----
+  v.serial_num  //  error: not supported
+  v.id  //  error: id is not a built-in function or field name
+----
+
+If you want to retreive a vertex having a specific ID, you can use the `to_vertex(id, type)` function.
+
+See the next section to see how to override the default behavior and treat the primary ID as attribute.
+
+=== `WITH primary_id_as_attribute`
+If the `WITH ... primary_id_as_attribute="true"` option is declared, then the ID can be treated as a readable attribute.
+Internally, the ID is being stored a second time, once as an ID and once as a write-once attribute.
+This is exactly the same way that PRIMARY KEY allows the ID to be treated as a vertex.
+Using this option eliminates the storage advantage of `PRIMARY_ID` in exchange for greater flexible in query operations.
+
+Example:
+
+[source.wrap,gsql]
+----
+CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT) WITH primary_id_as_attribute="true"
+----
+
+=== PRIMARY KEY
+
+Instead of the legacy `PRIMARY_ID` syntax, GSQL offers another option for specifying the primary key.
 Append the keyword phrase `PRIMARY KEY` to any one of the attributes in the attribute list to make the attribute the primary key.
 It is conventional for the primary key to be the first attribute.
-Each vertex instance must have a unique value for the primary key attribute. GSQL creates a hash index on the PRIMARY KEY attribute with O(1) time complexity.
-The primary key data type should `STRING`, `INT`, or `UINT`.
+The primary key data type must be `STRING`, `INT`, or `UINT`.
 
-[source,ebnf]
-----
-primary_id_name_type := id_name_id_type PRIMARY KEY
-----
+Its syntax for the `id_and_attribute_list` term is as follows:
 
+  [attribute_list ", "] id_attribute_name key_type PRIMARY KEY ["," attribute_list]
 
 Example:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
 ----
 
 [WARNING]
 ====
-PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
+PRIMARY KEY is not supported in GraphStudio. If you define a vertex type using the PRIMARY KEY syntax, you will not be able to use that vertex type or the global schema in GraphStudio.
 ====
 
-==== Composite keys
+=== Composite Key using `PRIMARY KEY`
 
 GSQL supports composite keys - grouping multiple attributes to create a primary key for a specific vertex.
-To specify a composite key, use the keyword PRIMARY KEY followed by the attributes that form the composite key enclosed in parentheses in the CREATE VERTEX command.
+To specify a composite key, first definite all the vertex type's attributes.
+Follow that with the keyword PRIMARY KEY and then the parenthesized list of attributes that form the composite key.
 
-[source,ebnf]
+Its syntax for the `id_and_attribute_list` term is as follows:
+
+[source.wrap,ebnf]
 ----
-composite_id_name_type := PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
+attribute_list "," PRIMARY KEY "(" attribute_name ("," attribute_name)* ")"
 ----
 
 Example:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 CREATE VERTEX Movie (id UINT, title STRING, year UINT, PRIMARY KEY (title,year,id))
 ----
 
 [WARNING]
 ====
-Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to operate on the graph with that vertex type or the global schema in GraphStudio.
+Composite keys are not supported in GraphStudio. If you define a vertex type with composite keys, you will not be able to use that vertex type or the global schema in GraphStudio.
 ====
 
-==== Vertex Attribute List
+=== Vertex Attribute List
 
-The attribute list, enclosed in parentheses, is a list of one or more _id definitions_ and _attribute descriptions_ separated by commas:
+The attribute list is a list of one or more _id definitions_ and _attribute descriptions_ separated by commas:
 
 [source,ebnf]
 ----
-primary_id_name_type
-[, attribute_name type [DEFAULT default_value ] ]*
+attribute_list :=
+  attribute_name type [DEFAULT default_value]
+  ["," attribute_name type [DEFAULT default_value] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
-. Any number of additional attributes may be listed after the primary_id attribute. Each attribute has a name, type, and optional default *value* (for primitive-type or DATETIME attributes only)
+. There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].
 
 Example:
 
@@ -188,14 +227,26 @@ Example:
 
 .Vertex definitions for User-Book-Rating graph
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 include::appendix:example$book_rating/d_schema_vertex_attributes.gsql[]
 ----
 
 Unlike the tables in a relational database, vertex types do not need to have a foreign key attribute for one vertex type to have a relationship to another vertex type.  Such relationships are handled by edge types.
 
-=== `WITH STATS`
+=== Vertex Options
+
+[source.wrap, gsql]
+----
+vertex_option :=
+WITH [STATS="none"|"outdegree_by_edgetype"]
+[primary_id_as_attribute="false"]
+----
+
+The xref:#_primary_id_and_with_primary_id_as_attribute[primary_id_as_attribute] option was described with PRIMARY ID.
+
+
+==== `WITH STATS`
 
 By default, when the loader stores a vertex and its attributes in the graph store, it also stores some statistics about the vertex's outdegree -- how many connections it has to other vertices.
 The optional `WITH STATS` clause lets the user control how much information is recorded. Recording the information in the graph store will speed up queries which need degree information, but it increases the memory usage.
@@ -204,13 +255,13 @@ There are two* options.
 * If `outdegree_by_edgetype` is chosen, then each vertex records a list of degree count values, one value for each type of edge in the schema.
 * If "none" is chosen, then no degree statistics are recorded with each vertex. If the `WITH STATS` clause is not used, the loader acts as if `outdegree_by_edgetype` were selected.
 
-The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edgetype name as a string parameter.  To get the total outdegree, omit the parameter.
+The graph below has two types of edges between persons: phone_call and text.  For Bobby, the `outdegree_by_edgetype` option records how many phone calls Bobby made (1) and how many text messages Bobby sent (2). This information can be retrieved using the built-in vertex function outdegree().  To get the outdegree of a specific edge type, provide the edge type name as a string parameter.  To get the total outdegree, omit the parameter.
 
 .Illustration of outdegree stats
 image::comms-graph-outdegree.png["Diagram of a graph with five person vertices. Andy is connected to Bobby with a phone_call edge. Bobby is connected to three other person vertices, Casey, Dean and Emory with a text, phone_call, and text edges respectively."]
 
 |===
-| WITH STATS option (case insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")
+| WITH STATS option (case-insensitive) | Bobby.outdegree() | Bobby.outdegree("text") | Bobby.outdegree("phone_call")
 
 | "none"
 | not available

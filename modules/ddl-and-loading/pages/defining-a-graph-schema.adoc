@@ -75,11 +75,11 @@ CREATE VERTEX vertex_type_name "("id_and_attribute_list")" [vertex_options]
 
 There are three variations of `id_and_attribute_list`, based on whether the key is to be treated as an attribute and whether the key is a composite key:
 
-. Using xref:_primary_id[`PRIMARY_ID`] to define the ID.
+. xref:_primary_id[Using `PRIMARY_ID`] to define the ID.
  By default, the ID is not considered an attribute, so it cannot be read and used in expressions with the same flexible as regular attributes.
  The advantage of this mode is that vertices are stored more compactly.
-. Using xref:_primary_key[`PRIMARY KEY`] to designate an attribute as the ID.
-. Using xref:_composite_key_using_primary_key[`PRIMARY KEY`] with a parenthesized list of attributes, to create a compound key.
+. xref:_primary_key[Using `PRIMARY KEY`] to designate one attribute as the primary key.
+. xref:_composite_key_using_primary_key[Using `PRIMARY KEY` to create a composite key].
 
 [TIP]
 ====
@@ -144,7 +144,7 @@ If you want to retreive a vertex having a specific ID, you can use the `to_verte
 
 See the next section to see how to override the default behavior and treat the primary ID as attribute.
 
-=== PRIMARY_ID and `WITH primary_id_as_attribute`
+=== `WITH primary_id_as_attribute`
 If the `WITH ... primary_id_as_attribute="true"` option is declared, then the ID can be treated as a readable attribute.
 Internally, the ID is being stored a second time, once as an ID and once as a write-once attribute.
 This is exactly the same way that PRIMARY KEY allows the ID to be treated as a vertex.

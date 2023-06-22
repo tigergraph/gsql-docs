@@ -104,7 +104,7 @@ The `CONCURRENCY` parameter sets the maximum number of concurrent requests that 
 The `BATCH_SIZE` parameter sets the number of data lines included in each concurrent request sent to the GPE.  The default is 8192.
 
 ==== `EOF`
-This is a boolean parameter (`"True"` or `"False"`). There are two modes for the S3 Loader: streaming mode (`"False"`) and EOF mode (`"True"`). The default mode is `"False"`): streaming mode.
+This is a boolean parameter. The loader has two modes: streaming mode (`"False"`) and EOF mode (`"True"`). The default mode is (`"False"`): streaming mode.
 
 * In streaming mode, loading will never stop until the job is aborted.
 * In EOF mode, loading will stop after consuming the provided file objects.

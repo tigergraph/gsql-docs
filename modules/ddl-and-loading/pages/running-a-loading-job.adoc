@@ -47,7 +47,7 @@ For more information, see xref:tigergraph-server:user-access:access-control-mode
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] job_name [
     USING file_var [="file_path_string"][, file_var [="file_path_string"]]*
-    [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]
+    [, CONCURRENCY=cnum][,BATCH_SIZE=bnum][,EOF="eof_mode"]
 ]
 ----
 
@@ -109,6 +109,12 @@ The `CONCURRENCY` parameter sets the maximum number of concurrent requests that 
 ==== `BATCH_SIZE`
 
 The `BATCH_SIZE` parameter sets the number of data lines included in each concurrent request sent to the GPE.  The default is 8192.
+
+==== `EOF`
+This is a boolean parameter (`"True"` or `"False"`). There are two modes for the S3 Loader: streaming mode (`"False"`) and EOF mode (`"True"`). The default mode is `"False"`): streaming mode.
+
+* In streaming mode, loading will never stop until the job is aborted.
+* In EOF mode, loading will stop after consuming the provided file objects.
 
 === Running Loading Jobs as REST Requests
 

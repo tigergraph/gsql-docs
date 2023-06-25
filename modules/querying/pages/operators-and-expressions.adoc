@@ -126,6 +126,8 @@ See the <<bit-operators>> section below.
 mathOperator := "*" | "/" | "%" | "+" | "-" | "<<" | ">>" | "&" | "|"
 ----
 
+==== Operator precedence
+
 Operator precedences are shown in the following list, from the highest precedence to the lowest. Operators that are shown together on a line have the same precedence:
 
 .Operator Precedence, highest to lowest
@@ -164,6 +166,48 @@ include::appendix:example$minimal_net/operators_expressions_math_operators_resul
 --
 ====
 
+==== Automatic numeric type casting
+
+When the two operands for a mathematical operator have different data types, the operator will first make an internal copy of the operand with the "lower" precision and convert it the "higher" precision, according to this hierarchy, from lowest to highest:
+
+INT -> UINT -> FLOAT -> DOUBLE
+
+The final result value will have this higher precision.
+
+**Example 1: **
+[code]
+----
+INT A = 7;
+INT B = 2;
+PRINT A / B;
+----
+Both A and B are INT, so integer division is performed.
+The output is 3.
+
+*Example 2:*
+[code]
+----
+FLOAT C = 7;
+INT D = 2.0;
+PRINT C / D;
+----
+C will be copied to an internal FLOAT type variable, so that the division operation is 7.0/2.0 = 3.5;
+
+*Example 3:*
+[code]
+----
+INT E = -7;
+UINT F = 2;
+PRINT E  / F;
+----
+E will be copied to an internal UINT type variable which cannot properly handle its negative value.  The result will be wrong,
+
+[WARNING]
+====
+Operations using UINT and INT will be converted to UINT-only operations, destroying any negative values.
+
+If your INT values or resulting values could be negative, and all of your values will be within the range of INT, then consider explicitly converting your UINT values to INT, so that the operators work exclusively with INT.
+====
 
 === Boolean Operators
 

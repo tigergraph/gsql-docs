@@ -139,12 +139,12 @@ TYPEDEF TUPLE "<" field_name field_type ["(" field_size ")"]
 
 | `INT`
 | Optional
-| 1, 2, 4 (default), or 8 bytes
+| 1, 2, 4, or 8 bytes. Default is 8.
 | 0 to 2{caret}(N*8) - 1
 
 | `UINT`
 | Optional
-| 1, 2, 4 (default), or 8 bytes
+| 1, 2, 4, or 8 bytes. Default is 8.
 | -2{caret}(N*8 - 1) to 2{caret}(N*8 - 1) - 1
 
 | `FLOAT`

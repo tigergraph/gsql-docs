@@ -111,14 +111,23 @@ The `CONCURRENCY` parameter sets the maximum number of concurrent requests that 
 The `BATCH_SIZE` parameter sets the number of data lines included in each concurrent request sent to the GPE.  The default is 8192.
 
 ==== `EOF`
-This is a boolean parameter. The loader has two modes: streaming mode (`"False"`) and EOF mode (`"True"`). The default mode is (`"False"`): streaming mode.
 
-* In streaming mode, loading will never stop until the job is aborted.
+NOTE: The `EOF` option applies only for Kafka-based or connector-based loading.
+Direct loading of local files is always in `EOF` mode.
+
+
+This is a boolean parameter
+The loader has two modes: streaming mode (`"False"`) and EOF mode (`"True"`).
+The default mode is (`"True"`): EOF mode.
+
 * In EOF mode, loading will stop after consuming the provided file objects.
+* In streaming mode, loading will never stop until the job is aborted.
 
 === Running Loading Jobs as REST Requests
 
-Another way to run a loading job is through the `+POST /ddl/{graph_name}+` endpoint of the REST{pp} server. Since the REST{pp} server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL. For details on how to use the endpoint, please see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[Run a loading job].
+Another way to run a loading job is through the `+POST /ddl/{graph_name}+` endpoint of the REST{pp} server.
+Since the REST{pp} server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL.
+For details on how to use the endpoint, please see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[Run a loading job].
 
 
 

@@ -166,7 +166,7 @@ include::appendix:example$minimal_net/operators_expressions_math_operators_resul
 --
 ====
 
-==== Automatic numeric type casting
+=== Automatic numeric type casting
 
 When the two operands for a mathematical operator have different data types, the operator will first make an internal copy of the operand with the "lower" precision and convert it the "higher" precision, according to this hierarchy, from lowest to highest:
 

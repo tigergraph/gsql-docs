@@ -119,7 +119,7 @@ The operators listed in this section are designed to behave like the operators i
 
 We support the following standard mathematical operators and meanings.
 The latter four (`<<` `>>`  `&` `|`) are for bitwise operations.
-See the <<bit-operators>> section below.
+See the xref:#_bit_operators[] section below.
 
 [source,ebnf]
 ----
@@ -611,13 +611,26 @@ Exactly one type is allowed in the `RETURNS` header, and thus the `RETURN` state
 A subquery must be created before the query that calls the subquery.
 A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
 
-[CAUTION]
-====
-* A xref:distributed-query-mode.adoc[distributed query] cannot call another distributed query
-* A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause
-====
 
-.Main Components of a Subquery
+=== Subquery Limitations
+* xref:query-operations.adoc#_interpret_query[Interpreted mode] is not supported.
+* A xref:distributed-query-mode.adoc[distributed query] cannot call another distributed query
+* A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause.
+
+In 3.9.2:
+
+* A subquery with a `SET<VERTEX<` _v_type_ `>>` (specified vertex type) parameter does not work in Interpreted mode or Distributed mode.
+* A subquery with a `SET<VERTEX>` (generic vertex type) parameter can work but has several limitations:
+** This combination cannot be used in an Interpreted query.
+** In Distributed mode, there may be only one such SET<VERTEX> parameter.
+** The subquery cannot directly return the `vset.size() function.`
+
+In 3.9.0 and 3.9.1:
+
+* A subquery with a `SET<VERTEX>` (either specific or generic vertex type) parameter does not work in Distributed mode or Interpreted mode.
+
+=== Main Components of a Subquery
+
 [source,gsql]
 ----
 CREATE QUERY <query_name>() FOR GRAPH <Graph_Name> <1>

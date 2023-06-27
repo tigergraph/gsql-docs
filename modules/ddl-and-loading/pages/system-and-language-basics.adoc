@@ -439,12 +439,12 @@ TYPEDEF TUPLE "<" field_name field_type ["(" field_size ")"]
 
 | `INT`
 | Optional
-| 1, 2, 4 (default), or 8 bytes
+| 1, 2, 4, or 8 bytes. Default: 8 [See Note below]
 | 0 to 2{caret}(N*8) - 1
 
 | `UINT`
 | Optional
-| 1, 2, 4 (default), or 8 bytes
+| 1, 2, 4, or 8 bytes. Default: 8 [See Note below]
 | -2{caret}(N*8 - 1) to 2{caret}(N*8 - 1) - 1
 
 | `FLOAT`
@@ -472,6 +472,8 @@ TYPEDEF TUPLE "<" field_name field_type ["(" field_size ")"]
 | Any number of characters
 | Any string under N characters
 |===
+
+NOTE: Prior to v3.6.2, the default size for INT and UINT fields in a UDT was 4 bytes.
 
 A UDT must be defined before being used as a field in a vertex type or edge type.
 To define a UDT, use the `TYPEDEF TUPLE` statement. Here is an example of a `TYPEDEF TUPLE` statement:

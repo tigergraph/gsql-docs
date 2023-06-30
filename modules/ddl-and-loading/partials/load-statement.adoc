@@ -419,7 +419,7 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 
 === Loading Parquet Data
 
-TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
+TigerGraph can load data from Parquet files if they are stored in AWS S3 buckets. For more details on how to set up S3 data sources and loading jobs, read the xref:3.5@tigergraph-server:data-loading:s3-loader-user-guide.adoc[AWS S3 Loader User Guide].
 In the background TigerGraph uses the JSON loading functionality to read data from Parquet files, so the xref:creating-a-loading-job.adoc#_loading_json_data[JSON specific information] in the previous section applies.
 
 In order to load Parquet data, you need to:

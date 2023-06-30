@@ -216,7 +216,7 @@ attribute_list :=
   ["," attribute_name type [DEFAULT default_value] ]*
 ----
 
-The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
+The available attribute types, including user-defined types, are listed in the section xref:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types].
 
 . Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 . There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].

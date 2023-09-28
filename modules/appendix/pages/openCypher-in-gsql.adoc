@@ -1,0 +1,315 @@
+= openCypher Features in GSQL
+
+We support many openCypher features in TigerGraph but not all.
+
+This page lists all of openCypher features that are currently *supported* and *unsupported* by TigerGraph.
+
+== Supported openCypher Features
+=== Clauses
+
+[cols="1,1"]
+|===
+|Clause |Description
+
+|DELETE | Delete graph elements — nodes and relationships.
+
+Any node to be deleted must also have all associated relationships explicitly deleted.
+
+|DETACH DELETE |Writing Delete a node or set of nodes.
+
+All associated relationships will automatically be deleted.
+
+|LIMIT |Reading sub-clause A sub-clause used to constrain the number of records in the output.
+
+|MATCH |Reading Specify the patterns to search for in the database.
+
+|MANDATORY MATCH |Reading Specify the patterns to search for in the database, and fail if no match is found.
+
+|ORDER BY [ASC[ENDING] DESC[ENDING]] |Reading sub-clause A sub-clause following
+
+|RETURN or WITH |Specifying that the output should be sorted in either ascending (the default) or descending order.
+
+|RETURN … [AS] |Projecting Defines what to include in the query result set.
+
+|SKIP |Reading/Writing A sub-clause defining from which record to start including the records in the output.
+
+|WITH … [AS] |Projecting Allows query parts to be chained together, piping the results from one to be used as starting points or criteria in the next.
+
+See below for restrictions.
+
+|WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
+|===
+
+=== Operators
+[cols="1,1"]
+|===
+|% |Mathematical Modulo division
+
+|* |Mathematical Multiplication
+
+|+ |Mathematical Addition
+
+|+ |String Concatenation
+
+|+ |List Concatenation
+
+|- |Mathematical Subtraction or unary minus
+
+|. |General Property access
+
+|/ |Mathematical Division
+
+|< |Comparison Less than
+
+|< = |Comparison Less than or equal to
+
+|<> |Comparison Inequality
+
+|= |Comparison Equality
+
+|> |Comparison Greater than
+
+|>= |Comparison Greater than or equal to
+
+|AND |Boolean Conjunction
+
+|CONTAINS |String comparison Case-sensitive inclusion search
+
+|DISTINCT |General Duplicate removal
+
+|ENDS WITH |String comparison Case-sensitive suffix search
+
+|IN List |List element existence check
+
+|IS NOT NULL |Comparison Non-null check
+
+|IS NULL |Comparison null check
+
+|NOT |Boolean Negation
+
+|OR |Boolean Disjunction
+
+|STARTS WITH |String comparison Case-sensitive prefix search
+
+|XOR |Boolean Exclusive disjunction
+
+|[ ] |General Subscript (dynamic property access)
+
+|[ ] |List Subscript (accessing element(s) in a list)
+
+|^ |Mathematical Exponentiation
+|===
+
+=== Functions
+
+[cols="1,1"]
+|===
+|left() |String Returns a string containing the specified number of leftmost characters of the original string.
+
+|right() |String Returns a string containing the specified number of rightmost characters of the original string.
+
+|reverse() |String Returns a string in which the order of all characters in the original string have been reversed.
+
+|lTrim() |String Returns the original string with leading whitespace removed.
+
+|replace() |String Returns a string in which all occurrences of a specified string in the original string have been replaced by another (specified) string.
+
+|rTrim() |String Returns the original string with trailing whitespace removed.
+
+|trim() |String Returns the original string with leading and trailing whitespace removed.
+
+|acos() |Trigonometric Returns the arccosine of a number in radians.
+
+|asin() |Trigonometric Returns the arcsine of a number in radians.
+
+|atan() |Trigonometric Returns the arctangent of a number in radians.
+
+|atan2() |Trigonometric Returns the arctangent2 of a set of coordinates in radians.
+
+|ceil() |Numeric Returns the smallest floating point number that is greater than or equal to a number and equal to a mathematical integer.
+
+|cot() |Trigonometric Returns the cotangent of a number.
+
+|degrees() |Trigonometric Converts radians to degrees.
+
+|exp() |Logarithmic Returns e^n, where e is the base of the natural logarithm, and n is the value of the argument expression.
+
+|floor() |Numeric Returns the largest floating point number that is less than or equal to a number and equal to a mathematical integer.
+
+|log() |Logarithmic Returns the natural logarithm of a number.
+
+|log10() |Logarithmic Returns the common logarithm (base 10) of a number.
+
+|pi() |Trigonometric Returns the mathematical constant pi.
+
+|radians() |Trigonometric Converts degrees to radians.
+
+|rand() |Numeric Returns a random floating point number in the range from 0 (inclusive) to 1 (exclusive); i.e. [0, 1).
+
+|round() |Numeric Returns the value of a number rounded to the nearest integer.
+
+|sign() |Numeric Returns the signum of a number: 0 if the number is 0, -1 for any negative number, and 1 for any positive number.
+
+|sin() |Trigonometric Returns the sine of a number.
+
+|sqrt() |Logarithmic Returns the square root of a number.
+
+|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
+
+|tan() |Trigonometric Returns the tangent of a number.
+
+|abs() |Numeric Returns the absolute value of a number.
+
+|avg() |Aggregating Returns the average of a set of values.
+
+|coalesce() |Scalar Returns the first non-null value in a list of expressions.
+
+|cos() |Trigonometric Returns the cosine of a number.
+
+|count() |Aggregating Returns the number of values or records.
+
+|max() |Aggregating Returns the maximum value in a set of values.
+
+|min() |Aggregating Returns the minimum value in a set of values.
+
+|sum() |Aggregating Returns the sum of a set of numeric values.
+
+|type() |Scalar Returns the string representation of the relationship type.
+
+|toLower() |String Returns the original string in lowercase.
+
+|toString() |String Converts an integer, float or boolean value to a string.
+
+|toUpper() |String Returns the original string in uppercase.
+
+|substring() |String Returns a substring of the original string, beginning with a 0-based index start and length.
+
+|e() |Logarithmic Returns the base of the natural logarithm, e.
+
+|timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
+|===
+
+=== Expressions
+[cols="1,1"]
+|===
+|CASE Expression |A generic conditional expression, similar to if/else statements available in other languages.
+|===
+
+== Unsupported openCypher Features
+=== Clauses
+[cols="1,1]
+|===
+|OPTIONAL MATCH |Reading Specify the patterns to search for in the database while using nulls for missing parts of the pattern.
+
+|CALL […YIELD] |Reading/Writing Invoke a procedure deployed in the database.
+
+|CREATE |Writing create nodes and relationships.
+
+|MERGE |Reading/Writing Ensures that a pattern exists in the graph. Either the pattern already exists, or it needs to be created.
+
+|REMOVE |Writing Remove properties and labels from nodes and relationships.
+
+|UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
+
+|UNION ALL |Set operations Combines the result of multiple queries. Duplicates are retained.
+
+|UNWIND … [AS] |Projecting Expands a list into a sequence of records.
+
+|SET |Writing Update labels on nodes and properties on nodes and relationships.
+|===
+
+=== Operators
+N/A
+
+=== Functions
+[cols="1,1"]
+|===
+|collect() |Aggregating Returns a list containing the values returned by an expression.
+
+|endNode() |Scalar Returns the end node of a relationship.
+
+|exists() |Predicate Returns true if a match for the pattern exists in the graph, or if the specified property exists in the node, relationship or map.
+
+|head() |Scalar Returns the first element in a list.
+
+|id() |Scalar Returns the id of a relationship or node.
+
+|keys() |List Returns a list containing the string representations for all the property names of a node, relationship, or map.
+
+|labels() |List Returns a list containing the string representations for all the labels of a node.
+
+|last() |Scalar Returns the last element in a list.
+
+|length() |Scalar Returns the length of a path.
+
+|nodes() |List Returns a list containing all the nodes in a path.
+
+|properties() |Scalar Returns a map containing all the properties of a node or relationship.
+
+|range() |List Returns a list comprising all integer values within a specified range.
+
+|relationships() |List Returns a list containing all the relationships in a path.
+
+|size() |Scalar Returns the number of items in a list.
+
+|size() |Applied to pattern expression Scalar Returns the number of subgraphs matching the pattern expression. size() applied to string Scalar Returns the size of a string.
+
+|split() |String Returns a list of strings resulting from the splitting of the original string around matches of the given delimiter.
+
+|startNode() |Scalar Returns the start node of a relationship.
+
+|tail() |List Returns all but the first element in a list.
+
+|reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
+
+|stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
+
+|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
+|percentileDisc() |Aggregating Returns the nearest value to the given percentile over a group using a rounding method.
+
+|toBoolean() |Scalar Converts a string value to a boolean value.
+
+|toFloat() |Scalar Converts an integer or string value to a floating point number.
+
+|toInteger() |Scalar Converts a floating point or string value to an integer value.
+|===
+
+=== Syntax
+
+Certain openCypher syntax is also *not* supported.
+
+* Queries with a *WITH* clause that *does not* implicitly group by exactly one vertex variable.
+
+. 0 vertex variables as group key
+[source,gsql]
+MATCH (u:User {name: "John") // find all users with the same friend count as John
+WITH     u.friendCount AS fc   // note, u not included in group key list
+MATCH  (o:User {friendCount: fc})
+…
+
+. More than 1 vertex variables as group key
+[source,gsql]
+MATCH (u1) -[:communication]- (x) -[:communication]- (u2)
+WITH     u1, u2, COUNT(x) // we support only u1 or only u2 in list
+…
+
+* Queries introducing path variables
+[source,gsql]
+MATCH p = (u1) -[e1:communication]- (x) -[e2:communication]- (u2)	// p is path var
+…
+
+* Queries whose *MATCH* pattern *does not* include at least one vertex variable from immediately preceding *WITH* clause.
+[source,gsql]
+MATCH (u:user) -[:communication]- (o)
+WITH     u, …
+MATCH (x) -[:communication]-(y)		// this pattern must refer to u
+…
+
+* Queries with disconnected *MATCH* pattern fragments
+[source,gsql]
+MATCH (x:user), (y:user)
+WHERE x.friendCount = y.friendCount
+…
+
+* Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.

@@ -181,7 +181,9 @@ The token functions in the WHERE clause and those token functions used for attri
 include::partial$token_functions_where.adoc[]
 
 
-=== `TAGS` clause (Beta)
+=== `TAGS` clause (Deprecated)
+
+IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
 
 The `TAGS` clause specifies the tags to be applied to the vertices loaded by the `LOAD` statement.
 

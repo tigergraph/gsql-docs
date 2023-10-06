@@ -45,7 +45,7 @@ For more information, see xref:tigergraph-server:user-access:access-control-mode
 .`RUN LOADING JOB` syntax for concurrent loading
 [source.wrap,ebnf]
 ----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] job_name [
+RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] [-max_percent_error [100] ] job_name [
     USING file_var [="file_path_string"][, file_var [="file_path_string"]]*
     [, CONCURRENCY=cnum][,BATCH_SIZE=bnum][,EOF="eof_mode"]
 ]
@@ -84,6 +84,31 @@ The `-n` option limits the loading job to processing only a range of lines of ea
 For example, `-n 50` means read lines 1 to 50.
 `-n 10, 50` means read lines 10 to 50.
 The special symbol `$` is interpreted as "last line", so `-n 10,$` means reads from line 10 to the end.
+
+==== `-max_percent_error`
+
+The `-max_percent_error` option is used by the loader process to decide when to automatically abort a running loading job.
+This depends on a user provided percentage of the data input lines that are rejected.
+
+There are two possible cases where an input line may be rejected:
+
+* Input format error: This is the case where the input line cannot be parsed properly.
+* Filtering error: This is the case where the input line can be parsed properly, but it does not pass certain filtering rules defined in the loading job itself.
+
+For example, if `-max_percent_error` is set to 50%, and over 50% of data input lines in a given batch are rejected by the loader either due to parsing error or filtering error, the loader process will abort itself.
+
+NOTE: The default behavior is 100% and will continue loading until reaching the end of the file.
+
+[cols="2"]
+|===
+|max_percent_error |behavior
+
+|0 |Loading will stop if any parsed input lines are rejected by the format or filtering rules.
+
+|between 0 and 99 |Loading will stop if the percentage of rejected parsed input exceeds the user-provided limit.
+
+|100 |Loading will continue until complete.
+|===
 
 === Parameters
 

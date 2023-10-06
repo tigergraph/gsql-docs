@@ -1,12 +1,12 @@
-= Cypher Pattern Support in GSQL
+= openCypher Pattern Support in GSQL
 
-We have extended GSQL to support Cypher patterns in the FROM clause.
+We have extended GSQL to support openCypher patterns in the FROM clause.
 
-GSQL maintains its SELECT-FROM-WHERE block structure, but TigerGraph now allows the following new syntax in the FROM clause
+GSQL maintains its SELECT-FROM-WHERE block structure, but TigerGraph allows the following new syntax in the FROM clause
 
 NOTE: This is in addition to the standard GSQL patterns, which will continue to be supported
 
-== Cypher's vertex pattern notation
+== openCypher's vertex pattern notation
 
 `(v:VType)` which now gets translated internally to standard GSQL's  `VType:v`.
 
@@ -14,7 +14,7 @@ Both `v` and `VType` are optional.
 
 `VType` can be a disjunction.
 
-== Cypher's edge patterns notation
+== openCypher's edge patterns notation
 
 `[e:EType]` which now gets translated internally to standard GSQL's `(EType:e)`.
 
@@ -22,13 +22,13 @@ Both `e` and `EType` are optional.
 
 `EType` can be a disjunction
 
-== Cypher's property condition notation
+== openCypher's property condition notation
 
-This is applicable to both vertex and edge patterns. It has a general form:
+GSQL also handles openCypher's property condition notation (which is applicable to both vertex and edge patterns)
 
     x {prop_1: val_1, …, prop_n: val_n}
 
-and it now gets translated internally into a `WHERE` clause condition:
+by translating into a `WHERE` clause condition:
 
     x.prop_1 == val_1 AND … AND x.prop_n == val_n
 

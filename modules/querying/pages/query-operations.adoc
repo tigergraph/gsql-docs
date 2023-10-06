@@ -154,6 +154,8 @@ It also supports calling functions, assigning variables, printing, and modifying
 +
 The query body may include calls to other queries. That is, the other queries are treated as subquery functions.
 See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
++
+Additionally, GSQL supports openCypher syntax in the query body. See pages xref:appendix:openCypher-in-gsql.adoc[], xref:appendix:openCypher-in-gsql-web-shell.adoc[], and xref:appendix:openCypher-gsql-from-clause-extension.adoc[] to learn more about openCypher and for examples.
 
 === Examples
 

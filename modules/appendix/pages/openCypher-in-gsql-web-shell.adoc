@@ -2,16 +2,16 @@
 
 To write openCypher queries in the GSQL Web Shell, follow these steps:
 
-NOTE: Interpret query does not support distributed query mode
+NOTE: INTERPRET QUERY does not support distributed query mode
 
-. Open GSQL Web Shell in your browser and login.
+. Open GSQL Web Shell in your browser and log in.
 
 . Run `INTERPRET OPENCYPHER QUERY`
 [source,gsql]
 INTERPRET OPENCYPHER QUERY () FOR GRAPH communication_mau {
 MATCH (u:user)
 WHERE u.id = "test"
-Return u
+RETURN u
 }
 
 . Create an openCypher query
@@ -19,13 +19,15 @@ Return u
 CREATE DISTRIBUTED OPENCYPHER QUERY get_user_by_id2() FOR GRAPH communication_mau {
 MATCH (u:user)
 WHERE u.id = "test"
-Return u
+RETURN u
 }
 
 . Install the openCypher query
 [source,gsql]
 INSTALL QUERY get_user_by_id2
-Run installed openCypher query
+
+. Run installed openCypher query
+[source, gsql]
 RUN QUERY get_user_by_id2()
 
 

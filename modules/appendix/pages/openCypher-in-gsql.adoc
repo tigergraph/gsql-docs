@@ -1,17 +1,18 @@
-= openCypher Features in GSQL
+= openCypher in GSQL
 
-We support many openCypher features in TigerGraph but not all.
 
-This page lists all of openCypher features that are currently *supported* and *unsupported* by TigerGraph.
+openCypher is a popular open-source declarative query language for property graphs. More about openCypher can be found at xref:http://opencypher.org[openCypher.org].
 
-== Supported openCypher Features
+TigerGraph's GSQL query language supports many openCypher features. This page lists the features currently xref:_opencypher_features_in_gsql[supported] and features xref:_opencypher_features_not_yet_supported[not yet supported ].
+
+== openCypher Features in GSQL
 === Clauses
 
 [cols="1,1"]
 |===
 |Clause |Description
 
-|DELETE | Delete graph elements — nodes and relationships.
+|DELETE |Delete graph elements — nodes and relationships.
 
 Any node to be deleted must also have all associated relationships explicitly deleted.
 
@@ -195,7 +196,7 @@ See below for restrictions.
 |CASE Expression |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
-== Unsupported openCypher Features
+== openCypher Features Not Yet Supported
 === Clauses
 [cols="1,1]
 |===

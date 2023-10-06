@@ -97,8 +97,9 @@ There are two possible cases where an input line may be rejected:
 
 For example, if `-max_percent_error` is set to 50%, and over 50% of data input lines in a given batch are rejected by the loader either due to parsing error or filtering error, the loader process will abort itself.
 
-NOTE: The default behavior is 100% and will continue loading until reaching the end of the file.
+NOTE: The default percentage is set to 0.
 
+.`-max_percent_error` summery
 [cols="2"]
 |===
 |max_percent_error |behavior

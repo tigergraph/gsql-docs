@@ -46,6 +46,8 @@ image::select_statement_data_flow_v1.1.png[Basic data flow for a classic 1-hop G
 
 In classic (Syntax v1) GSQL, the FROM clause describes one step or hop pattern.
 
+NOTE: As of 3.9.3, GSQL supports openCypher patterns as an alternative to writing a FROM clause. Please see xref:appendix:openCypher-gsql-from-clause-extension.adoc[] for more details.
+
 .FROM clause
 [source,ebnf]
 ----

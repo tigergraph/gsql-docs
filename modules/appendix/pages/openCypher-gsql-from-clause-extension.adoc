@@ -1,0 +1,324 @@
+= openCypher Pattern Support in GSQL
+
+We have extended GSQL to support openCypher patterns in the FROM clause.
+
+GSQL maintains its SELECT-FROM-WHERE block structure, but TigerGraph allows the following new syntax in the FROM clause
+
+NOTE: This is in addition to the standard GSQL patterns, which will continue to be supported
+
+== openCypher's vertex pattern notation
+
+`(v:VType)` which now gets translated internally to standard GSQL's  `VType:v`.
+
+Both `v` and `VType` are optional.
+
+`VType` can be a disjunction.
+
+== openCypher's edge patterns notation
+
+`[e:EType]` which now gets translated internally to standard GSQL's `(EType:e)`.
+
+Both `e` and `EType` are optional.
+
+`EType` can be a disjunction.
+
+== openCypher's property condition notation
+
+GSQL also handles openCypher's property condition notation (which is applicable to both vertex and edge patterns)
+
+    x {prop_1: val_1, …, prop_n: val_n}
+
+by translating into a `WHERE` clause condition:
+
+    x.prop_1 == val_1 AND … AND x.prop_n == val_n
+
+== Examples
+
+[source, gsql]
+CREATE  QUERY test_03 () FOR GRAPH G SYNTAX V3 {
+    SELECT n, COUNT(fr) AS friendsCount INTO T
+    FROM (n {name: "John"})-[:FRIEND]-(fr)
+    HAVING friendsCount > 3;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_07 () FOR GRAPH G SYNTAX V3 {
+    SELECT friend_of_a_friend.name AS fofName INTO T
+    FROM (user:Person {name: "Adam"})-[r1:FRIEND]-()-[r2:FRIEND]-(friend_of_a_friend) ;
+    PRINT T;
+}
+
+NOTE: For queries with cypher patterns to be accepted, the user needs to declare them under V3 syntax (using cypher patterns with V2 or V1 syntax declaration leads to syntax error). V3 queries are pre-processed into V2 queries (the V2 version is written to the log after the cypher pattern normalization).
+
+
+[source, gsql]
+CREATE QUERY test_03 () FOR GRAPH G SYNTAX V2 {
+    SELECT n, COUNT(fr) AS friendsCount INTO T
+    from   :n -(FRIEND)- :fr  WHERE n.name == "John"
+    HAVING friendsCount > 3;
+    PRINT T;
+}
+
+Now after cypher pattern normalization:
+
+[source, gsql]
+CREATE  QUERY test_07 () FOR GRAPH G SYNTAX _V2 {
+    SELECT friend_of_a_friend.name AS fofName INTO T
+    from   Person:user -(FRIEND:r1)-  -(FRIEND:r2)- :friend_of_a_friend
+    WHERE user.name == "Adam" ;
+    PRINT T;
+}
+
+
+NOTE: If the original input is V2 or V1, the cypher preprocessor is never invoked, so it will not affect standard GSQL queries.
+
+== More examples below:
+
+[source, gsql]
+CREATE  QUERY test_03 () FOR GRAPH G SYNTAX V3 {
+    XXX =
+    SELECT  n
+    FROM    (n)-[:friend]-(fr);
+    PRINT XXX;
+}
+
+[source, gsql]
+CREATE  QUERY test_99 () FOR GRAPH G SYNTAX V3 {
+    SELECT  n.name INTO T  FROM  (n)
+    ORDER BY n.name
+    LIMIT 3;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_98 () FOR GRAPH G SYNTAX V3 {
+    SELECT  n.name INTO T  FROM  (n)
+    ORDER BY n.name
+    LIMIT 3;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_40 () FOR GRAPH G SYNTAX V3
+{
+    SELECT
+    CASE
+        WHEN n.eyes == "blue" THEN 1
+        WHEN n.age < 40 THEN 2
+    ELSE 3 END AS result INTO T  FROM  (n) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_40a () FOR GRAPH G SYNTAX V3 {
+    SELECT
+    CASE n.eyes
+        WHEN "blue" THEN 1
+        WHEN "brown" THEN 2
+    ELSE 3 END AS result INTO T  FROM  (n) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_22 () FOR GRAPH G SYNTAX V3 {
+    SELECT actor, count(movie) AS nrOfMovies INTO T
+    FROM (actor:Person)-[:ACTED_IN]->(movie:Movie);
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_21 () FOR GRAPH G SYNTAX V3 {
+    SELECT actor.name, actor.age INTO T
+    FROM  (actor:Person {name: "Charlie Sheen"})-[:ACTED_IN]->(movie:Movie);
+}
+
+[source, gsql]
+CREATE  QUERY test_195b () FOR GRAPH G SYNTAX V3 {
+    SELECT  n INTO T  FROM  (n) WHERE n.email == "//This is NOT a comment";
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_164 () FOR GRAPH G SYNTAX V3 {
+    SELECT  a.type  INTO T  FROM  (a)
+    WHERE a.name == "Alice";
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_162 () FOR GRAPH G SYNTAX V3 {
+    SELECT  sum(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_161 () FOR GRAPH G SYNTAX V3 {
+    SELECT n.age INTO T  FROM  (n)
+    WHERE n.name IN ("A" "B" "C");
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_158 () FOR GRAPH G SYNTAX V3 {
+    SELECT  min(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_157 () FOR GRAPH G SYNTAX V3 {
+    SELECT  min(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_156 () FOR GRAPH G SYNTAX V3 {
+    SELECT  max(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_154b () FOR GRAPH G SYNTAX V3 {
+    SELECT  count(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_154a () FOR GRAPH G SYNTAX V3 {
+    SELECT  count(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_153 () FOR GRAPH G SYNTAX V3 {
+    SELECT  n.type , n.age, count(*) INTO T  FROM  (n {name: "A"})-[]->(x) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_153b () FOR GRAPH G SYNTAX V3 {
+    SELECT  r.type , count(*) INTO T  FROM  (n {name: "A"})-[r]->() ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_153a () FOR GRAPH G SYNTAX V3 {
+    SELECT  r.type , count(*) INTO T  FROM  (n {name: "A"})-[r]->() ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_151 () FOR GRAPH G SYNTAX V3 {
+    SELECT  avg(n.age) INTO T  FROM  (n:Person) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_149 () FOR GRAPH G SYNTAX V3 {
+    SELECT  r.type  INTO T  FROM  (n)-[r]->()
+    WHERE n.name == "Alice";
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_145 () FOR GRAPH G SYNTAX V3 {
+    SELECT  length(a.name) INTO T  FROM  (a)
+    WHERE length(a.name)> 6;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_141 () FOR GRAPH G SYNTAX V3 {
+    SELECT  getvid(a) INTO T  FROM  (a) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_12 () FOR GRAPH G SYNTAX V3 {
+    SELECT  remote_friend.name INTO T  FROM  (me)-[:KNOWS*1..2]-(remote_friend)
+    WHERE me.name == "Filipa";
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_107 () FOR GRAPH G SYNTAX V3 {
+    DELETE n   FROM  (n:Person {name: "Andres"}) ;
+}
+
+[source, gsql]
+CREATE  QUERY test_107a () FOR GRAPH G SYNTAX V3 {
+    DELETE r   FROM  (n {name: "Andres"})-[r:KNOWS]->() ;
+}
+
+[source, gsql]
+CREATE  QUERY test_104 () FOR GRAPH G SYNTAX V3 {
+    DELETE n   FROM  (n:Person) ;
+}
+
+[source, gsql]
+CREATE  QUERY test_08 () FOR GRAPH G SYNTAX V3 {
+    SELECT friend_of_a_friend.name AS fofName INTO T
+    FROM   (fr)-[r2:friend]-(friend_of_a_friend) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_07 () FOR GRAPH G SYNTAX V3 {
+    SELECT friend_of_a_friend.name AS fofName INTO T
+    FROM   (user:Person {name: "Adam"})-[r1:friend]-()-[r2:friend]-(friend_of_a_friend) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_07a () FOR GRAPH G SYNTAX V3 {
+    SELECT friend_of_a_friend.name AS fofName INTO T
+    FROM   (fr)-[r2:friend]-(friend_of_a_friend) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_03 () FOR GRAPH G SYNTAX V3 {
+    SELECT  n, COUNT(fr) AS friendsCount INTO T
+    FROM    (n {name: "John"})-[:friend]-(fr)
+    HAVING  friendsCount > 3;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_154 () FOR GRAPH G SYNTAX V3 {
+    SELECT  count(x) INTO T  FROM  (n {name: "A"})-[]->(x) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_multiple_match_where() FOR GRAPH G SYNTAX V3 {
+    SELECT  n, count(f) AS fCount, count(fof) AS fofCount INTO T
+    FROM    (n {name: "John"})-[:friend]-(f), (f)-[:friend]-(fof)
+    WHERE   f.age < 21 AND  fof.age < 21
+    HAVING  fCount > 3 AND fofCount > 13;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_kleened_wildcard() FOR GRAPH G SYNTAX V3 {
+    SELECT DISTINCT p, hollywood INTO T
+    FROM   (p:Person {name: "Kevin Bacon"})-[:_*1..3]-(hollywood) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_kleene_no_type() FOR GRAPH G SYNTAX V3 {
+    SELECT DISTINCT p, hollywood INTO T
+    FROM   (p:Person {name: "Kevin Bacon"})-[*1..3]-(hollywood) ;
+    PRINT T;
+}
+
+[source, gsql]
+CREATE  QUERY test_empty_edge_pattern_right() FOR GRAPH G SYNTAX V3 {
+    SELECT DISTINCT p, x INTO T
+    FROM   (p:Person {name: "Kevin Bacon"}) --> (x) ;
+    PRINT T;
+}
+
+
+

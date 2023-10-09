@@ -20,7 +20,7 @@ Both `v` and `VType` are optional.
 
 Both `e` and `EType` are optional.
 
-`EType` can be a disjunction
+`EType` can be a disjunction.
 
 == openCypher's property condition notation
 
@@ -71,7 +71,7 @@ CREATE  QUERY test_07 () FOR GRAPH G SYNTAX _V2 {
 }
 
 
-NOTE:: If the original input is V2 or V1, the cypher preprocessor is never invoked, so it will not affect standard GSQL queries.
+NOTE: If the original input is V2 or V1, the cypher preprocessor is never invoked, so it will not affect standard GSQL queries.
 
 == More examples below:
 

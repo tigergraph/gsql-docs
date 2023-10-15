@@ -12,8 +12,10 @@ A line should contain only data values and separators, without extra whitespace.
 From a tabular view, each line of data is a row, and each row consists of a series of column values.
 
 Loading data is a two-step process.
-First, a loading job is defined.
-Next, the job is executed with a `RUN LOADING JOB` statement.
+
+. First, a loading job is defined with a `CREATE LOADING JOB` statement.
+. Next, the job is executed with a `RUN LOADING JOB` statement.
+
 These two statements, and the components of the loading job, are detailed below.
 
 The structure of a loading job will be presented hierarchically, top-down:
@@ -24,9 +26,8 @@ The structure of a loading job will be presented hierarchically, top-down:
 * `LOAD` statements, which can have several clauses
 
 [NOTE]
-====
-*All blank spaces are meaningful in string fields in CSV and JSON*. Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_token_functions>>).
-====
+*All blank spaces are meaningful in string fields in CSV and JSON*.
+Either pre-process your data files to remove extra spaces, or use GSQL's token processing functions `gsql_trim`, `gsql_ltrim`, and `gsql_rtrim` (<<_token_functions>>).
 
 [NOTE]
 User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
@@ -49,9 +50,7 @@ Among its several duties, the RESTPP component manages loading jobs. There can b
 Furthermore, if the TigerGraph graph is distributed (partitioned) across multiple machine nodes, each machine's RESTPP-LOADER(s) can be put into action. Each RESTPP-LOADER only reads local input data files, but the resulting graph data can be stored on any machine in the cluster.
 
 [NOTE]
-====
 To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
-====
 
 A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
 
@@ -70,11 +69,13 @@ Each statement in the block, including the last one, should end with a semicolon
 [source,gsql]
 ----
 CREATE LOADING JOB job_name FOR GRAPH Graph_Name {
-   [zero or more DEFINE statements;]
-   [zero or more LOAD statements;] | [zero or more DELETE statements;] <1>
+   [zero or more DEFINE statements;] <1>
+   [zero or more LOAD statements;] | [zero or more DELETE statements;] <2>
 }
 ----
-<1> A loading job may contain either `LOAD` or `DELETE` statements but not both.
+
+<1> While one loading job may define multiple data sources (files), keep the number below 100 for best performance.
+<2> A loading job may contain either `LOAD` or `DELETE` statements but not both.
 A loading job that includes both will be rejected when the `CREATE` statement is executed.
 
 === Loading data to global vertices and edges
@@ -131,6 +132,10 @@ A `DEFINE` statement is used to define a local variable or expression to be used
 The `DEFINE FILENAME` statement defines a filename variable.
 The variable can then be used later in the `JOB` block by a `LOAD` statement to identify its data source.
 Every concurrent loading job must have at least one `DEFINE FILENAME` statement.
+
+[NOTE]
+Having more than 100 file or folder sources will degrade performance.
+Consider either consolidating sources or splitting your work into separate loading jobs.
 
 [source,ebnf]
 ----
@@ -256,7 +261,7 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 . Complex type: Depends on the field type or element type. Any invalid field (in `UDT`), element (in `LIST` or `SET`), key or value (in `MAP`) causes rejection.
 
 * *New data objects:* If a valid data object has a new ID value, then the data object is added to the graph store.  Any attributes which are missing are assigned the default value for that data type or for that attribute.
-* *Overwriting existing data objects*: If a valid data object has a ID value for an existing object, then the new object overwrites the existing data object, with the following clarifications and exceptions:
+* *Overwriting existing data objects*: If a valid data object has an ID value for an existing object, then the new object overwrites the existing data object, with the following clarifications and exceptions:
 
 . The attribute values of the new object overwrite the attribute values of the existing data object.
 . *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.

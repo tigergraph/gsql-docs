@@ -87,18 +87,20 @@ The special symbol `$` is interpreted as "last line", so `-n 10,$` means reads f
 
 ==== `-max_percent_error mpe`
 
-The `-max_percent_error` option instructs the loader process to abort the loading job if the percentage of data lines in the input batch that are rejected exceeds `mpe`.
-By default, `mbe` is set to 100 and loading will continue until complete.
+The `-max_percent_error` option instructs the loader process to abort the loading job, if the percentage (range between 0 and 100) of data lines in the input batch that are rejected, exceeds `mpe`.
+By default, loading will continue until complete, which is equivalent to `mbe` being set to 100.
 
 Otherwise, for example, if the input source has 1000 data lines and `mpe` = 25 (or 25%),
 then the loading job will abort if it rejects 251 lines.
 
-If mpe = 0, then the load job aborts if any input line is rejected.
+If mpe = 0, then the load job aborts if any input line are rejected.
 
 There are two possible cases where an input line may be rejected:
 
 * Input format error: the input line cannot be parsed properly.
 * Filtering error: the input line can be parsed properly, but it does not pass certain filtering rules defined in the loading job itself.
+
+The percentage number following `-max_percent_error` **is required** if the option is provided. Otherwise, a parsing error will appear.
 
 === Parameters
 

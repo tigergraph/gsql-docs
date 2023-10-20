@@ -45,8 +45,10 @@ For more information, see xref:tigergraph-server:user-access:access-control-mode
 .`RUN LOADING JOB` syntax for concurrent loading
 [source.wrap,ebnf]
 ----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] job_name [
-    USING file_var [="file_path_string"][, file_var [="file_path_string"]]*
+RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] [-max_percent_error mbe ]
+job_name [
+    USING file_var [="file_path_string"]
+        [, file_var [="file_path_string"]]*
     [, CONCURRENCY=cnum][,BATCH_SIZE=bnum][,EOF="eof_mode"]
 ]
 ----
@@ -71,8 +73,6 @@ Kick off the following job:
   Loading log: '/usr/local/tigergraph/logs/restpp/restpp_loader_logs/gsql_demo/gsql_demo_m1.1525091090494.log'
 ----
 
-
-
 ==== `-dryrun`
 
 If -dryrun is used, the system will read the data files and process the data as instructed by the job, but will NOT load any data into the graph. This option can be a useful diagnostic tool.
@@ -84,6 +84,23 @@ The `-n` option limits the loading job to processing only a range of lines of ea
 For example, `-n 50` means read lines 1 to 50.
 `-n 10, 50` means read lines 10 to 50.
 The special symbol `$` is interpreted as "last line", so `-n 10,$` means reads from line 10 to the end.
+
+==== `-max_percent_error mpe`
+
+The `-max_percent_error` option instructs the loader process to abort the loading job, if the percentage (range between 0 and 100) of data lines in the input batch that are rejected, exceeds `mpe`.
+By default, loading will continue until complete, which is equivalent to `mbe` being set to 100.
+
+Otherwise, for example, if the input source has 1000 data lines and `mpe` = 25 (or 25%),
+then the loading job will abort if it rejects 251 lines.
+
+If mpe = 0, then the load job aborts if any input line are rejected.
+
+There are two possible cases where an input line may be rejected:
+
+* Input format error: the input line cannot be parsed properly.
+* Filtering error: the input line can be parsed properly, but it does not pass certain filtering rules defined in the loading job itself.
+
+The percentage number following `-max_percent_error` **is required** if the option is provided. Otherwise, a parsing error will appear.
 
 === Parameters
 

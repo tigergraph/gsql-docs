@@ -146,6 +146,36 @@ Another way to run a loading job is through the `+POST /ddl/{graph_name}+` endpo
 Since the REST{pp} server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL.
 For details on how to use the endpoint, please see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[Run a loading job].
 
+== Troubleshooting Loading Job Delays
 
+In v3.9.3, the current timestamp and the last updated timestamp was introduced to help keep track of the most recent progress of a loading job.
+
+If you notice that a loading job *has not* been updated for an extended period of time, please follow the steps below to troubleshoot and resolve the issue.
+
+. Verify GPE/GSE Status
++
+Confirm the status of the GPE/GSE of a loading job that is not being updated.
+Check the online status of a GPE/GSE by running `gadmin status`.
++
+.Example
+[source, gsql]
+$ gadmin status
++--------------------+-------------------------+-------------------------+
+|    Service Name    |     Service Status      |      Process State      |
++--------------------+-------------------------+-------------------------+
+|        GPE         |         Online          |         Running         |
+|        GSE         |         Online          |         Running         |
++--------------------+-------------------------+-------------------------+
++
+Verify that both GPE and GSE are marked as "Online."
++
+*If they are not "Online"*, please restart the services by running `gadmin restart all -y`.
+
+. Re-run the Loading Job
++
+Once you have ensured that GPE and GSE are online and functioning.
+Resolve the loading job delay by xref:_running_a_loading_job[re-running the job].
+
+NOTE: If you encounter any further issues or require additional assistance, please consult our support team for expert guidance.
 
 

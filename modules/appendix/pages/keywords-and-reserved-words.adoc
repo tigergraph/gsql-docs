@@ -89,6 +89,7 @@ The compiler will reject the use of a reserved word as well as any word beginnin
 * FOR
 * FOREACH
 * FROM
+* FUNCTION
 * GLOBAL
 * GRANTS
 * GRAPH
@@ -141,6 +142,7 @@ The compiler will reject the use of a reserved word as well as any word beginnin
 * OR
 * ORDER
 * PINNED
+* POLICY
 * POST_ACCUM
 * POST-ACCUM
 * PRIMARY
@@ -156,6 +158,7 @@ The compiler will reject the use of a reserved word as well as any word beginnin
 * RESET_COLLECTION_ACCUM
 * RETURN
 * RETURNS
+* ROW
 * SAMPLE
 * SECOND
 * SELECT

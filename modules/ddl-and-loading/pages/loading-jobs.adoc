@@ -1,0 +1,12 @@
+= Loading Jobs
+:description: An overview of loading language.
+
+A unique and powerful feature of the GSQL (R) language is the inclusion of high-level language to express how to load data into the database, via the definition of _loading jobs_.
+
+A loading job is a named procedure that specifies how to associate (or "map") the fields in one or more data files to the attributes and IDs of vertices or edges. A loading job can be reused, using any set of data files that conform to the expected format.
+
+The loading job documentation is organized into two parts:
+
+* xref:creating-a-loading-job.adoc[Creating a loading job]
+* xref:running-a-loading-job.adoc[Running a loading job]
+

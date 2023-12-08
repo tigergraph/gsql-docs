@@ -1,12 +1,13 @@
-= Database Definition & Loading
-:description: An overview of the database definition and loading language.
+= Schema Definition
+:description: An overview of the database definition language.
 
-GSQL Database Definition & Loading (DDL) Language allows you to create graphs, modify graph schemas, and load data into graphs.
+The GSQL (R) Graph Database Language is more than just a query language. It also serves as a DDL (Database Definition Language).
 
-The statements and clauses of the DDL language are organized into four topics, which describe the typical workflow for working with data definition and loading:
+You use the DDL syntax to define the _schema_, the blueprint for data elements in your database and how they relate to one another: _vertex types_, _edge types_, and _graphs_. A graph is a collection of vertex and edge types.
 
-. xref:defining-a-graph-schema.adoc[Defining a graph schema]
-. xref:modifying-a-graph-schema.adoc[Modifying a graph schema]
-. xref:creating-a-loading-job.adoc[Creating a loading job]
-. xref:running-a-loading-job.adoc[Running a loading job]
+The DDL documentation is split into two logical parts:
+
+* xref:defining-a-graph-schema.adoc[Defining a graph schema]
+* xref:modifying-a-graph-schema.adoc[Modifying a graph schema]
+
 

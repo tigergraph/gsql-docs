@@ -276,7 +276,7 @@ header has been defined in the loading job, rather than in the data file
 |`REJECT_LINE_RULE`
 |If the filter expression evaluates to true, then do
 not use this input data line.
-Not supported in a xref:tigergraph-server:data-loading:-loader/index.adoc[ loading job].
+Not supported in a xref:tigergraph-server:data-loading/index.adoc[ loading job].
 |name of filter from a preceding `DEFINE
 INPUT_LINE_FILTER` statement
 
@@ -382,7 +382,7 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 === Loading Parquet data
 
 TigerGraph can load data from Parquet files using our loader.
-For more details on how to set up a Kafka data streaming connector and loading jobs, see xref:3.9@data-loading/data-loading-overview.adoc[].
+For more details on how to set up a Kafka data streaming connector and loading jobs, see xref:3.9@data-loading:data-loading-overview.adoc[].
 
 CAUTION: When loading Parquet data, INT96 data types are not supported.
 If your data source uses INT96 data types, the corresponding attribute in your graph will be left empty.  

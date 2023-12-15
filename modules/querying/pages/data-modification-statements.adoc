@@ -3,9 +3,8 @@
 
 The GSQL language provides full support for vertex and edge insertion, deletion, and attribute update.
 
-Each query is considered one transaction.
-Therefore, *modifications to the graph data do not take effect until the entire query is completed (committed)*.
-Accordingly, any modification statement does not affect any other statements inside the same query.
+NOTE: *Modifications to the graph data do not take effect until the entire query is completed (committed)*.
+If one step needs to see the changes of an earlier step, you must separate the work into separate queries run in sequence.
 
 [#_query_body_delete_statement]
 == Query-body `DELETE` Statement

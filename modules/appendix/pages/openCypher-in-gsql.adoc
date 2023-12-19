@@ -5,6 +5,8 @@ openCypher is a popular open-source declarative query language for property grap
 
 TigerGraph's GSQL query language supports many openCypher features. This page lists the features currently xref:_opencypher_features_in_gsql[supported] and features xref:_opencypher_features_not_yet_supported[not yet supported ].
 
+To see how to run openCypher on the TigerGraph platform, see xref:openCypher-in-gsql.adoc[].
+
 == openCypher Features in GSQL
 === Clauses
 

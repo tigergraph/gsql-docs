@@ -6,11 +6,10 @@ OpenCypher queries run the same way that GSQL queries do, either as anonymous in
 
 Follow these two simple rules:
 
-. Whenever you would use the keyword `QUERY`, precede it with `OPENCYPHER`, e.g.
+. Use the keyword `OPENCYPHER` to specify the query type when you `CREATE` or `INTERPRET` a query:
 
  * `INTERPRET OPENCYPHER QUERY`
  * `CREATE OPENCYPHER QUERY`
- * `INSTALL OPENCYPHER QUERY`
 
 . Replace the body of the query procedure with OpenCypher instead of GSQL.
 End with a `RETURN` clause.
@@ -49,5 +48,8 @@ INSTALL QUERY get_user_by_id2
 . Run the installed query.
 [source, gsql]
 RUN QUERY get_user_by_id2()
++
+Note that you don't need to specify `OPENCYPHER` when you install or run the query.
+In particular, `INSTALL QUERY ALL` will work on a combination of GSQL and openCypher queries.
 
 

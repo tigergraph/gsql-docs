@@ -1,12 +1,24 @@
-= Writing openCypher Queries in GSQL Web Shell
+= Writing and Running openCypher in GSQL Shell
 
-To write openCypher queries in the GSQL Web Shell, follow these steps:
+You can run openCypher queries in a GSQL shell, e.g., a GSQL Web Shell from TigerGraph Cloud.
 
-NOTE: INTERPRET QUERY does not support distributed query mode
+OpenCypher queries run the same way that GSQL queries do, either as anonymous interpreted procedures or as installed named procedures.
 
-. Open GSQL Web Shell in your browser and log in.
+Follow these two simple rules:
 
-. Run `INTERPRET OPENCYPHER QUERY`
+. Whenever you would use the keyword `QUERY`, precede it with `OPENCYPHER`, e.g.
+
+ * `INTERPRET OPENCYPHER QUERY`
+ * `CREATE OPENCYPHER QUERY`
+ * `INSTALL OPENCYPHER QUERY`
+
+. Replace the body of the query procedure with OpenCypher instead of GSQL.
+End with a `RETURN` clause.
+
+For more details on the current openCypher support, see xref:openCypher-in-gsql.adoc[].
+
+== Example: Interpreted Query
+
 [source,gsql]
 INTERPRET OPENCYPHER QUERY () FOR GRAPH communication_mau {
 MATCH (u:user)
@@ -14,19 +26,27 @@ WHERE u.id = "test"
 RETURN u
 }
 
-. Create an openCypher query
+
+NOTE: `INTERPRET QUERY` does not support `DISTRIBUTED` query mode.
+
+== Example: Installed Query
+
+. Create an openCypher query.
 [source,gsql]
 CREATE DISTRIBUTED OPENCYPHER QUERY get_user_by_id2() FOR GRAPH communication_mau {
 MATCH (u:user)
 WHERE u.id = "test"
 RETURN u
 }
++
+Note that the query body is the same when creating or interpreting a query.
+Only the header changed.
 
-. Install the openCypher query
+. Install the query.
 [source,gsql]
 INSTALL QUERY get_user_by_id2
 
-. Run installed openCypher query
+. Run the installed query.
 [source, gsql]
 RUN QUERY get_user_by_id2()
 

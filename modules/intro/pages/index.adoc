@@ -5,10 +5,52 @@ The GSQL™ software program is the TigerGraph comprehensive environment for des
 In short, TigerGraph users do most of their work via the GSQL program.
 This document presents the syntax and features of the GSQL language.
 
-The GSQL Language Reference is divided into two major parts:
+*Already familiar with GSQL?* Skip ahead to xref:_what_sets_gsql_apart[] to learn more about the language design, or first get to know GSQL below.
 
-* xref:ddl-and-loading:system-and-language-basics.adoc[Data Definition and Loading (DDL) Language] describes system basics, defining a graph schema, and loading data.
-* xref:querying:index.adoc[GSQL Query Language] describes querying.
+== Get to Know GSQL
+[.home-card,cols="3,3,3",grid=none,frame=none]
+|===
+a|
+*Tutorials*
+
+xref:gsql-ref:tutorials:gsql-101/index.adoc[], xref:gsql-ref:tutorials:pattern-matching/index.adoc[], and xref:gsql-ref:tutorials:accumulators-tutorial.adoc[] are a set of step by step tutorials to help you get start using GSQL in TigerGraph.
+a|
+*openCypher in GSQL*
+
+TigerGraph’s GSQL query language supports many openCypher features. To see how to run openCypher on the TigerGraph platform, see xref:gsql-ref:appendix:openCypher-in-gsql.adoc[], xref:gsql-ref:appendix:openCypher-gsql-from-clause-extension.adoc[], and xref:gsql-ref:appendix:openCypher-in-gsql-web-shell.adoc[].
+
+a|
+*System & Language Basics*
+
+Learn the xref:gsql-ref:basics:system-and-language-basics.adoc[basic elements] that make up the GSQL Data Definition.
+a|
+*Attribute Data Types*
+
+Learn about the different data types that can be stored in xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[vertex and edge attributes].
+
+a|
+*Schema Definition*
+
+Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema], the blueprint for data elements in a database.
+
+a|
+*Querying*
+
+xref:gsql-ref:querying:index.adoc[] is a language for the exploration and analysis of large scale graphs.
+
+a|
+*Loading Jobs*
+
+xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[] are a unique and powerful feature used to load data into the database.
+
+a|
+*Appendix*
+
+Checkout the xref:gsql-ref:appendix:cheat-sheets.adoc[], xref:gsql-ref:appendix:gsql-style-guide.adoc[], or other information on GSQL under the "Appendix" dropdown for more information.
+
+
+a|
+|===
 
 == What sets GSQL apart
 
@@ -61,9 +103,15 @@ CREATE QUERY products_abc() {
 
   PRINT results;
 }
-
 ----
 |===
+
+
+
+
+
+
+
 
 
 

@@ -5,105 +5,69 @@ The GSQL™ software program is the TigerGraph comprehensive environment for des
 In short, TigerGraph users do most of their work via the GSQL program.
 This document presents the syntax and features of the GSQL language.
 
-*Already familiar with GSQL?* Skip ahead to xref:_what_sets_gsql_apart[] to learn more about the language design, or first get to know GSQL below.
-
 == Get to Know GSQL
 [.home-card,cols="2,2",grid=none,frame=none]
 |===
 a|
+image:getstarted-homecard.png[alt=getstarted,width=74,height=74]
 *Tutorials*
 
-xref:gsql-ref:tutorials:gsql-101/index.adoc[], xref:gsql-ref:tutorials:pattern-matching/index.adoc[], and xref:gsql-ref:tutorials:accumulators-tutorial.adoc[] are a set of step by step tutorials to help you get start using GSQL in TigerGraph.
+A set of step-by-step tutorials to help you get started using GSQL in TigerGraph.
+
+xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101 ↗]
+xref:gsql-ref:tutorials:pattern-matching/index.adoc[Pattern Maching Tutorial ↗]
+xref:gsql-ref:tutorials:accumulators-tutorial.adoc[Accumulators Tutorial  ↗]
+
 a|
+image:img.png[alt=graphstudio,width=74,height=74]
 *openCypher in GSQL*
 
-TigerGraph’s GSQL query language supports many openCypher features. To see how to run openCypher on the TigerGraph platform, see xref:gsql-ref:appendix:openCypher-in-gsql.adoc[], xref:gsql-ref:appendix:openCypher-gsql-from-clause-extension.adoc[], and xref:gsql-ref:appendix:openCypher-in-gsql-web-shell.adoc[].
+TigerGraph’s GSQL query language supports many openCypher features.
+
+xref:openCypher-in-gsql:openCypher-in-gsql.adoc[openCypher in GSQL ↗]
+xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[Clause Extension ↗]
+xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[openCypher in Web Shell ↗]
 
 a|
+image:lang.png[alt=basics,width=74,height=74]
 *System & Language Basics*
 
-Learn the xref:gsql-ref:basics:system-and-language-basics.adoc[basic elements] that make up the GSQL Data Definition.
+Learn the xref:gsql-ref:basics:system-and-language-basics.adoc[Basic Elements ↗] that make up the GSQL Data Definition.
+
 a|
+image:attrbutes-homecard.png[alt=types,width=74,height=74]
 *Attribute Data Types*
 
-Learn about the different data types that can be stored in xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[vertex and edge attributes].
+Learn about xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[vertex and edge attributes ↗]  and the different data types that can be stored in them.
 
 a|
+image:schema-homecard.png[alt=types,width=74,height=74]
 *Schema Definition*
 
-Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema], the blueprint for data elements in a database.
+Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema ↗] the blueprint for data elements in a database.
 
 a|
+image:querying-homecard.png[alt=query,width=74,height=74]
 *Querying*
 
-xref:gsql-ref:querying:index.adoc[] is a language for the exploration and analysis of large scale graphs.
+xref:gsql-ref:querying:index.adoc[GSQL Query Language ↗] is a language for the exploration and analysis of large scale graphs.
 
 a|
+image:DataLoading-Homecard.png[alt=loadingjobs,width=74,height=74]
 *Loading Jobs*
 
-xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[] are a unique and powerful feature used to load data into the database.
+xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[Loading Jobs ↗] are a unique and powerful feature used to load data into the database.
 
 a|
+image:documentation-homecard.png[alt=apendix,width=74,height=74]
 *Appendix*
 
-Checkout the xref:gsql-ref:appendix:cheat-sheets.adoc[], xref:gsql-ref:appendix:gsql-style-guide.adoc[], or other information on GSQL under the "Appendix" dropdown for more information.
+Checkout the other information on GSQL under the "Appendix" dropdown for more information.
 
-
-a|
-|===
-
-== What sets GSQL apart
-
-GSQL is the choice for fast and scalable graph operations and analytics.
-GSQL’s similarity to SQL, high-level syntax, Turing completeness, and built-in parallelism brings faster performance, faster development and the ability to describe any algorithm.
-
-=== Designed for analytics
-GSQL is designed for complex graph analytics.
-By taking advantage of a unique feature of the GSQL query language - accumulators - users can leverage TigerGraph's Massively Parallel Processing (MPP) capability without the pain and fuss traditionally associated with parallel programming.
-
-
-=== Turing-complete
-GSQL is Turing-complete with full support for imperative and procedural programming, ideal for algorithmic computation.
-The Turing completeness of the language, especially with the conventional xref:querying:control-flow-statements.adoc[control flow statements], allows users to describe any algorithm with GSQL.
-
-TigerGraph offers an xref:graph-ml:intro:index.adoc[open-source data science library of algorithms] implemented entirely in GSQL, including xref:graph-ml:community-algorithms:louvain.adoc[Louvain algorithm for community detection] and the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm], demonstrating GSQL's ability to describe complex algorithms.
-
-=== Fast loading and querying
-Data loading procedures and queries written in GSQL take full advantage of TigerGraph's MPP capability, enabling blazing-fast data ingestion as well as querying.
-
-In a link:https://www.datanami.com/2022/04/20/tigergraph-releases-new-benchmark-report/[benchmark test], TigerGraph used the Data Benchmark Council (LDBC) Social Network Benchmark (SNB) Scale Factor 30k dataset.
-The results show that TigerGraph can run deep-link OLAP style queries on *36 TB* of raw data with 73 billion vertices and 534 billion edges, returning results in a few minutes or less.
-
-=== SQL-like
-GSQL features an SQL-like syntax that reduces the learning curve for SQL programmers.
-
-The following are two queries that retrieve a list of products in alphabetical order.
-We can see the similarities between the two languages especially in the `SELECT` statements:
-
-|===
-|SQL |GSQL
+xref:gsql-ref:appendix:cheat-sheets.adoc[Cheat Sheets ↗]
+xref:gsql-ref:appendix:gsql-style-guide.adoc[GSQL Style Guide ↗]
 
 a|
-[source,sql]
-----
-SELECT p.*
-FROM Product p
-ORDER BY p.ProductName;
-----
-a|
-[source,gsql]
-----
-CREATE QUERY products_abc() {
-  products = {Product.*};
-
-  results =
-    SELECT p
-    FROM products:p
-    ORDER BY p.productName;
-
-  PRINT results;
-}
-----
 |===
 
 

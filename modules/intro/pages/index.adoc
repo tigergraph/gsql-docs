@@ -6,68 +6,68 @@ In short, TigerGraph users do most of their work via the GSQL program.
 This document presents the syntax and features of the GSQL language.
 
 == Get to Know GSQL
-[.home-card,cols="2,2",grid=none,frame=none]
+[.home-card,cols="2,2",grid=none,frame=none, separator=¦]
 |===
-a|
+¦
 image:getstarted-homecard.png[alt=getstarted,width=74,height=74]
 *Tutorials*
 
 A set of step-by-step tutorials to help you get started using GSQL in TigerGraph.
 
-xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101 ↗]
-xref:gsql-ref:tutorials:pattern-matching/index.adoc[Pattern Maching Tutorial ↗]
-xref:gsql-ref:tutorials:accumulators-tutorial.adoc[Accumulators Tutorial  ↗]
+xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101 |]
+xref:gsql-ref:tutorials:pattern-matching/index.adoc[Pattern Maching Tutorial |]
+xref:gsql-ref:tutorials:accumulators-tutorial.adoc[Accumulators Tutorial]
 
-a|
+¦
 image:img.png[alt=graphstudio,width=74,height=74]
 *openCypher in GSQL*
 
 TigerGraph’s GSQL query language supports many openCypher features.
 
-xref:openCypher-in-gsql:openCypher-in-gsql.adoc[openCypher in GSQL ↗]
-xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[Clause Extension ↗]
-xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[openCypher in Web Shell ↗]
+xref:openCypher-in-gsql:openCypher-in-gsql.adoc[openCypher in GSQL |]
+xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[Clause Extension |]
+xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[openCypher in Web Shell]
 
-a|
+¦
 image:lang.png[alt=basics,width=74,height=74]
 *System & Language Basics*
 
-Learn the xref:gsql-ref:basics:system-and-language-basics.adoc[Basic Elements ↗] that make up the GSQL Data Definition.
+Learn the xref:gsql-ref:basics:system-and-language-basics.adoc[Basic Elements] that make up the GSQL Data Definition.
 
-a|
+¦
 image:attrbutes-homecard.png[alt=types,width=74,height=74]
 *Attribute Data Types*
 
-Learn about xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[vertex and edge attributes ↗]  and the different data types that can be stored in them.
+Learn about xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[Vertex and Edge Attributes]  and the different data types that can be stored in them.
 
-a|
+¦
 image:schema-homecard.png[alt=types,width=74,height=74]
 *Schema Definition*
 
-Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema ↗] the blueprint for data elements in a database.
+Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema] the blueprint for data elements in a database.
 
-a|
+¦
 image:querying-homecard.png[alt=query,width=74,height=74]
 *Querying*
 
-xref:gsql-ref:querying:index.adoc[GSQL Query Language ↗] is a language for the exploration and analysis of large scale graphs.
+xref:gsql-ref:querying:index.adoc[GSQL Query Language] is a language for the exploration and analysis of large scale graphs.
 
-a|
+¦
 image:DataLoading-Homecard.png[alt=loadingjobs,width=74,height=74]
 *Loading Jobs*
 
-xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[Loading Jobs ↗] are a unique and powerful feature used to load data into the database.
+xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[Loading Jobs] are a unique and powerful feature used to load data into the database.
 
-a|
+¦
 image:documentation-homecard.png[alt=apendix,width=74,height=74]
 *Appendix*
 
 Checkout the other information on GSQL under the "Appendix" dropdown for more information.
 
-xref:gsql-ref:appendix:cheat-sheets.adoc[Cheat Sheets ↗]
-xref:gsql-ref:appendix:gsql-style-guide.adoc[GSQL Style Guide ↗]
+xref:gsql-ref:appendix:cheat-sheets.adoc[Cheat Sheets |]
+xref:gsql-ref:appendix:gsql-style-guide.adoc[GSQL Style Guide]
 
-a|
+¦
 |===
 
 

@@ -57,10 +57,10 @@ print current_roles();
 }
 ----
 
-.Run the query and the result will show whether the user has a specified role:
+.Ex. The result will show the user's roles:
 [console,gsql]
 ----
-GSQL > run query test2()
+GSQL > run query test()
 {
     "version": {
         "edition": "enterprise",
@@ -71,7 +71,10 @@ GSQL > run query test2()
     "message": "",
     "results": [
     {
-        "is_granted_to_current_roles(\"USregion\")": true
+        "current_roles()": [
+            "USregion",
+            "NAregion"
+        ]
     }
     ]
 }

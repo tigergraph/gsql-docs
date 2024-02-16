@@ -18,23 +18,36 @@ Please run 'gadmin config set RESTPP.Factory.EnableAuth true' to enable.
 
 To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
 
-In order to use the context functions explicitly, users will need to hold the privilege `READ_ROLE` on the current graph, not including the cases that a row policy contains the context functions.
+In order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:tigergraph-server:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_context_functions[Context Functions].
 
 
 == current_roles()
-The `current_roles()` function gives users the role names granted to the current user, presented as a `SetAccum` of strings.
-For instance, a user holds the roles `USregion` and `NAregion`, when this user runs a query or GSQL Function with `current_roles()`, it will return a `SetAccum` containing the strings, `USregion` and `NAregion`.
 
-.For example, create the roles:
-[console,gsql]
-----
-GSQL > create role USregion
-GSQL > create role NAregion
-GSQL > grant role USregion, NAregion to user1
-GSQL > grant read on all roles in global to USregion
-GSQL > grant read on all data in global to USregion
-----
-Now, when you want to use `current_roles()`, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:#_row_policy[] already includes the xref:_context_functions[].
+===  Syntax
+
+`current_roles()`
+
+
+===  Description
+
+Returns a `SetAccum` of strings of role names granted to the current user.
+
+===  Return type
+
+`STRING`
+
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| None
+| None
+| None
+|===
+
+===  Example
 
 .Then, run a query like this:
 [console,gsql]
@@ -44,10 +57,10 @@ print current_roles();
 }
 ----
 
-.The result will show the user's roles:
+.Run the query and the result will show whether the user has a specified role:
 [console,gsql]
 ----
-GSQL > run query test()
+GSQL > run query test2()
 {
     "version": {
         "edition": "enterprise",
@@ -58,10 +71,7 @@ GSQL > run query test()
     "message": "",
     "results": [
     {
-        "current_roles()": [
-            "USregion",
-            "NAregion"
-        ]
+        "is_granted_to_current_roles(\"USregion\")": true
     }
     ]
 }
@@ -69,18 +79,31 @@ GSQL > run query test()
 
 == is_granted_to_current_roles(string roleName)
 
-`is_granted_to_current_roles()` tells if the current user holds a particular role specified in the parameter.
-This function returns a boolean value.
+=== Syntax
 
-.For example:
-[console,gsql]
-----
-is_granted_to_current_roles("USregion")
-----
+`is_granted_to_current_roles( "roleName" )`
 
-Should return true, because the user's role set contains `USregion` that was granted in the previous section.
+=== Description
 
-.For example, create a query that prints `is_granted_to_current_roles()` and input `USregion`:
+Returns true/false if the current user holds a particular role specified in the parameter.
+
+===  Return type
+
+`BOOL`
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `roleName`
+| A role name to check against current users roles.
+| `STRING`
+|===
+
+===  Example
+
+.Ex. Create a query that prints `is_granted_to_current_roles()` and input `USregion`:
 [console, gsql]
 ----
 create query test2() {
@@ -88,7 +111,7 @@ print is_granted_to_current_roles("USregion");
 }
 ----
 
-.Run the query and the result will show whether the user has the specified role:
+.Ex. Run the query and the result will show whether the user has the specified role:
 [console,gsql]
 ----
 GSQL > run query test2()

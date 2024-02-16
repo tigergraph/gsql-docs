@@ -8,18 +8,10 @@ They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergra
 == Enable Context Functions
 
 Before users can use Context Functions, they must enable REST++ authentication.
-If it's not enabled, users will see the following warning message:
-
-[console]
-----
-This query requires RESTPP authentication to be enabled.
-Please run 'gadmin config set RESTPP.Factory.EnableAuth true' to enable.
-----
-
+If it's not enabled, users will see an error message.
 To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
 
 In order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:tigergraph-server:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_context_functions[Context Functions].
-
 
 == current_roles()
 

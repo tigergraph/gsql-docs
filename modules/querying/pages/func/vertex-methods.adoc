@@ -384,7 +384,7 @@ No return value.
 
 == VLAC vertex alias methods (Deprecated)
 
-IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
+IMPORTANT: Tag-based Vertex-Level Access Control is deprecated as of October 2023. This feature will be completely removed in v4.0.
 
 This section covers the vertex alias methods used to access and modify tags on vertices,
 

@@ -7,7 +7,7 @@ They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergra
 
 == Enable Context Functions
 
-Before users can use Context Functions, they must enable REST++ authentication.
+Before users can use Context Functions, you must enable REST++ authentication.
 If it's not enabled, users will see an error message.
 To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
 

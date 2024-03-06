@@ -42,7 +42,7 @@ The `USE GLOBAL` command changes a superuser's mode to Global mode.
 In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.
 For example, the user should run `USE GLOBAL` before creating or running a `GLOBAL SCHEMA_CHANGE JOB`.
 
-=== Global Privileges Schema Change Jobs
+=== Global Privileges on Schema Change Jobs
 
 Only users with the `WRITE_SCHEMA` privilege on the global scope can add, alter, or drop global vertex types or global edge types, which are those that are created using `CREATE VERTEX` or `CREATE EDGE`.
 This rule applies even if the vertex or edge type is used in only one graph.

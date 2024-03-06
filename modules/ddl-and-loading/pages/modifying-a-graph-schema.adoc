@@ -502,7 +502,30 @@ CREATE GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library {
 RUN GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library
 ----
 
+=== `-N` Option
 
+Additionally, an option `-N`  is currently supported for both local and global schema change jobs.
+
+[NOTE]
+====
+Option `-N`, for both global and local scopes,  will mark the queries as deprecated and the user will need to manually re-install the deprecated queries.
+====
+
+Local jobs with the `-N` option will skip recompile and reinstall queries created for the local graph.
+
+.Example
+[source,gsql]
+----
+RUN SCHEMA_CHANGE JOB test_job -N
+----
+
+Global jobs with the `-N` option will skip recompile and re-install queries.
+
+.Example
+[source,gsql]
+----
+RUN GLOBAL SCHEMA_CHANGE JOB test_job -N
+----
 
 == `DROP GLOBAL SCHEMA_CHANGE JOB`
 

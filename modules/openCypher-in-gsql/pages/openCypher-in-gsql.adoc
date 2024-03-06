@@ -157,8 +157,6 @@ See below for restrictions.
 
 |sqrt() |Logarithmic Returns the square root of a number.
 
-|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
-
 |tan() |Trigonometric Returns the tangent of a number.
 
 |abs() |Numeric Returns the absolute value of a number.
@@ -264,6 +262,8 @@ N/A
 |tail() |List Returns all but the first element in a list.
 
 |reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
+
+|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
 
 |stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
 

@@ -28,8 +28,21 @@ Load or query operations which begin before the schema change will be completed 
 Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
 It is considered good practice to perform schema changes during times of low graph activity.
 
-[#_global_vs_local_schema_changes]
+[#_global_vs_Local_schema_changes]
 == Global vs. local schema changes
+
+[IMPORTANT]
+====
+Users must have the global scope to interact with global schema change jobs (create, delete, run). See xref:_use_global[].
+====
+
+=== `USE GLOBAL`
+
+The `USE GLOBAL` command changes a superuser's mode to Global mode.
+In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.
+For example, the user should run `USE GLOBAL` before creating or running a `GLOBAL SCHEMA_CHANGE JOB`.
+
+=== Global Privileges Schema Change Jobs
 
 Only users with the `WRITE_SCHEMA` privilege on the global scope can add, alter, or drop global vertex types or global edge types, which are those that are created using `CREATE VERTEX` or `CREATE EDGE`.
 This rule applies even if the vertex or edge type is used in only one graph.
@@ -288,8 +301,6 @@ CREATE SCHEMA_CHANGE JOB add_reviews FOR GRAPH Book_Rating {
 RUN SCHEMA_CHANGE JOB add_reviews
 ----
 
-
-
 == `DROP SCHEMA_CHANGE JOB`
 
 To drop (remove) a schema change job, run `DROP JOB schema_change_job` name from the GSQL shell. The specific schema change job will be removed from GSQL. Refer to the xref:creating-a-loading-job.adoc#_drop_job_statement[Creating a Loading Job page] for more information about dropping jobs.
@@ -300,11 +311,6 @@ GSQL > USE GRAPH Book_rating
 GSQL > DROP JOB local_schema_change123
 The job local_schema_change123 is dropped!
 ----
-
-== `USE GLOBAL`
-
-
-The `USE GLOBAL` command changes a superuser's mode to Global mode.  In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.  For example, the user should run `USE GLOBAL` before creating or running a `GLOBAL SCHEMA_CHANGE JOB`.
 
 == `CREATE GLOBAL SCHEMA_CHANGE JOB`
 

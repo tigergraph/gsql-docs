@@ -139,7 +139,29 @@ $ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=0"
 }
 ----
 
+=== Exception format not defined in query
 
+A default exception format is available in cases where the exception is not defined in the query.
+
+.This format reads as follows:
+* `Exception <name> is raised with an error code of <code>`.
+
+.Example
+[source, gsql]
+----
+create or replace query test_q(bool b) {
+    EXCEPTION UsedFalseBoolean (80005);
+    if not b then
+      raise UsedFalseBoolean; // EXCEPTION message not defined here.
+    end;
+    print "Used true boolean in main.";
+}
+install query test_q
+
+run query test(false)
+
+Exception UsedFalseBoolean is raised with error code 80005
+----
 
 == *User-Defined Exception Behavior*
 

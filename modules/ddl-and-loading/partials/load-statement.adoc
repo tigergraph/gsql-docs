@@ -33,6 +33,24 @@ This section describes destination clauses for loading to vertices and edges.
 [source,gsql]
 ----
 TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
+    [WHERE conditions]
+----
+
+
+.Edge Destination Clause
+[source,gsql]
+----
+TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
+                               target_id_expr [target_type_expr]
+                               [, attr_expr]*)
+    [WHERE conditions]
+----
+
+////
+.Vertex Destination Clause
+[source,gsql]
+----
+TO VERTEX vertex_type_name VALUES (id_expr [, attr_expr]*)
     [WHERE conditions] [OPTION (options)]
 ----
 
@@ -45,7 +63,7 @@ TO EDGE edge_type_name VALUES (source_id_expr [source_type_expr],
                                [, attr_expr]*)
     [WHERE conditions] [OPTION (options)]
 ----
-
+////
 
 For the `TO VERTEX` and `TO EDGE` destination clauses, the following rules for its parameters apply:
 

@@ -271,12 +271,36 @@ The accumulators fall into two major groups :
  ** GroupByAccum
 
 The details of each accumulator type are summarized in this table.  The Accumulation Operation column explains how the accumulator `exampleAccum` is updated when the statement `exampleAccum += newVal` is executed.
-Following the table are example queries for each accumulator type.
 
 [CAUTION]
 ====
 User should be careful when using `MinAccum`, `MaxAccum` and `SumAccum` with the generic type `vertex` and `edge` as the value might be `unknown`.
+
+Additionally, users should add a check for an invalid vertex before using the vertex.
+
+.Example
+[source,gsql]
+----
+CREATE DISTRIBUTED QUERY localAccum_invalidVertex(){
+    MinAccum<VERTEX> @a;
+    SetAccum<VERTEX> @b;
+    SetAccum<VERTEX> @c;
+
+    Persons = SELECT src FROM Person:src
+    ACCUM
+        vertex d = src.@a,
+        IF getvid(d) != -1 THEN
+            d.@c += src.@b
+        END
+    LIMIT 3;
+
+    PRINT Persons[Persons.@a, Persons.@b, Persons.@c];
+}
+----
+
 ====
+
+Following the table are example queries for each accumulator type.
 
 .Accumulator Types and Their Accumulation Behavior
 [width="100%",cols="<34%,<33%,<33%",options="header",]

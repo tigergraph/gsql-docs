@@ -201,7 +201,7 @@ include::partial$token_functions_where.adoc[]
 
 === `TAGS` clause (Deprecated)
 
-IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
+IMPORTANT: Tag-based Vertex-Level Access Control is deprecated as of October 2023. This feature will be completely removed in v4.0.
 
 The `TAGS` clause specifies the tags to be applied to the vertices loaded by the `LOAD` statement.
 

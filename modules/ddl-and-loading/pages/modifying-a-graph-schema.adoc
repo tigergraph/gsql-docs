@@ -222,7 +222,8 @@ ALTER VERTEX|EDGE Object_Type_Name DROP ATTRIBUTE (
 
 === `ALTER VERTEX ... WITH`  (Deprecated)
 
-IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
+IMPORTANT: Tag-based Vertex-Level Access Control is deprecated as of October 2023. This feature will be completely removed in v4.0.
+
 
 `The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable.
 Vertex types are untaggable by default.

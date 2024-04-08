@@ -302,7 +302,7 @@ CREATE SCHEMA_CHANGE JOB add_reviews FOR GRAPH Book_Rating {
 RUN SCHEMA_CHANGE JOB add_reviews
 ----
 
-== `DROP SCHEMA_CHANGE JOB`
+== `DROP JOB SCHEMA_CHANGE`
 
 To drop (remove) a schema change job, run `DROP JOB schema_change_job` name from the GSQL shell. The specific schema change job will be removed from GSQL. Refer to the xref:creating-a-loading-job.adoc#_drop_job_statement[Creating a Loading Job page] for more information about dropping jobs.
 
@@ -528,7 +528,7 @@ Global jobs with the `-N` option will skip recompile and re-install queries.
 RUN GLOBAL SCHEMA_CHANGE JOB test_job -N
 ----
 
-== `DROP GLOBAL SCHEMA_CHANGE JOB`
+== `DROP JOB GLOBAL SCHEMA_CHANGE`
 
 Global schema change jobs can be dropped by using the DROP JOB command. Refer to the xref:creating-a-loading-job.adoc[Creating a Loading Job page] for more information about dropping jobs.
 

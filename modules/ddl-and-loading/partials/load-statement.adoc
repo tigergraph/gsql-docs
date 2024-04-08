@@ -302,9 +302,9 @@ INPUT_LINE_FILTER` statement
 |Whether each line is a json
 object (see xref:creating-a-loading-job.adoc#_loading_json_data[Loading JSON Data] below for more details)
 a|
-`true`, `false`
+`"true"`, `"false"`
 
-Default is `false`
+Default is `"false"`
 
 |`NEW_VERTEX_ONLY`
 a|
@@ -315,9 +315,9 @@ vertex which already exists, do not update it.
 If false, upsert vertices.
 
 a|
-`true`, `false`
+`"true"`, `"false"`
 
-Default is `false`
+Default is `"false"`
 
 a|
 `VERTEX_MUST_EXIST`
@@ -328,9 +328,9 @@ If false, always insert new edges, creating endpoint
 vertices as needed, using given id and default values for other
 parameters.
 a|
-`true`, `false`
+`"true"`, `"false"`
 
-Default is "false"
+Default is `"false"`
 |===
 
 [#_loading_json_data]

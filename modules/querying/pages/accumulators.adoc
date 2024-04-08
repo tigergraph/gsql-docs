@@ -72,16 +72,29 @@ These threads have shared mutually exclusive access to the accumulators.
 
 Accumulators are xref:querying:declaration-and-assignment-statements.adoc#_block_scoping[block-scoped] and can only be accessed in the block where they are declared.
 
-The name of a vertex-attached or a edge-attached accumulator begins with a single `@`.
-The name of a global accumulator begins with `@@`.
+* The name of a vertex-attached accumulator begins with a single `@`.
+
+* The name of a edge-attached accumulator syntax differs from vertex-attached accumulator syntax by the leading `EDGE` keyword.
+
+* The name of a global accumulator begins with `@@`.
 
 .EBNF for Accumulator Declaration
 [source.wrap,ebnf]
 ----
-accumDeclStmt := accumType localAccumName ["=" expr]
-                    ["," localAccumName ["=" expr]]*
-               | accumType globalAccumName ["=" expr]
-                    ["," globalAccumName ["=" expr]]*
+accumDeclStmt := globalAccumDeclStmt
+              | localAccumDeclStmt
+
+localAccumDeclStmt := vertexAccumDeclStmt
+                    | edgeAccumDeclStmt
+
+globalAccumDeclStmt := accumType globalAccum ["=" expr]
+                       ["," globalAccumName ["=" expr]]*
+
+vertexAccumDeclStmt := accumType localAccumName ["=" expr]
+                       ["," vertexAccumName ["=" expr]]*
+edgeAccumDeclStmt := accumType EDGE localAccumName ["=" expr]
+                       ["," edgeAccumName ["=" expr]]*
+
 localAccumName := "@"accumName;
 globalAccumName := "@@"accumName;
 ----
@@ -116,15 +129,21 @@ A statement such as ``v1.@neighbors += 1``will only impact `v1` 's `@neighbors` 
 
 [NOTE]
 ====
-Edge-attached Accumulators can only be used in a distributed and interpret queries.
+TigerGraph will support edge accumulator starting in 3.10.0, but only for single-hop distributed query.
 ====
+//[NOTE]
+//====
+//Edge-attached Accumulators can only be used in a distributed and interpreted queries.
+//====
+
 Edge-attached accumulators are mutable state variables that are attached to each edge in the graph for the duration of the query's lifetime.
 They act as run-time attributes of a edge.
 They are shared, mutually exclusively, among all query processes.
 
+
 Edge-attached accumulators can be set to a value with the `=` operator.
-Additionally, the operator `+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
-Edge-attached accumulators can only be accessed or updated (via `=` or `+=`) in an `ACCUM/WHERE` clauses within a `SELECT` statement.
+Additionally, the operator `\+=` can be used to update the state of the accumulator; the function of `+=` depends on the accumulator type.
+Edge-attached accumulators can only be used (via `=` or `+=` ) in `ACCUM` or `WHERE` clauses within a `SELECT` statement
 
 In the example below, there are two accumulators attached to each edge.
 The initial value of an accumulator of a given type is predefined, however it can be changed at declaration as in the accumulator `@count` below.
@@ -133,19 +152,20 @@ All edge accumulator names have a single leading at-sign `@`.
 [NOTE]
 ====
 Edge-attached accumulator syntax differs from vertex-attached accumulator syntax by the leading `EDGE` keyword.
+
+The only needs to be declared once per variable type. (Ex. `SumAccum<INT> EDGE @sum1, @sum2 = 1;`)
 ====
 
 .Edge-Attached Accumulators. Note the 'EDGE` keyword.
 [source,gsql]
 ----
-SumAccum<INT> EDGE @count;
-MinAccum<INT> EDGE @min;
+SumAccum<INT> EDGE @count = 1;
 MaxAccum<FLOAT> EDGE @max;
 ----
 
 These are accessed via the dot operator on a edge variable or a edge alias (e.g., `e.@count`).
 The accumulator operator `+=` only impacts the accumulator for the specific edge being referenced.
-A statement such as ``e1.@min += 1``will only impact `e1` 's `@count` and not the `@count` for other edges.
+A statement such as `e1.@count += 1` will only impact `e1` 's `@count` and not the `@count` for other edges.
 
 .Edge-Attached Accumulators in a Query
 [source,gsql]

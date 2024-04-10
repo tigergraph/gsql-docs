@@ -528,6 +528,58 @@ Global jobs with the `-N` option will skip recompile and re-install queries.
 RUN GLOBAL SCHEMA_CHANGE JOB test_job -N
 ----
 
+=== Impact Warning
+
+A notification will be displayed to help users understand the impact of running a global or local schema change on a query.
+
+.The warning message will be as follows:
+[source, console]
+----
+WARNING: When modifying the graph schema, reinstalling all affected queries is required, and the duration of this process may vary based on the number and complexity of the queries. To skip query reinstallation, you can run with the '-N' option, but manual reinstallation of queries will be necessary afterwards.
+----
+
+Users can skip this message by using the `-N` option with the schema change job and the queries will not be reinstalled.
+
+==== Examples
+
+.This first example runs a schema change job without the option `-N`.
+[source, console]
+----
+GLE_6714 (main) $ gsql 2_run_schemage_cahnge_job.gsql
+Using graph 'person_movie'
+WARNING: When modifying the graph schema, reinstalling all affected queries is required, and the duration of this process may vary based on the number and complexity of the queries. To skip query reinstallation, you can run with the '-N' option, but manual reinstallation of queries will be necessary afterwards.
+Kick off schema change job schema_change_job
+Doing schema change on graph 'person_movie' (current version: 1)
+Trying to add local edge 'has_director' and its reverse edge 'reverse_has_director' to the graph 'person_movie'.
+
+Graph person_movie updated to new version 2
+Validating existing queries for graph person_movie ...
+Start installing queries, about 1 minute ...
+Select 'm1' as compile server, now connecting ...
+Node 'm1' is prepared as compile server.
+
+[========================================================================================================] 100% (0/0)
+Query installation finished.
+The job schema_change_job completes in 6.621 seconds!
+Local schema change succeeded.
+----
+
+.This example runs a global schema change job with the option `-N`.
+[source, console]
+----
+GLE_6714 (main) $ cat 3_run_schemage_cahnge_job_without_warning.gsql
+RUN GLOBAL SCHEMA_CHANGE JOB global_schema_change_job -N
+GLE_6714 (main) $ gsql 3_run_schemage_cahnge_job_without_warning.gsql
+Kick off global schema change job global_schema_change_job
+Doing schema change on graph 'person_movie' (current version: 2)
+Trying to add global edge 'has_friend' and its reverse edge 'reverse_has_friend' to the graph 'person_movie'.
+
+Doing schema change on the global schema (current version: 67)
+
+Graph person_movie updated to new version 3
+Global schema change succeeded.
+----
+
 == `DROP JOB GLOBAL SCHEMA_CHANGE`
 
 Global schema change jobs can be dropped by using the DROP JOB command. Refer to the xref:creating-a-loading-job.adoc[Creating a Loading Job page] for more information about dropping jobs.

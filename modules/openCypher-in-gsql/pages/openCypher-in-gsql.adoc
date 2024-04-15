@@ -188,6 +188,9 @@ See below for restrictions.
 |e() |Logarithmic Returns the base of the natural logarithm, e.
 
 |timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
+
+|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
 |===
 
 === Expressions
@@ -266,8 +269,6 @@ N/A
 |stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
 
 |stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
-
-|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
 
 |percentileDisc() |Aggregating Returns the nearest value to the given percentile over a group using a rounding method.
 

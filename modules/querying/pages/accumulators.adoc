@@ -279,6 +279,7 @@ The accumulators fall into two major groups :
  ** SumAccum
  ** MinAccum, MaxAccum
  ** AvgAccum
+ ** PercentileContAccum
  ** AndAccum, OrAccum
  ** BitwiseAndAccum, BitwiseOrAccum
 * *Collection Accumulators* store a set of values:
@@ -359,6 +360,12 @@ baseTypes. Ordering is hierarchical, using the leftmost field of the
 tuple first, then the next field, and so on.
 
 |`AvgAccum` |0.0 (double precision) |Updates `AvgAccum` to double precision average of right operand and all previous values accumulated to `AvgAccum`
+
+| `PercentileContAccum`
+| `0`
+| `PercentileContAccum` returns the percentile of the given value over a group using linear interpolation.
+
+
 
 |`AndAccum` |True |Updates `AndAccum` to boolean `AND` of right operand and `AndAccum`.
 
@@ -562,6 +569,132 @@ include::appendix:example$minimal_net/accum_avgaccum_results.json[]
 --
 ====
 
+=== PercentileContAccum
+
+PercentileContAccum returns the percentile of the given value over a group using linear interpolation.
+PercentileContAccum’s default value is `0`, and is of double type.
+
+It is similar to AvgAccum, and does not need to set the data type.
+
+.PercentileContAccum() has two way of initialization:
+[source, gsql]
+----
+PercentileContAccum @@ps; //the percent is 0.0
+PercentileContAccum<0.5> @@ps; //the percent is 0.5
+----
+
+.PercentileContAccum also has the following functions available:
+* `setpercent(double percent)`: to set the percent, the default value of percent is `0`.
+* `getpercent()`: to check current value of a percent.
+* `clear()`: to clear the inner vector that holds all the data, and reset default value of the accumulator to `0`.
+This will not change the percent.
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+.PercentileContAccum Example
+[source,gsql]
+----
+CREATE OR REPLACE QUERY test1 () {
+    TYPEDEF PercentileContAccum<0.4> perc; // Usage with TYPEDEF
+    GroupByAccum<int __dummyKey, perc pc> @@T;
+    VS_XXX = SELECT p
+             FROM   Person:p
+             WHERE  p.firstName=="John"
+             ACCUM	@@T += (1 -> p.id);
+    PRINT @@T.get(1) AS T;
+}
+
+CREATE OR REPLACE QUERY test2 () {
+    PercentileContAccum<0.9> @@pa, @@ps;
+    PercentileContAccum @@ps_post;
+    // Default value of PercentileContAccum
+    print @@pa, @@pa.getpercent();
+
+    @@pa += 2.0;
+    @@pa += 3.0;
+    @@pa += 3.0;
+    @@pa += 4.0;
+
+    @@pa.setPercent(0.3);
+    print @@pa, @@pa.getpercent();
+
+    @@pa.setPercent(0.5);
+    print @@pa, @@pa.getpercent();
+
+    VS_XXX = SELECT p
+             FROM   Person:p
+             WHERE  p.firstName=="George"
+             ACCUM
+                  @@ps += datetime_to_epoch(p.creationDate)
+             POST-ACCUM
+                  @@ps_post += p.id;
+    PRINT @@ps, @@ps.getpercent(), @@ps_post, @@ps_post.getpercent();
+
+    @@ps.setpercent(0.6);
+    @@ps_post.setpercent(0.6);
+    PRINT @@ps, @@ps.getpercent(), @@ps_post, @@ps_post.getpercent();
+
+    // clear function will clear data, but not percent
+    @@ps_post.clear();
+    PRINT @@ps_post, @@ps_post.getpercent();
+}
+
+// local accumulator
+CREATE OR REPLACE QUERY test3 (DATETIME date_1, DATETIME date_2) {
+     PercentileContAccum<0.3> @lperc_1;
+     PercentileContAccum @lperc_2;
+     PercentileContAccum @@gperc;
+     @@gperc.setpercent(0.6);
+
+     S = SELECT s FROM tupPerson:s -(<TUP_MEMBER:e)- _:t
+          WHERE e.creationDate > date_1 AND e.creationDate < date_2
+          ACCUM
+               s.@lperc_2 += s.id2,
+               s.@lperc_2 += s.id2 + 1000,
+               s.@lperc_2 += s.id2 + 3000
+          POST-ACCUM(s)
+               s.@lperc_2.setpercent(0.4),
+               @@gperc += s.@lperc_2;
+
+     PRINT S [S.@lperc_2, S.@lperc_2.getpercent(), S.@lperc_1.getpercent()], @@gperc, @@gperc.getpercent();
+}
+
+CREATE OR REPLACE QUERY test4 (DATETIME date_1, DATETIME date_2) {
+     TYPEDEF PercentileContAccum<0.3> perc_1;
+     TYPEDEF PercentileContAccum perc_2;
+     perc_1 @lperc_1;
+     perc_2 @lperc_2;
+     PercentileContAccum @@gperc;
+     @@gperc.setpercent(0.6);
+
+     S = SELECT s FROM tupPerson:s -(<TUP_MEMBER:e)- _:t
+          WHERE e.creationDate > date_1 AND e.creationDate < date_2
+          ACCUM
+               s.@lperc_2 += s.id2,
+               s.@lperc_2 += s.id2 + 1000,
+               s.@lperc_2 += s.id2 + 3000
+          POST-ACCUM(s)
+               s.@lperc_2.setpercent(0.4),
+               @@gperc += s.@lperc_2;
+
+     PRINT S [S.@lperc_2, S.@lperc_2.getpercent(), S.@lperc_1.getpercent()], @@gperc, @@gperc.getpercent();
+}
+----
+--
+
+Results::
++
+--
+[source,gsql]
+----
+
+----
+--
+====
 
 === AndAccum / OrAccum
 

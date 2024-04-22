@@ -1,8 +1,15 @@
-= Enabling Cost-Based Optimization
+= Enabling Cost-Based Optimization (Preview Feature)
 :sectnums:
 :description: Steps to enable the query optimizer.
 
 This page walks you through the steps to enable cost-based optimization.
+
+[IMPORTANT]
+====
+Query Optimizer is currently a Preview Feature. Preview Features give users an early look at future production-level features.
+
+Preview Features should not be used for production deployments.
+====
 
 == Before you begin
 * You have created a query that contains a xref:select-statement/index.adoc[`SELECT` statement] that uses a xref:select-statement/index.adoc#_path_pattern[path pattern] in its `FROM` clause with one or more hops.

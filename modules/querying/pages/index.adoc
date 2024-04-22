@@ -27,6 +27,11 @@ A typical workflow for working with GSQL queries is to xref:query-operations.ado
 
 GSQL also supports xref:query-operations.adoc#interpret-a-created-query[interpreting a query], which allows users to skip query installation and execute the query directly.
 
+== Query Descriptions
+
+User can add description for query and query parameter.
+Here you will find the procedures for updating, showing, and dropping descriptions of queries and query parameters.
+
 == Syntax
 
 The following pages describes the syntax of the GSQL Query Language:

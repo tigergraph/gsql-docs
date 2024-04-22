@@ -1,7 +1,14 @@
-= Statistics REST APIs
+= Statistics REST APIs (Preview Feature)
 
 The endpoints on this page calculate cardinality and histogram statistics of vertex and edge types and attributes.
 The statistics are required for effective optimization.
+
+[IMPORTANT]
+====
+Query Optimizer is currently a Preview Feature. Preview Features give users an early look at future production-level features.
+
+Preview Features should not be used for production deployments.
+====
 
 == Cardinality
 

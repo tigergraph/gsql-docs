@@ -1,4 +1,4 @@
-= Query Optimizer
+= Query Optimizer (Preview Feature)
 :description: Overview of the query optimizer.
 
 The query optimizer optimizes the execution plan of a query.
@@ -6,6 +6,13 @@ The query optimizer optimizes the execution plan of a query.
 When writing a GSQL query with multi-hop `SELECT` statements, the xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)] specified in the `FROM` clause is declarative.
 In other words, it specifies the structure of paths to be matched, without specifying the particulars of how the graph is traversed to find these paths.
 It is the query optimizer's job to determine the best graph traversal plan to satisfy the query.
+
+[IMPORTANT]
+====
+Query Optimizer is currently a Preview Feature. Preview Features give users an early look at future production-level features.
+
+Preview Features should not be used for production deployments.
+====
 
 == Heuristics-based optimization
 

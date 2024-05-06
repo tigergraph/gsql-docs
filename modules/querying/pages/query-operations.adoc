@@ -607,7 +607,7 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 
 [source,ebnf]
 ----
-installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryMame]* )
+installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryName]* )
 ----
 
 `INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.

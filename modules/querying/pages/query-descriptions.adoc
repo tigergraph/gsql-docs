@@ -1,0 +1,93 @@
+= Query Descriptions
+
+This page explains the procedures for updating, showing, and dropping descriptions of queries and query parameters.
+
+== Update description
+After creating a query, you can add a description for the query.
+
+=== Syntax
+
+UPDATE DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>] <description>
+
+Required privilege
+WRITE_QUERY
+
+To update a description, run the UPDATE DESCRIPTION command as shown below. You can update the description of a query or a query parameter. If you choose not to specify a graph in the command, the current scope will be used as the scope of the description.
+
+[source, gsql]
+----
+GSQL > USE GRAPH POC_GRAPH
+GSQL > UPDATE DESCRIPTION OF QUERY query1 "xxx"
+GSQL > UPDATE DESCRIPTION OF QUERY query2 ON GRAPH graph1 "xxx"
+GSQL > UPDATE DESCRIPTION OF QUERY_PARAM query1.param1 "xxx"
+----
+
+[NOTE]
+====
+The term `UPDATE` here means adding a description to the target.
+If the target does not already have a description, it will be added.
+If the target already has a description, it will be replaced with the new one.
+====
+
+[CAUTION]
+====
+Using create or replace is preferable for updating a query to ensure that the description is retained.
+Otherwise, there is a risk of losing the description.
+====
+
+== Show description
+
+=== Syntax
+
+SHOW DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
+
+Required privilege
+READ_QUERY
+
+To display a description, use the SHOW DESCRIPTION command as shown below. Similar to the update command, you can display the description of a query or a query parameter.
+
+
+[source, gsql]
+----
+GSQL > USE GRAPH POC_GRAPH
+GSQL > SHOW DESCRIPTION OF QUERY query1
+GSQL > SHOW DESCRIPTION OF QUERY query1,query2
+GSQL > SHOW DESCRIPTION OF QUERY * ON GRAPH graph1
+GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1
+GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
+GSQL > SHOW DESCRIPTION OF QUERY_PARAM query2.*
+----
+
+Support is provided for displaying descriptions of multiple targets simultaneously. You can separate the targets using commas, or use the wildcard * to display all descriptions.
+
+== Drop description
+
+=== Syntax
+
+DROP DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
+
+Required privilege
+
+WRITE_QUERY
+
+To drop a description, run the DROP DESCRIPTION command like below.
+Similar to the update command, you can drop the description of a global type object or a local type object.
+
+To remove a description, use the DROP DESCRIPTION command as shown below.
+Similar to the update command, you can remove the description of a query or a query parameter.
+
+[source, gsql]
+----
+GSQL > USE GRAPH POC_GRAPH
+GSQL > DROP DESCRIPTION OF QUERY query1
+GSQL > DROP DESCRIPTION OF QUERY query1*,query2*
+GSQL > DROP DESCRIPTION OF QUERY * ON GRAPH poc_graph
+GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1
+GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
+GSQL > DROP DESCRIPTION OF QUERY_PARAM query1*
+----
+
+Support is provided for dropping descriptions of multiple targets simultaneously.
+You can separate the targets using commas, or use the wildcard * to drop all descriptions.
+The query parameter's description is independent of the query's description.
+Therefore, after dropping the query description, the query parameter's description remains unaffected.

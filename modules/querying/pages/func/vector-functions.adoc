@@ -1,0 +1,1007 @@
+= Vector Functions
+:experimental:
+
+Vector Functions in TigerGraph are currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
+xref:3.9@graph-ml:similarity-algorithms:index.adoc[]
+
+
+== Vector
+=== tg_euclidean_distance_accum ()
+====  Syntax
+`tg_euclidean_distance_accum (VectorA, VectorB)`
+
+====  Description
+The Euclidean distance between two vectors.
+
+====  Return type
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+| VectorA
+| An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+| `+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+
+| VectorB
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+|===
+
+====  Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY euclidean_example() FOR GRAPH social {
+    ListAccum<INT> @@a = [1, 2, 3];
+    ListAccum<INT> @@b = [4, 5, 6];
+    double distance = tg_euclidean_distance_accum(@@a, @@b);
+    PRINT distance;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+{
+    "distance": 5.19615
+}
+----
+--
+====
+
+== Vector Similarity
+
+=== tg_overlap_similarity_accum ()
+==== Syntax
+`tg_overlap_similarity_accum( VectorA, VectorB )`
+
+====  Description
+The overlap coefficient between two vectors.
+
+==== Return type
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+|`VectorA`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+
+|`VectorB`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY overlap_example(/* Parameters here */) FOR GRAPH social {
+    ListAccum<INT> @@a = [1, 2, 3];
+    ListAccum<INT> @@b = [2, 2, 3];
+    double overlap_similarity = tg_overlap_similarity_accum(@@a, @@b);
+    PRINT overlap_similarity;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+[
+  {
+    "overlap_similarity": 0.66667
+  }
+]
+----
+--
+====
+
+=== pearson_similarity_accum ()
+====  Syntax
+`pearson_similarity_accum(VectorA, VectorB)`
+
+====  Description
+The Pearson correlation coefficient between two vectors.
+
+====  Return type
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+|`VectorA`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+|`VectorB`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY pearson_example() FOR GRAPH social {
+    ListAccum<INT> @@a = [1, 2, 3];
+    ListAccum<INT> @@b = [2, 2, 3];
+    double pearson_similarity = tg_pearson_similarity_accum(@@a, @@b);
+    PRINT pearson_similarity;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+{
+    "pearson_similarity": 0.86603
+}
+----
+--
+====
+
+=== tg_cosine_similarity()
+====  Syntax
+`tg_cosine_similarity(VectorA, VectorB)`
+
+====  Description
+
+The cosine similarity between the two vectors.
+
+====  Return type
+
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+|`VectorA`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+|`VectorB`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY cosine_similarity_example() FOR GRAPH social {
+  ListAccum<INT> @@a = [1, 0, 3];
+  ListAccum<INT> @@b = [0, 2, 6];
+  double similarity = tg_cosine_similarity_accum(@@a, @@b);
+  PRINT similarity;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+{
+    "similarity": 0.868243
+}
+----
+--
+====
+
+=== tg_jaccard_similarity()
+====  Syntax
+`tg_jaccard_similarity()(VectorA, VectorB)`
+
+====  Description
+
+The Jaccard similarity between the two sets.
+
+====  Return type
+
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+|`VectorA`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+|`VectorB`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY jaccard_similarity_example() FOR GRAPH social {
+  ListAccum<INT> @@a = [1, 2, 3];
+  ListAccum<INT> @@b = [2, 3, 4];
+  double similarity = tg_jaccard_similarity_accum(@@a, @@b);
+  PRINT similarity;
+}
+----
+--
+Result::
++
+--
+[,json]
+----
+{
+    "jaccard_similarity": 0.5
+}
+----
+--
+====
+
+== Vector Similarity of Neighborhoods
+=== tg_cosine_nbor_ap_batch ()
+====  Syntax
+[source,gsql]
+----
+CREATE QUERY tg_cosine_nbor_ap_batch(
+    vertex_type,
+    edge_type,
+    edge_attribute,
+    top_k,
+    print_results = true,
+    file_path,
+    similarity_edge,
+    num_of_batches = 1
+)
+----
+
+====  Description
+
+The result of this algorithm is the top k cosine similarity scores and their corresponding pair for each vertex.
+
+[NOTE]
+====
+The score is only included if it is greater than 0.
+====
+
+
+====  Return type
+
+`double`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+| `vertex_type`
+| Vertex type to calculate similarity for.
+| `STRING`
+
+| `edge_type`
+| Directed edge type to traverse
+| `STRING`
+
+| `edge_attribute`
+| Name of the attribute on the edge type to use as the weight
+| `STRING`
+
+| `top_k`
+| Number of top scores to report for each vertex
+| `INT`
+
+| `print_results`
+| If `true`, output JSON to standard output.
+| `BOOL`
+
+| `similarity_edge`
+| If provided, the similarity score will be saved to this edge.
+| `STRING`
+
+| `file_path`
+| If not empty, write output to this file in CSV.
+| `STRING`
+
+| `num_of_batches`
+| Number of batches to divide the query into
+| `INT`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY tg_cosine_batch(
+    "Person",
+    "Friend",
+    "weight",
+    5,
+    true,
+    "",
+    "",
+    1
+):
+----
+--
+Result::
++
+--
+[,json]
+----
+[
+  {
+    "start": [
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 0.49903,
+              "ver": "Howard"
+            },
+            {
+              "val": 0.43938,
+              "ver": "George"
+            },
+            {
+              "val": 0.05918,
+              "ver": "Alex"
+            },
+            {
+              "val": 0.05579,
+              "ver": "Ivy"
+            }
+          ]
+        },
+        "v_id": "Fiona",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": []
+        },
+        "v_id": "Justin",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": []
+        },
+        "v_id": "Bob",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 0.22361,
+              "ver": "Bob"
+            },
+            {
+              "val": 0.21213,
+              "ver": "Alex"
+            }
+          ]
+        },
+        "v_id": "Chase",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 0.57143,
+              "ver": "Bob"
+            },
+            {
+              "val": 0.12778,
+              "ver": "Chase"
+            }
+          ]
+        },
+        "v_id": "Damon",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": []
+        },
+        "v_id": "Alex",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 0.64253,
+              "ver": "Alex"
+            },
+            {
+              "val": 0.63607,
+              "ver": "Ivy"
+            },
+            {
+              "val": 0.27091,
+              "ver": "Howard"
+            },
+            {
+              "val": 0.14364,
+              "ver": "Fiona"
+            }
+          ]
+        },
+        "v_id": "George",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": []
+        },
+        "v_id": "Eddie",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 0.94848,
+              "ver": "Fiona"
+            },
+            {
+              "val": 0.6364,
+              "ver": "Alex"
+            },
+            {
+              "val": 0.31046,
+              "ver": "George"
+            },
+            {
+              "val": 0.1118,
+              "ver": "Howard"
+            }
+          ]
+        },
+        "v_id": "Ivy",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "start.@heap": [
+            {
+              "val": 1.09162,
+              "ver": "Fiona"
+            },
+            {
+              "val": 0.78262,
+              "ver": "Ivy"
+            },
+            {
+              "val": 0.11852,
+              "ver": "George"
+            }
+          ]
+        },
+        "v_id": "Howard",
+        "v_type": "Person"
+      }
+    ]
+  }
+]
+----
+--
+====
+
+
+=== tg_cosine_nbor_ss ()
+====  Syntax
+
+[source,gsql]
+----
+tg_cosine_nbor_ss (
+    source,
+    e_type_set,
+    reverse_e_type_set,
+    weight_attribute,
+    INT top_k,
+    INT print_limit,
+    BOOL print_results = TRUE,
+    STRING file_path = "", STRING similarity_edge = "")
+RETURNS (MapAccum<VERTEX, FLOAT>)
+----
+
+====  Description
+
+The top k vertices in the graph that have the highest similarity scores, along with their scores.
+
+====  Return type
+
+`FLOAT`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+| `source`
+| The source vertex to start from.
+Provide the vertex ID and type as a tuple: `("id","type")`
+| `VECTOR`
+
+| `e_type_set`
+| Edge types to traverse.
+| `SET<STRING>`
+
+| `reverse_e_type_set`
+| Reverse edge type to traverse.
+| `SET<STRING>`
+
+| `weight_attribute`
+| The edge attribute to use as the weight of the edge.
+| `STRING`
+
+| `top_k`
+| The number of vertices to return.
+| `INT`
+
+| `print_limit`
+| The maximum number of vertices to return.
+| `INT`
+
+| `print_results`
+| Whether to output the final results to the console in JSON format.
+| `BOOL`
+
+| `filepath`
+| If provided, the algorithm will save the output in CSV format to this file.
+| `STRING`
+
+| `similarity_edge`
+| If provided, the similarity score will be saved to this edge.
+| `STRING`
+
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY tg_cosine_nbor_ss (
+    "Alex",
+    "Likes",
+    "Reverse_Likes",
+    "weight",
+    5,
+    5,
+    _,
+    _,
+    _
+)
+----
+--
+JSON Result::
++
+--
+[,json]
+----
+[
+  {
+    "neighbours": [
+      {
+        "attributes": {
+          "neighbours.@sum_similarity": 0.42173
+        },
+        "v_id": "Jing",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "neighbours.@sum_similarity": 0.14248
+        },
+        "v_id": "Kevin",
+        "v_type": "Person"
+      }
+    ]
+  }
+]
+----
+--
+Test RESULT::
++
+--
+[,console]
+----
+Vertex1,Vertex2,Similarity
+Alex,Kevin,0.142484
+Alex,Jing,0.421731
+----
+--
+====
+
+=== tg_jaccard_nbor_ap_batch ()
+====  Syntax
+
+[source, gsql]
+----
+tg_jaccard_nbor_ap_batch (
+    top_k = 10,
+    v_type_set,
+    feat_v_type,
+    e_type_set,
+    reverse_e_type_set,
+    similarity_edge,
+    src_batch_num = 50,
+    nbor_batch_num = 10,
+    print_results = true,
+    print_limit = 50,
+    file_path = ""
+)
+----
+
+====  Description
+
+Calculates similarity scores for all vertex pairs in a graph.
+
+====  Return type
+
+`FLOAT`
+
+====  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `top_k`
+| Number of top scores to report for each vertex.
+| `INT`
+
+| `v_type`
+| Vertex type to calculate similarity for.
+| `SET<STRING>`
+
+| `feat_v_type`
+| Feature vertex type.
+| `SET<STRING>`
+
+| `e_type`
+| Directed edge type to traverse.
+| `SET<STRING>`
+
+| `reverse_e_type`
+| Reverse edge type to traverse.
+| `SET<STRING>`
+
+| `similarity_edge`
+| If provided, the similarity scores will be saved to this edge type.
+| `STRING`
+
+| `src_batch_num`
+| Number of batches to split the source vertices into.
+| `INT`
+
+| `nbor_batch_num`
+| Number of batches to split the 2-hop neighbor vertices into.
+| `INT`
+
+| `print_results`
+| If `true`, output JSON to standard output.
+| `BOOL`
+
+| `print_limit`
+| Number of source vertices to print, -1 to print all.
+| `INT`
+
+| `file_path`
+| If a file path is provided, the algorithm will output to a file specified by the file path in CSV format.
+| `STRING`
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY tg_jaccard_nbor_ap_batch (
+    10,
+    "Person",
+    "Likes",
+    "Reverse_Likes",
+    "weight"
+    "",
+    50,
+    10,
+    true,
+    50,
+    ""
+)
+----
+--
+JSON Result::
++
+--
+[,json]
+----
+ {
+    "Start": [
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.33333,
+              "ver": "Howard"
+            },
+            {
+              "val": 0.25,
+              "ver": "Ivy"
+            },
+            {
+              "val": 0.25,
+              "ver": "George"
+            }
+          ]
+        },
+        "v_id": "Fiona",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": []
+        },
+        "v_id": "Justin",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": []
+        },
+        "v_id": "Bob",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.5,
+              "ver": "Damon"
+            }
+          ]
+        },
+        "v_id": "Chase",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.5,
+              "ver": "Chase"
+            }
+          ]
+        },
+        "v_id": "Damon",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.33333,
+              "ver": "Ivy"
+            }
+          ]
+        },
+        "v_id": "Alex",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.5,
+              "ver": "Howard"
+            },
+            {
+              "val": 0.25,
+              "ver": "Fiona"
+            }
+          ]
+        },
+        "v_id": "George",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": []
+        },
+        "v_id": "Eddie",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.33333,
+              "ver": "Alex"
+            },
+            {
+              "val": 0.25,
+              "ver": "Fiona"
+            }
+          ]
+        },
+        "v_id": "Ivy",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Start.@heap": [
+            {
+              "val": 0.5,
+              "ver": "George"
+            },
+            {
+              "val": 0.33333,
+              "ver": "Fiona"
+            }
+          ]
+        },
+        "v_id": "Howard",
+        "v_type": "Person"
+      }
+    ]
+  }
+]
+----
+--
+====
+
+=== tg_jaccard_nbor_ss ()
+====  Syntax
+
+[console, gsql]
+----
+tg_jaccard_nbor_ss (
+    source,
+    e_type,
+    reverse_e_type,
+    top_k = 100,
+    print_results = TRUE,
+    similarity_edge_type = "",
+    file_path = "")
+----
+
+====  Description
+
+Compare two vertices by Jaccard similarity.
+
+====  Return type
+
+`FLOAT`
+
+====  Parameters
+|===
+| Parameter | Description | Data type
+
+| `source`
+| Source vertex to calculate similarity from.
+Provide the vertex ID and type as a tuple: `("id","type")`
+| `VERTEX`
+
+| `e_type`
+| Edge type to traverse
+| `STRING`
+
+| `reverse_e_type`
+| Reverse edge type to traverse
+| `STRING`
+
+| `INT top_k`
+| The number of vertex pairs with the highest similarity scores to return. Limits number of returned items.
+| `INT`
+
+| `print_results`
+| Whether to output the final results to the console in JSON format
+| `BOOL`
+
+| `similarity_edge_type`
+| If provided, the similarity score will be saved to this edge
+| `STRING`
+
+| `file_path`
+| If provided, the algorithm will save the output in CSV format to this file
+| `STRING`
+
+|===
+
+==== Example
+[tabs]
+====
+Query::
++
+--
+[,gsql]
+----
+CREATE QUERY tg_jaccard_nbor_ss (
+    "Alex",
+    "Likes",
+    "Reverse_Likes",
+    100,
+    true,
+    "",
+    ""
+)
+----
+--
+JSON Result::
++
+--
+[,json]
+----
+[
+  {
+    "Others": [
+      {
+        "attributes": {
+          "Others.@sum_similarity": 0.5
+        },
+        "v_id": "Kat",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Others.@sum_similarity": 0.4
+        },
+        "v_id": "Kevin",
+        "v_type": "Person"
+      },
+      {
+        "attributes": {
+          "Others.@sum_similarity": 0.2
+        },
+        "v_id": "Jing",
+        "v_type": "Person"
+      }
+    ]
+  }
+]
+----
+--
+====

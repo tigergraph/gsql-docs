@@ -2,13 +2,13 @@
 :experimental:
 
 Vector Functions in TigerGraph are currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
-xref:3.9@graph-ml:similarity-algorithms:index.adoc[]
+xref:graph-ml:similarity-algorithms:index.adoc[]
 
 
 == Vector
 === tg_euclidean_distance_accum ()
 ====  Syntax
-`tg_euclidean_distance_accum (VectorA, VectorB)`
+`tg_similarity_accum(VectorA, VectorB, "EUCLIDEAN")`
 
 ====  Description
 The Euclidean distance between two vectors.
@@ -27,6 +27,11 @@ The Euclidean distance between two vectors.
 | VectorB
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+//| "EUCLIDEAN"
+//|
+//|
+
 |===
 
 ====  Example
@@ -40,7 +45,7 @@ Query::
 CREATE QUERY euclidean_example() FOR GRAPH social {
     ListAccum<INT> @@a = [1, 2, 3];
     ListAccum<INT> @@b = [4, 5, 6];
-    double distance = tg_euclidean_distance_accum(@@a, @@b);
+    double distance = tg_similarity_accum(@@a, @@b, "EUCLIDEAN");
     PRINT distance;
 }
 ----
@@ -56,8 +61,6 @@ Result::
 ----
 --
 ====
-
-== Vector Similarity
 
 === tg_overlap_similarity_accum ()
 ==== Syntax
@@ -269,6 +272,7 @@ Result::
 --
 ====
 
+////
 == Vector Similarity of Neighborhoods
 === tg_cosine_nbor_ap_batch ()
 ====  Syntax
@@ -1005,3 +1009,4 @@ JSON Result::
 ----
 --
 ====
+////

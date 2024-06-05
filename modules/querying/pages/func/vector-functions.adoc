@@ -1,12 +1,12 @@
 = Vector Functions
 :experimental:
 
-Vector Functions in TigerGraph are currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
+Vector functions in TigerGraph are currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
 xref:graph-ml:similarity-algorithms:index.adoc[]
 
 
-== Vector
-=== tg_euclidean_distance_accum ()
+== tg_similarity_accum()
+=== Euclidean Distance
 ====  Syntax
 `tg_similarity_accum(VectorA, VectorB, "EUCLIDEAN")`
 
@@ -21,16 +21,16 @@ The Euclidean distance between two vectors.
 | Parameter | Description | Data type
 
 | VectorA
-| An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+| An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 | `+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
 
 | VectorB
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
 
-//| "EUCLIDEAN"
-//|
-//|
+| "EUCLIDEAN"
+| A string that identifies the similarity function type.
+| `const string`
 
 |===
 
@@ -62,9 +62,9 @@ Result::
 --
 ====
 
-=== tg_overlap_similarity_accum ()
+=== Overlap
 ==== Syntax
-`tg_overlap_similarity_accum( VectorA, VectorB )`
+`tg_similarity_accum( VectorA, VectorB, "OVERLAP" )`
 
 ====  Description
 The overlap coefficient between two vectors.
@@ -77,12 +77,16 @@ The overlap coefficient between two vectors.
 | Parameter | Description | Data type
 
 |`VectorA`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
 
 |`VectorB`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+
+| "OVERLAP"
+| A string that identifies the similarity function type.
+| `const string`
 |===
 
 ==== Example
@@ -96,7 +100,7 @@ Query::
 CREATE QUERY overlap_example(/* Parameters here */) FOR GRAPH social {
     ListAccum<INT> @@a = [1, 2, 3];
     ListAccum<INT> @@b = [2, 2, 3];
-    double overlap_similarity = tg_overlap_similarity_accum(@@a, @@b);
+    double overlap_similarity = tg_similarity_accum(@@a, @@b, "OVERLAP");
     PRINT overlap_similarity;
 }
 ----
@@ -115,9 +119,9 @@ Result::
 --
 ====
 
-=== pearson_similarity_accum ()
+=== Pearson
 ====  Syntax
-`pearson_similarity_accum(VectorA, VectorB)`
+`tg_similarity_accum(VectorA, VectorB, "PEARSON")`
 
 ====  Description
 The Pearson correlation coefficient between two vectors.
@@ -130,12 +134,16 @@ The Pearson correlation coefficient between two vectors.
 | Parameter | Description | Data type
 
 |`VectorA`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
 
 |`VectorB`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+| "PEARSON"
+| A string that identifies the similarity function type.
+| `const string`
 |===
 
 ==== Example
@@ -149,7 +157,7 @@ Query::
 CREATE QUERY pearson_example() FOR GRAPH social {
     ListAccum<INT> @@a = [1, 2, 3];
     ListAccum<INT> @@b = [2, 2, 3];
-    double pearson_similarity = tg_pearson_similarity_accum(@@a, @@b);
+    double pearson_similarity = tg_similarity_accum(@@a, @@b "PEARSON");
     PRINT pearson_similarity;
 }
 ----
@@ -166,9 +174,9 @@ Result::
 --
 ====
 
-=== tg_cosine_similarity()
+=== Cosine
 ====  Syntax
-`tg_cosine_similarity(VectorA, VectorB)`
+`tg_similarity_accum(VectorA, VectorB, "COSINE")`
 
 ====  Description
 
@@ -183,12 +191,16 @@ The cosine similarity between the two vectors.
 | Parameter | Description | Data type
 
 |`VectorA`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
 
 |`VectorB`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+| "COSINE"
+| A string that identifies the similarity function type.
+| `const string`
 |===
 
 ==== Example
@@ -202,7 +214,7 @@ Query::
 CREATE QUERY cosine_similarity_example() FOR GRAPH social {
   ListAccum<INT> @@a = [1, 0, 3];
   ListAccum<INT> @@b = [0, 2, 6];
-  double similarity = tg_cosine_similarity_accum(@@a, @@b);
+  double similarity = tg_similarity_accum(@@a, @@b "COSINE");
   PRINT similarity;
 }
 ----
@@ -219,9 +231,9 @@ Result::
 --
 ====
 
-=== tg_jaccard_similarity()
+=== Jaccard
 ====  Syntax
-`tg_jaccard_similarity()(VectorA, VectorB)`
+`tg_similarity_accum(VectorA, VectorB "JACCARD")`
 
 ====  Description
 
@@ -236,12 +248,16 @@ The Jaccard similarity between the two sets.
 | Parameter | Description | Data type
 
 |`VectorA`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
 
 |`VectorB`
-|An n-dimensional vector denoted by a `+ListAccum+` of length `n`
+|An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
 |`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+
+| "JACCARD"
+| A string that identifies the similarity function type.
+| `const string`
 |===
 
 ==== Example
@@ -255,7 +271,7 @@ Query::
 CREATE QUERY jaccard_similarity_example() FOR GRAPH social {
   ListAccum<INT> @@a = [1, 2, 3];
   ListAccum<INT> @@b = [2, 3, 4];
-  double similarity = tg_jaccard_similarity_accum(@@a, @@b);
+  double similarity = tg_similarity_accum(@@a, @@b, "JACCARD");
   PRINT similarity;
 }
 ----

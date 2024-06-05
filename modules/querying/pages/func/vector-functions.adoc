@@ -1,11 +1,35 @@
-= Vector Functions
+= Vector Similarity Function
 :experimental:
 
-Vector functions in TigerGraph are currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
+Vector Similarity Function in TigerGraph is currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
 xref:graph-ml:similarity-algorithms:index.adoc[]
+
+[CAUTION]
+====
+Vector Similarity Functions are subcomponents for the Appropriate Nearest Nearest (ANN) algorithm which is still in beta.
+====
+
+[IMPORTANT]
+====
+Beta features are for personal or R&D use and not for production use.
+====
+
 
 
 == tg_similarity_accum()
+
+The function takes 3 parameters.
+
+* The first 2 parameters are `ListAccum<>` for the two vectors being compared.
+* The 3rd parameter is a string and indicates which variation of the function to use.
++
+====
+.For example:
+
+** If the string’s value is `“COSINE”`, then the function performs cosine similarity.
+** If the string’s value is `“JACCARD”`, it performs Jaccard similarity.
+====
+
 === Euclidean Distance
 ====  Syntax
 `tg_similarity_accum(VectorA, VectorB, "EUCLIDEAN")`

@@ -1,6 +1,101 @@
 = GSQL Language Reference
 :page-aliases: intro.adoc
 
+++++
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antora Configuration Switcher</title>
+</head>
+<body>
+
+<select id="antora-config">
+  <option value="config1">Configuration 1</option>
+  <option value="config2">Configuration 2</option>
+</select>
+
+<p id="dynamic-text">This text will change based on the selected configuration.</p>
+
+<script>
+document.getElementById('antora-config').addEventListener('change', function() {
+  var selectedConfig = this.value;
+  var antoraYmlContent;
+  var dynamicText;
+
+  // Determine the dynamic text based on the selected configuration
+  if (selectedConfig === 'config1') {
+    dynamicText = 'Dynamic text for Configuration 1';
+  } else if (selectedConfig === 'config2') {
+    dynamicText = 'Dynamic text for Configuration 2';
+  } else {
+    console.error('Invalid configuration selected');
+    return;
+  }
+
+  // Update the text content of the paragraph element
+  document.getElementById('dynamic-text').textContent = dynamicText;
+
+  // Determine the antora.yml content based on the selected configuration
+  if (selectedConfig === 'config1') {
+    antoraYmlContent = `
+name: gsql-ref
+title: GSQL Language Reference
+version: 4.1.1
+display_version: "4.1"
+start_page: intro-v3:index.adoc
+
+nav:
+- modules/intro/nav.adoc
+`;
+  } else if (selectedConfig === 'config2') {
+    antoraYmlContent = `
+name: gsql-ref
+title: GSQL Language Reference
+version: 4.1.1
+display_version: "4.1"
+start_page: intro:index.adoc
+
+nav:
+- modules/intro/nav.adoc
+- modules/tutorials/nav.adoc
+- modules/basics/nav.adoc
+- modules/ddl-and-loading/nav.adoc
+- modules/querying/nav.adoc
+- modules/openCypher-in-gsql/nav.adoc
+- modules/appendix/nav.adoc
+`;
+  } else {
+    console.error('Invalid configuration selected');
+    return;
+  }
+
+  // Apply the dynamically generated antora.yml content
+  applyAntoraYml(antoraYmlContent);
+});
+
+function applyAntoraYml(content) {
+  // Assuming Antora is already initialized and available globally
+  if (typeof Antora === 'undefined') {
+    console.error('Antora is not initialized or available');
+    return;
+  }
+
+  // Set the antora.yml content
+  Antora.player.assimilateYaml(content);
+
+  // Reload the site to apply the changes (optional)
+  // window.location.reload();
+}
+</script>
+
+</body>
+</html>
+
+++++
+
+
+
 The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.
 
 In short, TigerGraph users do most of their work via the GSQL program.

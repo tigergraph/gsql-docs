@@ -1,1 +1,65 @@
 = SELECT
+
+Introductory text(this is garbeldy-gook to see what the articles would look like)
+
+== Beautiful Vertex Information
+
+* A list of concise information, perfectly
+* getting the message across
+
+`a small code block that adds understanding`
+
+[source,gsql]
+----
+//A large code block that can act as an example
+CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+
+SELECT p FROM etc etc
+
+}
+----
+
+
+=== A sub-section about vertex information
+
+* Here is a bullet point about some information
+- here's a second bullet point
+
+
+
+
+
+
+
+|===
+| Tables | are | the | best | thing | ever
+
+| `integer`
+| induction
+| sales
+| my cousin's birthday
+| python
+| ok
+|===
+
+
+== now for another section
+
+[NOTE]
+this is a note
+
+[WARNING]
+this is a warning
+
+[IMPORTANT]
+this is important information
+
+.Only a few more lines left
+- Surprise +
+page break
+
+a random line
+
+---
+
+and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

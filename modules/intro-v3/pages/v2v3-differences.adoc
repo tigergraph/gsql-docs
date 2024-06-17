@@ -6,7 +6,7 @@ There are a few key differences between V2 and V3 designed to make writing queri
 users famliar with OpenCypher.
 
 
-== Node Syntax
+== Vertex Syntax
 When referencing nodes, aliases are now placed on the left instead of the right, and the entire reference is now
 encapsulated in parentheses. For instance, instead of writing `Person:p`, you would instead write `(p:Person)`.
 You can also filter your search by attaching values to specific attributes of a node. For example, if you wanted to filter

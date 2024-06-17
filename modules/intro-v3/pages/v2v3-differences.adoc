@@ -1,0 +1,47 @@
+= Migrating From V2 to V3
+
+*Note: this is a draft*
+
+There are a few key differences between V2 and V3 designed to make writing queries more streamlined for older users and
+users famliar with OpenCypher.
+
+
+== Node Syntax
+When referencing nodes, aliases are now placed on the left instead of the right, and the entire reference is now
+encapsulated in parentheses. For instance, instead of writing `Person:p`, you would instead write `(p:Person)`.
+You can also filter your search by attaching values to specific attributes of a node. For example, if you wanted to filter
+all people named "Bob", you could write `(p:Person {name: "Bob"})`
+
+
+
+Sidenote: Is this correct?
+`(p:Person {name: "Bob", age: 10})`
+
+
+
+== Edge Syntax
+For edges, aliases are also placed on the left. Edges should be encapsulated inside of square brackets
+instead of parentheses. Arrowheads are now placed outside of the
+dashes instead of inside the brackets.
+
+As an example, assume that a "person" node has a directed edge "likes" to other "person" nodes.
+The relationship in V3 syntax would look like this: +
+`(p:Person) -[l:likes]\-> (p:Person)`
+
+== Examples
+Here is a simple query that will return all people that Bob likes(assuming that only one person is named "Bob").
+
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY who-does-bob-like syntax v3 {
+
+
+
+
+}
+----
+
+
+
+
+

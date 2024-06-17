@@ -5,10 +5,13 @@ display_version: "4.1"
 start_page: intro:index.adoc
 
 nav:
-- modules/intro/nav.adoc
-- modules/tutorials/nav.adoc
-- modules/basics/nav.adoc
-- modules/ddl-and-loading/nav.adoc
-- modules/querying/nav.adoc
-- modules/openCypher-in-gsql/nav.adoc
-- modules/appendix/nav.adoc
+- modules/intro-v3/nav.adoc
+- modules/creating-a-graph-schema/nav.adoc
+- modules/loading-data/nav.adoc
+- modules/queries/nav.adoc
+- modules/query-block-clauses/nav.adoc
+- modules/packages-and-CALL-statement/nav.adoc
+- modules/vertex-set-operators/nav.adoc
+- modules/functions/nav.adoc
+- modules/values-and-types/nav.adoc
+- modules/appendix-v3/nav.adoc

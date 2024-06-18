@@ -18,7 +18,15 @@ SELECT p FROM etc etc
 
 }
 ----
+.cool title name
+****
+activate sidebar block
 
+[discrete]
+== this is a discrete heading
+TIP: here's a nice tidbit
+
+****
 
 === A sub-section about vertex information
 

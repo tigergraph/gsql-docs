@@ -1,21 +1,16 @@
 = Migrating From V2 to V3
 
-*Note: this is a draft*
 
 There are a few key differences between V2 and V3 designed to make writing queries more streamlined for older users and
 users famliar with OpenCypher.
 
 
 == Vertex Syntax
-When referencing nodes, aliases are now placed on the left instead of the right, and the entire reference is now
-encapsulated in parentheses. For instance, instead of writing `Person:p`, you would instead write `(p:Person)`.
-You can also filter your search by attaching values to specific attributes of a node. For example, if you wanted to filter
-all people named "Bob", you could write `(p:Person {name: "Bob"})`
-
-
-
-Sidenote: Is this correct?
-`(p:Person {name: "Bob", age: 10})`
+When referencing vertices, aliases are now placed on the left instead of the right, and the entire reference is now
+encapsulated in parentheses. For instance, instead of writing `Company:c`, you would instead write `(c:Company)`.
+You can also filter your search by attaching values to specific attributes of a vertex. For example, if you wanted to filter
+all companies founded in 2012, you could write `(c:Company {yearFounded: 2012})`. If you wanted to filter all companies founded in 2012 with the name "TigerGraph," you could write
+`(c:Company {yearFounded: 2012, name: "TigerGraph"})`.
 
 
 
@@ -24,22 +19,26 @@ For edges, aliases are also placed on the left. Edges should be encapsulated ins
 instead of parentheses. Arrowheads are now placed outside of the
 dashes instead of inside the brackets.
 
-As an example, assume that a "person" node has a directed edge "likes" to other "person" nodes.
+As an example, assume that a "company" node has a directed edge "invests" to other "company" nodes.
 The relationship in V3 syntax would look like this: +
-`(p:Person) -[l:likes]\-> (p:Person)`
+`(c:Company) -[i:invests]\-> (c:Company)`
 
 == Examples
-Here is a simple query that will return all people that Bob likes(assuming that only one person is named "Bob").
+Here is a simple query in version 3 syntax that will return all companies in the database founded in 2000.
 
 [source,gsql]
 ----
-CREATE OR REPLACE DISTRIBUTED QUERY who-does-bob-like syntax v3 {
+CREATE OR REPLACE DISTRIBUTED QUERY companies-in-2000 SYNTAX V3 {
 
 
 
 
 }
 ----
+
+Here is a query that ...
+
+
 
 
 

@@ -615,6 +615,6 @@ If leader switch or some other interruption takes place in GSQL the histogram op
 1. If timeout or some other event interrupts the collection of all the desired statistics, specifying a smaller subset of histograms based on what still has yet to be gathered will reduce the amount of regathering.
 For example, if executing a histogram computation request for attributes under all graphs, and after 2/4 graphs are fully gathered a timeout occurs, you can issue two requests at the graph level for graphs 3 and 4.
 
-2. When possible, it is best to schedule histogram computations after schema change jobs and data loading, not before. This is to ensure the statistics best reflect the current state of the database
+2. When possible, it is best to schedule histogram computations after schema change jobs and data loading, not before. This is to ensure the statistics best reflect the current state of the database.
 
-3. When choosing the right bucket value, the first step is to determine the requirements of the use case. Then, consider the granularity and compaction desired based on accuracy and performance / storage consumption 
+3. When choosing the right bucket value, the first step is to determine the requirements of the use case. Then, choose the fewer number of buckets that provides enough granularity.

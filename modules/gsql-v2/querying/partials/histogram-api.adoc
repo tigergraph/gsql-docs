@@ -237,7 +237,7 @@ A more condensed error message will be provided under `failure` if any of the hi
 
 === Retrieve histogram statistics
 
-`READ_DATA` privilege is required to retrieve a histogram for a particular attribute. This can be at the attribute level or a higher level. Note that for edge based histograms, the 'from' and 'to' vertex are not read and therefor only the edge requires the privilege
+`READ_DATA` privilege is required to retrieve a histogram for a particular attribute. This can be at the attribute level or a higher level. Note that for edge-based histograms, the 'from' and 'to' vertex are not read and therefore only the edge requires the privilege.
 
 `GET :14240/gsqlserver/gsql/stats/histogram`
 

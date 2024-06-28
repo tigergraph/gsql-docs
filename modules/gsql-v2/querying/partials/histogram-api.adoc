@@ -609,7 +609,7 @@ It is possible to request multiple histograms be deleted in the same request. Th
 ----
 
 ==== Current Limitations
-If leader switch or some other interruption takes place in GSQL we will not be able to resume progress. Statistics are stored as they are computed along with their start and end timestamps so there is no progress lost. See recommendations for some suggestions on how to handle such situations
+If leader switch or some other interruption takes place in GSQL the histogram operation will not be able to resume. Statistics are stored as they are computed along with their start and end timestamps so there is no progress lost. See recommendations for some suggestions on how to handle such situations.
 
 ==== Recommendations
 1. If timeout or some other event interrupts the collection of all the desired statistics, specifying a smaller subset of histograms based on what still has yet to be gathered will reduce the amount of regathering. For example, if executing a histogram computation request for attributes under all graphs, and after 2/4 graphs are fully gathered we are unable to continue, instead of regathering on all graphs again we can issue two requests at the graph level for graphs 3 and 4

@@ -5,7 +5,7 @@
 
 This endpoint computes histograms for a specified attribute of a vertex or edge type.
 
-READ_SCHEMA privilege is required for the graph that the histogram attribute belongs to. When gathering for multiple graphs at once (see Compute Multiple Histograms in one request), READ_SCHEMA is required on ALL of those graphs
+READ_SCHEMA privilege is required for the graph that the histogram attribute belongs to. When gathering for multiple graphs at once (see Compute Multiple Histograms in one request), READ_SCHEMA is required on ALL of those graphs.
 
 ==== Parameters
 Options can be specified in the header using -H:
@@ -70,7 +70,7 @@ Edge attribute::
 |`bucket`
 |The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
 
-By default we use a bucket value of 256. With discrete datatypes, a bucket count that is lower than the specified target may be necessary depending on the data the histogram is computed over.
+The default value is 256. With integral datatypes, it may be possible that the provided bucket count is too high for the range of values. In such cases, the highest number of buckets that can be used for that range of values will be used instead.
 |`INT`
 
 |`from`
@@ -156,7 +156,7 @@ Results::
 
 ==== Compute Multiple Histograms together
 
-In addition to requesting individual histograms through the POST endpoint, it is also possible to request all valid histograms on a per schema object basis.  The`bucket` parameter can still be specified and will be applied to every histogram being computed in the request.
+In addition to requesting individual histograms through the POST endpoint, it is also possible to request all valid histograms on a per schema object basis. The`bucket` parameter can still be specified and will be applied to every histogram being computed in the request.
 
 Respecting the dependency of lower level schema objects, this can be done as follows:
 
@@ -241,7 +241,7 @@ A more condensed error message will be provided under `failure` if any of the hi
 
 `GET :14240/gsqlserver/gsql/stats/histogram`
 
-This endpoint retrieves histogram data for a specified attribute of a vertex or edge type.
+This endpoint retrieves histogram data for a specified attribute of a vertex or edge type. Empty buckets in the histogram are denoted by a totalCount, upperCount, and ndv of zero. The upperBound will have the max theoretical value for an empty bucket.
 
 ==== Request Body
 
@@ -591,7 +591,7 @@ Results::
 
 ==== Deleting Multiple Histograms together
 
-It is possible to request multiple histograms be deleted in the same request. The graph name is always required, but we may request to delete all histograms under a given type as follows:
+It is possible to request multiple histograms be deleted in the same request. The graph name is always required, but it is possible to delete all histograms under a given type as follows:
 
 [.wrap,console]
 ----

@@ -21,13 +21,15 @@ include::partial$cardinality-api.adoc[]
 
 Histograms store information about the distribution of attribute values. They are computed using an Equi-Width computation method. This means, given a target bucket count, a histogram will be computed with up to that many buckets (see bucket parameter for more details). 
 
-**Buckets**: Increasing the number of buckets will increase the granularity of the computed histogram, while decreasing the number of buckets will increase compaction. Choosing the right bucket count should be done based on the use case first, then adjusted afterwards if necessary. Please see recommendations below for best practices.
+**Bucket Count**: Increasing the number of buckets will increase the granularity of the computed histogram, while decreasing the number of buckets will increase compaction. Choosing the right bucket count should be done based on the use case first, then adjusted afterwards if necessary. Please see recommendations below for best practices.
 
-NDV (Number of Distinct Values): this value is approximated for each bucket. For discrete datatypes (uint, int, datetime) this will represent the maximum potential NDV. For floating point, non discrete datatypes (float, double), assuming uniform distribution means assuming all values in a bucket are distinct. Primary id’s always have exact NDV values, since they are by definition all unique values.
+**NDV** (Number of Distinct Values): This value is approximated for each bucket. 
 
-Empty buckets in the histogram are denoted by a totalCount, upperCount, and ndv of zero. upperBound will have the max value for that bucket. This is only a theoretical limit for the bucket, and the totalCount should be relied on to determine whether a bucket is empty
+* Integral datatypes (UINT, INT, DATETIME): the NDV value represents an upper bound (the actual NDV may be lower).
+* Floating point numeric values (FLOAT, DOUBLE): the NDV is approximated by assuming all values are distinct. 
+* Primary id’s: the NDV represents the actual NDV and no approximation is used.
 
-Supported Data Types are: UINT, INT, DATETIME, FLOAT, DOUBLE
+**Supported Data Types**: UINT, INT, DATETIME, FLOAT, DOUBLE
 
 include::partial$histogram-api.adoc[]
 

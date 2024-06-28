@@ -9,8 +9,8 @@ READ_SCHEMA privilege is required for the graph that the histogram attribute bel
 
 ==== Parameters
 Options can be specified in the header using -H:
-`GSQL-Timeout` indicates timeout for the request. In the case of multiple computations, this timeout covers the overall timeout, including all the histogram computations
-`GSQL-Thread-Limit` indicates the thread limit per histogram computation. In the case of multiple computations this thread limit will apply to each histogram computation individually
+`GSQL-Timeout` indicates timeout for the request. In the case of multiple computations, this timeout covers the overall timeout, including all the histogram computations.
+`GSQL-Thread-Limit` indicates the thread limit per histogram computation. In the case of multiple computations this thread limit will apply to each histogram computation individually.
 
 ==== Request body
 

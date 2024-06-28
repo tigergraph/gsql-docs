@@ -198,7 +198,7 @@ Respecting the dependency of lower level schema objects, this can be done as fol
 -d '{"graph":"test_graph", "edge":"COMP_MEMBER", "from":"compForum", "to":"compPerson"}'
 ----
 
-The output generated is in the same format as individual computation, with the `success` field tracking the total number of successful computations and `failure` will track all of the failures encountered:
+The output generated is in the same format as individual computation, with the `success` field tracking the total number of successful computations and `failure` tracking all of the failures encountered:
 
 [tabs]
 ====

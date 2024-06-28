@@ -156,7 +156,7 @@ Results::
 
 ==== Compute Multiple Histograms together
 
-In addition to individually requesting histogram computation through the POST endpoint, it is also possible to gather ALL histograms on a per schema object basis. `bucket` parameter can still be specified and will be applied to every histogram being computed in the request
+In addition to requesting individual histograms through the POST endpoint, it is also possible to request all valid histograms on a per schema object basis.  The`bucket` parameter can still be specified and will be applied to every histogram being computed in the request.
 
 Respecting the dependency of lower level schema objects, this can be done as follows:
 

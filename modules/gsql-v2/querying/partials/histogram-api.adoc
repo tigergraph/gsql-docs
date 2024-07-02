@@ -3,11 +3,14 @@
 
 `POST :14240/gsqlserver/gsql/stats/histogram`
 
-This endpoint computes histograms for a specified attribute of a vertex type.
+This endpoint computes histograms for a specified attribute of a vertex or edge type.
+
+READ_SCHEMA privilege is required for the graph that the histogram attribute belongs to. When gathering for multiple graphs at once (see Compute Multiple Histograms in one request), READ_SCHEMA is required on ALL of those graphs.
 
 ==== Parameters
-No URL parameters.
-Provide parameters in the request body.
+Options can be specified in the header using -H:
+`GSQL-Timeout` indicates timeout for the request. In the case of multiple computations, this timeout covers the overall timeout, including all the histogram computations.
+`GSQL-Thread-Limit` indicates the thread limit per histogram computation. In the case of multiple computations this thread limit will apply to each histogram computation individually.
 
 ==== Request body
 
@@ -67,10 +70,7 @@ Edge attribute::
 |`bucket`
 |The number of intervals (https://en.wikipedia.org/wiki/Data_binning[buckets]) to divide the range of attribute values by.
 
-It is recommended that each bucket have at least 100 values.
-Therefore, a good rule of thumb is to divide the number of vertices by 100 to decide the number of buckets.
-For example, if the vertex type has 100,000 vertices, set this parameter to no higher than 1000.
-A standard value for this parameter is 256.
+The default value is 256. With integral datatypes, it may be possible that the provided bucket count is too high for the range of values. In such cases, the highest number of buckets that can be used for that range of values will be used instead.
 |`INT`
 
 |`from`
@@ -84,31 +84,166 @@ A standard value for this parameter is 256.
 
 ==== Examples
 
-The following request computes the histogram data for attribute `firstName` of vertex type `Person` on graph `ldbc_snb`:
+The following request computes the histogram data for attribute `length` of vertex type `Comment` on graph `test_graph`:
+
+[tabs]
+====
+Histogram Computation Request::
++
+--
+.Vertex Attribute Histogram Computation
+[source.wrap,console]
+----
+$ curl --user tigergraph:tigergraph \
+-X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","vertex":"Comment","attribute":"length","bucket":10}'
+----
+--
+
+Results::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "Histogram stats gathering completed",
+  "results": [
+    {
+      "success": "[1/1]",
+      "failure": []
+    }
+  ]
+}
+----
+--
+====
+
+The following request computes the histogram data for attribute `joinDate` from edge type `COMP_MEMBER` between from vertex `compForum` and to vertex `compPerson` on graph `test_graph`:
+
+[tabs]
+====
+Histogram Computation Request::
++
+--
+.Edge Attribute Histogram Computation
+[source.wrap,console]
+----
+$ curl --user tigergraph:tigergraph \
+-X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate","bucket":10}'
+----
+--
+
+Results::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "Histogram stats gathering completed",
+  "results": [
+    {
+      "success": "[1/1]",
+      "failure": []
+    }
+  ]
+}
+----
+--
+====
+
+==== Compute Multiple Histograms together
+
+In addition to requesting individual histograms through the POST endpoint, it is also possible to request all valid histograms on a per schema object basis. The`bucket` parameter can still be specified and will be applied to every histogram being computed in the request.
+
+Respecting the dependency of lower level schema objects, this can be done as follows:
 
 [.wrap,console]
 ----
-$ curl --user tigergraph:tigergraph -X POST \
-"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"firstName", "buckets":10}'
+// Compute Histograms for ALL valid attributes (default bucket value)
+-d '{}'
+// Compute Histograms for ALL valid attributes (bucket specified)
+-d '{"bucket":"10"}'
+// Compute Histograms for ALL valid attributes under:
+// graph test_graph 
+// (default bucket value)
+-d '{"graph":"test_graph"}'
+// Compute Histograms for ALL valid attributes under:
+// graph test_graph
+// vertex Comment
+// (default bucket value)
+-d '{"graph":"test_graph", "vertex":"Comment"}'
+// Compute Histograms for ALL valid attributes under:
+// graph test_graph
+// vertex Comment
+// (default bucket value)
+-d '{"graph":"test_graph", "vertex":"Comment"}'
+// Compute Histograms for ALL valid attributes and from/to vertices under:
+// graph test_graph
+// edge COMP_MEMBER
+// (default bucket value)
+-d '{"graph":"test_graph", "edge":"COMP_MEMBER"}'
+// Compute Histograms for ALL from/to vertices for attribute joinDate:
+// graph test_graph
+// edge COMP_MEMBER
+// attribute joinDate
+// (default bucket value)
+-d '{"graph":"test_graph", "edge":"COMP_MEMBER", "attribute":"joinDate"}'
+// Compute Histograms for ALL valid attributes under:
+// graph test_graph
+// edge COMP_MEMBER, from vertex compForum, to vertex compPerson
+// (default bucket value)
+-d '{"graph":"test_graph", "edge":"COMP_MEMBER", "from":"compForum", "to":"compPerson"}'
 ----
 
-To compute the histogram data for attribute `creationDate`  from vertex type `Person` to vertex type `Comment`, make the following request:
+The output generated is in the same format as individual computation, with the `success` field tracking the total number of successful computations and `failure` tracking all of the failures encountered:
 
-[.wrap,console]
+[tabs]
+====
+Histogram Computation Request::
++
+--
+.Gather ALL Histogram Computation
+[source.wrap,console]
 ----
-$ curl --user tigergraph:tigergraph -X POST \
-"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}'
+$ curl --user tigergraph:tigergraph \
+-X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{}'
 ----
+--
+
+Results::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "Histogram stats gathering completed",
+  "results": [
+    {
+      "failure": [],
+      "success": "[94/94]"
+    }
+  ]
+}
+----
+--
+====
+
+A more condensed error message will be provided under `failure` if any of the histogram computations encounter an error. This allows the request to log the error and continue with the next computation. For more information on the specific error refer to the logs or run the particular histogram computation individually for more verbose feedback. 
 
 === Retrieve histogram statistics
 
+`READ_DATA` privilege is required to retrieve a histogram for a particular attribute. This can be at the attribute level or a higher level. Note that for edge-based histograms, the 'from' and 'to' vertex are not read and therefore only the edge requires the privilege.
+
 `GET :14240/gsqlserver/gsql/stats/histogram`
 
-This endpoint retrieves histogram data for a specified attribute of a vertex type.
+This endpoint retrieves histogram data for a specified attribute of a vertex or edge type. Empty buckets in the histogram are denoted by a totalCount, upperCount, and ndv of zero. The upperBound will have the max theoretical value for an empty bucket.
 
-==== Parameters
+==== Request Body
 
 |===
 |Parameter |Description |Data type
@@ -141,19 +276,221 @@ This endpoint retrieves histogram data for a specified attribute of a vertex typ
 
 ==== Examples
 
-The following request retrieves the histogram statistics for the `first_name` attribute of the vertex type `Person`:
+[tabs]
+====
+Histogram Retrieval Request::
++
+--
+.Retrieve Vertex Attribute Histogram
+[source.wrap,console]
+----
+$ curl --user tigergraph:tigergraph \
+-X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","vertex":"Comment","attribute":"length","bucket":10}'
+----
+--
 
-[.wrap,console]
+Results Histogram Exists::
++
+--
+[source,console]
 ----
-$ curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&vertex=Person&attribute=firstName"
+{
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "histogram": [
+        {
+          "ndv": 1,
+          "upperBound": 1988,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 0,
+          "upperBound": 1789,
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 1,
+          "upperBound": 1402,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 1,
+          "upperBound": 1211,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 1,
+          "upperBound": 1119,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 1,
+          "upperBound": 908,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 116,
+          "upperBound": 183,
+          "rowsUpper": 90,
+          "rowsTotal": 151037
+        },
+        {
+          "ndv": 0,
+          "upperBound": 399,
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 0,
+          "upperBound": 598,
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 1,
+          "upperBound": 710,
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        }
+      ],
+      "gatherEnd": "2024-05-07 19:09:03",
+      "gatherStart": "2024-05-07 19:09:03"
+    }
+  ]
+}
 ----
+--
 
-The following request retrieves the histogram statistics for the `creationDate` attribute of the refined edge type `LIKES` between `Person` and `Comment`:
+Results Histogram Does Not Exist::
++
+--
+[source,console]
+----
+{
+  "error": true,
+  "message": "Histogram does not exist for test_graph.Comment.length",
+  "results": ""
+}
+----
+--
+====
 
-[.wrap,console]
+[tabs]
+====
+Histogram Retrieval Request::
++
+--
+.Retrieve Edge Attribute Histogram
+[source.wrap,console]
 ----
-$ curl --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
+$ curl --user tigergraph:tigergraph \
+-X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate","bucket":10}'
 ----
+--
+
+Results Histogram Exists::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "histogram": [
+        {
+          "ndv": 1,
+          "upperBound": "2012-09-03 16:44:14",
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 2,
+          "upperBound": "2012-04-15 18:07:22",
+          "rowsUpper": 1,
+          "rowsTotal": 2
+        },
+        {
+          "ndv": 0,
+          "upperBound": "2012-03-14 15:53:37",
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 3,
+          "upperBound": "2011-12-15 02:34:53",
+          "rowsUpper": 1,
+          "rowsTotal": 3
+        },
+        {
+          "ndv": 1,
+          "upperBound": "2011-09-11 17:20:51",
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 0,
+          "upperBound": "2011-06-29 02:37:41",
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 1,
+          "upperBound": "2010-04-22 12:31:07",
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 0,
+          "upperBound": "2010-10-12 13:21:44",
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        },
+        {
+          "ndv": 1,
+          "upperBound": "2010-11-15 07:23:59",
+          "rowsUpper": 1,
+          "rowsTotal": 1
+        },
+        {
+          "ndv": 0,
+          "upperBound": "2011-04-03 14:12:22",
+          "rowsUpper": 0,
+          "rowsTotal": 0
+        }
+      ],
+      "gatherEnd": "2024-05-07 20:44:34",
+      "gatherStart": "2024-05-07 20:44:34"
+    }
+  ]
+}
+----
+--
+
+Results Histogram Does Not Exist::
++
+--
+[source,console]
+----
+{
+  "error": true,
+  "message": "Histogram does not exist for test_graph.COMP_MEMBER.compForum.compPerson.joinDate",
+  "results": ""
+}
+----
+--
+====
 
 
 === Delete histogram statistics
@@ -163,7 +500,7 @@ $ curl --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gs
 This endpoint deletes histogram data for a graph.
 This includes histogram data on all vertex attributes in that graph.
 
-==== Parameters
+==== Request Body
 
 |===
 |Parameter |Description |Data type
@@ -196,16 +533,88 @@ This includes histogram data on all vertex attributes in that graph.
 
 ==== Examples
 
-The following request deletes the histogram statistics for the graph `ldbc_snb`:
+[tabs]
+====
+Histogram Deletion Request::
++
+--
+.Delete Vertex Attribute Histogram
+[source.wrap,console]
+----
+$ curl --user tigergraph:tigergraph \
+-X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","vertex":"Comment","attribute":"length"}'
+----
+--
+
+Results::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "",
+  "results": "Deleting any histogram(s) for test_graph.Comment.length"
+}
+----
+--
+====
+
+[tabs]
+====
+Histogram Deletion Request::
++
+--
+.Delete Edge Attribute Histogram
+[source.wrap,console]
+----
+$ curl --user tigergraph:tigergraph \
+-X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate"}'
+----
+--
+
+Results::
++
+--
+[source,console]
+----
+{
+  "error": false,
+  "message": "",
+  "results": "Deleting any histogram(s) for test_graph.compForum.COMP_MEMBER.compPerson.joinDate"
+}
+----
+--
+====
+
+==== Deleting Multiple Histograms together
+
+It is possible to request multiple histograms be deleted in the same request. The graph name is always required, but it is possible to delete all histograms under a given type as follows:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb
+// Delete Histograms for ALL attributes under:
+// graph test_graph
+-d '{"graph":"test_graph"}'
+// Delete Histograms for ALL attributes under:
+// graph test_graph
+// vertex Comment
+-d '{"graph":"test_graph", "vertex":"Comment"}'
+// Delete Histograms for ALL attributes under:
+// graph test_graph
+// edge COMP_MEMBER, from vertex compForum, to vertex compPerson
+-d '{"graph":"test_graph", "edge":"COMP_MEMBER", "from":"compForum", "to":"compPerson"}'
 ----
 
-The following request deletes the histogram statistics for the `creationDate` attribute of the refined edge type `LIKES` between `Person` and `Comment`:
+==== Current Limitations
+If leader switch or some other interruption takes place in GSQL the histogram operation will not be able to resume. Statistics are stored as they are computed along with their start and end timestamps so there is no progress lost. See recommendations for some suggestions on how to handle such situations.
 
-[.wrap,console]
-----
-$ curl --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram?graph=ldbc_snb&edge=LIKES&attribute=creationDate&from=Person&to=Comment"
-----
+==== Recommendations
+1. If timeout or some other event interrupts the collection of all the desired statistics, specifying a smaller subset of histograms based on what still has yet to be gathered will reduce the amount of regathering.
+For example, if executing a histogram computation request for attributes under all graphs, and after 2/4 graphs are fully gathered a timeout occurs, you can issue two requests at the graph level for graphs 3 and 4.
+
+2. When possible, it is best to schedule histogram computations after schema change jobs and data loading, not before. This is to ensure the statistics best reflect the current state of the database.
+
+3. When choosing the right bucket value, the first step is to determine the requirements of the use case. Then, choose the fewer number of buckets that provides enough granularity.

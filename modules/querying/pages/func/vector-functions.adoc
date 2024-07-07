@@ -16,8 +16,8 @@ The current vector functions work with` ListAccum<>` inputs but not directly wit
 
 The function takes 3 parameters.
 
-* The first 2 parameters are `ListAccum<>` for the two vectors being compared.
-* The 3rd parameter is a string and indicates which variation of the function to use.
+* The first two parameters are `ListAccum<>` for the two vectors being compared.
+* The third parameter is a string and indicates which variation of the function to use.
 +
 ====
 .For example:

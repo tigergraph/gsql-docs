@@ -274,7 +274,8 @@ Result::
 
 ====  Description
 
-The Jaccard similarity between the two sets.
+The Jaccard similarity between the two sets, that is, the number of items appearing in both sets, divided by the number of unique items in the lists.
+Jaccard similarity, like overlap similarity, is intended for vectors which are unordered sets of _categorical data_, such as the sets of city names mentioned in travel blogs.
 
 ====  Return type
 

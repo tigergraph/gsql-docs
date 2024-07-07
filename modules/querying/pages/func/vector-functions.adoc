@@ -117,7 +117,7 @@ Overlap similarity is intended for vectors which are unordered sets of _categori
 
 |`VectorB`
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
-|`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+|`+ListAccum<INT/UINT/STRING>+`
 
 | "OVERLAP"
 | A string that identifies the similarity function type.

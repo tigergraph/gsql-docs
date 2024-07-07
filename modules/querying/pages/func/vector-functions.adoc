@@ -45,6 +45,7 @@ This function supports multiple similarity measures; the user selects which meas
 
 ====  Description
 The Euclidean distance between two vectors.
+The vectors must have the same length and have corresponding numeric elements.
 
 ====  Return type
 `double`

@@ -19,5 +19,6 @@ Built-in functions:
 * xref:func/type-conversion-functions.adoc[Type conversion functions]
 * xref:func/vertex-methods.adoc[Vertex functions]
 * xref:func/miscellaneous-functions.adoc[Miscellaneous functions]
+* xref:func/vector-functions.adoc[]
 
 In GSQL, users can supplement the language by defining their own Query User-Defined Functions (Query UDF). To learn about how to define a Query UDF, see xref:func/query-user-defined-functions.adoc[Query User-Defined Functions].

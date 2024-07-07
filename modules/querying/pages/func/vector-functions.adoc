@@ -287,7 +287,7 @@ Jaccard similarity, like overlap similarity, is intended for vectors which are u
 
 |`VectorA`
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
-|`ListAccum<INT/UINT/FLOAT/DOUBLE>`
+|`ListAccum<INT/UINT/STRING>`
 
 |`VectorB`
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`.

@@ -1,7 +1,7 @@
 = Vector Functions
 :experimental:
 
-Vector Similarity Function in TigerGraph is currently implemented as UDFs and preloaded as part of the Graph Data Science Library:
+This page lists all the functions in the GSQL query language that operate on vector data.  In general, a vector could be either a `LIST<>` type attribute or a `ListAccum<>` variable. 
 xref:graph-ml:similarity-algorithms:index.adoc[]
 
 [CAUTION]

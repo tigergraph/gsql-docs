@@ -113,7 +113,7 @@ Overlap similarity is intended for vectors which are unordered sets of _categori
 
 |`VectorA`
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`.
-|`+ListAccum<INT/UINT/FLOAT/DOUBLE>+`
+|`+ListAccum<INT/UINT/STRING>+`
 
 |`VectorB`
 |An n-dimensional vector denoted by a `+ListAccum+` of length `n`.

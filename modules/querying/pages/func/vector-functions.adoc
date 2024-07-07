@@ -20,12 +20,24 @@ This function supports multiple similarity measures; the user selects which meas
 * The first two parameters are `ListAccum<>` for the two vectors being compared.
 * The third parameter is a string and indicates which variation of the function to use.
 +
-====
-.For example:
+|===
+| Value | Function
 
-** If the string’s value is `“COSINE”`, then the function performs cosine similarity.
-** If the string’s value is `“JACCARD”`, it performs Jaccard similarity.
-====
+| "COSINE"
+| cosine similarity
+
+| "EUCLIDEAN"
+| Euclidean distance
+
+| "JACCARD"
+| Jaccard similarity
+
+| "OVERLAP"
+| overlap similarity
+
+| "PEARSON"
+| Pearson correlation coefficient
+|===
 
 === Euclidean Distance
 ====  Syntax

@@ -14,7 +14,8 @@ The current vector functions work with` ListAccum<>` inputs but not directly wit
 
 == tg_similarity_accum()
 
-The function takes 3 parameters.
+Returns a similarity (or distance) measure between two vectors.
+This function supports multiple similarity measures; the user selects which measure by setting one of the input parameters.
 
 * The first two parameters are `ListAccum<>` for the two vectors being compared.
 * The third parameter is a string and indicates which variation of the function to use.

@@ -10,11 +10,6 @@ The current vector functions are implemented as UDFs and preloaded as part of th
 The current vector functions work with` ListAccum<>` inputs but not directly with `List<>` attributes.
 ====
 
-[IMPORTANT]
-====
-Beta features are for personal or R&D use and not for production use.
-====
-
 
 
 == tg_similarity_accum()

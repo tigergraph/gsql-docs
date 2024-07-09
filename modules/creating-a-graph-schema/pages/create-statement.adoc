@@ -4,6 +4,13 @@ TigerGraph’s declarative query language, GSQL, is a unified language for build
 It covers data modeling, data loading, and data querying.
 Below, we illustrate the data modeling language (DDL) using a sample graph.
 
+[NOTE]
+====
+You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
+To learn more about permission and privileges, see
+xref:https://docs.tigergraph.com/tigergraph-server/current/user-access/access-control-model[Access Control Model in TigerGraph].
+====
+
 == Vertex Type
 
 
@@ -18,16 +25,23 @@ CREATE VERTEX City ( name STRING PRIMARY KEY)
 CREATE VERTEX Phone (name STRING PRIMARY KEY, isBlocked BOOL)
 ----
 
-A [green]#CREATE VERTEX# statement is used to define a vertex type. It specifies:
+The [green]#CREATE VERTEX# statement defines a new global vertex type with a name, a primary key, and an attribute list.
+
+Data loaded to a global vertex type in one graph will be shared across all graphs that use that vertex type.
+See xref:https://docs.tigergraph.com/gsql-ref/3.9/ddl-and-loading/modifying-a-graph-schema#_global_vs_local_schema_changes[Global
+vs. local schema changes] for instructions on creating local vertices.
+
 
 1. *Type Name*: A unique string identifier for the vertex type. For example, [green]#Account#, [green]#City#, and [green]#Phone# are vertex type names.
 2. *Attributes*: One or more attributes can be defined. Each attribute has a name and an associated data type. For example, in the [green]#Account# vertex type, [green]#isBlocked# is an attribute with the data type [green]#BOOL#.
+The available attribute types, including user-defined types, are listed in the section xref:values-and-types:values-and-types.adoc[Attribute Data Types].
 3. *Primary Key*: One or more attributes that uniquely identify a vertex of its type. For example, in the [green]#Account# vertex type, [green]#name# is the primary key. Each vertex type must have a primary key.
 
 === Composite Key using PRIMARY KEY
 
 You can specify a composite key (a set of attributes) as the primary key of the vertex type by placing the [green]#PRIMARY KEY# at the end of the attribute list. To save memory space, we recommend using a single attribute as the primary key.
 
+[source,gsql]
 ----
 CREATE VERTEX Account (firstName STRING, lastName STRING, isBlocked BOOL, PRIMARY KEY (firstName, lastName))
 
@@ -35,6 +49,8 @@ CREATE VERTEX Account (firstName STRING, lastName STRING, isBlocked BOOL, PRIMAR
 ----
 
 == Edge Types
+
+[source,gsql]
 ----
 CREATE DIRECTED EDGE Transfer (FROM Account, TO Account, DISCRIMINATOR(date DATETIME), amount UINT) WITH REVERSE_EDGE="Transfer_Reverse"
 
@@ -43,20 +59,31 @@ CREATE UNDIRECTED EDGE hasPhone (FROM Account, TO Phone)
 CREATE DIRECTED EDGE isLocatedIn (FROM Account, TO City)
 ----
 
-A [green]#CREATE EDGE# statement defines an edge type, specifying:
+A [green]#CREATE EDGE# statement defines an edge type. Data loaded to a global edge type in one graph will be shared across all graphs that use that edge type.
+See xref:https://docs.tigergraph.com/gsql-ref/3.9/ddl-and-loading/modifying-a-graph-schema#_global_vs_local_schema_changes[global vs. local schema changes] for instructions on creating local edges.
+
+A [green]#CREATE EDGE# statement defines an edge type with the following specifications:
 
 1. *Type Name*: A unique identifier for the edge type. Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn#.
 2. *Direction Property*: Specified by the [green]#DIRECTED# or [green]#UNDIRECTED# keyword.
 ** *DIRECTED*: Models an asymmetric relationship with a defined direction from the source vertex to the target vertex.
 ** *UNDIRECTED*: Models a symmetric relationship with no defined direction, simply connecting two vertices.
 3. *Attributes*: Zero or more attributes can be defined, each with a name and an associated data type. Example: In the [green]#Transfer# edge type, [green]#amount# is an attribute with the data type [green]#UINT#.
-4. *Discriminator*: (Optional) specified by [green]#DISCRIMINATOR#,it is used to differentiate multiple instances of the same edge type between the same pair of vertices. Example: The [green]#Transfer# edge type uses the [green]#date# attribute as its discriminator to differentiate multiple [green]#Transfer# edges between the same account pair (Scott, Ed).
-5. *Source and Target Vertex Type pair(s)*: Specifies the vertex types that the edge connects. Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn# edges connect their respective [green]#FROM# and [green]#TO# vertex types. For an undirected edge, either vertex type can be at the source (the [green]#FROM#) position, and the remaining one will take the target (the [green]#TO#) position.
+The available attribute types, including user-defined types, are listed in the section xref:values-and-types:values-and-types.adoc[Attribute Data Types]
+4. *Discriminator*: By default, only one instance of an edge type is allowed between two vertices. You can add an optional
+discriminator (specified by the keyword `DISCRIMINATOR`) to the edge type definition to differentiate multiple instances of one
+edge type between two vertices. Example: The [green]#Transfer# edge type uses the [green]#date# attribute as its discriminator to differentiate
+multiple Transfer edges between the same account pair (Scott, Ed).   Only INT, UINT , DATETIME and STRING types are allowed
+to be discriminators for edge types. The specification of the discriminator must come before other attributes.
+
+5. *Source and Target Vertex Type pair(s)*: specifies at least one pair of source and target vertex types, that is, the vertex types on both ends of the edge. In GSQL, they are often referred to as the FROM vertex and the TO vertex, respectively, to reflect the keywords used to define the edge type.
+Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn# edges connect their respective [green]#FROM# and [green]#TO# vertex types. For an undirected edge, either vertex type can be at the source (the [green]#FROM#) position, and the remaining one will take the target (the [green]#TO#) position.
 6. *Reverse Edge Type*: For directed edges, you can optionally use “[purple]#WITH REVERSE_EDGE# = [green]#reverse_edge_name#” to specify a reverse edge type, which shares the same schema as the forward edge type but in the opposite direction and has a unique name. This is useful when writing queries to traverse both directions of an edge. Example: For each [green]#Transfer# edge, a reverse edge [green]#Transfer_Reverse# is created, flipping the source and target of the [green]#Transfer# edge.
 
 === Multi-Pairs of (source, target)
 When defining an edge type, if you want to specify multiple pairs of source and target vertex types, you can use a pipe ([green]#|#) to separate them. Below example, you can use isLocatedIn edge type to connect [green]#company# and [green]#city#, or [green]#university# and [green]#city#, or [green]#person# and [green]#city#.
 
+[source,gsql]
 ----
 CREATE DIRECTED EDGE isLocatedIn (FROM company, TO city | FROM university, TO city | FROM person, TO city)
 
@@ -64,6 +91,7 @@ CREATE DIRECTED EDGE isLocatedIn (FROM company, TO city | FROM university, TO ci
 
 If your target types are of the same type, you can combine the sources using pipe. See example below. Vice versa for source types.
 
+[source,gsql]
 ----
 CREATE DIRECTED EDGE isLocatedIn (FROM company|university|person, TO city)
 
@@ -71,12 +99,16 @@ CREATE DIRECTED EDGE isLocatedIn (FROM company|university|person, TO city)
 
 == Graph Type
 
+[source,gsql]
 ----
 CREATE GRAPH financialGraph (Account, City, Phone, Transfer, Transfer_Reverse, hasPhone, isLocatedIn)
 
 ----
 
-A [green]#CREATE GRAPH# statement defines a graph type, specifying:
+A [green]#CREATE GRAPH# statement defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data.
+The vertex types and edge types may be listed in any order. Executing `CREATE GRAPH` will set the new graph to be the working graph.
+
+A [green]#CREATE GRAPH# statement specifies:
 
 1. *Graph Name*: A unique identifier for the graph. Example: [green]#financialGraph#.
 2. *Graph Element Types*: A list of vertex and edge types that make up the graph. Example: [green]#Account#, [green]#City#, [green]#Phone#, [green]#Transfer#, [green]#hasPhone#, [green]#isLocatedIn#.
@@ -86,6 +118,7 @@ This statement creates a graph named [green]#financialGraph# that includes the s
 === Syntax Sugar to include all vertex or edge types.
 If you want to include all vertex and edge types in your graph, you can use star (*) as illustrated below.
 
+[source,gsql]
 ----
 CREATE GRAPH financialGraph (*)
 

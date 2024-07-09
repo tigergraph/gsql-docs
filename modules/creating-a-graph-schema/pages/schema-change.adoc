@@ -1,73 +1,264 @@
-= Schema Change
+= Change a Graph Schema
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+After a graph schema has been created, it can be modified. Before we
+proceed, it is important to understand the concepts of global scope and graph scope.
 
-== Beautiful Vertex Information
+== Global Scope vs. Graph Scope
+A database uses Data Definition Language (DDL) to create and modify schema objects. Schema objects include vertex types, edge types, graph types, etc. These schema objects reside in the metadata store, known as the Catalog.
 
-* A list of concise information, perfectly
-* getting the message across
+Each schema object is visible within a scope. In a graph database, there are two scopes:
 
-`a small code block that adds understanding`
+* *Global Scope*: This is the default scope for schema objects. By default, all objects created using the "CREATE" DDL statement belong to the global scope.
+* *Graph Scope*: Each graph has its own graph scope. A schema change job can be used to add schema objects (vertex or edge types) to a specific graph's scope.
+
+
+.Global scope schema objects
+image::Global_Local.png[]
+
+As illustrated in Figure 1, we use the CREATE statements to create the
+[green]#Account#, [green]#City#, and [green]#Phone# vertex schema object, and the [green]#isLocatedIn#, [green]#hasPhone#, [green]#Transfer#, and [green]#Transfer_Reverse# edge schema
+object, and the [green]#financialGraph# graph schema object. They are all visible in the Global scope.
+
+To enter the global scope, type the "[purple]#use global#" command in the GSQL shell. Next, use the "[purple]#ls#" command to list all the
+schema objects under this scope.
 
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
-
-SELECT p FROM etc etc
-
-}
+> USE GLOBAL
+> ls
 ----
-.cool title name
-****
-activate sidebar block
 
-[discrete]
-== this is a discrete heading
-TIP: here's a nice tidbit
-
-****
-
-=== A sub-section about vertex information
-
-* Here is a bullet point about some information
-- here's a second bullet point
+.Global scope schema objects and graph scope objects
+image::Global_Local_With_Arrows.png[]
 
 
 
+Figure 2 shows that the financialGraph is composed of global scope schema objects such as Account, City, Phone, isLocatedIn,
+and hasPhone etc. The privateGraph also uses the global schema object Phone. Thus, both the financialGraph and the privateGraph
+share the Phone schema object. Additionally, the privateGraph has its own private schema objects—Loan and Person vertex objects.
+
+To enter a graph scope, type the "[purple]#use graph graphName#" command in the GSQL shell. Then, use the "[purple]#ls#" command to list all
+the schema objects under this graph scope.
 
 
+[source,gsql]
+----
+> USE GRAPH privateGraph
+> ls
+----
 
 
-|===
-| Tables | are | the | best | thing | ever
+== Schema Change Job
+To safely update the graph schema, the user should follow this procedure:
 
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
+* Create a schema change job, which defines a sequence of `ADD`, `ALTER`, and/or `DROP` statements.
+* Run the schema change job (using `RUN SCHEMA_CHANGE JOB <job name>`),
+which will do the following:
+** Attempt the schema change.
+** If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema
+** If the change is unsuccessful, report the failure and return to the state before the attempt.
 
 
-== now for another section
+[CAUTION]
+====
+A schema change will invalidate any loading jobs or query jobs which relate to an altered part of the schema.
+Specifically:
 
-[NOTE]
-this is a note
+* A loading job becomes invalid if it refers to a vertex or and an edge which has been dropped (deleted) or altered.
+* A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been dropped.
+
+Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
+====
 
 [WARNING]
-this is a warning
+====
+Load or query operations which begin before the schema change will be completed based on the pre-change schema. Load or
+query operations which begin after the schema change, and which have not been invalidated, will be completed based on
+the post-change schema.
 
-[IMPORTANT]
-this is important information
+Schema changes that are performed during times with high query or data loading volume may have a chance of failure. It
+is considered good practice to perform schema changes during times of low graph activity.
+====
 
-.Only a few more lines left
-- Surprise +
-page break
+=== Local Schema Change Job
 
-a random line
+[source,gsql]
+----
+# create an empty graph named financialGraph
+CREATE GRAPH financialGraph ()
 
----
+# enter the graph scope
+USE GRAPH financialGraph
 
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]
+# create a schema change job to add vertex/edge types
+CREATE SCHEMA_CHANGE JOB financialGraph_schema_job {
+   # add all vertex types
+   ADD VERTEX Account ( name STRING PRIMARY KEY, isBlocked BOOL);
+   ADD VERTEX City ( name STRING PRIMARY KEY);
+   ADD VERTEX Phone (name STRING PRIMARY KEY, isBlocked BOOL);
+
+   # add all edge types
+   ADD DIRECTED EDGE Transfer (FROM Account, TO Account, DISCRIMINATOR(date DATETIME), amount UINT) WITH REVERSE_EDGE="Transfer_Reverse";
+   ADD UNDIRECTED EDGE hasPhone (FROM Account, TO Phone);
+   ADD DIRECTED EDGE isLocatedIn (FROM Account, TO City);
+}
+
+# run the schema change job
+RUN SCHEMA_CHANGE JOB financialGraph_schema_job
+----
+
+
+
+A local schema change job is a schema object created under a current graph scope.
+A [green]#CREATE SCHEMA_CHANGE JOB# statement defines a new graph-scope schema change job. It specifies:
+
+* The job name. For example,  [green]#financialGraph_schema_job#
+* A sequence of [purple]#ADD#, [purple]#ALTER#, and [purple]#DROP# statements separated by “;” for changing a particular
+graph. It does not perform the schema change. In the above example, we use the [purple]#ADD# statements to create a list of vertex
+and edge types for the graph [green]#financialGraph#.
+
+
+The job can be executed by the “[purple]#RUN SCHEMA_CHANGE JOB jobName#” command. After we execute the schema change
+job, the catalog looks like Figure 3.
+
+.The schema change job financialGraph_schema_job modifies the empty financialGraph by adding a list of local vertex and edge types
+image::localGraph2.png[]
+
+
+== ADD VERTEX|EDGE
+
+The `ADD VERTEX` statement specifies:
+
+1. *Type Name*: A unique identifier for the edge type. Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn#.
+2. *Direction Property*: Specified by the [green]#DIRECTED# or [green]#UNDIRECTED# keyword.
+** *DIRECTED*: Models an asymmetric relationship with a defined direction from the source vertex to the target vertex.
+** *UNDIRECTED*: Models a symmetric relationship with no defined direction, simply connecting two vertices.
+3. *Attributes*: Zero or more attributes can be defined, each with a name and an associated data type. Example: In the [green]#Transfer# edge type, [green]#amount# is an attribute with the data type [green]#UINT#.
+4. *Discriminator*: (Optional) specified by [green]#DISCRIMINATOR#,it is used to differentiate multiple instances of the same edge type between the same pair of vertices. Example: The [green]#Transfer# edge type uses the [green]#date# attribute as its discriminator to differentiate multiple [green]#Transfer# edges between the same account pair (Scott, Ed).
+5. *Source and Target Vertex Type pair(s)*: Specifies the vertex types that the edge connects. Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn# edges connect their respective [green]#FROM# and [green]#TO# vertex types. For an undirected edge, either vertex type can be at the source (the [green]#FROM#) position, and the remaining one will take the target (the [green]#TO#) position.
+6. *Reverse Edge Type*: For directed edges, you can optionally use “[purple]#WITH REVERSE_EDGE# = [green]#reverse_edge_name#” to specify a reverse edge type, which shares the same schema as the forward edge type but in the opposite direction and has a unique name. This is useful when writing queries to traverse both directions of an edge. Example: For each [green]#Transfer# edge, a reverse edge [green]#Transfer_Reverse# is created, flipping the source and target of the [green]#Transfer# edge.
+
+[source, gsql]
+----
+# an add vertex statement
+ADD VERTEX Account ( name STRING PRIMARY KEY, isBlocked BOOL);
+
+# an add edge statement
+ADD UNDIRECTED EDGE hasPhone (FROM Account, TO Phone);
+----
+
+== DROP VERTEX|EDGE
+The [purple]#DROP VERTEX# and the [purple]#DROP EDGE# statement specifies:
+
+1. *Type Name*: A unique string identifier for the vertex or edge type to be dropped. For
+example, [green]#Account#, [green]#isLocatedIn# type names.
+
+Below are some examples of the DROP statement, all of which should be part of the body of a schema change job.
+
+[source,gsql]
+----
+# a drop vertex statement
+DROP VERTEX City, Phone;
+
+# a drop edge statement
+DROP EDGE isLocatedIn;
+----
+
+
+== ALTER VERTEX|EDGE
+The [purple]#ALTER VERTEX# and the [purple]#ALTER EDGE# statement specifies the attributes to [purple]#ADD# or [purple]#DROP#.
+
+`ALTER VERTEX Company ADD ATTRIBUTE (industry STRING, market_cap DOUBLE)`
+
+1. *Type Name*: A unique string identifier for the vertex or edge type to be modified.
+2. *Attribute name list* to be added or dropped.
+3. *Edge (source, target) pairs* to be added.
+
+Here are some examples of the ALTER statement on vertex and edge types. All of them should be part of the body of a schema change job.
+
+[source,gsql]
+----
+# change attributes of the Account vertex schema
+ALTER VERTEX Account ADD ATTRIBUTE (age UINT, gender STRING);
+ALTER VERTEX Account DROP ATTRIBUTE (isBlocked);
+
+# change attributes of the hasPhone edge schema
+ALTER EDGE hasPhone ADD ATTRIBUTE (model STRING);
+
+# add a new (source,target) pair to the hasPhone edge
+ALTER EDGE hasPhone ADD PAIR (FROM City, TO Phone);
+----
+
+
+== Global Schema Change Job
+The `CREATE GLOBAL SCHEMA_CHANGE JOB` block defines a sequence of `ADD`, `ALTER`, and `DROP` statements that modify either
+the attributes of a global vertex or edge types, or add (or drop) the global vertex or edge  types to( or from) a graph.
+Unlike the non-global schema change job, the header does not include a graph name. However, the `ADD`/`ALTER`/`DROP` statements
+in the body do mention graphs.
+
+[source,gsql]
+----
+# enter the global scope
+USE GLOBAL
+
+CREATE GRAPH privateGraph()
+
+# create a global schema change job to add global vertex/edge types to the graph
+CREATE GLOBAL SCHEMA_CHANGE JOB updatePrivateGraph {
+
+   # modify a the global vertex Account schema
+   ALTER VERTEX Account ADD ATTRIBUTE (age UINT, gender STRING);
+   ALTER VERTEX Account DROP ATTRIBUTE (isBlocked);
+
+   # add the global Phone vertex to privateGraph
+   ADD VERTEX Phone TO GRAPH privateGraph;
+
+}
+
+# run the schema change job
+RUN GLOBAL SCHEMA_CHANGE JOB updatePrivateGraph
+----
+
+
+=== Drop A Schema Change Job
+To drop a schema job, use the `DROP JOB` command, which specifies:
+1. *Job Name*: the schema change job name
+
+[source,gsql]
+----
+# drop a global schema change job
+USE GLOBAL
+DROP JOB updatePrivateGraph
+
+# drop a graph scope schema change job
+USE GRAPH financialGraph
+DROP JOB financialGraph_schema_job
+
+----
+
+=== Drop All
+
+The `DROP ALL` command clears all graph data, all graph schemas, all loading jobs, and all queries. It should only be used when the intent is to erase an entire database design and to start over.
+
+
+This command is only available to superusers and only when they are in global mode.
+
+==== -N Option
+Additionally, an option `-N` is currently supported for both local and global schema change jobs.
+Option `-N`, for both global and local scopes, will mark the queries as deprecated and the user will need to manually
+re-install the deprecated queries.
+
+[source,gsql]
+----
+# do schema change, and invalidate all queries.
+USE GLOBAL
+RUN GLOBAL SCHEMA_CHANGE JOB updatePrivateGraph -N
+
+USE GRAPH financialGraph
+RUN SCHEMA_CHANGE JOB financialGraph_schema_job -N
+----
+
+
+
+
+

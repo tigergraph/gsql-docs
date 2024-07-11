@@ -1,0 +1,23 @@
+= Create A Graph Schema
+
+Before loading data into a graph database, you need to define a graph schema. This section shows how to create a graph schema using vertex types and edge types.
+
+== Sample Graph
+We will use a sample graph to illustrate the concepts. In the figure below, the graph consists of two types of elements:
+
+* **Vertices**: Represented by circles. These are the nodes or entities in your graph.
+* **Edges**: Represented by lines. Each connects a pair of vertices and represents a relationship between them.
+
+Both vertices and edges have structured types, similar to how tables define records in relational databases.
+Vertex types define the structure of vertices, and edge types define the structure of edges.
+Bold labels in each graph element show the names of each type. Graph elements with the same color share the same type.
+
+.Sample Financial Graph Data
+image::creating-a-graph-schema:Sample Graph GSQL.png[]
+
+
+
+
+
+
+

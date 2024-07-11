@@ -134,8 +134,15 @@ The `ADD VERTEX` statement specifies:
 ** *DIRECTED*: Models an asymmetric relationship with a defined direction from the source vertex to the target vertex.
 ** *UNDIRECTED*: Models a symmetric relationship with no defined direction, simply connecting two vertices.
 3. *Attributes*: Zero or more attributes can be defined, each with a name and an associated data type. Example: In the [green]#Transfer# edge type, [green]#amount# is an attribute with the data type [green]#UINT#.
-4. *Discriminator*: (Optional) specified by [green]#DISCRIMINATOR#,it is used to differentiate multiple instances of the same edge type between the same pair of vertices. Example: The [green]#Transfer# edge type uses the [green]#date# attribute as its discriminator to differentiate multiple [green]#Transfer# edges between the same account pair (Scott, Ed).
-5. *Source and Target Vertex Type pair(s)*: Specifies the vertex types that the edge connects. Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn# edges connect their respective [green]#FROM# and [green]#TO# vertex types. For an undirected edge, either vertex type can be at the source (the [green]#FROM#) position, and the remaining one will take the target (the [green]#TO#) position.
+The available attribute types, including user-defined types, are listed in the section xref:values-and-types:values-and-types.adoc[Attribute Data Types]
+4. *Discriminator*: By default, only one instance of an edge type is allowed between two vertices. You can add an optional
+discriminator (specified by the keyword `DISCRIMINATOR`) to the edge type definition to differentiate multiple instances of one
+edge type between two vertices. Example: The [green]#Transfer# edge type uses the [green]#date# attribute as its discriminator to differentiate
+multiple Transfer edges between the same account pair (Scott, Ed).   Only INT, UINT , DATETIME and STRING types are allowed
+to be discriminators for edge types. The specification of the discriminator must come before other attributes.
+
+5. *Source and Target Vertex Type pair(s)*: specifies at least one pair of source and target vertex types, that is, the vertex types on both ends of the edge. In GSQL, they are often referred to as the FROM vertex and the TO vertex, respectively, to reflect the keywords used to define the edge type.
+Examples: [green]#Transfer#, [green]#hasPhone#, and [green]#isLocatedIn# edges connect their respective [green]#FROM# and [green]#TO# vertex types. For an undirected edge, either vertex type can be at the source (the [green]#FROM#) position, and the remaining one will take the target (the [green]#TO#) position.
 6. *Reverse Edge Type*: For directed edges, you can optionally use “[purple]#WITH REVERSE_EDGE# = [green]#reverse_edge_name#” to specify a reverse edge type, which shares the same schema as the forward edge type but in the opposite direction and has a unique name. This is useful when writing queries to traverse both directions of an edge. Example: For each [green]#Transfer# edge, a reverse edge [green]#Transfer_Reverse# is created, flipping the source and target of the [green]#Transfer# edge.
 
 [source, gsql]
@@ -222,6 +229,7 @@ RUN GLOBAL SCHEMA_CHANGE JOB updatePrivateGraph
 
 === Drop A Schema Change Job
 To drop a schema job, use the `DROP JOB` command, which specifies:
+
 1. *Job Name*: the schema change job name
 
 [source,gsql]

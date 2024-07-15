@@ -8,7 +8,7 @@ Below, we illustrate the data modeling language (DDL) using the sample graph.
 ====
 You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 To learn more about permission and privileges, see
-xref:https://docs.tigergraph.com/tigergraph-server/current/user-access/access-control-model[Access Control Model in TigerGraph].
+xref:tigergraph-server:user-access:access-control-model.adoc[Access Control Model in TigerGraph].
 ====
 
 == Vertex Type

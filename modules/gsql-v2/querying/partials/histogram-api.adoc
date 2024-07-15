@@ -1,16 +1,20 @@
 [#_compute_histogram_statistics]
 === Compute histogram statistics
 
-`POST :14240/gsqlserver/gsql/stats/histogram`
+`POST :14240/gsql/v1/stats/histogram`
 
 This endpoint computes histograms for a specified attribute of a vertex or edge type.
 
 READ_SCHEMA privilege is required for the graph that the histogram attribute belongs to. When gathering for multiple graphs at once (see Compute Multiple Histograms in one request), READ_SCHEMA is required on ALL of those graphs.
 
+The following header is also required: `-H 'Content-Type: application/json'`
+
 ==== Parameters
-Options can be specified in the header using -H:
+Additional options can be specified in the header using -H:
 `GSQL-Timeout` indicates timeout for the request. In the case of multiple computations, this timeout covers the overall timeout, including all the histogram computations.
 `GSQL-Thread-Limit` indicates the thread limit per histogram computation. In the case of multiple computations this thread limit will apply to each histogram computation individually.
+
+Note that multiple headers can be included, for example: `-H 'Content-Type: application/json' -H 'GSQL-Timeout: 1000000' ...`
 
 ==== Request body
 
@@ -95,7 +99,8 @@ Histogram Computation Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","vertex":"Comment","attribute":"length","bucket":10}'
 ----
 --
@@ -130,7 +135,8 @@ Histogram Computation Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate","bucket":10}'
 ----
 --
@@ -209,7 +215,8 @@ Histogram Computation Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X POST "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{}'
 ----
 --
@@ -239,7 +246,7 @@ A more condensed error message will be provided under `failure` if any of the hi
 
 `READ_DATA` privilege is required to retrieve a histogram for a particular attribute. This can be at the attribute level or a higher level. Note that for edge-based histograms, the 'from' and 'to' vertex are not read and therefore only the edge requires the privilege.
 
-`GET :14240/gsqlserver/gsql/stats/histogram`
+`GET :14240/gsql/v1/stats/histogram`
 
 This endpoint retrieves histogram data for a specified attribute of a vertex or edge type. Empty buckets in the histogram are denoted by a totalCount, upperCount, and ndv of zero. The upperBound will have the max theoretical value for an empty bucket.
 
@@ -285,7 +292,8 @@ Histogram Retrieval Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X GET "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","vertex":"Comment","attribute":"length","bucket":10}'
 ----
 --
@@ -393,7 +401,8 @@ Histogram Retrieval Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X GET "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X GET "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate","bucket":10}'
 ----
 --
@@ -495,7 +504,7 @@ Results Histogram Does Not Exist::
 
 === Delete histogram statistics
 
-`DELETE :14240/gsqlserver/gsql/stats/histogram`
+`DELETE :14240/gsql/v1/stats/histogram`
 
 This endpoint deletes histogram data for a graph.
 This includes histogram data on all vertex attributes in that graph.
@@ -542,7 +551,8 @@ Histogram Deletion Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X DELETE "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","vertex":"Comment","attribute":"length"}'
 ----
 --
@@ -570,7 +580,8 @@ Histogram Deletion Request::
 [source.wrap,console]
 ----
 $ curl --user tigergraph:tigergraph \
--X DELETE "http://localhost:14240/gsqlserver/gsql/stats/histogram" \
+-H 'Content-Type: application/json' \
+-X DELETE "http://localhost:14240/gsql/v1/stats/histogram" \
 -d '{"graph":"test_graph","edge":"COMP_MEMBER","from":"compForum","to":"compPerson","attribute":"joinDate"}'
 ----
 --

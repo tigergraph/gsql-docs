@@ -3,7 +3,7 @@
 Before loading data into a graph database, you need to define a graph schema. This section shows how to create a graph schema using vertex types and edge types.
 
 == Sample Graph
-We will use a sample graph to illustrate the concepts. In the figure below, the graph consists of two types of elements:
+To effectively illustrate the concepts needed to create a graph schema, we will create an example graph schema modeling the data in the sample graph below in the following articles. The graph consists of two types of elements:
 
 * **Vertices**: Represented by circles. These are the nodes or entities in your graph.
 * **Edges**: Represented by lines. Each connects a pair of vertices and represents a relationship between them.

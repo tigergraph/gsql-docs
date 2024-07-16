@@ -1074,6 +1074,8 @@ Running `to_vertex() and to_vertex_set()` requires real-time conversion of an ex
 
 * If the user can always know the id before running the query, define the query with `VERTEX` or `SET<VERTEX>` parameters instead of `STRING` or `SET<STRING>` parameters, and avoid calling `to_vertex()` or `to_vertex_set()`.
 * Calling `to_vertex_set()` one time is much faster than calling `to_vertex()` multiple times. Use `to_vertex_set()` instead of `to_vertex()` as much as possible.
+
+Since 4.1.0, we cannot use `to_vertex()` in ACCUM or POST-ACCUM clauses any more. An error message will be prompted when we try to do so.
 ==== 
 
 
@@ -1143,6 +1145,11 @@ GSQL > RUN QUERY to_vertex_test("Dan", "person")
 
 
 === `to_vertex_set()`
+
+[WARNING]
+==== 
+Since 4.1.0, we cannot use `to_vertex_set()` in ACCUM or POST-ACCUM clauses any more. An error message will be prompted when we try to do so.
+==== 
 
 
 ====  Syntax

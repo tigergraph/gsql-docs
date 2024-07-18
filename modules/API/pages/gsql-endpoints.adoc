@@ -1,0 +1,101 @@
+= GSQL Endpoints
+:pp: {plus}{plus}
+:description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
+:toc:
+
+This page describes the REST API endpoints accessible on a TigerGraph server.
+
+[NOTE]
+====
+*Note for users of TigerGraph Cloud*
+
+For all TigerGraph Cloud solutions created on or after June 20, 2022, ports 14240 and 9000 are no longer exposed.
+This also applies to previously created cloud solutions that are resized on or after June 20, 2022. Use port 443 instead for API endpoint connectivity on cloud solutions:
+
+** Use API endpoint `443/restpp/<endpoint>` for RESTPP endpoints that were on port 9000
+
+** Use API endpoint `443/<endpoint>` for endpoints that were on port 14240
+
+For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
+====
+
+== Vertex
+
+=== show local vertices
+
+`GET /gsql/v1/schema/vertices`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Sample request:
+
+.GET /gsql/v1/schema/vertices Request and Response
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
+{"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"title"},{"AttributeType":{"Name":"STRING COMPRESS"},"AttributeName":"country"},{"AttributeType":{"Name":"UINT"},"AttributeName":"year"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"movie"}]}
+----
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the vertices on which graph.
+|===
+
+'''
+=== show all global vertices
+
+`GET /gsql/v1/schema/vertices`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Sample request:
+
+.GET /gsql/v1/schema/vertices Request and Response
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/gsql/v1/schema/vertices"
+{"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"uid"},"Name":"user"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"wid"},"Name":"website"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"pid"},"Name":"product"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"user2"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"DATETIME"},"AttributeName":"dob"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"user3"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"title"},{"AttributeType":{"Name":"STRING COMPRESS"},"AttributeName":"country"},{"AttributeType":{"Name":"UINT"},"AttributeName":"year"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"movie"}]}
+----
+
+==== Parameters:
+
+None
+
+'''
+=== show a local vertex
+
+`GET /gsql/v1/schema/vertices/{vertexName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Sample request:
+
+.GET /schema/vertices/house Request and Response
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/house?graph=g"
+{"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"IsLocal":true,"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"house"}}
+----
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the vertices on which graph.
+|===
+
+'''        
+

@@ -228,6 +228,8 @@ Sampling error data can be viewed by executing the 'SHOW LOADING ERROR <job_id>'
 ----
 
 As mentioned in the report, The command `SHOW LOADING ERROR <job_id>` shows the error data sampled during data loading.
+
+Error Data Example
 [source,gsql]
 ----
 +----------------+------------------------------+------------+--------------------------------------------------------+

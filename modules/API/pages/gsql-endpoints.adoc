@@ -27,17 +27,30 @@ For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph C
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
 
-.GET /gsql/v1/schema/vertices Request and Response
+==== Example
 
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"title"},{"AttributeType":{"Name":"STRING COMPRESS"},"AttributeName":"country"},{"AttributeType":{"Name":"UINT"},"AttributeName":"year"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"movie"}]}
 ----
+--
+====
 
-===== Parameters:
+==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
@@ -55,15 +68,27 @@ curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.GET /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"uid"},"Name":"user"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"wid"},"Name":"website"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"pid"},"Name":"product"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"user2"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"DATETIME"},"AttributeName":"dob"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"user3"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"title"},{"AttributeType":{"Name":"STRING COMPRESS"},"AttributeName":"country"},{"AttributeType":{"Name":"UINT"},"AttributeName":"year"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"movie"}]}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -76,15 +101,27 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.GET /gsql/v1/schema/vertices/house Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/house?graph=g"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"IsLocal":true,"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"house"}}
 ----
+--
+====
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -104,15 +141,27 @@ curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/house?graph=g"
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.GET /gsql/v1/schema/vertices/person Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/person"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"}}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -126,16 +175,27 @@ NONE
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.POST /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully create vertices: [UserA, UserB]"}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -157,15 +217,27 @@ curl -X POST "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gs
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.POST /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?gsql=false&graph=empty_graph" -d '{"addVertices":["user","website"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully add vertices: [user, website] on graph empty_graph"}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -190,17 +262,29 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.POST /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?gsql=false" -d '{"createVertices":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
 {"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
 ]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully create vertices: [User5, User4]"}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -222,15 +306,27 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.DELETE /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertexName=user2,user3"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Vertices [user2, user3] deleted successfully."}
 ----
+--
+====
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -251,16 +347,27 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.DELETE /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertexName=user2,user3&graph=recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Vertices [user2, user3] deleted successfully."}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -285,16 +392,27 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.DELETE /gsql/v1/schema/vertices/user2 Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/user2?graph=recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Vertices [user2] deleted successfully."}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -315,16 +433,27 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.DELETE /gsql/v1/schema/vertices/user2 Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/user2"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Vertices [user2] deleted successfully."}
 ----
-
+--
+====
 ==== Parameters:
 
 None
@@ -336,16 +465,27 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.PUT /gsql/v1/schema/vertices/user Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/user?graph=recommend" -d '{"dropAttributes":["area"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully update vertex: user"}
 ----
-
+--
+====
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -364,36 +504,57 @@ curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.PUT /gsql/v1/schema/vertices/user Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/user" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully update vertex: user"}
 ----
-
+--
+====
 ==== Parameters:
 
 None
 
+'''  
 === get all global edges 
 
 `GET /gsql/v1/schema/edges`
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.GET /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"transaction_id"}],"FromVertexTypeName":"user","Name":"purchase"},{"IsDirected":true,"ToVertexTypeName":"website","Config":{},"Attributes":[],"FromVertexTypeName":"user","Name":"has_account"},{"IsDirected":false,"ToVertexTypeName":"website","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"item_id"}],"FromVertexTypeName":"product","Name":"sell_on"},{"IsDirected":true,"ToVertexTypeName":"product","Config":{},"Attributes":[],"FromVertexTypeName":"user","Name":"viewed"},{"IsDirected":true,"ToVertexTypeName":"movie","Config":{"REVERSE_EDGE":"roles2"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"role"}],"FromVertexTypeName":"person","Name":"roles"}]}
 ----
-
+--
+====
 ==== Parameters:
 
 None
@@ -405,16 +566,26 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.GET /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges?graph=person_movie"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":[{"IsDirected":true,"ToVertexTypeName":"movie","Config":{"REVERSE_EDGE":"roles2"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"role"}],"FromVertexTypeName":"person","Name":"roles"}]}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -434,16 +605,26 @@ curl -X GET "http://localhost:14240/gsql/v1/schema/edges?graph=person_movie"
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.GET /gsql/v1/schema/edges/purchase Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges/purchase"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"transaction_id"}],"FromVertexTypeName":"user","Name":"purchase"}}
 ----
-
+--
+====
 ==== Parameters:
 
 None
@@ -455,16 +636,26 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.GET /gsql/v1/schema/edges/roles Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges/roles?graph=person_movie"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":{"IsDirected":true,"ToVertexTypeName":"movie","Config":{"REVERSE_EDGE":"roles2"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"role"}],"FromVertexTypeName":"person","Name":"roles"}}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -486,15 +677,26 @@ curl -X GET "http://localhost:14240/gsql/v1/schema/edges/roles?graph=person_movi
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.POST /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from user3, to product, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from user2, to product, attr2 float)"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully create edges: [edge1, edge2]"}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -517,15 +719,26 @@ curl -X POST "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql"
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.POST /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false&graph=empty_graph" -d '{"addEdges":["has_account"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":true,"message":"Failed to create edges [has_account]. Semantic Check Fails: The schema change job tries to add edge has_account to graph empty_graph, but the FROM vertex type user does not exist on the graph.\n"}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -550,16 +763,26 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.POST /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false" -d ' {"createEdges":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr1"}],"FromVertexTypeName":"user3","Name":"edge1"},{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr2"}],"FromVertexTypeName":"user2","Name":"edge2"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully create edges: [edge1, edge2]"}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -580,15 +803,26 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.DELETE /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=test1"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully dropped edges: [test1]."}
 ----
+--
+====
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -609,16 +843,26 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.DELETE /gsql/v1/schema/edges Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=e1&graph=recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Edges [e1] deleted successfully."}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -643,15 +887,26 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.DELETE /gsql/v1/schema/edges/e1 Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/e1?graph=recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Edges [e1] deleted successfully."}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -673,15 +928,26 @@ curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/sch
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.DELETE /gsql/v1/schema/edges/test1 Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/test1"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully dropped edges: [test1]."}
 ----
+--
+====
 
 ==== Parameters:
 
@@ -694,16 +960,26 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.PUT /gsql/v1/schema/edges/purchase Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/purchase" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully update edge: purchase"}
 ----
-
+--
+====
 ==== Parameters:
 
 None
@@ -715,16 +991,26 @@ None
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
-
-.PUT /gsql/v1/schema/edges/e1 Request and Response
-
-[source,console]
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/e1?graph=recommend" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"Successfully update edge: e1"}
 ----
-
+--
+====
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]

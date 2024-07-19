@@ -19,7 +19,7 @@ This also applies to previously created cloud solutions that are resized on or a
 For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
 ====
 
-== Vertex
+== Schema
 
 === show local vertices
 
@@ -37,7 +37,7 @@ curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
 {"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"sid"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"title"},{"AttributeType":{"Name":"STRING COMPRESS"},"AttributeName":"country"},{"AttributeType":{"Name":"UINT"},"AttributeName":"year"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"movie"}]}
 ----
 
-==== Parameters:
+===== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
@@ -377,9 +377,6 @@ curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/
 ==== Parameters:
 
 None
-
-
-== Edges
 
 === get all global edges 
 
@@ -742,4 +739,33 @@ curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/
 
 
 '''  
+== Privilage
 
+=== show all privilages
+
+`GET /gsql/v1/privileges`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Sample request:
+
+.GET /gsql/v1/schema/vertices Request and Response
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
+{"error":false,"message":"","results":[{"privilegeType":"GRAPH","privilege":"READ_SCHEMA"},{"privilegeType":"GRAPH","privilege":"WRITE_SCHEMA"},{"privilegeType":"GRAPH","privilege":"READ_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"EXECUTE_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"WRITE_LOADINGJOB"},{"privilegeType":"QUERY","privilege":"READ_QUERY"},{"privilegeType":"GRAPH","privilege":"CREATE_QUERY"},{"privilegeType":"QUERY","privilege":"UPDATE_QUERY"},{"privilegeType":"QUERY","privilege":"DROP_QUERY"},{"privilegeType":"QUERY","privilege":"INSTALL_QUERY"},{"privilegeType":"QUERY","privilege":"EXECUTE_QUERY"},{"privilegeType":"QUERY","privilege":"OWNER"},{"privilegeType":"GRAPH","privilege":"WRITE_DATASOURCE"},{"privilegeType":"GRAPH","privilege":"READ_ROLE"},{"privilegeType":"GRAPH","privilege":"WRITE_ROLE"},{"privilegeType":"GRAPH","privilege":"READ_USER"},{"privilegeType":"GLOBAL","privilege":"WRITE_USER"},{"privilegeType":"GRAPH","privilege":"READ_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"WRITE_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"READ_FILE"},{"privilegeType":"GLOBAL","privilege":"WRITE_FILE"},{"privilegeType":"GLOBAL","privilege":"DROP_GRAPH"},{"privilegeType":"GLOBAL","privilege":"EXPORT_GRAPH"},{"privilegeType":"GLOBAL","privilege":"CLEAR_GRAPHSTORE"},{"privilegeType":"GLOBAL","privilege":"DROP_ALL"},{"privilegeType":"GRAPH","privilege":"ACCESS_TAG"},{"privilegeType":"GRAPH","privilege":"READ_DATA"},{"privilegeType":"GRAPH","privilege":"CREATE_DATA"},{"privilegeType":"GRAPH","privilege":"UPDATE_DATA"},{"privilegeType":"GRAPH","privilege":"DELETE_DATA"},{"privilegeType":"GRAPH","privilege":"APP_ACCESS_DATA"},{"privilegeType":"GRAPH","privilege":"READ_POLICY"},{"privilegeType":"GRAPH","privilege":"WRITE_POLICY"},{"privilegeType":"PACKAGE","privilege":"USE_FUNCTION"},{"privilegeType":"PACKAGE","privilege":"WRITE_FUNCTION"},{"privilegeType":"GLOBAL","privilege":"READ_WORKLOAD_QUEUE"},{"privilegeType":"GLOBAL","privilege":"WRITE_WORKLOAD_QUEUE"}]}
+----
+
+===== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the vertices on which graph.
+|===
+
+'''

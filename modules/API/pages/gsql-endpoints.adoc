@@ -1031,7 +1031,7 @@ Response::
 
 `GET /gsql/v1/privileges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to list all built-in privileges.
 
 ==== Example
 
@@ -1042,7 +1042,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/privileges"
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/privileges"
 ----
 --
 Response::
@@ -1061,7 +1061,7 @@ Response::
 
 `POST /gsql/v1/privileges/grant`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to grant RABC privileges to specific roles
 
 ==== Example
 
@@ -1072,7 +1072,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/privileges/grant?graph=g" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/grant?graph=recommend" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
 ----
 --
 Response::
@@ -1097,5 +1097,224 @@ Response::
 | in which graph the privilege(s) should be granted, 
 or grant privilege(s) on global level if the parameter is missing
 |===
+
+'''
+
+=== revoke privilege(s) from role(s)
+
+`POST /gsql/v1/privileges/revoke`
+
+This endpoint is used to revoke RABC privileges from specific roles
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/revoke?graph=recommend" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The privileges \"CREATE, READ, UPDATE\" are successfully revoked on \"VERTEX user\" IN GRAPH recommend from role: r2\nThe privileges \"CREATE, READ, UPDATE\" are successfully revoked on \"VERTEX user\" IN GRAPH recommend from role: r1\n","results":[{"privileges":{"1":{"privileges":[]}},"role":"r1"},{"privileges":{},"role":"r2"}]}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the privilege(s) should be revoked, 
+or revoke privilege(s) on global level if the parameter is missing
+|===
+
+'''
+
+=== show all roles
+
+`GET /gsql/v1/roles`
+
+Call this endpoint to show all roles, including built-in roles and user defined roles.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+---- 	
+{"error":false,"message":"","results":{"builtIn":{"global":["globalobserver","globaldesigner","superuser"],"local":["observer","queryreader","querywriter","designer","admin"]},"userDefinedRoles":{"1":["r1","r2","r3"],"recommend":["r4"]}}}
+----
+--
+====
+
+'''
+
+=== Create roles
+
+`POST /gsql/v1/roles`
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/roles?graph=recommend" -d "{"roles":["r1", "r2"]}"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully created local roles on graph 'recommend': [r1, r2]."}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph to create local roles, 
+or create global roles if the parameter is missing
+|===
+
+'''
+
+=== Delete roles
+
+`DELETE /gsql/v1/roles`
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles?graph=recommend&role=r1,r2"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully dropped roles: [r1, r2]."}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph to delete local roles, 
+or delete global roles if the parameter is missing
+
+| `roles`
+| yes
+| roles to delete
+|===
+
+'''
+
+=== show one role
+
+`GET /gsql/v1/roles/{roleName}`
+
+Call this endpoint to show the info of a specific role.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles/r1"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+---- 	
+{"error":false,"message":"","results":{"Graph":"recommend","roleName":"r1","isGlobal":false,"rolePrivileges":{"recommend":{"privileges":["READ_DATA","CREATE_DATA"]}}}}
+----
+--
+====
+
+'''
+
+=== delete one role
+
+`DELETE /gsql/v1/roles/{roleName}`
+
+Call this endpoint to delete a specific role.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles/r1"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+---- 	
+{"error":false,"message":"","results":"Successfully dropped roles: [r1]."}
+----
+--
+====
 
 '''

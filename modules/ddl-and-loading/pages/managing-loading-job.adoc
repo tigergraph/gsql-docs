@@ -224,7 +224,31 @@ The above loading job and data generate the following reports:
   +--------------------------------------------------------------------------------------+
 [WARNING] bad data in m1 (replica 1) /home/tigergraph/movie.dat: 1 line(s) do not have enough number of tokens.
 [WARNING] bad data in m1 (replica 1) /home/tigergraph/movie.dat:Movie: 1 object(s) have invalid attributes.
+Sampling error data can be viewed by executing the 'SHOW LOADING ERROR <job_id>'.
 ----
+
+As mentioned in the report, The command `SHOW LOADING ERROR <job_id>` shows the error data sampled during data loading.
+[source,gsql]
+----
++----------------+------------------------------+------------+--------------------------------------------------------+
+|    Source      |            Reason            |   Offset   |                        Content                         |
++----------------+------------------------------+------------+--------------------------------------------------------+
+|/home/tigergraph|InvalidAttribute(load vertex:M|1           |0,abc,USA,-1990                                         |
+|/movie.dat      |ovie)                         |            |                                                        |
++----------------+------------------------------+------------+--------------------------------------------------------+
+|/home/tigergraph|ShortOfToken(file)            |7           |6,abc,1990                                              |
+|/movie.dat      |                              |            |                                                        |
++----------------+------------------------------+------------+--------------------------------------------------------+
+Done
+----
+
+The command shows two line of error data:
+* The data at line 1, it has an invalid attribute(year).
+* The data at line 7, it doesn't have enough tokens(should have 4 attributes).
+By default, only the earliest 100 errors are shown, but you can customize this limit. `SHOW LOADING ERROR <job_id> limit <your_limit>`
+
+[NOTE]
+User privileges for showing loading errors are the same as running loading jobs.
 
 The file level report points out the two data level errors in this Movie loading job.
 The `load_output` log file contains more detailed information.

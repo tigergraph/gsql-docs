@@ -747,25 +747,69 @@ curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
 
-==== Sample request:
+==== Example
 
-.GET /gsql/v1/schema/vertices Request and Response
-
-[source,console]
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
+curl -X GET "http://localhost:14240/gsql/v1/privileges"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":false,"message":"","results":[{"privilegeType":"GRAPH","privilege":"READ_SCHEMA"},{"privilegeType":"GRAPH","privilege":"WRITE_SCHEMA"},{"privilegeType":"GRAPH","privilege":"READ_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"EXECUTE_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"WRITE_LOADINGJOB"},{"privilegeType":"QUERY","privilege":"READ_QUERY"},{"privilegeType":"GRAPH","privilege":"CREATE_QUERY"},{"privilegeType":"QUERY","privilege":"UPDATE_QUERY"},{"privilegeType":"QUERY","privilege":"DROP_QUERY"},{"privilegeType":"QUERY","privilege":"INSTALL_QUERY"},{"privilegeType":"QUERY","privilege":"EXECUTE_QUERY"},{"privilegeType":"QUERY","privilege":"OWNER"},{"privilegeType":"GRAPH","privilege":"WRITE_DATASOURCE"},{"privilegeType":"GRAPH","privilege":"READ_ROLE"},{"privilegeType":"GRAPH","privilege":"WRITE_ROLE"},{"privilegeType":"GRAPH","privilege":"READ_USER"},{"privilegeType":"GLOBAL","privilege":"WRITE_USER"},{"privilegeType":"GRAPH","privilege":"READ_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"WRITE_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"READ_FILE"},{"privilegeType":"GLOBAL","privilege":"WRITE_FILE"},{"privilegeType":"GLOBAL","privilege":"DROP_GRAPH"},{"privilegeType":"GLOBAL","privilege":"EXPORT_GRAPH"},{"privilegeType":"GLOBAL","privilege":"CLEAR_GRAPHSTORE"},{"privilegeType":"GLOBAL","privilege":"DROP_ALL"},{"privilegeType":"GRAPH","privilege":"ACCESS_TAG"},{"privilegeType":"GRAPH","privilege":"READ_DATA"},{"privilegeType":"GRAPH","privilege":"CREATE_DATA"},{"privilegeType":"GRAPH","privilege":"UPDATE_DATA"},{"privilegeType":"GRAPH","privilege":"DELETE_DATA"},{"privilegeType":"GRAPH","privilege":"APP_ACCESS_DATA"},{"privilegeType":"GRAPH","privilege":"READ_POLICY"},{"privilegeType":"GRAPH","privilege":"WRITE_POLICY"},{"privilegeType":"PACKAGE","privilege":"USE_FUNCTION"},{"privilegeType":"PACKAGE","privilege":"WRITE_FUNCTION"},{"privilegeType":"GLOBAL","privilege":"READ_WORKLOAD_QUEUE"},{"privilegeType":"GLOBAL","privilege":"WRITE_WORKLOAD_QUEUE"}]}
 ----
+--
+====
 
-===== Parameters:
+'''
+
+=== grant privilege(s) to role(s)
+
+`POST /gsql/v1/privileges/grant`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/privileges/grant?graph=g" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The privileges \"CREATE, READ, UPDATE\" are successfully granted on \"VERTEX user\" IN GRAPH recommend to role: r2\nThe privileges \"CREATE, READ, UPDATE\" are successfully granted on \"VERTEX user\" IN GRAPH recommend to role: r1\n","results":[{"privileges":{"1":{"privileges":[]},"recommend":{"privileges":[],"childPermissions":{"user":{"privileges":["READ_DATA","CREATE_DATA","UPDATE_DATA"]}}}},"role":"r1"},{"privileges":{"recommend":{"privileges":[],"childPermissions":{"user":{"privileges":["READ_DATA","CREATE_DATA","UPDATE_DATA"]}}}},"role":"r2"}]}
+----
+--
+====
+
+==== Parameters:
+
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
 | `graph`
-| yes
-| the vertices on which graph.
+| no
+| in which graph the privilege(s) should be granted, 
+or grant privilege(s) on global level if the parameter is missing
 |===
 
 '''

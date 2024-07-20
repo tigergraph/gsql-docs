@@ -1329,8 +1329,772 @@ Response::
 | the graph whose schema to show
 |===
 
+=== create one graph using gsql command
+
+
+`POST /gsql/v1/schema/graphs?gsql=true`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?gsql=true" -d '{"gsql": "create graph g(*)"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created graph: [g]."} 
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| true, means using gsql command
+|===
 
 '''  
+
+=== create one graph using JSON format 
+
+`POST /gsql/v1/schema/graphs`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=gtest&gsql=false
+" -d '{"VertexTypes":["user","product"], "EdgeTypes":["purchase"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created graph: [gtest]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| false, means using JSON
+
+| `graphName`
+| yes
+| the graph name
+|===
+
+'''  
+
+=== drop one graph
+
+`DELETE /gsql/v1/schema/graphs/{graphName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/person_movie"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped graph: person_movie."}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+
+=== drop graphs with given names
+
+`DELETE /gsql/v1/schema/graphs/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=person_movie,recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped graphs: [person_movie, recommend]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graphNames`
+| yes
+| the graph names(separate by `,`), all means drop all the graphs
+|===
+
+'''  
+=== drop local/global scheme change job
+
+`DELETE /gsql/v1/schema/jobs/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=g"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped schema change jobs: [test1, test2]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobName`
+| yes
+| the schema jobs to drop (separate by `,`) 
+
+| `graph`
+| no
+| the graph whose jobs to drop.
+|===
+
+'''  
+=== create local/global scheme change job using gsql command
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph person_movie;}"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created global schema change job: [test3]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| `true`, means using gsql command
+
+| `type`
+| yes
+| when `global` means create global schema change, `local` means create local schema change.
+|===
+
+'''  
+=== create global scheme change job using json
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4?gsql=false&type=global" -d '{"graphs": [{"graphName":"empty_graph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created global schema change job: [test4]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| false
+| `true`, means post body using json 
+
+| `type`
+| yes
+| `global`, means create global schema change
+|===
+
+'''  
+=== create local scheme change job using json
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?type=local&graph=recommend" -d 
+'{
+    "dropVertexTypes": [
+        "desk"
+    ],
+    "alterVertexTypes": [
+        {
+            "name": "house",
+            "dropAttributes": [
+                "height"
+            ],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "dropIndexAttributes": [
+                {
+                    "indexName": "Index_Type_Name",
+                    "attributeName": "area"
+                }
+            ],
+            "addIndexAttributes": [
+                {
+                    "indexName": "ppIndex",
+                    "attributeName": "pp"
+                }
+            ]
+        }
+    ],
+    "addVertexTypes": [
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User5"
+        },
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User4"
+        }
+    ],
+    "addEdgeTypes": [
+        {
+            "IsDirected": true,
+            "ToVertexTypeName": "User4",
+            "Config": {
+
+            },
+            "IsLocal": true,
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "DATETIME"
+                    },
+                    "AttributeName": "live_date"
+                }
+            ],
+            "FromVertexTypeName": "User5",
+            "Name": "edge1"
+        }
+    ],
+    "dropEdgeTypes": [
+        "e1"
+    ],
+    "alterEdgeTypes": [
+        {
+            "dropAttributes": [
+                "attr1"
+            ],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "name": "e2"
+        }
+    ]
+}
+'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created schema change job: [test5]."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+|  yes
+| the graph whose schema change job to create 
+
+| `type`
+| yes
+| `local`, means create local schema change
+|===
+
+'''  
+=== get a specific local/global schema change job
+
+`GET /gsql/v1/schema/jobs/{jobName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?json=true&graph=empty_graph"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH empty_graph;\n    }\n"}}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+|  no
+| the graph whose schema change job to show 
+
+| `json`
+| yes
+| `true`, meann response format `json`, else `text`
+|===
+
+'''  
+=== run global schema change job directly 
+
+`POST /gsql/v1/schema/change`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change" -d ' 
+ {"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
+{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
+]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created vertices: [User5, User4]."}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+=== run local schema change job directly
+
+`POST /gsql/v1/schema/change`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=recommend" -d 
+'{
+    "dropVertexTypes": [
+    ],
+    "alterVertexTypes": [
+        {
+            "name": "house",
+            "dropAttributes": [
+            ],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "dropIndexAttributes": [
+                {
+                    "indexName": "Index_Type_Name",
+                    "attributeName": "area"
+                },
+                {
+                    "indexName": "height_type_name",
+                    "attributeName": "height"
+                }
+            ],
+            "addIndexAttributes": [
+                {
+                    "indexName": "xIndex",
+                    "attributeName": "x"
+                },
+                {
+                    "indexName": "yIndex",
+                    "attributeName": "y"
+                }
+            ]
+        }
+    ],
+    "addVertexTypes": [
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User5"
+        },
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User4"
+        }
+    ],
+    "addEdgeTypes": [
+        {
+            "IsDirected": true,
+            "ToVertexTypeName": "User4",
+            "Config": {
+
+            },
+            "IsLocal": true,
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "DATETIME"
+                    },
+                    "AttributeName": "live_date"
+                }
+            ],
+            "FromVertexTypeName": "User5",
+            "Name": "edge1"
+        }
+    ],
+    "dropEdgeTypes": [
+    ],
+    "alterEdgeTypes": [
+        {
+            "dropAttributes": [
+                "attr1"
+            ],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "name": "e1"
+        }
+    ]
+}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema change job runs successfully"}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the graph who the local schema change runs on
+|===
+
+'''  
+=== run an existing schema change job
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?graph=recommend"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema change job run successfully!"}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph who the schema change job runs on
+|===
+
+'''  
+=== get all local schema change jobs
+
+`GET /gsql/v1/schema/jobs`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=person_movie"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"add2":{"dropVertexTypes":[],"addTags":[],"name":"add2","alterVertexTypes":[],"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE","PRIMARY_ID_AS_ATTRIBUTE":true},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"lastName"},{"AttributeType":{"Name":"INT"},"AttributeName":"age"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"birthday"},{"AttributeType":{"Name":"FLOAT"},"AttributeName":"weight"},{"AttributeType":{"Name":"DOUBLE"},"AttributeName":"salary"},{"AttributeType":{"Name":"BOOL"},"AttributeName":"marriage"},{"AttributeType":{"ValueTypeName":"STRING","Name":"LIST"},"AttributeName":"speaks"},{"AttributeType":{"ValueTypeName":"STRING","Name":"SET"},"AttributeName":"email"},{"AttributeType":{"ValueTypeName":"STRING","KeyTypeName":"INT","Name":"MAP"},"AttributeName":"familyMember"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"test_person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE","PRIMARY_ID_AS_ATTRIBUTE":true},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"url"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"test_city"}],"addEdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"test_city","Config":{},"Attributes":[{"AttributeType":{"Name":"DATETIME"},"AttributeName":"live_date"}],"FromVertexTypeName":"test_person","Name":"test_live_in"}],"dropEdgeTypes":[],"graph":"person_movie","alterEdgeTypes":[],"dropTags":[]}}]}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the graph whose schema change job to show
+
+| `json`
+| yes
+| `true`, request format is `json`
+|===
+
+'''  
+
 == Privilage
 
 === show all privilages

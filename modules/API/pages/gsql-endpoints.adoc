@@ -2094,6 +2094,1378 @@ Response::
 |===
 
 '''  
+=== get all global schema change jobs
+
+`GET /gsql/v1/schema/jobs`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH empty_graph;\n    }\n"},{"test2":"CREATE GLOBAL SCHEMA_CHANGE JOB test2 {\n      ADD VERTEX product TO GRAPH empty_graph;\n    }\n"}]}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+
+
+== Data source
+
+=== get a data source
+
+`GET /gsql/v1/data-sources/{dsName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/data-sources/k1"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"name":"k1","type":"KAFKA","content":{"broker":"kafka-0.tigergraph.com","kafka_config":{"security.protocol":"SSL"}}}}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+
+=== get all data sources
+
+`GET /gsql/v1/data-sources`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/data-sources"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"name":"s1","belongTo":"empty_graph","type":"S3","content":{"access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":"","type":"s3"},"isLocal":true},{"name":"s2","belongTo":"person_movie","type":"S3","content":{"access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":"","type":"s3"},"isLocal":true},{"name":"k1","type":"KAFKA","content":{"broker":"kafka-0.tigergraph.com","kafka_config":{"security.protocol":"SSL"}},"isLocal":false}]}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+=== update data source 
+
+`PUT /gsql/v1/data-sources`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=g" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source s5 is created"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to update
+|===
+
+'''
+=== create data source 
+
+`POST /gsql/v1/data-sources`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=g" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source s4 is created"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to create
+|===
+
+'''
+=== drop one data source 
+
+`DELETE /gsql/v1/data-sources/{dsName}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=g" -d '{"error":false,"message":"Data source k1 is dropped."}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source k1 is dropped."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to delete
+|===
+
+'''
+=== grant one data source 
+
+`POST /gsql/v1/data-sources/grant`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/grant" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully grant datasource k1 to the graph(s) [empty_graph, person_movie]"}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+=== revoke datasource 
+
+`POST /gsql/v1/data-sources/revoke`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/revoke" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully revoke datasource k1 from graph(s) [empty_graph, person_movie]"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to revoke
+|===
+
+'''
+=== drop all data source 
+
+`DELETE /gsql/v1/data-sources/dropAll`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/dropAll"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"All data sources is dropped successfully."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data sources to delete
+|===
+
+'''
+=== get the sample data of S3 file.uris or local files
+
+`POST /gsql/v1/sample-data`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/sample-data" -d ' 
+ {
+  "graphName": "ldbc_snb",
+  "dataSource": "adsafsfsfsfds",
+  "type": "s3",
+  "path": "s3a://gsql-sample-data/test-json/test.json",
+  "dataFormat": "json",
+  "parsing": {
+    "fileFormat": "none",
+    "eol": "\\n"
+  },
+  "filling": "N/A",
+  "size": 10
+}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{
+    "error": false,
+    "message": "",
+    "results": {
+        "data": [
+            {
+                "age": 40,
+                "gender": "male",
+                "name": "Tom",
+                "state": "ca"
+            },
+            {
+                "age": 34,
+                "gender": "male",
+                "name": "Dan",
+                "state": "ny"
+            },
+            {
+                "age": 25,
+                "gender": "female",
+                "name": "Jenny",
+                "state": "tx"
+            },
+            [
+                {
+                    "age": 28,
+                    "gender": "male",
+                    "name": "Kevin",
+                    "state": "az"
+                },
+                {
+                    "age": 22,
+                    "gender": "female",
+                    "name": "Amily",
+                    "state": "ca"
+                },
+                {
+                    "age": 20,
+                    "gender": "female",
+                    "name": "Nancy",
+                    "state": "ky"
+                }
+            ],
+            {
+                "age": 26,
+                "gender": "male",
+                "name": "Jack",
+                "state": "fl"
+            },
+            {
+                "age": 8,
+                "gender": "male",
+                "name": "a",
+                "state": "OR"
+            },
+            {
+                "age": 57,
+                "gender": "male",
+                "name": "aa",
+                "state": "MA"
+            },
+            {
+                "age": 25,
+                "gender": "male",
+                "name": "aaa",
+                "state": "MI"
+            },
+            {
+                "age": 71,
+                "gender": "female",
+                "name": "ab",
+                "state": "WY"
+            },
+            {
+                "age": 71,
+                "gender": "female",
+                "name": "abandoned",
+                "state": "KS"
+            }
+        ],
+        "header": [],
+        "json": true
+    }
+}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+=== get all buckets of given S3 data source
+
+`GET /gsql/v1/list-buckets/{s3Name}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-buckets/abcd"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+"error":false,"message":"","results":["acxiom2019","antifraudtg","aws-cloudtrail-logs-966275272565-4bde22f6","aws-glue-assets-966275272565-us-east-1","aws-logs-966275272565-us-east-1","bofa-louvain","ces-bucket-2","ces-neptune-bucket","ces-new-bucket","cf-templates-58ygac5qoly7-us-east-1","cloud-gbar-test","config-bucket-966275272565","databricks-workspace-stack-aa423-lambdazipsbucket-xjxhu6ikq892","databricks-workspace-stack-f31e4-bucket","databricks-workspace-stack-f31e4-lambdazipsbucket-ucd8ilhr3buv","databricks-workspace-stack-lambdazipsbucket-1qcpzmo9f4qzv","databricks-workspace-stack-lambdazipsbucket-1tycaofagn975","db-0cb8f9da9d4e67f9345947c4c54a5c3e-s3-root-bucket","db-81dc2edb4436079cea7c8c522f2ca24c-s3-root-bucket","db-ed2852b62420a6b838035944365a583a-s3-root-bucket","docker-image-store","docker-registry-backup","faerskit","faq.graphtiger.com","fareshealthcare","files.graphtiger.com","finfraud-demo-files","gbar-test","graphsql","graphsql-ctrip","graphsql-download","graphsql-elb-log","graphsql-eric-elb-log","graphsql-s3download","graphsql-test","graphsql-testdrive","graphsql-web","graphsql-xyz","graphsql-yeepay","graphstudio-customerportal","graphstudio-s3-e2e-test","graphstudio-sample-data-e2e-test","gsql-sample-data","kafka-connector-experiment","ldbc1","like-elb-test","litong","loading-test","merklescience","movie-rec-demo","pmitigergraph","presalesdocs","presalestg","racsftp","release-download-access-log","release-package-stats","release.graphtiger.com","renmaitong","rhfraud1","rik-bucket1","robb-tg-finfraud","robb-tgload-data","s3-import-test","s3-loading-test","se.training.deepdive","stevefuller-db","tango-test","test-gbar","test-graphstudio-bucket","test-s3import-el","test-website.graphtiger.com","tg-app-team","tg-isgs","tg-it-resource","tigergraph-aws-usage","tigergraph-benchmark-dataset","tigergraph-build-artifacts","tigergraph-cloudphysics","tigergraph-customer-support","tigergraph-development-artifects","tigergraph-download-hk","tigergraph-engineering-development-packages","tigergraph-fs-data","tigergraph-gle-prebuild","tigergraph-gui-prebuild-package","tigergraph-kafka-prebuild-package","tigergraph-mcafee-dlp","tigergraph-misc","tigergraph-release-download","tigergraph-release-prebuild","tigergraph-release-replica","tigergraph-temporary-files","tigergraph-test-dataset","tigergraph-testdrive-testdata","tigergraph-training","traininggsql","twitter-graph-benchmark","urbana-docker-ws","vladsynthea","xandrlog"]}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+=== get all files and directories under given S3 bucket path
+
+`GET /gsql/v1/list-files/{s3Name}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-files/fl2323?path=s3a://import-test"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":{"folders":["test-folder"],"files":["chinese.csv","movies.csv","ratings.csv","ratings.tar","ratings.tar.gz","ratings.zip","中文®初めまして.csv"]}}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| uri of the data source
+|===
+
+'''
+
+== Database Utilities
+
+=== backup
+
+`GET /gsql/v1/internal/backup`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/internal/backup?path=/to/your/path"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"gsql.replica":1,"error":false,"message":"The backup request finished successfully."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the backup path
+|===
+
+'''
+=== restore
+
+`GET /gsql/v1/internal/restore`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The restore request finished successfully."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the restore path
+
+| `install`
+| no
+| `true`, force to install all queries
+
+| `restore`
+| no
+| `true`, when use `gadmin backup restore` command;
+|===
+
+
+'''
+
+=== recover gdict catalog
+
+`POST /gsql/v1/schema/recover`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Recover schema succeed!"}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+=== validate graph schema
+
+`POST /gsql/v1/schema/check`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema Check succeeded."}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+
+== Group
+
+=== retrieve a group by id using scim format
+
+`GET /gsql/scim/v2/Groups/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2?gsqlFormat=false"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g2","meta":{"location":"/scim/v2/Groups/54ba8a0f-693c-4cf3-9c53-5caaa244049a","resourceType":"Group"},"members":[],"id":"54ba8a0f-693c-4cf3-9c53-5caaa244049a"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
+'''
+=== retrieve a group by id using gsql format
+
+`GET /gsql/scim/v2/Groups/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=true"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"lastSuccessLogin":"Tue Jul 02 16:57:36 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 16:57:36 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `true`, using gsql format
+|===
+
+'''
+
+=== retrieve groups using gsql format
+
+`GET /gsql/scim/v2/Groups/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":[{"lastSuccessLogin":"Tue Jul 02 17:07:50 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:07:50 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]},{"lastSuccessLogin":"Tue Jul 02 17:07:50 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:07:50 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g2","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}]}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `true`, using gsql format
+|===
+
+'''
+
+=== retrieve groups using scim format
+
+`GET /gsql/scim/v2/Groups/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&gsqlFormat=false&filter=displayName%20nq%20'g2'%20and%20displayName%20sw%20'g1'"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":1,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0570fc42-79ea-427e-aa2e-2b53a0470163","resourceType":"Group"},"id":"0570fc42-79ea-427e-aa2e-2b53a0470163"}]}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the scim format. Value: false.
+
+| filter
+| yes
+| The format should adhere to the structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
+
+| excludedAttributes
+| yes
+| Specifies attributes to be excluded. Currently supports only `members`.
+|===
+
+'''
+
+=== create group using scim format
+
+`POST /gsql/scim/v2/Groups/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=false" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"scimG3","meta":{"location":"/scim/v2/Groups/706d0ad6-2165-4190-8512-de5abfd06988","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"16c1e6cc-3b2a-4d57-9a2e-fb55a5d14804"},{"display":"user4","type":"User","value":"457b9982-d5fb-4ad6-b50a-266919bf0c16"}],"id":"706d0ad6-2165-4190-8512-de5abfd06988"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the scim format. Value: false.
+|===
+
+'''
+=== create group using gsql format
+
+`POST /gsql/scim/v2/Groups/`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created group g4","results":{"lastSuccessLogin":"Tue Jul 02 17:32:40 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:32:40 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g4","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the gsql format. Value: true.
+|===
+
+'''
+=== update a group
+
+`PATCH /gsql/scim/v2/Groups/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=false" -d ' 
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0b181bc8-d055-4fcb-af52-20c560324c6f","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"5cdad092-af32-435e-9865-c2ad06b9d6f8"},{"display":"user4","type":"User","value":"c14765de-ea78-422a-bd87-88f3f7d3ceda"}],"id":"0b181bc8-d055-4fcb-af52-20c560324c6f"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the scim format. Value: false.
+|===
+
+'''
+=== drop one group
+
+`DELETE /gsql/scim/v2/Groups/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=false" -d ' 
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped group g1"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the scim format. Value: false. Indicates whether to use the GSQL format. Value: true. 
+|===
+
+'''
+
+=== drop groups
+
+`POST /gsql/scim/v2/Groups`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped groups: [g1]"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| action
+| yes
+| Indicates whether to delete the groups. Value: delete. 
+|===
+
+'''
+
+== User
+
+=== retrieve a user by id using scim/gsql format
+
+`GET /gsql/scim/v2/Users/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
+'''
+=== update a user
+
+`PUT /gsql/scim/v2/Users/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
+'''
+=== drop users
+
+`POST /gsql/scim/v2/Users/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false&action=delete"  -d ' {"userNames":["u1"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped users: [u1]"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| yes
+| Indicating drop users, value: delete.
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
+'''
+
+=== drop a user
+
+`DELETE /gsql/scim/v2/Users/{id}`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=true"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped user u1"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
+'''
+
+=== create user using scim format
+
+`POST /gsql/scim/v2/Users`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=false" -d ' 
+{"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"active":true,"id":"d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","userName":"scimUser2"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; 
+|===
+
+'''
+=== create user using gsql format
+
+`POST /gsql/scim/v2/Users`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true" -d ' {"password":"tiger123","username":"user2"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created user user2"}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `true`, using gsql format; 
+|===
+
+'''
+=== retrieve users using scim format
+
+`GET /gsql/scim/v2/Users`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20nq%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&gsqlFormat=false&excludedAttributes=names"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":2,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"meta":{"location":"/scim/v2/Users/7a004538-8d41-4f85-b5e7-2a26358f0173","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"7a004538-8d41-4f85-b5e7-2a26358f0173","userName":"tigergraph"},{"meta":{"location":"/scim/v2/Users/0a71523d-9623-4b04-908d-395096e288f4","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"0a71523d-9623-4b04-908d-395096e288f4","userName":"u1"}]}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `excludedAttributes`
+| no
+| `names`, currently only support this value.
+
+| filter
+| yes
+| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName nq "u1"
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; 
+|===
+
+'''
+=== retrieve users using gsql format
+
+`GET /gsql/scim/v2/Users`
+
+These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":[{"lastSuccessLogin":"Wed Jul 03 15:26:33 HKT 2024","privileges":{"1":{"privileges":["READ_SCHEMA","WRITE_SCHEMA","READ_LOADINGJOB","EXECUTE_LOADINGJOB","WRITE_LOADINGJOB","CREATE_QUERY","WRITE_DATASOURCE","READ_ROLE","WRITE_ROLE","READ_USER","WRITE_USER","READ_PROXYGROUP","WRITE_PROXYGROUP","READ_FILE","WRITE_FILE","DROP_GRAPH","EXPORT_GRAPH","CLEAR_GRAPHSTORE","DROP_ALL","ACCESS_TAG","READ_DATA","CREATE_DATA","UPDATE_DATA","DELETE_DATA","APP_ACCESS_DATA","READ_POLICY","WRITE_POLICY","USE_FUNCTION","WRITE_FUNCTION","READ_WORKLOAD_QUEUE","WRITE_WORKLOAD_QUEUE"]},"recommend":{"privileges":[]}},"nextValidLogin":"Wed Jul 03 15:26:33 HKT 2024","roles":{"1":["superuser"],"recommend":["superuser"]},"failedAttempts":0,"name":"tigergraph","disabled":false,"isSuperUser":true,"showAlterPasswordWarning":false,"secrets":[]},{"lastSuccessLogin":"Wed Jul 03 15:26:33 HKT 2024","privileges":{"recommend":{"privileges":[]}},"nextValidLogin":"Wed Jul 03 15:26:33 HKT 2024","roles":{"recommend":["r1"]},"failedAttempts":0,"name":"u1","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}]}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `true`, using gsql format; 
+|===
+
+'''
 
 == Privilage
 

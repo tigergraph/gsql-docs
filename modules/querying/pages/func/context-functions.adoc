@@ -3,7 +3,7 @@
 Context functions are a set of built-in functions that provide insights into the user's information during their current session.
 They offer valuable insights into user roles, making it easier to manage access and privileges within TigerGraph.
 
-They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
+They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:3.10@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
 == Enable Context Functions
 

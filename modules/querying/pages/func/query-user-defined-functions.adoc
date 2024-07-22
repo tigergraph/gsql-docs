@@ -35,7 +35,7 @@ All UDF files are scanned by the system to ensure that they comply with the UDF 
 * There is a file header allowlist that restricts the possible file headers to a customizable list.
 * Additional C{plus}{plus} features are disabled for security reasons.
 
-For more details, see xref:{page-component-version}@tigergraph-server:security:index.adoc#_udf_file_scanning[Security - UDF file scanning].
+For more details, see xref:tigergraph-server:security:index.adoc#_udf_file_scanning[Security - UDF file scanning].
 
 [#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}

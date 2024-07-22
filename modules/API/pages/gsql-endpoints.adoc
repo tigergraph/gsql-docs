@@ -2769,7 +2769,7 @@ None
 
 '''  
 
-== Group
+== Admin
 
 === retrieve a group by id using scim format
 
@@ -2810,6 +2810,10 @@ Response::
 |===
 
 '''
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6df16c8... Update gsql-endpoints.adoc
 === retrieve a group by id using gsql format
 
 `GET /gsql/scim/v2/Groups/{id}`

@@ -2767,7 +2767,38 @@ Response::
 
 None
 
-'''  
+'''
+
+=== clear graph store
+
+`GET /gsql/v1/clear-store`
+
+This endpoint is used to clear graph store data but keep the schema.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully cleared graph store."}
+----
+--
+====
+
+'''
+
 
 == Admin
 
@@ -3140,8 +3171,6 @@ Response::
 |===
 
 '''
-
-== User
 
 === retrieve a user by id using scim/gsql format
 
@@ -4144,38 +4173,6 @@ Response::
 [source.wrap,console]
 ----
 {"error": false,"message": "","results": "Deleting any histogram(s) for G.E1.a"}
-----
---
-====
-
-'''
-
-== System Utility
-
-=== clear graph store
-
-`GET /gsql/v1/clear-store`
-
-This endpoint is used to clear graph store data but keep the schema.
-
-==== Example
-
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully cleared graph store."}
 ----
 --
 ====

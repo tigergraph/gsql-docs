@@ -739,7 +739,8 @@ curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/
 
 
 '''  
-== Privilage
+
+== Admin
 
 === show all privilages
 
@@ -1027,6 +1028,417 @@ Response::
 [source.wrap,console]
 ---- 	
 {"error":false,"message":"","results":"Successfully dropped roles: [r1]."}
+----
+--
+====
+
+'''
+
+=== grant role(s) to user(s)
+
+`POST /gsql/v1/roles/grant`
+
+This endpoint is used to grant roles to specific users
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/grant?graph=recommend' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully granted roles [observer, r1] on graph 'recommend' to users [user1, user2]."}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the role(s) should be granted, 
+or grant role(s) on global level if the parameter is missing
+|===
+
+'''
+
+=== revoke privilege(s) from role(s)
+
+`POST /gsql/v1/roles/revoke`
+
+This endpoint is used to revoke roles from specific users
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/revoke?graph=recommend' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully revoked roles [observer, r1] on graph 'recommend' from users [user1, user2]."}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the role(s) should be revoked, 
+or revoke role(s) on global level if the parameter is missing
+|===
+
+
+'''
+
+== Statistics
+
+=== get cardinality statistics
+
+`GET /gsql/v1/stats/cardinality`
+
+This endpoint is used to fetch cardinality statistics.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/cardinality?graph=recommend'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"vertex_counts":[{"count":5,"type":"user"}],"edge_counts":[{"count":5,"type":"edge3"},{"count":10,"from":"user","to":"product","type":"purchase"}]}}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Get the cardinality stats of which graph
+|===
+
+'''
+
+=== post cardinality statistics
+
+`POST /gsql/v1/stats/cardinality`
+
+This endpoint has to usage: 1) Fetch fresh up-to-date cardinality statistics and persist it to storage. 2) Persist user defined cardinality statistics to storage.
+
+==== 1) Fetch fresh up-to-date cardinality statistics and persist it to storage
+
+===== Example
+
+[,tabs]
+======
+Request1::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&vertex=Person'
+----
+--
+Response1::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "successfully persisted statistics"}
+----
+--
+======
+
+[,tabs]
+======
+Request2::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&edge=LIKES&from=Person&to=Post'
+----
+--
+Response2::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "successfully persisted statistics"}
+----
+--
+======
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Persist the cardinality stats to which graph
+
+| `vertex`
+| no
+| Fetch fresh up-to-date cardinality stats for specific vertex types and persist them to storage
+
+| `edge`
+| no
+| Fetch fresh up-to-date cardinality stats for specific edge types and persist them to storage, if `vertex` is not empty, this parameter will be ignored
+
+| `from`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also from specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `to`.
+
+| `to`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also to specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `from`.
+|===
+
+==== 2) Persist user defined cardinality statistics to storage.
+
+===== Example
+
+[,tabs]
+======
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb' -d '{"vertex_counts":[{"type": "user","count": 5}], "edge_counts":[{"type":"edge3","count":5},{"type":"purchase","from":"user","to":"product","count":10}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"vertex_counts":[{"count":5,"type":"user"}],"edge_counts":[{"count":5,"type":"edge3"},{"count":10,"from":"user","to":"product","type":"purchase"}]}}
+----
+--
+======
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Persist the cardinality stats to which graph
+|===
+
+'''
+
+=== delete cardinality statistics
+
+`DELETE /gsql/v1/stats/cardinality`
+
+This endpoint is used to remove cardinality statistics from storage.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/cardinality?graph=recommend'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"successfully deleted statistics"}
+----
+--
+====
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Delete the cardinality stats of indicated graph from storage
+|===
+
+'''
+
+=== get histogram statistics
+
+`GET /gsql/v1/stats/cardinality`
+
+This endpoint is used to fetch histogram statistics.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a", "bucket":10}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+[{"histogram": [{"rowsTotal": 104,"rowsUpper": 1,"upperBound": "2010-05-05 10:44:41"},{"rowsTotal": 12599,"rowsUpper": 1,"upperBound": "2012-06-09 21:24:20"},{"rowsTotal": 15986,"rowsUpper": 1,"upperBound": "2012-09-13 09:27:04"},{"rowsTotal": 1995,"rowsUpper": 1,"upperBound": "2010-11-14 17:07:00"},{"rowsTotal": 3570,"rowsUpper": 1,"upperBound": "2011-02-18 09:33:18"},{"rowsTotal": 4193,"rowsUpper": 1,"upperBound": "2011-05-24 21:54:24"},{"rowsTotal": 5481,"rowsUpper": 1,"upperBound": "2011-08-28 09:45:29"},{"rowsTotal": 752,"rowsUpper": 1,"upperBound": "2010-08-11 07:41:03"},{"rowsTotal": 8665,"rowsUpper": 1,"upperBound": "2012-03-06 08:31:44"},{"rowsTotal": 8880,"rowsUpper": 1,"upperBound": "2011-12-01 21:13:33"}]}]
+----
+--
+====
+
+'''
+
+=== post histogram statistics
+
+`POST /gsql/v1/stats/histogram`
+
+This endpoint is used to persist new histogram statistics to storage.
+
+==== Example
+
+[,tabs]
+=====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/histogram' -d '{"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"0": {"rowsTotal": 151037,"rowsUpper": 90,"upperBound": 183},"1": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 399},"2": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 598},"3": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 710},"4": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 908},"5": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1119},"6": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1211},"7": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1402},"8": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 1789},"9": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1988}}
+----
+--
+=====
+
+'''
+
+=== delete histogram statistics
+
+`DELETE /gsql/v1/stats/histogram`
+
+This endpoint is used to remove histogram statistics from storage.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "","results": "Deleting any histogram(s) for G.E1.a"}
+----
+--
+====
+
+'''
+
+== System Utility
+
+=== clear graph store
+
+`GET /gsql/v1/clear-store`
+
+This endpoint is used to clear graph store data but keep the schema.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully cleared graph store."}
 ----
 --
 ====

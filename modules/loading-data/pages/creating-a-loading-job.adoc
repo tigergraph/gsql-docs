@@ -1,73 +1,193 @@
 = Creating a Loading Job
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+After defining a graph schema, the next step is to load data into it.
+The GSQL Loading Language is a declarative language designed for integrating heterogeneous data sources into a central graph schema. One of the key advantages of graph databases is their ability to flexibly and incrementally integrate data silos.
+The graph schema serves as a central integration schema, allowing different data sources to be merged seamlessly. This integration is accomplished through loading jobs. Each loading job can independently integrate one or more data sources into the graph, and multiple loading jobs can be defined and executed as needed. Each loading job operates independently, providing flexibility and scalability in data integration.
 
-== Beautiful Vertex Information
 
-* A list of concise information, perfectly
-* getting the message across
+== Dataset and Sample Graph Diagrams
+As a quick reminder, here is the sample schema that will be used as the template for loading the data along with the data itself.
 
-`a small code block that adds understanding`
+.Graph schema of financialGraph
+image::creating-a-graph-schema:schema Graph GSQL.png[]
+
+.Sample Data of financialGraph
+image::creating-a-graph-schema:Sample Graph GSQL.png[]
+
+
+=== Dataset
+These are the files that model the data in financialGraph and will be used in the next step.
+
+.cityFile.tsv
+[source,csv]
+----
+cityFile.tsv
+cityName|population
+New York|8,336,000
+San Francisco|808,437
+London|8,982,000
+----
+
+.accountFile.csv
+[source,csv]
+----
+name,blocked,phone_number,phone_blocked
+Scott,no,999,no
+Ed,no,222,no
+Paul,no,555,yes
+Jen,no,555,yes
+Steven,yes,(no phone, should I add into dataset?)
+----
+
+.transferFile.csv
+[source,csv]
+----
+srcAcct,tgtAcct,timestamp,amt
+Scott,Ed,2024-4-1,$3M
+Scott,Ed,2024-2-1,$1M
+Scott,Ed,2024-2-14,$10M
+Ed,Paul,2024-1-4,$3M
+Jen,Scott,2024-4-4,$8M
+Paul,Jen,2024-2-1,$7M
+Paul,Steven,2023-5-9,$4M
+Steven,Jen,2024-5-1,$3M
+----
+
+== Define A Loading Job
 
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+USE Graph financialGraph
 
-SELECT p FROM etc etc
+CREATE LOADING JOB load_financialGraph FOR GRAPH financialGraph {
+    //define data source variable
+    DEFINE FILENAME cityFile;
+    DEFINE FILENAME accountFile;
+    DEFINE FILENAME transferFile;
 
+    //use LOAD statement to specify mappings from source to graph schema
+    LOAD cityFile
+      TO VERTEX city VALUES ($0) USING QUOTE="double", SEPARATOR="|";
+    LOAD accountFile
+      TO VERTEX Account VALUES ($"name", $"blocked"),
+      WHERE gsql_is_not_empty_string($"phone_blocked")
+      TO VERTEX Phone VALUES ($"phone_number", $"phone_blocked"),
+      TO EDGE hasPhone VALUES ($"name", $"phone_number") USING QUOTE="double", SEPARATOR=",", HEADER="true";
+ LOAD transferFile
+      TO EDGE Transfer VALUES ($"srcAcct", $"tgtAcct", $"timestamp", $"amt") USING QUOTE="single", SEPARATOR=",";
 }
+
+RUN LOADING JOB load_financialGraph USING cityFile="/home/tigergraph/data/cityFile.tsv",
+accountFile="/home/tigergraph/data/accountFile.csv",
+      transferFile="/home/tigergraph/data/transferFile.csv"
 ----
-.cool title name
-****
-activate sidebar block
 
-[discrete]
-== this is a discrete heading
-TIP: here's a nice tidbit
+A loading job consists of:
 
-****
+1. *A unique job name*: A unique identifier for the loading job. Example: load_financialGraph.
+2. *Target graph name*: The name of the graph schema which the job will target to load data. Example: financialGraph.
+3. *File name variables*: the body of the loading job begins by defining a set of data source variables, which are declared by `DEFINE FILENAME` with the variable names. Examples: `cityFile`, `accountFile`, `transferFile`.
+4. *Loading statements*: Each loading statement begins with the `LOAD` keyword. It defines one or more mappings
+from the source file to the target vertex or edge objects in a graph. Each loading statement uses one source file name variable
+and utilizes one or more `TO` clauses to map the source file to one or more target graph element(vertex/edge) types, where the `VALUE`
+clause specifies the mappings. Optionally, a `WHERE` clause can be included to filter which data is loaded to a vertex or edge. Here is a
+shortened example of the above loading statement along with a supporting diagram:
 
-=== A sub-section about vertex information
+[source,gsql]
+----
+LOAD accountFile
+    TO VERTEX Account VALUES ($"name", $"blocked"),
+    TO VERTEX Phone VALUES ($"phone_number", $"phone_blocked")
+    WHERE gsql_is_not_empty_string($"phone_blocked"),
+    TO EDGE hasPhone VALUES ($"name", $"phone_number")
+    USING QUOTE="double", SEPARATOR=",", HEADER="true";
+----
 
-* Here is a bullet point about some information
-- here's a second bullet point
+.Supporting Diagram for Shortened Loading Job Example
+image::loading-data:Loading Job ETL.png[]
+
+As shown in the diagram, every line of `accountFile` is divided and mapped to:
+
+* *One Account vertex* using the columns "name" and "blocked."
+* *One Phone vertex* using the columsns "phone_number" and "phone_blocked."
+** In the above example, the `WHERE` clause usees a token function to check if the "phone_blocked"
+column is empty. If it is empty, the current phone vertex is not loaded and the program will move
+on to the next phone vertex. For more information about these token functions, see <<running-a-loading-job.adoc#functionssupportedinloading, Functions Supported In Loading>>.
+* *One hasPhone edge* using the columns "name" and "phone_number"
+
+The _`VALUE` clause_ specifies the mappings between source file columns and the target vertex or edge schema's
+corresponding positions. Source columns can be specified by:
+
+* Column name($"columnName"): if column names are used, the option `HEADER="true"` must be included
+in the `USING` clause.
+* Column position ($positionIndex): the positionIndex is an integer starting from 0 representing each column.
 
 
 
 
 
 
+
+
+
+The _`USING` clause_ specifies a set of key-value pairs to address the heterogeneity of the source file. The supported key-value pairs are listed below.
 
 |===
-| Tables | are | the | best | thing | ever
+| Function name | Return value
 
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
+| `max(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: maximum of all `arg` values cumulatively received
+
+| `min(arg)`
+| `INT`, `UINT`, `FLOAT`, `DOUBLE`: minimum of all `arg` values cumulatively received
+
+| `add(arg)`
+a| * `INT`, `UINT`, `FLOAT`, `DOUBLE`: sum of all `arg` values cumulatively received
+* `STRING`: concatenation of all arg values cumulatively received
+* `LIST`, `SET` element: list/set of all `arg` values cumulatively received
+* `MAP` (key -> value) pair: key-value dictionary of all key-value pair `arg` values cumulatively received:
++
+--
+** If the values in the key-value pairs are `INT` or `DOUBLE` types, the return values are the sums of all values by key.
+** If the values in the key-value pairs are `STRING` type, the return values are concatenation of all values by key.
+** If the values in the key-value pairs are `UDT` or `DATETIME` types, the return values are the last loaded value.
+--
+If loading into an existing vertex, the new loaded key-value pairs accumulate with the existing pairs in the same way.
+
+| `and(arg)`
+a| * `BOOL`: `AND` of all `arg` values cumulatively received
+* `INT`, `UINT`: bitwise `AND` of all `arg` values cumulatively received
+
+| `or(arg)`
+a| * BOOL: `OR` of all `arg` values cumulatively received
+* INT, UINT: bitwise `OR` of all `arg` values cumulatively received
+
+| `overwrite(arg)`
+a| * Non-container: `arg`
+* `LIST`, `SET`: new list/set containing only `arg`
+
+| `ignore_if_exists(arg)`
+| Any: If an attribute value already exists, return(retain) the existing value.Otherwise, return(load) `arg` .
 |===
 
+Here is the general syntax for a loading statement:
 
-== now for another section
+[source,gsql]
+----
+LOAD file_name
+TO VERTEX|EDGE vertex_or_edge_name VALUES($”column_name”,$positionIndex)
+WHERE [one or more token functions]
+USING parameter1=”parameter1_value”, parameter2=”parameter2_value”
+----
 
-[NOTE]
-this is a note
 
-[WARNING]
-this is a warning
 
-[IMPORTANT]
-this is important information
 
-.Only a few more lines left
-- Surprise +
-page break
 
-a random line
 
----
 
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]
+
+
+
+
+

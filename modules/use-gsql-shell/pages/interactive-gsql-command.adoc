@@ -9,7 +9,7 @@ You need to have TigerGraph installed on your computer in order to use the GSQL 
 For more information about using TigerGraph on your computer, see xref:tigergraph-server:getting-started:index.adoc[Getting Started]
 ====
 
-=== Entering the GSQL Shell
+== Entering the GSQL Shell
 
 To enter the GSQL shell, type `gsql` into the bash terminal as the TigerGraph Linux user.
 
@@ -17,6 +17,12 @@ To enter the GSQL shell, type `gsql` into the bash terminal as the TigerGraph Li
 ----
 $ gsql
 ----
+
+== Multi-line Commands
+
+
+
+
 
 
 

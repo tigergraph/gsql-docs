@@ -1,73 +1,65 @@
 = Running a Loading Job
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+This article explains different ways to run loading jobs as well as how to drop loading jobs.
 
-== Beautiful Vertex Information
 
-* A list of concise information, perfectly
-* getting the message across
 
-`a small code block that adds understanding`
+== Method 1: RUN LOADING JOB Command
+[source,gsql]
+----
+USE Graph financialGraph
+
+RUN LOADING JOB load_financialGraph USING cityFile="/home/tigergraph/data/cityFile.tsv",
+accountFile="/home/tigergraph/data/accountFile.csv",
+transferFile="/home/tigergraph/data/transferFile.csv"
+----
+
+You can use the `RUN LOADING JOB` command to submit a loading job. When a job is submitted, it is assigned a job ID number, which is displayed on the GSQL console. This job ID can be used to refer to the job for various purposes, including checking its status, aborting the job, or restarting the job. For details on managing a job, please refer to the article xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc[Managing Loading Jobs].
+The 'USING' clause specifies a set of key-value pairs, each representing a binding between a file name variable and a file path. For example, the 'cityFile' is a file variable defined in the loading job, at job runtime, it can be bound to the file located at "`/home/tigergraph/data/cityFile.tsv`".
+
+
+== Method 2: Running Loading Jobs as REST Requests
+
+Another way to run a loading job is through the `POST /ddl/{graph_name}` endpoint of the REST\++ server.
+Since the REST++ server has more direct access to the graph processing engine, this can execute more quickly than a `RUN LOADING JOB` statement in GSQL.
+Below is an example to invoke the loading statement related to the cityFile variable.
+
+[source,console]
+----
+# Provide data for filename cityFile for the first LOAD statement
+curl -X POST --data-binary @./cityFile.tsv \"http://localhost:9000/ddl/financialGraph?tag=load_financialGraph&filename=cityFile"
+----
+
+=== Request Body
+
+The request body is the data to be loaded (either in CSV or JSON format).
+Curl allows you to read the data from an input file by using the @ symbol.
+
+For more details on how to use the endpoint, please see xref:https://docs.tigergraph.com/tigergraph-server/3.2/api/built-in-endpoints#_run_a_loading_job[Run A Loading Job].
+
+
+== Drop a Loading Job
+
+To drop (remove) a job, run `DROP JOB job_name`. The job will be removed from GSQL. To drop all jobs, run either of the following commands:
 
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
-
-SELECT p FROM etc etc
-
-}
+DROP JOB ALL
+DROP JOB *
 ----
-.cool title name
-****
-activate sidebar block
 
-[discrete]
-== this is a discrete heading
-TIP: here's a nice tidbit
+The scope of `DROP JOB ALL` depends on the user’s current scope. If the user has set a working graph, then `DROP ALL` removes all the jobs for that graph. If a superuser has set their scope to be global, then `DROP JOB ALL` removes all jobs across all graph spaces.
 
-****
+[id=functionssupportedinloading]
+== Functions Supported in Loading
 
-=== A sub-section about vertex information
+Source files are streaming in as token streams. Sometimes, the user wants to transform tokens before they are loaded.
+Token functions are functions that operate on input tokens during data loading. These functions allow you to clean and format your raw data, as well as transform the raw data to better fit with your graph schema.
 
-* Here is a bullet point about some information
-- here's a second bullet point
+There are four types of token functions:
 
+* xref:gsql-ref:ddl-and-loading:functions:token.adoc[Token Functions]
+* xref:gsql-ref:ddl-and-loading:functions:token_where.adoc[Token Functions in WHERE Clause]
+* xref:gsql-ref:ddl-and-loading:functions:reducer.adoc[Reducer Functions]
+* xref:gsql-ref:ddl-and-loading:add-token-function.adoc[User-defined token functions]
 
-
-
-
-
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
-
-
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

@@ -1,16 +1,16 @@
-= Create Statement
+= Create Statement For Schemas
 
-TigerGraph’s declarative query language, GSQL, is a unified language for building graph database applications end-to-end.
-It covers data modeling, data loading, and data querying.
-Below, we illustrate the data modeling language (DDL) using the sample graph.
+
+This article details how to <<vertextype,create vertices>>, <<_edge_types, create edges>>, and <<_graph_type,create graphs>>
 
 [NOTE]
 ====
 You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 To learn more about permission and privileges, see
-xref:https://docs.tigergraph.com/tigergraph-server/current/user-access/access-control-model[Access Control Model in TigerGraph].
+xref:tigergraph-server:user-access:access-control-model.adoc[Access Control Model in TigerGraph].
 ====
 
+[id=vertextype]
 == Vertex Type
 
 

@@ -1,5 +1,9 @@
 = Create A Graph Schema
 
+TigerGraph’s declarative query language, GSQL, is a unified language for building graph database applications end-to-end.
+It covers data modeling, data loading, and data querying.
+This section will illustrate the data modeling language (DDL).
+
 Before loading data into a graph database, you need to define a graph schema. This section shows how to create a graph schema using vertex types and edge types.
 
 == Sample Graph

@@ -1,4 +1,4 @@
-= Query Blocks
+= Query Structure
 
 The main building block of GSQL query is a SELECT-FROM-WHERE-ACCUM query block. Here's a breakdown of each component in their processing order:
 
@@ -57,8 +57,7 @@ tgtAccnts = SELECT y
 
 // V3 Syntax
 tgtAccnts = SELECT y
-            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
-                  (y:Account {isBlocked: FALSE})
+            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]-> (y:Account {isBlocked: FALSE})
             ACCUM y.@cnt +=1;
 ----
 
@@ -91,8 +90,7 @@ tgtAccnts = SELECT y
 
 // V3 Syntax
 tgtAccnts = SELECT y
-            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
-                 (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
+            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]-> (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
             ACCUM y.@cnt +=1;
 ----
 
@@ -110,8 +108,7 @@ GROUP BY x
 
 // V3 Syntax
 SELECT x AS srcAccount, COUNT(y) AS tgtCnt INTO T
-FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
-      (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
+FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]-> (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
 GROUP BY x
 
 
@@ -125,7 +122,7 @@ Each GSQL query is defined as a stored procedure and can take in parameters at r
 [source,gsql]
 ----
 CREATE OR REPLACE DISTRIBUTED QUERY q3(/* parameters */) SYNTAX V2 {
-    // Query body for V3 syntax
+    // Query body for V2 syntax
 }
 ----
 

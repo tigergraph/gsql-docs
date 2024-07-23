@@ -1,6 +1,6 @@
 = Syntax Versions
 
-Since it sinception in 2015, GSQL has evolved through three syntax versions: V1, V2, and V3.
+Since its inception in 2015, GSQL has evolved through three syntax versions: V1, V2, and V3.
 
 * *V1 Syntax*: GSQL began with V1, which features a 1-hop-only data flow query language.
 * *V2 Syntax*: The introduction of Pattern Match syntax in V2 marked a shift towards a more declarative approach. Users no longer need to consider data flow when writing queries, simplifying the query process.

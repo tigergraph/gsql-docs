@@ -1,65 +1,200 @@
-= Query Block
+= Query Blocks
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+The main building block of GSQL query is a SELECT-FROM-WHERE-ACCUM query block. Here's a breakdown of each component in their processing order:
 
-== Beautiful Vertex Information
+1. *FROM Clause*: Specifies the graph pattern to be matched.
+2. *WHERE Clause (Optional)*: Used to post-filter the matched graph patterns.
+3. *ACCUM Clause (Optional)*: Aggregates values based on the matched patterns.
+4. *SELECT Clause*: Projects the vertex set or expressions as output.
+5. *Two Output forms*:
+a. *Vertex Set Variable Assignment (typical)*: Assigns the selected vertex set to a vertex set variable, allowing it to be used to drive subsequent query blocks.
+b. *Expressions stored in a table variable*: project expression directly into a table variable, allowing them to be returned in the end.
 
-* A list of concise information, perfectly
-* getting the message across
+We illustrate each pattern query blocks by examples.
 
-`a small code block that adds understanding`
+.Node Pattern Query Block
+[source,gsql]
+----
+ // syntax V2
+ X =  SELECT a
+      FROM Account:a
+      WHERE a.isBlocked == TRUE;
+
+ // syntax v3
+ X =  SELECT a
+      FROM (a:Account {isBlocked: TRUE});
+----
+
+In the example above, the `FROM` clause specifies a node pattern. The variable “a” binds to the matching Account vertices. The `WHERE` clause filters all vertices using the provided boolean expression. The vertices that pass this filter are selected as output and stored in the vertex set variable X.
+
+This structure is similar to the relational database query language SQL. However, instead of selecting columns or their derived expressions from a table, GSQL allows you to select vertices based on the matched graph patterns. The reason for using a vertex set as the typical output of a query block is to enable traversal from one vertex set to another, facilitating subsequent graph queries.
+
+If you want to project the columns of the matched node pattern, you can output the selection into a table variable.
 
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+// syntax V2
+ SELECT a.name AS name, a.isBlocked AS isBlocked INTO T
+ FROM Account:a
+ WHERE a.isBlocked == TRUE;
 
-SELECT p FROM etc etc
+ // syntax v3
+ SELECT a.name AS name, a.isBlocked AS isBlocked INTO T
+ FROM (a:Account {isBlocked: TRUE});
+----
 
+In the above example, we project the matched account “name” and “isBlocked” attributes into a table T.  Note that we need to use “AS alias” to specify a new name for each selected expression. Example, “As name” and “AS isBlocked”.
+
+
+.Edge Pattern Query Block
+[source,gsql]
+----
+// V2 Syntax
+tgtAccnts = SELECT y
+            FROM Account:x - (Transfer>:e)- Account:y
+            WHERE x.isBlocked == TRUE AND y.isBlocked == FALSE
+            ACCUM y.@cnt +=1;
+
+// V3 Syntax
+tgtAccnts = SELECT y
+            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
+                  (y:Account {isBlocked: FALSE})
+            ACCUM y.@cnt +=1;
+----
+
+In the above example, we match an `Account-[Transfer]\->Account` edge pattern and return target accounts y that are not blocked but are reachable from a blocked account in one hop. The `ACCUM` clause aggregates, for each such y, the number of x accounts that can reach them, storing the aggregate in the accumulator variable @cnt for each y. We will explain the accumulator and `ACCUM` clause in a separate section.
+If you want to project the columns of the matched edge pattern or perform a GROUP BY operation as in SQL before you `SELECT`, you can do so.
+
+[source,gsql]
+----
+// V2 Syntax
+SELECT x AS srcAccnt, COUNT(y) AS tgtCnt INTO T
+FROM Account:x - (Transfer>:e)- Account:y
+WHERE x.isBlocked == TRUE AND y.isBlocked == FALSE
+GROUP BY x
+// V3 Syntax
+SELECT x AS srcAccnt, COUNT(y) AS tgtCnt INTO T
+FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]-> (y:Account {isBlocked: FALSE})
+GROUP BY x
+----
+
+In the above query block, we match an Account-[Transfer]->Account edge pattern, treating the matched pattern as a pattern table. Each row in this table represents a matched `Account-[Transfer]\->Account` instance. We then group by the source account x and count how many unblocked y accounts can be reached from each blocked x account. The source account x and its reachable y count are stored in table T.
+
+.Path Pattern Query Block
+[source,gsql]
+----
+// V2 Syntax
+tgtAccnts = SELECT y
+            FROM Account:x- (Transfer>:e) - Account:z - (<Transfer) - Account:y
+            WHERE x.isBlocked == TRUE AND y.isBlocked == FALSE
+            ACCUM y.@cnt +=1;
+
+// V3 Syntax
+tgtAccnts = SELECT y
+            FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
+                 (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
+            ACCUM y.@cnt +=1;
+----
+
+In the above example, we match a path  pattern and return target accounts y that are not blocked but are reachable from a blocked account in two hops. The `ACCUM` clause aggregates, for each such y, the number of x accounts that can reach them, storing the aggregate in the accumulator variable @cnt for each y. We will explain the accumulator and `ACCUM` clause in a separate section.
+
+You can use `SELECT` expressions `INTO T` to output any expressions derived from the binding variables in the path pattern.
+
+[source,gsql]
+----
+// V2 Syntax
+SELECT x AS srcAccount, COUNT(y) AS tgtCnt INTO T
+FROM Account:x- (Transfer>:e) - Account:z - (<Transfer) - Account:y
+WHERE x.isBlocked == TRUE AND y.isBlocked == FALSE
+GROUP BY x
+
+// V3 Syntax
+SELECT x AS srcAccount, COUNT(y) AS tgtCnt INTO T
+FROM (x:Account {isBlocked: TRUE}) -[e:Transfer]->
+      (z:Account) <-[Transfer]- (y:Account {isBlocked: FALSE})
+GROUP BY x
+
+
+----
+In the above example, for each x, we find the number of accounts y that share a transfer target account z. The query counts how many unblocked y accounts can be reached from each blocked x account through a common z account. The source account x and the reachable count are stored in table T.
+
+== Query Signature
+
+Each GSQL query is defined as a stored procedure and can take in parameters at runtime. The query signature is illustrated below:
+
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY q3(/* parameters */) SYNTAX V2 {
+    // Query body for V3 syntax
 }
 ----
 
+* *CREATE OR REPLACE*: Ensures the new query is created. If a query with the same name already exists, it will be overwritten.
+* *DISTRIBUTED*: Ensures the query can run on both a single machine and a distributed cluster. It is recommended to always use this keyword, although it can be omitted by users working on a single machine.
+* *QUERY*: Followed by a unique name for the query, e.g., q3.
+* *Parameters*: Listed within parentheses. For example, (INT cutoff, BOOL flag).
+* *SYNTAX*: Specifies the syntax version—V1, V2, or V3.
+* *Query Body*: Enclosed within {}.
 
-=== A sub-section about vertex information
+This structure allows for flexible and reusable GSQL queries that can be adapted to different runtime parameters and environments.
 
-* Here is a bullet point about some information
-- here's a second bullet point
+== Query Body
+Within the {}, user will define a sequence of connected or unconnected query blocks to make up the query body. Below is the skeleton of a query body.
 
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY q3(/* parameters */) SYNTAX V2 {
+    // Query body
 
-
-
-
-
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
+    V1= Query_Block_1;
 
 
-== now for another section
+    V2= Query_Block_2;
 
-[NOTE]
-this is a note
 
-[WARNING]
-this is a warning
+    V3= Query_Block_3;
 
-[IMPORTANT]
-this is important information
+        .
+        .
+        .
 
-.Only a few more lines left
-- Surprise +
-page break
+    V_n = Query_Block_n;
 
-a random line
+    PRINT V_i;
+}
+----
 
----
+A typical GSQL query follows a top-down sequence of query blocks. Each query block generates a vertex set, which can be used by subsequent query blocks to drive pattern matching. `PRINT` statement is used to output any query block's result.
+A complete query example.
 
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY q3(BOOL flag) SYNTAX V2 {
+ // V2 Syntax
+ tgtAccnts = SELECT y
+             FROM Account:x- (Transfer>:e) - Account:z - (<Transfer) - Account:y
+             WHERE x.isBlocked == TRUE AND y.isBlocked == FALSE
+             ACCUM y.@cnt +=1;
+
+ // tgtAccnts vertex set drive the below query block
+ tgtPhones = SELECT z
+             FROM tgtAccnts:x- (hasPhone:e) - Phone:z
+             WHERE z.isBlocked == flag
+             ACCUM z.@cnt +=1;
+
+  PRINT tgtPhones;
+}
+
+----
+
+In the example above, the first query block finds y accounts and stores them in the tgtAccnts vertex set. The second query block then uses the tgtAccnts vertex set to form an edge pattern, finding all the blocked (or unblocked) phones reachable from tgtAccnts. It also counts how many y accounts can reach each blocked (or unblocked) phone, storing this count in the accumulator variable @cnt for each z.
+
+By associating each query block with a vertex set, users can write queries in a composable manner. Composition occurs when a prior vertex set variable is used in subsequent query block patterns. This approach enables the construction of complex queries by building on previously defined vertex sets, allowing for more modular and readable query structures.
+
+
+
+
+
+
+
+

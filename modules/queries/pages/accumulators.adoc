@@ -1,73 +1,193 @@
-= Accumulators
+= What Are Accumulators?
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+GSQL is a Turing-complete graph database query language. One of its key advantages over other graph query languages is its support for accumulators, which can be either global or vertex local.
+An accumulator is a state variable in GSQL. Its state is mutable throughout the life cycle of a query.
 
-== Beautiful Vertex Information
+== Accumulator Supported Operators
 
-* A list of concise information, perfectly
-* getting the message across
+An accumulator in GSQL supports two operators: assignment (=) and accumulation (+=).
 
-`a small code block that adds understanding`
+* `=` operator: The assignment operator can be used to reset the state of an accumulator or its current value.
+* `+=` operator: The accumulation operator can be used to add new values to the accumulator's state. Depending on the type of accumulator, different accumulation semantics are applied.
 
+.Example of Assignment and Accumulation
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+USE GRAPH financialGraph
 
-SELECT p FROM etc etc
+CREATE OR REPLACE DISTRIBUTED QUERY q1 (/* parameters */) FOR GRAPH financialGraph SYNTAX V2 {
+
+    SumAccum<INT> @@sum_accum = 0;
+    MinAccum<INT> @@min_accum = 0;
+    MaxAccum<INT> @@max_accum = 0;
+    OrAccum @@or_accum = FALSE;
+    AndAccum @@and_accum = TRUE;
+    ListAccum<INT> @@list_accum;
+
+    // @@sum_accum will be 3 when printed
+    @@sum_accum +=1;
+    @@sum_accum +=2;
+    PRINT @@sum_accum;
+
+    // @@min_accum will be 1 when printed
+    @@min_accum +=1;
+    @@min_accum +=2;
+    PRINT @@min_accum;
+
+    // @@max_accum will be 2 when printed
+    @@max_accum +=1;
+    @@max_accum +=2;
+    PRINT @@max_accum;
+
+    // @@or_accum will be TRUE when printed
+    @@or_accum += TRUE;
+    @@or_accum += FALSE;
+    PRINT @@or_accum;
+
+    // @@and_accum will be FALSE when printed
+    @@and_accum += TRUE;
+    @@and_accum += FALSE;
+    PRINT @@and_accum;
+
+    // @@list_accum will be [1,2,3,4] when printed
+    @@list_accum += 1;
+    @@list_accum += 2;
+    @@list_accum += [3,4];
+    PRINT @@list_accum;
+
+}
+
+//install the query
+install query  q1
+
+//run the query
+run query q1()
+
+//result
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 2
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@sum_accum": 3
+    },
+    {
+      "@@min_accum": 0
+    },
+    {
+      "@@max_accum": 2
+    },
+    {
+      "@@or_accum": true
+    },
+    {
+      "@@and_accum": false
+    },
+    {
+      "@@list_accum": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ]
+}
+
+----
+
+In the above example, six different accumulator variables (those with prefix @@) are declared, each with a unique type. Below we explain the semantics and usage of them.
+
+* SumAccum<INT> allows user to keep adding INT values
+* MinAccum<INT> keeps the smallest INT number it has seen. As the @@min_accum statements show, we accumulated 1 and 2 to the MinAccum accumulator, and end up with the value 0, as neither of 1 nor 2 is smaller than the initial state value 0.
+*  MaxAccum<INT> is symmetric to MinAccum. It returns the MAX INT value it has seen. The max_accum statements accumulate 1 and 2 into it, and end up with the value 2.
+* OrAccum keeps OR-ing the internal boolean state variable with new boolean variables that accumulate to it. The initial default value is assigned FALSE. We accumulate TRUE and FALSE into it, and end up with the TRUE value.
+* AndAccum is symmetric to OrAccum. Instead of using OR, it uses the AND accumulation semantics. We accumulate TRUE and FALSE into it, and end up with the FALSE value.
+* ListAccum<INT> keeps appending new integer(s) into its internal list variable. We append 1, 2, and [3,4] to the accumulator, and end up with [1,2,3,4].
+
+== Global vs. Vertex Attached Accumulator
+At this point, we have seen that accumulators are special typed variables in GSQL. We are ready to explain their global and local scopes.
+
+
+Global accumulators belong to the entire query. They can be updated anywhere within the query, whether inside or outside a query block.
+Local accumulators belong to each vertex. The term "local" indicates that they are local to the vertex element. These accumulators can only be updated when their owning vertex is accessible within a `SELECT-FROM-WHERE-ACCUM` query block. To differentiate them, we use specific prefixes in their identifiers when declaring them.
+
+* @@ is used for declaring global accumulator variables. It is always used stand-alone. E.g `@@cnt +=1`
+
+* @ is used for declaring local accumulator variables. It must be used with a vertex variable specified in the FROM clause  in a query block. E.g. v.@cnt += 1  where v is a vertex variable specified in a FROM clause of a SELECT-FROM-WHERE query block.
+
+.Example.
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+CREATE OR REPLACE DISTRIBUTED QUERY q1 (/* parameters */) FOR GRAPH financialGraph SYNTAX V2 {
+
+    SumAccum<INT> @cnt = 0; //local accumulator
+    SumAccum<INT>  @@hasPhoneCnt = 0; //global accumulator
+
+   S = SELECT c
+       FROM Account:a - (hasPhone:e) - Phone:p
+       WHERE a.isBlocked == TRUE
+       ACCUM  a.@cnt +=1,
+              p.@cnt +=1,
+              @@hasPhoneCnt +=1;
+
+   PRINT S;
+   PRINT @@hasPhoneCnt;
 
 }
 ----
-.cool title name
-****
-activate sidebar block
 
-[discrete]
-== this is a discrete heading
-TIP: here's a nice tidbit
+In the above example:
 
-****
-
-=== A sub-section about vertex information
-
-* Here is a bullet point about some information
-- here's a second bullet point
+* @cnt is a local accumulator. Once declared, each vertex variable x specified in a FROM clause can access it in the form x.@cnt. The local accumulator state is mutable by any query block.
+* @@hasPhoneCnt is a global accumulator.
 
 
+The ACCUM clause will execute its statements for each pattern matched in the FROM clause and evaluated as TRUE by the WHERE clause.
+
+=== Detailed Explanation:
+
+* The FROM clause identifies the edge patterns that match Account -[hasPhone]- Phone.
+* The WHERE clause filters the edge patterns based on the Account.isBlocked attribute.
+* The ACCUM clause will execute once for each pattern that passes the WHERE clause.
+
+For each matching pattern that survive the WHERE clause, the following will occur:
+
+* a.@cnt += 1
+* p.@cnt += 1
+* @@hasPhoneCnt += 1
+
+The accumulator will accumulate based on the accumulator type.
+
+== ACCUM Clause vs. POST-ACCUM Clause
+
+Accumulators are runtime variables in GSQL. The ACCUM clause and the POST-ACCUM clause of a query block is designed to do the accumulation for local accumulators.
+
+=== FROM-WHERE Produces A Binding Table
+
+We can think of the `FROM` and `WHERE` clauses specify a binding table, where the `FROM` clause specifies the pattern, and the `WHERE` clause does a post-filter of the matched pattern instances-- the result is a table, each row in the table is a pattern instance with the binding variables specified in the `FROM` clause as columns. Using the example in Figure 1, we have
+a result table (a, e, p) where “a” is the Account variable, “e” is the “hasPhone” variable, and “p” is the Phone variable.
+
+=== ACCUM Loop Each Row in the Binding Table
+`ACCUM` clause executes its statement(s) once for each row in the result table. Further, ACCUM parallelly executes its statements. Most local accumulators or global accumulators are accumulated in the `ACCUM` clause. Using the example in Figure 1, for each (a,e,p) in the result table, we increment the a.@cnt accumulator, and the p.@cnt accumulator. Also, we increment the global accumulator @@hasPhoneCnt.
+
+=== POST-ACCUM Loop One Projected Vertex Column In the Binding Table
+
+`POST-ACCUM` clause is designed to access the aggregated accumulator value computed in the `ACCUM` clause. It executes its statements(s) once for each distinct value of a referenced vertex column from the binding table. You can have multiple `POST-ACCUM` clauses. But each `POST-ACCUM` clause can only refer to one vertex variable specified in the `FROM` clause.
+
+*I will add examples based on the data here - Mitchell*
+
+== Accumulator as a Query Block Composition Tool
+
+The scope of the accumulator declaration may cover a sequence of query blocks, in which case the accumulated values computed by a block can be read (and further modified) by subsequent blocks. This enables powerful composition effects that support the concise specification of multi-pass algorithms, with each pass specified declaratively.
 
 
 
 
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
-
-
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

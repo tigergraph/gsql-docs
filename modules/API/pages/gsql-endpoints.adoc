@@ -2773,7 +2773,15 @@ None
 
 `GET /gsql/v1/clear-store`
 
-This endpoint is used to clear graph store data but keep the schema.
+This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
+It does not delete the database schema, nor does it delete queries or loading jobs.
+It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+
+[WARNING]
+====
+This operation is not reversible.
+The deleted data cannot be recovered.
+====
 
 ==== Example
 

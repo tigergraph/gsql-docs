@@ -56,6 +56,11 @@ typedef := TYPEDEF TUPLE "<" tupleFields ">" tupleType
 tupleFields := (baseType fieldName) | (fieldName baseType)
            ["," (baseType fieldName) | (fieldName baseType)]*
 
+createVirtualEdge := CREATE DIRECTED|UNDIRECTED VIRTUAL EDGE Virtual_Edge_Type_Name "("
+    FROM Vertex_Type_Name ("|" Vertex_Type_Name)* ","
+    TO Vertex_Type_Name ("|" Vertex_Type_Name)*
+    ["," attribute_name type [DEFAULT default_value]]* ")"
+
 parameterType := baseType
                | [ SET | BAG ] "<" baseType ">"
                | FILE
@@ -447,6 +452,128 @@ include::appendix:example$investment_net/datatypes_udt_results.json[]
 ----
 --
 ====
+
+
+== Virtual Edge
+
+In the graph schema, while regular edges facilitate CRUD operations, traversing multiple steps between vertices can be cumbersome. 
+
+To streamline this process, we are introducing the Virtual Edge feature, which are in memory edges that can be created during query runtime, simplifying traversal and enabling predicate application across non-adjacent vertices.
+
+.EBNF for creating virtual edge 
+[source,ebnf]
+----
+createVirtualEdge := CREATE DIRECTED|UNDIRECTED VIRTUAL EDGE Virtual_Edge_Type_Name "("
+    FROM Vertex_Type_Name ("|" Vertex_Type_Name)* ","
+    TO Vertex_Type_Name ("|" Vertex_Type_Name)*
+    ["," attribute_name type [DEFAULT default_value]]* ")"
+----
+
+.Example
+[source,ebnf]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY exampleQuery(){
+  CREATE DIRECTED VIRTUAL EDGE virtualE1(from v1, to v2, attr1 int);
+  ...
+}
+----
+
+=== Definition scope
+Virtual edges can only be defined in the global scope of a query, meaning they must be declared at the top level of the query body. They cannot be nested within local statement such as IF, ELSE, FOREACH, select-block etc. The definition of a virtual edge is visible and valid throughout the entire query.
+
+=== Access, Manipulation and Traversal
+In general, virtual edge is very similar to regular edge, meaning we can update, upsert, access, delete virtual edge just like regular edge.
+
+.Example Query with a user-defined tuple
+[tabs]
+====
+Query::
++
+--
+[source,gsql]
+----
+include::appendix:example$virtual_edge/sample_query.gsql[]
+----
+This query creates a virtual edge type VirtualE1, insert edge, access, and delete just like regular edge
+--
+
+Result::
++
+--
+[source,gsql]
+----
+GSQL > RUN QUERY exampleQuery()
+include::appendix:example$virtual_edge/sample_query.json[]
+----
+--
+====
+
+=== Limitation
+* It is only supported to create virtual edge type in the global scope of query, creating virtual edge type inside statements are not allowed, for example below is an incorrect usage
+
+[,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY exampleQuery(Bool condition){
+
+  IF Condition THEN
+	// we are creating virtual edge inside if statement, which is not allowed
+	CREATE DIRECTED VIRTUAL EDGE VirtualE1(FROM Person, TO Post|Comment, creationDate DATETIME);
+
+	...
+  END;
+}
+----
+
+* Only GPR v2 syntax support virtual edge, while UDF does not.
+* Virtual Edge does not support multi edge, i.e. no DISCRIMINATOR attribute can be added in virtual edge
+* Virtual Edge types cannot be used together with other virtual edge or regular edges in edge traversal, for example below is an incorrect usage
+
+[,gsql]
+----
+R = select s from Person:s -((VirtualE1>|VirtualE2>):e)- :t
+    accum
+      case e.type
+        when "VirtualE1" then @@results1 += Results01(e._a, e._b, e._c, e._d)
+        when "VirtualE2" then @@results2 += Results02(e._a, e._b)
+      end
+    ;
+----
+
+* Does not support virtual edge with getAttr(), setAttr() functions
+* Cannot aggregate virtual edge into edge containers, for example below is an incorrect usage
+
+[,gsql]
+----
+ListAccum<edge> @@res;
+R = SELECT p1 FROM person:p1 -(FOF:e)- person:p2
+     ACCUM
+       @@res += e;
+----
+
+* Does not support user defined tuple as attribute type
+* Does not support update and access attributes of same Virtual Edge type in the same ACCUM clause.
+
+** Correct example
+[,gsql]
+----
+// we are reading the attribute of virtual edge in ACCUM clause, and 
+// insert(update) virtual edge in POST-ACCUM caluse, which is allowed
+
+W = select s from Src:s - (VE:e) - Tgt:t
+        ACCUM @@cnt +=e.attr1;
+	 POST-ACCUM INSERT INTO VE values(s, t);
+----
+
+** Incorrect example
+[,gsql]
+----
+// we are reading the attribute of virtual edge and also updating it in
+// the same ACCUM clause, which is not allowed
+
+W = select s from Src:s - (VE:e) - Tgt:t
+        ACCUM @@cnt +=e.attr1,
+ e.attr1 += 1;
+----
 
 
 == `FILE` Object

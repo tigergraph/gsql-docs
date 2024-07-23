@@ -1,0 +1,33 @@
+CREATE OR REPLACE DISTRIBUTED QUERY exampleQuery(){
+
+  // First we create a virtual edge type
+  CREATE DIRECTED VIRTUAL EDGE VirtualE1(FROM v1, TO v2, creationDate DATETIME);
+
+  P = SELECT s FROM v1:s -(e1>:e)- :t
+         ACCUM
+	      // here we insert virtual edges
+            INSERT INTO VirtualE1 VALUES(s, t, to_datetime("2024-01-01"));
+
+  SumAccum<INT> @@cntVE1;
+  MinAccum<DATETIME> @@minDatetime;
+  P = SELECT s FROM v1:s -(VirtualE1>:e)- :t
+         ACCUM
+		// here we traverse virtual edges just like regular edge
+            @@cntVE1 += 1,
+            @@minDatetime += e.creationDate;
+
+  PRINT @@cntVE1;
+  PRINT @@minDatetime;
+
+  P = SELECT s FROM v1:s -(VirtualE1>:e)- :t
+         ACCUM
+		// here we delete the virtual edges
+            DELETE(e);
+
+  SumAccum<INT> @@cntVE2;
+  P = SELECT s FROM v1:s -(VirtualE1>)- :t
+         ACCUM
+		// here we sum up the number of virtual edges, it should be 0
+            @@cntVE2 += 1;
+  PRINT @@cntVE2;
+}

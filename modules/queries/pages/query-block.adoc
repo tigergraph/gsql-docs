@@ -12,7 +12,7 @@ b. *Expressions stored in a table variable*: project expression directly into a 
 
 We illustrate each pattern query blocks by examples.
 
-.Node Pattern Query Block
+== Node Pattern Query Block
 [source,gsql]
 ----
  // syntax V2
@@ -46,7 +46,7 @@ If you want to project the columns of the matched node pattern, you can output t
 In the above example, we project the matched account “name” and “isBlocked” attributes into a table T.  Note that we need to use “AS alias” to specify a new name for each selected expression. Example, “As name” and “AS isBlocked”.
 
 
-.Edge Pattern Query Block
+== Edge Pattern Query Block
 [source,gsql]
 ----
 // V2 Syntax
@@ -80,7 +80,7 @@ GROUP BY x
 
 In the above query block, we match an Account-[Transfer]->Account edge pattern, treating the matched pattern as a pattern table. Each row in this table represents a matched `Account-[Transfer]\->Account` instance. We then group by the source account x and count how many unblocked y accounts can be reached from each blocked x account. The source account x and its reachable y count are stored in table T.
 
-.Path Pattern Query Block
+== Path Pattern Query Block
 [source,gsql]
 ----
 // V2 Syntax

@@ -1,45 +1,48 @@
-= Migrating From V2 to V3
+= Syntax Versions
 
+Since it sinception in 2015, GSQL has evolved through three syntax versions: V1, V2, and V3.
 
-There are a few key differences between V2 and V3 designed to make writing queries more streamlined for older users and
-users famliar with OpenCypher.
+* *V1 Syntax*: GSQL began with V1, which features a 1-hop-only data flow query language.
+* *V2 Syntax*: The introduction of Pattern Match syntax in V2 marked a shift towards a more declarative approach. Users no longer need to consider data flow when writing queries, simplifying the query process.
+* *V3 Syntax*: With the publication of ISO GQL in 2024, GSQL introduced the experimental V3 syntax. This version incorporates many Cypher-inspired elements, emphasizing ASCII art in its syntax.
 
+== Differences Between Syntax Versions
 
-== Vertex Syntax
-When referencing vertices, aliases are now placed on the left instead of the right, and the entire reference is now
-encapsulated in parentheses. For instance, instead of writing `Company:c`, you would instead write `(c:Company)`.
-You can also filter your search by attaching values to specific attributes of a vertex. For example, if you wanted to filter
-all companies founded in 2012, you could write `(c:Company {yearFounded: 2012})`. If you wanted to filter all companies founded in 2012 with the name "TigerGraph," you could write
-`(c:Company {yearFounded: 2012, name: "TigerGraph"})`.
+* *V1 vs. V2*: For detailed differences between V1 and V2, please refer to xref:gsql-ref:querying:syntax-versions.adoc[Differences Between V1 and V2]
+* *V2 vs. V3*: The variations between V2 and V3 are primarily syntactic, with V3 placing a stronger emphasis on ASCII art.
 
+=== How to Specify a Syntax Version
+Users can specify the syntax version for a query in its signature. This is done by including the "Syntax Version" after the parameter parentheses and before the query body begins.
 
+==== Example
 
-== Edge Syntax
-For edges, aliases are also placed on the left. Edges should be encapsulated inside of square brackets
-instead of parentheses. Arrowheads are now placed outside of the
-dashes instead of inside the brackets.
-
-As an example, assume that a "company" node has a directed edge "invests" to other "company" nodes.
-The relationship in V3 syntax would look like this: +
-`(c:Company) -[i:invests]\-> (c:Company)`
-
-== Examples
-Here is a simple query in version 3 syntax that will return all companies in the database founded in 2000.
+* q1 uses syntax V1
 
 [source,gsql]
 ----
-CREATE OR REPLACE DISTRIBUTED QUERY companies-in-2000 SYNTAX V3 {
-
-
-
-
+CREATE OR REPLACE DISTRIBUTED QUERY q1(/* parameters */) SYNTAX V1 {
+// Query body for V1 syntax
 }
 ----
 
-Here is a query that ...
+* q2 uses syntax V2
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY q2(/* parameters */) SYNTAX V2 {
+// Query body for V2 syntax
+}
+----
 
 
+* q3 uses syntax V3
 
+[source,gsql]
+----
+CREATE OR REPLACE DISTRIBUTED QUERY q3(/* parameters */) SYNTAX V3 {
+// Query body for V3 syntax
+}
+----
+By clearly specifying the syntax version, users can leverage the unique features and improvements of each version to optimize their queries.
 
 
 

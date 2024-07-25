@@ -247,7 +247,7 @@ Done
 The command shows two line of error data:
 * The data at line 1, it has an invalid attribute(year).
 * The data at line 7, it doesn't have enough tokens(should have 4 attributes).
-By default, only the earliest 100 errors are shown, but you can limit the number of data displayed by using the `LIMIT` parameter.
+By default, only the earliest 100 errors are shown, but you can limit the number of data displayed by using the `LIMIT` option.
 
 [NOTE]
 User privileges for showing loading errors are the same as running loading jobs.

@@ -1415,7 +1415,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/person_movie"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/person_movie?cascade=true"
 ----
 --
 Response::
@@ -1429,7 +1429,15 @@ Response::
 ====
 ==== Parameters:
 
-None
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `cascade`
+| no
+| `true`, will automatic drop the queries and loading jobs in this graph. `false` will drop fail if there exist any query or loading job 
+|===
 
 '''  
 

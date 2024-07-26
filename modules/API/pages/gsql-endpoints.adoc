@@ -12,8 +12,7 @@ This page describes the REST API endpoints accessible on a TigerGraph server.
 
 `GET /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
-
+This endpoint is used to show all the local vertices on graph
 
 ==== Example
 
@@ -53,7 +52,7 @@ Response::
 
 `GET /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all the global vertices.
 
 ==== Example
 
@@ -86,7 +85,7 @@ None
 
 `GET /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show a local vertex.
 
 ==== Example
 
@@ -126,7 +125,7 @@ Response::
 
 `GET /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show a global vertex
 
 ==== Example
 
@@ -160,7 +159,7 @@ NONE
 
 `POST /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create global vertices using gsql command
 
 ==== Example
 
@@ -202,7 +201,7 @@ Response::
 
 `POST /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to add global vertices to local graph
 
 ==== Example
 
@@ -247,7 +246,7 @@ Response::
 
 `POST /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This api is used to create global vertex using json 
 
 ==== Example
 
@@ -291,7 +290,7 @@ Response::
 
 `DELETE /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop global vertices.
 
 ==== Example
 
@@ -332,7 +331,7 @@ Response::
 
 `DELETE /gsql/v1/schema/vertices`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop local vertices.
 
 ==== Example
 
@@ -377,7 +376,7 @@ Response::
 
 `DELETE /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop a local vertex.
 
 ==== Example
 
@@ -418,7 +417,7 @@ Response::
 
 `DELETE /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop a global vertex.
 
 ==== Example
 
@@ -450,7 +449,7 @@ None
 
 `PUT /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update a vertex attributes.
 
 ==== Example
 
@@ -489,7 +488,7 @@ Response::
 
 `PUT /gsql/v1/schema/vertices/{vertexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update a global vertex attributes.
 
 ==== Example
 [,tabs]
@@ -519,7 +518,7 @@ None
 ===  show all indexes
 `GET /gsql/v1/schema/indexes`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show all indexes on a vertex.
 
 ==== Example
 [,tabs]
@@ -549,7 +548,7 @@ None
 === show all indexes on a graph
 `GET /gsql/v1/schema/indexes`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show all indexes in a graph.
 
 ==== Example
 [,tabs]
@@ -587,7 +586,7 @@ Response::
 === show an index
 `GET /gsql/v1/schema/indexes/{indexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show a specific index.
 
 ==== Example
 [,tabs]
@@ -625,7 +624,7 @@ Response::
 === create indexes
 `POST /gsql/v1/schema/indexes`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create indexes.
 
 ==== Example
 [,tabs]
@@ -663,7 +662,7 @@ Response::
 === drop an index
 `DELETE /gsql/v1/schema/indexes/{indexName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop an index.
 
 ==== Example
 [,tabs]
@@ -705,7 +704,7 @@ Response::
 === drop indexes
 `DELETE /gsql/v1/schema/indexes`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop indexes.
 
 ==== Example
 [,tabs]
@@ -752,7 +751,7 @@ Response::
 
 `GET /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all global edges.
 
 ==== Example
 [,tabs]
@@ -783,7 +782,7 @@ None
 
 `GET /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all edges in graph.
 
 ==== Example
 [,tabs]
@@ -822,7 +821,7 @@ Response::
 
 `GET /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get a global specific edge type info.
 
 ==== Example
 [,tabs]
@@ -853,7 +852,7 @@ None
 
 `GET /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get a specific edge info of a local graph.
 
 ==== Example
 [,tabs]
@@ -894,7 +893,7 @@ Response::
 
 `POST /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create global edges using gsql command statement.
 
 ==== Example
 [,tabs]
@@ -936,7 +935,7 @@ Response::
 
 `POST /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to add global edges to graph using json format.
 
 ==== Example
 [,tabs]
@@ -980,7 +979,7 @@ Response::
 
 `POST /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create global edges using json format. 
 
 ==== Example
 [,tabs]
@@ -1020,7 +1019,7 @@ Response::
 
 `DELETE /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop global edges. 
 
 ==== Example
 [,tabs]
@@ -1060,7 +1059,7 @@ Response::
 
 `DELETE /gsql/v1/schema/edges`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop edges from a graph.
 
 ==== Example
 [,tabs]
@@ -1104,7 +1103,7 @@ Response::
 
 `DELETE /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop a local edge.
 
 ==== Example
 [,tabs]
@@ -1145,7 +1144,7 @@ Response::
 
 `DELETE /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to a global edge.
 
 ==== Example
 [,tabs]
@@ -1177,7 +1176,7 @@ None
 
 `PUT /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update attribute in edge in global level.
 
 ==== Example
 [,tabs]
@@ -1208,7 +1207,7 @@ None
 
 `PUT /gsql/v1/schema/edges/{edgeName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update attribute in edge in local level.
 
 ==== Example
 [,tabs]
@@ -1248,7 +1247,7 @@ Response::
 
 `GET /gsql/v1/schema/graphs`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show all graphs info only containing names of vertices and edges.
 
 ==== Example
 [,tabs]
@@ -1280,7 +1279,7 @@ None
 
 `GET /gsql/v1/schema/graphs`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to show one graph detailed info with given graph name.
 
 ==== Example
 [,tabs]
@@ -1321,7 +1320,7 @@ Response::
 
 `POST /gsql/v1/schema/graphs?gsql=true`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create one graph using gsql command.
 
 ==== Example
 [,tabs]
@@ -1361,7 +1360,7 @@ Response::
 
 `POST /gsql/v1/schema/graphs`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create one graph using JSON format.
 
 ==== Example
 [,tabs]
@@ -1406,7 +1405,7 @@ Response::
 
 `DELETE /gsql/v1/schema/graphs/{graphName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop one graph.
 
 ==== Example
 [,tabs]
@@ -1438,7 +1437,7 @@ None
 
 `DELETE /gsql/v1/schema/graphs/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop graphs with given names.
 
 ==== Example
 [,tabs]
@@ -1477,7 +1476,7 @@ Response::
 
 `DELETE /gsql/v1/schema/jobs/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop local/global scheme change jobs.
 
 ==== Example
 [,tabs]
@@ -1520,7 +1519,7 @@ Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create local/global scheme change job using gsql command.
 
 ==== Example
 [,tabs]
@@ -1563,7 +1562,7 @@ Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create global scheme change job using json.
 
 ==== Example
 [,tabs]
@@ -1606,7 +1605,7 @@ Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create local scheme change job using json.
 
 ==== Example
 [,tabs]
@@ -1766,7 +1765,7 @@ Response::
 
 `GET /gsql/v1/schema/jobs/{jobName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get a specific local/global schema change job.
 
 ==== Example
 [,tabs]
@@ -1809,7 +1808,7 @@ Response::
 
 `POST /gsql/v1/schema/change`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to run global schema change job directly .
 
 ==== Example
 [,tabs]
@@ -1843,7 +1842,7 @@ None
 
 `POST /gsql/v1/schema/change`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to run local schema change job directly.
 
 ==== Example
 [,tabs]
@@ -2003,7 +2002,7 @@ Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to run an existing schema change job.
 
 ==== Example
 [,tabs]
@@ -2042,7 +2041,7 @@ Response::
 
 `GET /gsql/v1/schema/jobs`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all local schema change jobs.
 
 ==== Example
 [,tabs]
@@ -2085,7 +2084,7 @@ Response::
 
 `GET /gsql/v1/schema/jobs`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all global schema change jobs.
 
 ==== Example
 [,tabs]
@@ -2120,7 +2119,7 @@ None
 
 `GET /gsql/v1/data-sources/{dsName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get a data source.
 
 ==== Example
 [,tabs]
@@ -2152,7 +2151,7 @@ None
 
 `GET /gsql/v1/data-sources`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all data sources.
 
 ==== Example
 [,tabs]
@@ -2183,7 +2182,7 @@ None
 
 `PUT /gsql/v1/data-sources`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update a data source .
 
 ==== Example
 [,tabs]
@@ -2222,7 +2221,7 @@ Response::
 
 `POST /gsql/v1/data-sources`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create a data source.
 
 ==== Example
 [,tabs]
@@ -2261,7 +2260,7 @@ Response::
 
 `DELETE /gsql/v1/data-sources/{dsName}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop one data source.
 
 ==== Example
 [,tabs]
@@ -2300,7 +2299,7 @@ Response::
 
 `POST /gsql/v1/data-sources/grant`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to grant one data source.
 
 ==== Example
 [,tabs]
@@ -2331,7 +2330,7 @@ None
 
 `POST /gsql/v1/data-sources/revoke`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to revoke data source.
 
 ==== Example
 [,tabs]
@@ -2370,7 +2369,7 @@ Response::
 
 `DELETE /gsql/v1/data-sources/dropAll`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop all data source.
 
 ==== Example
 [,tabs]
@@ -2409,7 +2408,7 @@ Response::
 
 `POST /gsql/v1/sample-data`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get the sample data of S3 file.uris or local files.
 
 ==== Example
 [,tabs]
@@ -2536,7 +2535,7 @@ None
 
 `GET /gsql/v1/list-buckets/{s3Name}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all buckets of given S3 data source.
 
 ==== Example
 [,tabs]
@@ -2567,7 +2566,7 @@ None
 
 `GET /gsql/v1/list-files/{s3Name}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to get all files and directories under given S3 bucket path.
 
 ==== Example
 [,tabs]
@@ -2603,13 +2602,214 @@ Response::
 
 '''
 
-== Database Utilities
+== Queries
 
+=== install queries
+
+`GET /gsql/v1/queries/install`
+
+This api is used for installing queries
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=g1&queries=q1,q2&flag=-single"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{
+"requestId": ": "121212121331",
+"message": "Successfully submitted request",
+"startTime":  "2024-07-07T23:17:06.831474Z"
+}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the graph on who to install queries
+
+| `queries`
+| yes
+| query names(join with `,` separated); value `*` or `all` mean all the queries.
+
+| `flag`
+| no
+| `-single` or `-force` or `-legacy` or `-debug` or `-cost`
+
+|===
+
+'''
+
+===  check query install status
+
+`GET /gsql/v1/queries/install/{requestId}`
+
+This api is used for checking query install status
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install/12121212"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{
+"error":false,
+"message":"Request 12121212 is running",
+"requestId" : "121212121",
+"startTime": "2024-07-07T23:17:06.831474Z"
+}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+
+== Security
+=== Login API
+
+`GET /gsql/v1/auth/simple`
+
+This api is used for user login, mainly for GUI use.
+
+==== Example
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/auth/simple"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{
+    "error": false,
+    "message": "successfully authored.",
+    "results": {
+        "disabled": false,
+        "failedAttempts": 0,
+        "isSuperUser": true,
+        "lastSuccessLogin": "Fri Jul 26 09:18:09 UTC 2024",
+        "name": "tigergraph",
+        "nextValidLogin": "Fri Jul 26 09:18:09 UTC 2024",
+        "privileges": {
+            "1": {
+                "privileges": [
+                    "READ_SCHEMA",
+                    "WRITE_SCHEMA",
+                    "READ_LOADINGJOB",
+                    "EXECUTE_LOADINGJOB",
+                    "WRITE_LOADINGJOB",
+                    "CREATE_QUERY",
+                    "WRITE_DATASOURCE",
+                    "READ_ROLE",
+                    "WRITE_ROLE",
+                    "READ_USER",
+                    "WRITE_USER",
+                    "READ_PROXYGROUP",
+                    "WRITE_PROXYGROUP",
+                    "READ_FILE",
+                    "WRITE_FILE",
+                    "DROP_GRAPH",
+                    "EXPORT_GRAPH",
+                    "CLEAR_GRAPHSTORE",
+                    "DROP_ALL",
+                    "ACCESS_TAG",
+                    "READ_DATA",
+                    "CREATE_DATA",
+                    "UPDATE_DATA",
+                    "DELETE_DATA",
+                    "APP_ACCESS_DATA",
+                    "READ_POLICY",
+                    "WRITE_POLICY",
+                    "USE_FUNCTION",
+                    "WRITE_FUNCTION",
+                    "READ_WORKLOAD_QUEUE",
+                    "WRITE_WORKLOAD_QUEUE"
+                ]
+            },
+            "ldbc_fin": {
+                "privileges": []
+            },
+            "test_graph": {
+                "childPermissions": {
+                    "test_loop_withContinueBreak": {
+                        "privileges": [
+                            "OWNER"
+                        ]
+                    }
+                },
+                "privileges": []
+            }
+        },
+        "roles": {
+            "1": [
+                "superuser"
+            ],
+            "ldbc_fin": [
+                "superuser"
+            ],
+            "test_graph": [
+                "superuser"
+            ]
+        },
+        "secrets": [],
+        "securityRecommendations": [
+            "Change default tigergraph user's password"
+        ],
+        "showAlterPasswordWarning": false
+    }
+}
+----
+--
+====
+===== Parameters:
+
+None
+
+'''
+
+== Database Utilities
 === backup
 
 `GET /gsql/v1/internal/backup`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to backup database in GLE side.
 
 ==== Example
 [,tabs]
@@ -2648,7 +2848,7 @@ Response::
 
 `GET /gsql/v1/internal/restore`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to restore database in GLE side.
 
 ==== Example
 [,tabs]
@@ -2697,7 +2897,7 @@ Response::
 
 `POST /gsql/v1/schema/recover`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to recover catalog.
 
 ==== Example
 [,tabs]
@@ -2728,7 +2928,7 @@ None
 
 `POST /gsql/v1/schema/check`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to validate graph schema.
 
 ==== Example
 [,tabs]
@@ -2793,7 +2993,50 @@ Response::
 ====
 
 '''
+=== get gsql version
 
+`GET /gsql/v1/version`
+
+This endpoint used for get the gsql version infomation.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X GET 'http://localhost:14240/gsql/v1/version?verbose=true'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+GSQL version: GLE-7162
+GSQL commit number: 3f46585895039eb41a460e87e6b8f15eef224800
+GSQL commit date: 2024-07-26 08:56:11 +0800
+Copyright (c) 2014-2024 TigerGraph. All rights reserved.
+This product is protected by U.S. and international copyright and intellectual property laws.
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `verbose`
+| no
+| `bool` type, `true` will print detail info
+|===
+
+'''
 
 == Admin
 
@@ -2801,7 +3044,7 @@ Response::
 
 `GET /gsql/scim/v2/Groups/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve a group by id using scim format.
 
 ==== Example
 [,tabs]
@@ -2841,7 +3084,7 @@ Response::
 
 `GET /gsql/scim/v2/Groups/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve a group by id using gsql format.
 
 ==== Example
 [,tabs]
@@ -2881,7 +3124,7 @@ Response::
 
 `GET /gsql/scim/v2/Groups/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve groups using gsql format.
 
 ==== Example
 [,tabs]
@@ -2921,7 +3164,7 @@ Response::
 
 `GET /gsql/scim/v2/Groups/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve groups using scim format.
 
 ==== Example
 [,tabs]
@@ -2969,7 +3212,7 @@ Response::
 
 `POST /gsql/scim/v2/Groups/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create group using scim format.
 
 ==== Example
 [,tabs]
@@ -3008,7 +3251,7 @@ Response::
 
 `POST /gsql/scim/v2/Groups/`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create group using gsql format.
 
 ==== Example
 [,tabs]
@@ -3047,7 +3290,7 @@ Response::
 
 `PATCH /gsql/scim/v2/Groups/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update a group.
 
 ==== Example
 [,tabs]
@@ -3083,11 +3326,11 @@ Response::
 |===
 
 '''
-=== drop one group
+=== drop one group by name
 
 `DELETE /gsql/scim/v2/Groups/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop one group by name.
 
 ==== Example
 [,tabs]
@@ -3128,7 +3371,7 @@ Response::
 
 `POST /gsql/scim/v2/Groups`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop groups.
 
 ==== Example
 [,tabs]
@@ -3168,7 +3411,7 @@ Response::
 
 `GET /gsql/scim/v2/Users/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve a user by id using scim/gsql format.
 
 ==== Example
 [,tabs]
@@ -3207,7 +3450,7 @@ Response::
 
 `PUT /gsql/scim/v2/Users/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to update a user.
 
 ==== Example
 [,tabs]
@@ -3246,7 +3489,7 @@ Response::
 
 `POST /gsql/scim/v2/Users/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop users.
 
 ==== Example
 [,tabs]
@@ -3290,7 +3533,7 @@ Response::
 
 `DELETE /gsql/scim/v2/Users/{id}`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to drop a user.
 
 ==== Example
 [,tabs]
@@ -3330,7 +3573,7 @@ Response::
 
 `POST /gsql/scim/v2/Users`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create user using scim format.
 
 ==== Example
 [,tabs]
@@ -3370,7 +3613,7 @@ Response::
 
 `POST /gsql/scim/v2/Users`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to create user using gsql format.
 
 ==== Example
 [,tabs]
@@ -3409,7 +3652,7 @@ Response::
 
 `GET /gsql/scim/v2/Users`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve users using scim format.
 
 ==== Example
 [,tabs]
@@ -3456,7 +3699,7 @@ Response::
 
 `GET /gsql/scim/v2/Users`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the GSQL server is up and running.
+This endpoint is used to retrieve users using gsql format.
 
 ==== Example
 [,tabs]

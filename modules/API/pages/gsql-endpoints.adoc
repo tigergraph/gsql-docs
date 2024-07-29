@@ -14,11 +14,11 @@ This page describes the REST API endpoints accessible on a TigerGraph server.
 
 This endpoint is used to show all the local vertices on graph
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -26,7 +26,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=g"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -54,11 +54,11 @@ Response::
 
 This endpoint is used to get all the global vertices.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -66,7 +66,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -87,11 +87,11 @@ None
 
 This endpoint is used to show a local vertex.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -99,7 +99,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/house?graph=g"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -127,11 +127,11 @@ Response::
 
 This endpoint is used to show a global vertex
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -139,7 +139,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/person"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -161,11 +161,11 @@ NONE
 
 This endpoint is used to create global vertices using gsql command
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -173,7 +173,7 @@ Request::
 curl -X POST "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -203,11 +203,11 @@ Response::
 
 This endpoint is used to add global vertices to local graph
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -215,7 +215,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?gsql=false&graph=empty_graph" -d '{"addVertices":["user","website"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -248,11 +248,11 @@ Response::
 
 This api is used to create global vertex using json 
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -262,7 +262,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 ]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -292,11 +292,11 @@ Response::
 
 This endpoint is used to drop global vertices.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -304,7 +304,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertexName=user2,user3"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -333,11 +333,11 @@ Response::
 
 This endpoint is used to drop local vertices.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -345,7 +345,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertexName=user2,user3&graph=recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -378,11 +378,11 @@ Response::
 
 This endpoint is used to drop a local vertex.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -390,7 +390,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/user2?graph=recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -419,11 +419,11 @@ Response::
 
 This endpoint is used to drop a global vertex.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -431,7 +431,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/user2"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -451,11 +451,11 @@ None
 
 This endpoint is used to update a vertex attributes.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -463,7 +463,7 @@ Request::
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/user?graph=recommend" -d '{"dropAttributes":["area"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -490,10 +490,10 @@ Response::
 
 This endpoint is used to update a global vertex attributes.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -501,7 +501,7 @@ Request::
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/user" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -520,10 +520,10 @@ None
 
 This endpoint is used to show all indexes on a vertex.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -531,7 +531,7 @@ Request::
 curl -X GET -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes" 
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -550,10 +550,10 @@ None
 
 This endpoint is used to show all indexes in a graph.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -561,7 +561,7 @@ Request::
 curl -X GET -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=recommend" 
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -588,10 +588,10 @@ Response::
 
 This endpoint is used to show a specific index.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -599,7 +599,7 @@ Request::
 curl -X GET -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes/Index_Type_Name?graph=recommend" 
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -626,10 +626,10 @@ Response::
 
 This endpoint is used to create indexes.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -637,7 +637,7 @@ Request::
 curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=recommend" -d '{"vertex":"house","addIndexAttributes":[{"indexName":"areaIndex","attributeName":"area"},{"indexName":"heightIndex","attributeName":"height"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -664,10 +664,10 @@ Response::
 
 This endpoint is used to drop an index.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -675,7 +675,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?vertex=name1&graph=g"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -706,10 +706,10 @@ Response::
 
 This endpoint is used to drop indexes.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -717,7 +717,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=g&vertex=name1 &indexName=index1,index2"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -753,10 +753,10 @@ Response::
 
 This endpoint is used to get all global edges.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -764,7 +764,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -784,10 +784,10 @@ None
 
 This endpoint is used to get all edges in graph.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -795,7 +795,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges?graph=person_movie"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -823,10 +823,10 @@ Response::
 
 This endpoint is used to get a global specific edge type info.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -834,7 +834,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges/purchase"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -854,10 +854,10 @@ None
 
 This endpoint is used to get a specific edge info of a local graph.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -865,7 +865,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/schema/edges/roles?graph=person_movie"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -895,10 +895,10 @@ Response::
 
 This endpoint is used to create global edges using gsql command statement.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -906,7 +906,7 @@ Request::
 curl -X POST "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from user3, to product, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from user2, to product, attr2 float)"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -937,10 +937,10 @@ Response::
 
 This endpoint is used to add global edges to graph using json format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -948,7 +948,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false&graph=empty_graph" -d '{"addEdges":["has_account"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -981,10 +981,10 @@ Response::
 
 This endpoint is used to create global edges using json format. 
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -992,7 +992,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false" -d ' {"createEdges":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr1"}],"FromVertexTypeName":"user3","Name":"edge1"},{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr2"}],"FromVertexTypeName":"user2","Name":"edge2"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1021,10 +1021,10 @@ Response::
 
 This endpoint is used to drop global edges. 
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1032,7 +1032,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=test1"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1061,10 +1061,10 @@ Response::
 
 This endpoint is used to drop edges from a graph.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1072,7 +1072,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=e1&graph=recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1105,10 +1105,10 @@ Response::
 
 This endpoint is used to drop a local edge.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1116,7 +1116,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/e1?graph=recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1146,10 +1146,10 @@ Response::
 
 This endpoint is used to a global edge.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1157,7 +1157,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/test1"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1178,10 +1178,10 @@ None
 
 This endpoint is used to update attribute in edge in global level.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1189,7 +1189,7 @@ Request::
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/purchase" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1209,10 +1209,10 @@ None
 
 This endpoint is used to update attribute in edge in local level.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1220,7 +1220,7 @@ Request::
 curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/e1?graph=recommend" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1249,10 +1249,10 @@ Response::
 
 This endpoint is used to show all graphs info only containing names of vertices and edges.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1260,7 +1260,7 @@ Request::
 curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1281,10 +1281,10 @@ None
 
 This endpoint is used to show one graph detailed info with given graph name.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1292,7 +1292,7 @@ Request::
 curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=person_movie"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1322,10 +1322,10 @@ Response::
 
 This endpoint is used to create one graph using gsql command.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1333,7 +1333,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?gsql=true" -d '{"gsql": "create graph g(*)"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1362,10 +1362,10 @@ Response::
 
 This endpoint is used to create one graph using JSON format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1374,7 +1374,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 " -d '{"VertexTypes":["user","product"], "EdgeTypes":["purchase"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1407,10 +1407,10 @@ Response::
 
 This endpoint is used to drop one graph.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1418,7 +1418,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/person_movie?cascade=true"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1447,10 +1447,10 @@ Response::
 
 This endpoint is used to drop graphs with given names.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1458,7 +1458,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=person_movie,recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1486,10 +1486,10 @@ Response::
 
 This endpoint is used to drop local/global scheme change jobs.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1497,7 +1497,7 @@ Request::
 curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=g"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1529,10 +1529,10 @@ Response::
 
 This endpoint is used to create local/global scheme change job using gsql command.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1540,7 +1540,7 @@ Request::
 curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph person_movie;}"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1572,10 +1572,10 @@ Response::
 
 This endpoint is used to create global scheme change job using json.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1583,7 +1583,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4?gsql=false&type=global" -d '{"graphs": [{"graphName":"empty_graph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1615,10 +1615,10 @@ Response::
 
 This endpoint is used to create local scheme change job using json.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1743,7 +1743,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 '
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1775,10 +1775,10 @@ Response::
 
 This endpoint is used to get a specific local/global schema change job.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1786,7 +1786,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?json=true&graph=empty_graph"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1818,10 +1818,10 @@ Response::
 
 This endpoint is used to run global schema change job directly .
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1832,7 +1832,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 ]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -1852,10 +1852,10 @@ None
 
 This endpoint is used to run local schema change job directly.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -1984,7 +1984,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
 }'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2012,10 +2012,10 @@ Response::
 
 This endpoint is used to run an existing schema change job.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2023,7 +2023,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?graph=recommend"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2051,10 +2051,10 @@ Response::
 
 This endpoint is used to get all local schema change jobs.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2062,7 +2062,7 @@ Request::
 curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=person_movie"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2094,10 +2094,10 @@ Response::
 
 This endpoint is used to get all global schema change jobs.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2105,7 +2105,7 @@ Request::
 curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2129,10 +2129,10 @@ None
 
 This endpoint is used to get a data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2140,7 +2140,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/data-sources/k1"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2161,10 +2161,10 @@ None
 
 This endpoint is used to get all data sources.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2172,7 +2172,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/data-sources"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2192,10 +2192,10 @@ None
 
 This endpoint is used to update a data source .
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2203,7 +2203,7 @@ Request::
 curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=g" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2231,10 +2231,10 @@ Response::
 
 This endpoint is used to create a data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2242,7 +2242,7 @@ Request::
 curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=g" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2270,10 +2270,10 @@ Response::
 
 This endpoint is used to drop one data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2281,7 +2281,7 @@ Request::
 curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=g" -d '{"error":false,"message":"Data source k1 is dropped."}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2309,10 +2309,10 @@ Response::
 
 This endpoint is used to grant one data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2320,7 +2320,7 @@ Request::
 curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/grant" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2340,10 +2340,10 @@ None
 
 This endpoint is used to revoke data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2351,7 +2351,7 @@ Request::
 curl -X POST 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/revoke" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2379,10 +2379,10 @@ Response::
 
 This endpoint is used to drop all data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2390,7 +2390,7 @@ Request::
 curl -X DELETE 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/dropAll"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2418,10 +2418,10 @@ Response::
 
 This endpoint is used to get the sample data of S3 file.uris or local files.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2442,7 +2442,7 @@ curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/sa
 }'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2545,10 +2545,10 @@ None
 
 This endpoint is used to get all buckets of given S3 data source.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2556,7 +2556,7 @@ Request::
 curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-buckets/abcd"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2576,10 +2576,10 @@ None
 
 This endpoint is used to get all files and directories under given S3 bucket path.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2587,7 +2587,7 @@ Request::
 curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-files/fl2323?path=s3a://import-test"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2618,10 +2618,10 @@ Response::
 
 This api is used for installing queries
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2629,7 +2629,7 @@ Request::
 curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=g1&queries=q1,q2&flag=-single"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2671,10 +2671,10 @@ Response::
 
 This api is used for checking query install status
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2682,7 +2682,7 @@ Request::
 curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install/12121212"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2702,17 +2702,253 @@ None
 
 '''
 
+== Database Utilities
+=== backup
+
+`GET /gsql/v1/internal/backup`
+
+This endpoint is used to backup database in GLE side.
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/internal/backup?path=/to/your/path"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"gsql.replica":1,"error":false,"message":"The backup request finished successfully."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the backup path
+|===
+
+'''
+=== restore
+
+`GET /gsql/v1/internal/restore`
+
+This endpoint is used to restore database in GLE side.
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The restore request finished successfully."}
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the restore path
+
+| `install`
+| no
+| `true`, force to install all queries
+
+| `restore`
+| no
+| `true`, when use `gadmin backup restore` command;
+|===
+
+
+'''
+
+=== recover gdict catalog
+
+`POST /gsql/v1/schema/recover`
+
+This endpoint is used to recover catalog.
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Recover schema succeed!"}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''  
+=== validate graph schema
+
+`POST /gsql/v1/schema/check`
+
+This endpoint is used to validate graph schema.
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema Check succeeded."}
+----
+--
+====
+==== Parameters:
+
+None
+
+'''
+
+=== clear graph store
+
+`GET /gsql/v1/clear-store`
+
+This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
+It does not delete the database schema, nor does it delete queries or loading jobs.
+It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+
+[WARNING]
+====
+This operation is not reversible.
+The deleted data cannot be recovered.
+====
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully cleared graph store."}
+----
+--
+====
+
+'''
+=== get gsql version
+
+`GET /gsql/v1/version`
+
+This endpoint used for get the gsql version infomation.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X GET 'http://localhost:14240/gsql/v1/version?verbose=true'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+GSQL version: GLE-7162
+GSQL commit number: 3f46585895039eb41a460e87e6b8f15eef224800
+GSQL commit date: 2024-07-26 08:56:11 +0800
+Copyright (c) 2014-2024 TigerGraph. All rights reserved.
+This product is protected by U.S. and international copyright and intellectual property laws.
+----
+--
+====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `verbose`
+| no
+| `bool` type, `true` will print detail info
+|===
+
+'''
+
+
 == Security
+
 === Login API
 
 `GET /gsql/v1/auth/simple`
 
 This api is used for user login, mainly for GUI use.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -2720,7 +2956,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/v1/auth/simple"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -2812,252 +3048,16 @@ None
 
 '''
 
-== Database Utilities
-=== backup
-
-`GET /gsql/v1/internal/backup`
-
-This endpoint is used to backup database in GLE side.
-
-==== Example
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/internal/backup?path=/to/your/path"
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"gsql.replica":1,"error":false,"message":"The backup request finished successfully."}
-----
---
-====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| no
-| the backup path
-|===
-
-'''
-=== restore
-
-`GET /gsql/v1/internal/restore`
-
-This endpoint is used to restore database in GLE side.
-
-==== Example
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"The restore request finished successfully."}
-----
---
-====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| no
-| the restore path
-
-| `install`
-| no
-| `true`, force to install all queries
-
-| `restore`
-| no
-| `true`, when use `gadmin backup restore` command;
-|===
-
-
-'''
-
-=== recover gdict catalog
-
-`POST /gsql/v1/schema/recover`
-
-This endpoint is used to recover catalog.
-
-==== Example
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Recover schema succeed!"}
-----
---
-====
-==== Parameters:
-
-None
-
-'''  
-=== validate graph schema
-
-`POST /gsql/v1/schema/check`
-
-This endpoint is used to validate graph schema.
-
-==== Example
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Schema Check succeeded."}
-----
---
-====
-==== Parameters:
-
-None
-
-'''
-
-=== clear graph store
-
-`GET /gsql/v1/clear-store`
-
-This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
-It does not delete the database schema, nor does it delete queries or loading jobs.
-It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
-
-[WARNING]
-====
-This operation is not reversible.
-The deleted data cannot be recovered.
-====
-
-==== Example
-
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully cleared graph store."}
-----
---
-====
-
-'''
-=== get gsql version
-
-`GET /gsql/v1/version`
-
-This endpoint used for get the gsql version infomation.
-
-==== Example
-
-[,tabs]
-====
-Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: text/plain' -X GET 'http://localhost:14240/gsql/v1/version?verbose=true'
-----
---
-Response::
-+
---
-[source.wrap,console]
-----
-GSQL version: GLE-7162
-GSQL commit number: 3f46585895039eb41a460e87e6b8f15eef224800
-GSQL commit date: 2024-07-26 08:56:11 +0800
-Copyright (c) 2014-2024 TigerGraph. All rights reserved.
-This product is protected by U.S. and international copyright and intellectual property laws.
-----
---
-====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `verbose`
-| no
-| `bool` type, `true` will print detail info
-|===
-
-'''
-
-== Admin
-
 === retrieve a group by id using scim format
 
 `GET /gsql/scim/v2/Groups/{id}`
 
 This endpoint is used to retrieve a group by id using scim format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3065,7 +3065,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2?gsqlFormat=false"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3094,10 +3094,10 @@ Response::
 
 This endpoint is used to retrieve a group by id using gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3105,7 +3105,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=true"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3134,10 +3134,10 @@ Response::
 
 This endpoint is used to retrieve groups using gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3145,7 +3145,7 @@ Request::
 curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3174,10 +3174,10 @@ Response::
 
 This endpoint is used to retrieve groups using scim format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3185,7 +3185,7 @@ Request::
 curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&gsqlFormat=false&filter=displayName%20nq%20'g2'%20and%20displayName%20sw%20'g1'"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3222,10 +3222,10 @@ Response::
 
 This endpoint is used to create group using scim format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3233,7 +3233,7 @@ Request::
 curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=false" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3261,10 +3261,10 @@ Response::
 
 This endpoint is used to create group using gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3272,7 +3272,7 @@ Request::
 curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3300,10 +3300,10 @@ Response::
 
 This endpoint is used to update a group.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3312,7 +3312,7 @@ curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim
 {"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3340,10 +3340,10 @@ Response::
 
 This endpoint is used to drop one group by name.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3352,7 +3352,7 @@ curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/sci
 {"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3381,10 +3381,10 @@ Response::
 
 This endpoint is used to drop groups.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3392,7 +3392,7 @@ Request::
 curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3421,10 +3421,10 @@ Response::
 
 This endpoint is used to retrieve a user by id using scim/gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3432,7 +3432,7 @@ Request::
 curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3460,10 +3460,10 @@ Response::
 
 This endpoint is used to update a user.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3471,7 +3471,7 @@ Request::
 curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3499,10 +3499,10 @@ Response::
 
 This endpoint is used to drop users.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3510,7 +3510,7 @@ Request::
 curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false&action=delete"  -d ' {"userNames":["u1"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3543,10 +3543,10 @@ Response::
 
 This endpoint is used to drop a user.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3554,7 +3554,7 @@ Request::
 curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=true"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3583,10 +3583,10 @@ Response::
 
 This endpoint is used to create user using scim format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3595,7 +3595,7 @@ curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/sc
 {"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3623,10 +3623,10 @@ Response::
 
 This endpoint is used to create user using gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3634,7 +3634,7 @@ Request::
 curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true" -d ' {"password":"tiger123","username":"user2"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3662,10 +3662,10 @@ Response::
 
 This endpoint is used to retrieve users using scim format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3673,7 +3673,7 @@ Request::
 curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20nq%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&gsqlFormat=false&excludedAttributes=names"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3709,10 +3709,10 @@ Response::
 
 This endpoint is used to retrieve users using gsql format.
 
-==== Example
+==== Example:
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3720,7 +3720,7 @@ Request::
 curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3749,11 +3749,11 @@ Response::
 
 This endpoint is used to list all built-in privileges.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3761,7 +3761,7 @@ Request::
 curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/privileges"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3779,11 +3779,11 @@ Response::
 
 This endpoint is used to grant RABC privileges to specific roles
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3791,7 +3791,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/grant?graph=recommend" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3822,11 +3822,11 @@ or grant privilege(s) on global level if the parameter is missing
 
 This endpoint is used to revoke RABC privileges from specific roles
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3834,7 +3834,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/revoke?graph=recommend" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "user", "roles":["r1", "r2"]}"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3865,11 +3865,11 @@ or revoke privilege(s) on global level if the parameter is missing
 
 Call this endpoint to show all roles, including built-in roles and user defined roles.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3877,7 +3877,7 @@ Request::
 curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3893,11 +3893,11 @@ Response::
 
 `POST /gsql/v1/roles`
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3905,7 +3905,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/roles?graph=recommend" -d "{"roles":["r1", "r2"]}"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3934,11 +3934,11 @@ or create global roles if the parameter is missing
 
 `DELETE /gsql/v1/roles`
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3946,7 +3946,7 @@ Request::
 curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles?graph=recommend&role=r1,r2"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -3981,11 +3981,11 @@ or delete global roles if the parameter is missing
 
 Call this endpoint to show the info of a specific role.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -3993,7 +3993,7 @@ Request::
 curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles/r1"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4011,11 +4011,11 @@ Response::
 
 Call this endpoint to delete a specific role.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4023,7 +4023,7 @@ Request::
 curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles/r1"
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4041,11 +4041,11 @@ Response::
 
 This endpoint is used to grant roles to specific users
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4053,7 +4053,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/grant?graph=recommend' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4084,11 +4084,11 @@ or grant role(s) on global level if the parameter is missing
 
 This endpoint is used to revoke roles from specific users
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4096,7 +4096,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/revoke?graph=recommend' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4130,11 +4130,11 @@ or revoke role(s) on global level if the parameter is missing
 
 This endpoint is used to fetch cardinality statistics.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4142,7 +4142,7 @@ Request::
 curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/cardinality?graph=recommend'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4174,11 +4174,11 @@ This endpoint has to usage: 1) Fetch fresh up-to-date cardinality statistics and
 
 ==== 1) Fetch fresh up-to-date cardinality statistics and persist it to storage
 
-===== Example
+===== Example:
 
 [,tabs]
 ======
-Request1::
+Sample Request 1::
 +
 --
 [source,bash]
@@ -4186,7 +4186,7 @@ Request1::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&vertex=Person'
 ----
 --
-Response1::
+Sample Response 1::
 +
 --
 [source.wrap,console]
@@ -4198,7 +4198,7 @@ Response1::
 
 [,tabs]
 ======
-Request2::
+Sample Request 2::
 +
 --
 [source,bash]
@@ -4206,7 +4206,7 @@ Request2::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&edge=LIKES&from=Person&to=Post'
 ----
 --
-Response2::
+Sample Response 2::
 +
 --
 [source.wrap,console]
@@ -4246,11 +4246,11 @@ Response2::
 
 ==== 2) Persist user defined cardinality statistics to storage.
 
-===== Example
+===== Example:
 
 [,tabs]
 ======
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4258,7 +4258,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb' -d '{"vertex_counts":[{"type": "user","count": 5}], "edge_counts":[{"type":"edge3","count":5},{"type":"purchase","from":"user","to":"product","count":10}]}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4288,11 +4288,11 @@ Response::
 
 This endpoint is used to remove cardinality statistics from storage.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4300,7 +4300,7 @@ Request::
 curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/cardinality?graph=recommend'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4330,11 +4330,11 @@ Response::
 
 This endpoint is used to fetch histogram statistics.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4342,7 +4342,7 @@ Request::
 curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a", "bucket":10}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4360,11 +4360,11 @@ Response::
 
 This endpoint is used to persist new histogram statistics to storage.
 
-==== Example
+==== Example:
 
 [,tabs]
 =====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4372,7 +4372,7 @@ Request::
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/histogram' -d '{"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]
@@ -4390,11 +4390,11 @@ Response::
 
 This endpoint is used to remove histogram statistics from storage.
 
-==== Example
+==== Example:
 
 [,tabs]
 ====
-Request::
+Sample Request::
 +
 --
 [source,bash]
@@ -4402,7 +4402,7 @@ Request::
 curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"G", "edge":"E1", "from":"V1", "to":"V2", "attribute":"a"}'
 ----
 --
-Response::
+Sample Response::
 +
 --
 [source.wrap,console]

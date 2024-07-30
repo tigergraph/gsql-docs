@@ -498,7 +498,7 @@ Sample Response::
 
 | `graph`
 | no
-| the indexes in which graph to create
+| Specifies the graph where the indexes should be created. If not provided, the indexes will be created in the default graph.
 |===
 
 '''  
@@ -536,11 +536,11 @@ Sample Response::
 
 | `vertex`
 | yes
-| the vertex on which to drop index
+| Specifies the vertex from which to drop the index
 
 | `graph`
 | no
-| the indexes in which graph to drop
+| Specifies the graph from which the index should be dropped. If not specified, the index will be dropped from the global vertex.
 |===
 
 '''  
@@ -557,7 +557,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=g&vertex=name1 &indexName=index1,index2"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=g&vertex=name1&indexName=index1,index2"
 ----
 --
 Sample Response::
@@ -578,54 +578,23 @@ Sample Response::
 
 | `vertex`
 | yes
-| the vertex on which to drop index
+| Specifies the vertex on which to drop the indexes.
 
 | `indexName`
 | yes
-| the indexes to drop (seperate by ,)
+| Specifies the indexes to drop (separated by commas)
 
 | `graph`
 | no
-| the indexes in which graph to drop
+| Specifies the graph from which the indexes should be dropped.
 |===
 
 '''  
-=== get all global edges 
+=== get all edges
 
 `GET /gsql/v1/schema/edges`
 
-This endpoint is used to get all global edges.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/schema/edges"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"transaction_id"}],"FromVertexTypeName":"user","Name":"purchase"},{"IsDirected":true,"ToVertexTypeName":"website","Config":{},"Attributes":[],"FromVertexTypeName":"user","Name":"has_account"},{"IsDirected":false,"ToVertexTypeName":"website","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"item_id"}],"FromVertexTypeName":"product","Name":"sell_on"},{"IsDirected":true,"ToVertexTypeName":"product","Config":{},"Attributes":[],"FromVertexTypeName":"user","Name":"viewed"},{"IsDirected":true,"ToVertexTypeName":"movie","Config":{"REVERSE_EDGE":"roles2"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"role"}],"FromVertexTypeName":"person","Name":"roles"}]}
-----
---
-====
-==== Parameters:
-
-None
-
-'''
-=== get all edges in graph
-
-`GET /gsql/v1/schema/edges`
-
-This endpoint is used to get all edges in graph.
+This endpoint is used to retrieve all local edges within a specific graph or retrieve all global edges.
 
 ==== Example:
 [,tabs]
@@ -656,46 +625,15 @@ Sample Response::
 
 | `graph`
 | yes
-| the edges in which graph 
+| Specifies the graph from which to retrieve the edges.
 |===
 
-'''
-=== get a global specific edge type info
+'''   
+=== retrieve a specific edge type info
 
 `GET /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to get a global specific edge type info.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/schema/edges/purchase"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"transaction_id"}],"FromVertexTypeName":"user","Name":"purchase"}}
-----
---
-====
-==== Parameters:
-
-None
-
-'''        
-=== get a specific edge type info (under graph)
-
-`GET /gsql/v1/schema/edges/{edgeName}`
-
-This endpoint is used to get a specific edge info of a local graph.
+This endpoint is used to retrieve information about a specific edge type within a local graph or retrieve information about a specific global edge type.
 
 ==== Example:
 [,tabs]
@@ -725,8 +663,8 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-| yes
-| the edges in which graph 
+| no
+| Specifies the graph in which the edge type is located. If not provided, it retrieves the global edge type information.
 |===
 
 
@@ -768,7 +706,7 @@ Sample Response::
 
 | `gsql`
 | yes
-| this should be true, means gsql command foramt
+| Indicates whether to use the GSQL command for creating edges. Must be set to true. The request body should contain the GSQL command within the JSON object.
 |===
 
 
@@ -810,11 +748,11 @@ Sample Response::
 
 | `gsql`
 | yes
-| this should be false, means a json format
+| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
 
 | `graph`
 | yes
-| which graph the global vertex to be added
+| Specifies the graph to which the global edges will be added.
 |===
 
 '''   
@@ -853,47 +791,7 @@ Sample Response::
 
 | `gsql`
 | yes
-| this should be false, means a json format
-|===
-
-'''  
-
-=== drop global edges
-
-`DELETE /gsql/v1/schema/edges`
-
-This endpoint is used to drop global edges. 
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=test1"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully dropped edges: [test1]."}
-----
---
-====
-
-==== Parameters:
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `edgeName`
-| yes
-| the edge types to be delete, if there exist more than one, use `,` separate; value all means drop all the edges
+| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
 |===
 
 '''  
@@ -902,7 +800,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/edges`
 
-This endpoint is used to drop edges from a graph.
+This endpoint is used to drop edges from a graph or drop global edges.
 
 ==== Example:
 [,tabs]
@@ -933,20 +831,20 @@ Sample Response::
 
 | `edgeName`
 | yes
-| the edge types to be delete, if there exist more than one, use `,` separate; value all means drop all the edges
+| Specifies the edge types to be deleted. If there are multiple edge types, separate them with a comma. Use 'all' to drop all edges.
 |
 
 | `graph`
 | yes
-| the vertices in which graph to be deleted
+| Specifies the graph from which the edges will be deleted. If not provided, it means the operation will drop global edges.
 |===
 
 '''  
-=== drop an local edge
+=== drop an edge
 
 `DELETE /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to drop a local edge.
+This endpoint is used to drop a local/global edge.
 
 ==== Example:
 [,tabs]
@@ -978,79 +876,16 @@ Sample Response::
 
 | `graph`
 | yes
-| the edge in which graph to be deleted
+| Specifies the graph from which the edge will be deleted. If not provided, it means the operation will drop a global edge.
 |===
 
 
 '''  
-=== drop a global edge
-
-`DELETE /gsql/v1/schema/edges/{edgeName}`
-
-This endpoint is used to a global edge.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/test1"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully dropped edges: [test1]."}
-----
---
-====
-
-==== Parameters:
-
-None
-
-'''  
-=== update attribute in edge in global level
+=== update attribute in edge
 
 `PUT /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to update attribute in edge in global level.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/purchase" -d '{"dropAttributes":["attr1"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr2"}]}'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully update edge: purchase"}
-----
---
-====
-==== Parameters:
-
-None
-
-'''  
-=== update attribute in edge in local level
-
-`PUT /gsql/v1/schema/edges/{edgeName}`
-
-This endpoint is used to update attribute in edge in local level.
+This endpoint is used to update attributes in edge.
 
 ==== Example:
 [,tabs]
@@ -1081,7 +916,7 @@ Sample Response::
 
 | `graph`
 | yes
-| the edge in which graph to be update
+| Specifies the graph in which the edge's attributes will be updated. If not provided, it means the operation will update attributes on the global level.
 |===
 
 
@@ -1155,11 +990,10 @@ Sample Response::
 
 | `graph`
 | yes
-| the graph whose schema to show
+| Specifies the name of the graph for which the schema details are to be shown.
 |===
 
 === create one graph using gsql command
-
 
 `POST /gsql/v1/schema/graphs?gsql=true`
 
@@ -1194,7 +1028,7 @@ Sample Response::
 
 | `gsql`
 | yes
-| true, means using gsql command
+| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
 |===
 
 '''  
@@ -1235,11 +1069,11 @@ Sample Response::
 
 | `gsql`
 | yes
-| false, means using JSON
+| Indicates whether to use a GSQL command for graph creation. Set to false to use JSON format.
 
 | `graphName`
 | yes
-| the graph name
+| Specifies the name of the graph to be created.
 |===
 
 '''  
@@ -1279,7 +1113,7 @@ Sample Response::
 
 | `cascade`
 | no
-| `true`, will automatic drop the queries and loading jobs in this graph. `false` will drop fail if there exist any query or loading job 
+|  If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
 |===
 
 '''  
@@ -1319,11 +1153,11 @@ Sample Response::
 
 | `graphNames`
 | yes
-| the graph names(separate by `,`), all means drop all the graphs
+| Specifies the names of the graphs to be dropped, separated by commas. Use 'all' to drop all graphs.
 |===
 
 '''  
-=== drop local/global scheme change job
+=== drop local/global scheme change jobs
 
 `DELETE /gsql/v1/schema/jobs/`
 
@@ -1358,11 +1192,11 @@ Sample Response::
 
 | `jobName`
 | yes
-| the schema jobs to drop (separate by `,`) 
+| Specifies the schema jobs to drop, separated by commas.
 
 | `graph`
 | no
-| the graph whose jobs to drop.
+| Specifies the graph whose jobs are to be dropped. If not provided, means drop the global schema change jobs.
 |===
 
 '''  
@@ -1401,11 +1235,11 @@ Sample Response::
 
 | `gsql`
 | yes
-| `true`, means using gsql command
+| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
 
 | `type`
 | yes
-| when `global` means create global schema change, `local` means create local schema change.
+| Specifies the type of schema change job to create. Use `global` for creating a global schema change job and `local` for creating a local schema change job.
 |===
 
 '''  
@@ -1443,12 +1277,12 @@ Sample Response::
 | Name | Required | Description
 
 | `gsql`
-| false
-| `true`, means post body using json 
+| yes
+| Indicates whether to use the GSQL command for creation. Must be set to false. The request body should use the JSON object.
 
 | `type`
 | yes
-| `global`, means create global schema change
+| Specifies the type of schema change job to create. Use `global` means creating a global schema change job.
 |===
 
 '''  
@@ -1603,12 +1437,12 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-|  yes
-| the graph whose schema change job to create 
+| yes
+| The graph for which the schema change job is to be created.
 
 | `type`
 | yes
-| `local`, means create local schema change
+| Specifies the type of schema change job to create. Use `local` means creating a local schema change job.
 |===
 
 '''  
@@ -1616,7 +1450,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to get a specific local/global schema change job.
+This endpoint is used to retrieve a specific local/global schema change job.
 
 ==== Example:
 [,tabs]
@@ -1651,7 +1485,7 @@ Sample Response::
 
 | `json`
 | yes
-| `true`, meann response format `json`, else `text`
+| Set to `true` to receive the response in JSON format; otherwise, the response will be in text format.
 |===
 
 '''  
@@ -1689,11 +1523,11 @@ Sample Response::
 None
 
 '''  
-=== run local schema change job directly
+=== run the schema change job directly
 
 `POST /gsql/v1/schema/change`
 
-This endpoint is used to run local schema change job directly.
+This endpoint is used to run the schema change job directly.
 
 ==== Example:
 [,tabs]
@@ -1845,7 +1679,7 @@ Sample Response::
 
 | `graph`
 | yes
-| the graph who the local schema change runs on
+| the graph who the local schema change runs on, If not provided, means running global schema change job.
 |===
 
 '''  
@@ -1884,15 +1718,15 @@ Sample Response::
 
 | `graph`
 | no
-| the graph who the schema change job runs on
+| The graph who the schema change job runs on. If not provided, means run the global schema change job.
 |===
 
 '''  
-=== get all local schema change jobs
+=== get schema change jobs
 
 `GET /gsql/v1/schema/jobs`
 
-This endpoint is used to get all local schema change jobs.
+This endpoint is used to get all local/global schema change jobs.
 
 ==== Example:
 [,tabs]
@@ -1923,46 +1757,14 @@ Sample Response::
 
 | `graph`
 | yes
-| the graph whose schema change job to show
+| The graph whose schema change job to show. If not provided, means to get all the global schema change job.
 
 | `json`
 | yes
-| `true`, request format is `json`
+| Set to `true` means response in JSON format; otherwise, the response will be in text format.
 |===
 
 '''  
-=== get all global schema change jobs
-
-`GET /gsql/v1/schema/jobs`
-
-This endpoint is used to get all global schema change jobs.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":[{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH empty_graph;\n    }\n"},{"test2":"CREATE GLOBAL SCHEMA_CHANGE JOB test2 {\n      ADD VERTEX product TO GRAPH empty_graph;\n    }\n"}]}
-----
---
-====
-==== Parameters:
-
-None
-
-'''  
-
 
 == Data source
 
@@ -2029,7 +1831,7 @@ Sample Response::
 None
 
 '''
-=== update data source 
+=== update a data source 
 
 `PUT /gsql/v1/data-sources`
 
@@ -2142,7 +1944,7 @@ Sample Response::
 
 | `graph`
 | no
-| the graph whose data source to delete
+| the graph whose data source to delete. 
 |===
 
 '''
@@ -2251,7 +2053,7 @@ Sample Response::
 
 | `graph`
 | no
-| the graph whose data sources to delete
+| If given, will delete all the data sources used by this graph. otherwise will delete all the global data sources.
 |===
 
 '''
@@ -2448,7 +2250,7 @@ Sample Response::
 
 | `path`
 | no
-| uri of the data source
+| Uri of the data source. If not list files under `\`
 |===
 
 '''
@@ -2502,8 +2304,13 @@ Sample Response::
 
 | `flag`
 | no
-| `-single` or `-force` or `-legacy` or `-debug` or `-cost`
-
+| Possible values:
+  `-single`: Install the query in single gpr mode.
+  `-force`: Force the installation of the query.
+  `-legacy`: Install the query in UDF mode.
+  `-debug`: Present results contains debug info.
+  `-cost`: Present results contains performance consumption.
+  `-single` and `-legacy` cannot be used together. The other options can be combined.
 |===
 
 '''
@@ -2580,8 +2387,8 @@ Sample Response::
 | Name | Required | Description
 
 | `path`
-| no
-| the backup path
+| yes
+| the backup output path.
 |===
 
 '''
@@ -2619,18 +2426,21 @@ Sample Response::
 | Name | Required | Description
 
 | `path`
-| no
-| the restore path
+| yes
+| the path where the data located used to restore the data
 
-| `install`
+| `reinstall`
 | no
-| `true`, force to install all queries
+| `true`, force to install all queries, otherwise will not.
 
 | `restore`
 | no
-| `true`, when use `gadmin backup restore` command;
-|===
+| `true`, will clean replicationManager unwritten replicas. otherwise will not.
 
+| `keepUser`
+| no
+| `true`, will retain users and permissions when restoring from a backup, ignoring the users in the backup. otherwise use the user in backup data.
+|===
 
 '''
 
@@ -2774,11 +2584,10 @@ This product is protected by U.S. and international copyright and intellectual p
 
 | `verbose`
 | no
-| `bool` type, `true` will print detail info
+| `bool` type, `true` will print detail info.
 |===
 
 '''
-
 
 == Security
 
@@ -2891,11 +2700,11 @@ None
 
 '''
 
-=== retrieve a group by id using scim format
+=== retrieve a group by id using scim/gsql format
 
 `GET /gsql/scim/v2/Groups/{id}`
 
-This endpoint is used to retrieve a group by id using scim format.
+This endpoint is used to retrieve a group by id using scim format or gsql format.
 
 ==== Example:
 [,tabs]
@@ -2927,46 +2736,6 @@ Sample Response::
 | `gsqlFormat`
 | yes
 | `false`, using scim format; `true`, using gsql format;
-|===
-
-'''
-
-=== retrieve a group by id using gsql format
-
-`GET /gsql/scim/v2/Groups/{id}`
-
-This endpoint is used to retrieve a group by id using gsql format.
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=true"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":{"lastSuccessLogin":"Tue Jul 02 16:57:36 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 16:57:36 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
-----
---
-====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| yes
-| `true`, using gsql format
 |===
 
 '''
@@ -3050,7 +2819,7 @@ Sample Response::
 
 | filter
 | yes
-| The format should adhere to the structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
+| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
 
 | excludedAttributes
 | yes

@@ -1,0 +1,21 @@
+= Packaged Template Queries
+
+== Why Use Template Query?
+
+In TigerGraph's schema-free queries, a special parameter plays a key role. This parameter, either a STRING for a specific vertex or edge type, or a SET<STRING> for multiple types, dynamically guides TigerGraph in selecting which vertices or edges to operate on based on user input.
+
+While schema-free queries offer flexibility by enabling users to reuse code for similar queries with varying vertex or edge types, they come with a performance cost. Our observations show that schema-free queries can perform up to 10% worse than hard-coded algorithms, or even up to three times worse, depending on factors like dataset size, data volume, schema complexity, and algorithm intricacy. To address this trade-off, we have introduced template queries as a balanced solution.
+
+We have observed that parameters associated with vertex and edge types tend to remain stable compared to general parameters. For example, in a PageRank algorithm, vertex and edge types are typically established at the project's inception and remain consistent throughout. Our template query simplifies this process by creating a hard-coded query based on the initial vertex and edge type inputs. Subsequent modifications to other parameters only necessitate running this established query. In the event of changes to vertex and edge types, a new hard-coded query is automatically generated. This method ensures that each query maintains high performance due to its hard-coded nature, thereby streamlining maintenance with the use of a single template query.
+
+== How to Use Builtin Template Query?
+
+The explanation above may seem a bit intricate, but in practice, most users don't need to create a template query manually. Our Graph Data Science Library already provides template queries for various algorithms, which you can readily utilize. For detailed guidance, please refer to link: xref:graph-ml:using-an-algorithm:packaged-template-algorithms.adoc[Packaged Template Algorithms].
+
+
+We offer a package called GDBMS_ALGO, which includes multiple sub-packages (such as community, centrality, etc.), each containing a variety of algorithms. By following the instructions outlined in the aforementioned document for import and call operations, TigerGraph will generate a hard-coded query for you. The query's name comprises the full template query name (including the package path) followed by a number, representing the hash value derived from the input vertex and edge types parameters. For example, `DBMS_ALGO_centrality_pagerank_3333444`. The initial call may require some time for query installation, but subsequent calls with the same vertex and edge type parameters won't need reinstallation. TigerGraph will directly execute the pre-generated hard-coded query. The generated hard-coded query functions similarly to a regular query, and you can examine its code in GraphStudio for reference when developing new algorithms.
+
+The numerical sequence in the hard-coded query corresponds to the hash value based on the input vertex and edge types parameters. Therefore, when you re-call this template query with different vertex and edge types parameters, TigerGraph will create and install another hard-coded query for you (e.g., `DBMS_ALGO_centrality_pagerank_5555666`). However, as long as a query with the same vertex and edge types parameters has been previously called, subsequent calls, even with modifications to other parameter types (e.g., maximum_iteration, damping, etc.), will directly utilize the relevant pre-installed hard-coded query.
+
+Additionally, when you drop a template query, the automatically generated hard-coded queries linked to it will also be dropped. Hence, it is not advisable to directly alter these hard-coded queries if you have specific customization needs. It is recommended to duplicate these queries, create new ones, and apply modifications to the newly created queries instead.
+

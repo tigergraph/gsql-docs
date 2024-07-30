@@ -1,0 +1,209 @@
+= User-defined Template Queries
+
+When leveraging TigerGraph within your team, you may create a collection of commonly used queries. These queries follow a similar logic, varying only in the types of vertices or edges they interact with, similar to the algorithms in our GDBMS_ALGO. To facilitate code maintenance, you can emulate the GDBMS_ALGO approach by customizing packages and template queries, enabling all team members to apply them across any graph.
+
+== Create a Package
+
+Creating a package is straightforward; simply execute the following command using gsql:
+```
+GSQL > CREATE PACKAGE my_package
+Successfully created Packages: [my_package].
+```
+It is essential to remember that packages can only be created in the global view. Attempting to create a package under a specific graph without being in the global view will result in an error.
+```
+GSQL > USE GRAPH MyGraph
+Using graph 'MyGraph'
+GSQL > CREATE PACKAGE my_package
+Please 'use global' first before run command: CREATE PACKAGE
+```
+In such instances, switch to the global view and proceed with creating the package to ensure success.
+```
+GSQL > USE GLOBAL
+GSQL > CREATE PACKAGE my_package
+Successfully created Packages: [my_package].
+```
+
+== Create a Subpackage
+
+To structure your template queries hierarchically, you can create nested subpackages. If you have already set up the `my_package` as outlined previously, you can generate a subpackage with the following command:
+```
+GSQL > CREATE PACKAGE my_package.my_subpackage
+Successfully created Packages: [my_package.my_subpackage].
+```
+
+== Create a Template Query
+
+If you are familiar with writing regular queries, creating a template query should not be too challenging. You just need to take a tested query and modify the first few words to `CREATE TEMPLATE QUERY [the full template query name (including the package path)]`. For example:
+```
+GSQL > BEGIN
+GSQL > CREATE TEMPLATE QUERY my_package.one_hop(
+GSQL >   VERTEX input,
+GSQL >   SET<STRING> e_type_set,
+GSQL >   STRING v_type
+GSQL > ) SYNTAX V1 {
+GSQL >   SumAccum<DOUBLE> @@vertex_count;
+GSQL >
+GSQL >   Nodes = {input};
+GSQL >   Nodes =
+GSQL >     SELECT s
+GSQL >     FROM   Nodes:s -(e_type_set:e)- v_type:t
+GSQL >     POST-ACCUM (t)
+GSQL >            @@vertex_count += 1
+GSQL >   ;
+GSQL >   PRINT @@vertex_count;
+GSQL > }
+GSQL > END
+Successfully created template queries: [one_hop].
+```
+
+Due to the typically lengthy content of template queries, running them directly in the GSQL shell can be inconvenient. It is recommended to execute them using a GSQL file. For further information, please refer to link:https://docs.tigergraph.com/gsql-ref/current/basics/system-and-language-basics#_command_files_and_inline_commands[Command files and inline commands].
+
+== Show a Package
+
+Using the `SHOW PACKAGE` command allows you to view the sub-packages within a specific package and the queries directly under that package (queries under its sub-packages need to be displayed by examining those sub-packages).
+```
+GSQL > SHOW PACKAGE my_package
+Packages "my_package":
+  - Sub-Packages:
+    - my_subpackage
+  - Object:
+    - Template Queries:
+        - one_hop(vertex input, set<string> e_type, string v_type)
+```
+
+You have the flexibility to display any layer of packages.
+```
+GSQL > SHOW PACKAGE my_package.my_subpackage
+Packages "my_package.my_subpackage":
+```
+
+== Show a Template Query
+
+If you wish to display the code of a template query, you can utilize the following command:
+```
+GSQL > SHOW TEMPLATE QUERY my_package.one_hop
+CREATE TEMPLATE QUERY my_package.one_hop(
+  VERTEX input,
+  SET<STRING> e_type,
+  STRING v_type
+) SYNTAX V1 {
+  SumAccum<DOUBLE> @@vertex_count;
+
+  Nodes = {input};
+  Nodes =
+    SELECT s
+    FROM   Nodes:s -(e_type:e)- v_type:t
+    POST-ACCUM (t)
+           @@vertex_count += 1
+  ;
+  PRINT @@vertex_count;
+}
+```
+
+== Call a Template Query
+
+Calling a user-defined template query is essentially no different from calling a built-in template query, as long as you modify the template query's full path and parameters. An example is shown below:
+```
+GSQL > USE GRAPH MyGraph
+Using graph 'MyGraph'
+
+GSQL > CALL my_package.one_hop((1, "MyNode"), "MyEdge", "MyNode")
+
+------Generating query------
+
+Successfully created queries: [my_package_one_hop_0867366548].
+
+------Installing query------
+
+Start installing queries, about 1 minute ...
+my_package_one_hop_0867366548 query: curl -X GET 'http://127.0.0.1:9000/query/MyGraph/my_package_one_hop_0867366548?input=VALUE&input.type=VERTEX_TYPE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+Select 'm1' as compile server, now connecting ...
+Node 'm1' is prepared as compile server.
+
+[========================================================================================================] 100% (1/1)
+Query installation finished.
+
+------Running query------
+
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@vertex_count": 0
+    }
+  ]
+}
+```
+
+In the example, when you execute the template query for the first time, it will automatically create the query `my_package_one_hop_0867366548`, install it, and then run it.
+
+Upon running the `LS` command, you will find `my_package_one_hop_0867366548` listed within MyGraph, appearing like any other standard query.
+
+```
+GSQL > LS
+
+
+---- Graph MyGraph
+Vertex Types:
+  - VERTEX MyNode(PRIMARY_ID id STRING, community_id STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+Edge Types:
+  - UNDIRECTED EDGE MyEdge(FROM MyNode, TO MyNode, weight DOUBLE)
+
+Graphs:
+  - Graph MyGraph(MyNode:v, MyEdge:e)
+Jobs:
+Queries:
+    // Generated by CALL my_package.one_hop(input, input.type, e_type, v_type) using parameter: e_type = [], v_type = MyNode
+  - my_package_one_hop_0867366548(vertex input) (installed v2)
+```
+
+When you CALL this template query again with the same `e_type_set` and `v_type`, you will observe that there is no need to regenerate and reinstall the query. Instead, it will directly execute  `my_package_one_hop_0867366548`.
+
+```
+GSQL > CALL my_package.one_hop((2, "MyNode"), "MyEdge", "MyNode")
+
+------Running query------
+
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@vertex_count": 0
+    }
+  ]
+}
+```
+
+== Drop a Template Query
+
+The following is the command for dropping the template query:
+```
+GSQL > DROP TEMPLATE QUERY my_package.one_hop
+Start to drop generated queries...
+Successfully dropped queries on the graph 'MyGraph': [my_package_one_hop_0867366548].
+Finish dropping generated queries from template query.
+Successfully dropped template queries: [my_package.one_hop].
+```
+
+== Drop a Package
+
+Below is the command to drop the package (please ensure you switch to the global view first).
+```
+GSQL > USE GLOBAL
+GSQL > DROP PACKAGE my_package.my_subpackage
+Successfully dropped Packages: [my_package.my_subpackage].
+```
+
+

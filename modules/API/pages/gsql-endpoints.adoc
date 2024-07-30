@@ -4162,3 +4162,1698 @@ Response::
 ====
 
 '''
+
+=== get loading job names
+
+`GET /gsql/v1/loading-jobs?graph=[graphName]`
+
+This endpoint is used to get all loading job names of a graph.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","jobNames":["incidents_fraud_report_company_csv"]}
+----
+--
+====
+
+'''
+
+=== create/update a loading job
+
+`POST/PUT /gsql/v1/loading-jobs?graph=[graphName]`
+
+This endpoint is used to create/update a new/existed loading job.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST/PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '[loading job statement]'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created loading job: [jobName]"}
+----
+--
+====
+
+'''
+
+=== get loading job info
+
+`GET /gsql/v1/loading-jobs/{jobName}?graph=[graphName]&json=[true/false]`
+
+This endpoint is used to get a specific loading job's information.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: applicaiton/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=g&json=[true/false]' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+Default behavior:
+json=false:
+{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
+
+json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
+----
+--
+====
+
+'''
+
+=== run loading job
+
+`POST /gsql/v1/loading-jobs/run?graph=[graphName]`
+
+This endpoint is used to run a loading job.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/loading-jobs/run?graph=g' 
+payload could be one of these:
+kafka loading: [{"name":"load_kafka","dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}],"streaming":false}]
+s3: [{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]
+file loading: [{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
+full parameters: [{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully ran loading job(s): [jobName]", "jobIds": ["jobId"]}
+----
+--
+====
+
+'''
+
+=== drop a loading job
+
+`DELETE /gsql/v1/loading-jobs/{jobName}?graph=[graphName]`
+
+This endpoint is used to drop a loading job by name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/loading-jobs/jobName?graph=g' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully drop loading job 'jobName'."}
+----
+--
+====
+
+'''
+
+=== abort loading job
+
+`GET /gsql/v1/loading-jobs/abort?graph=[graphName]&jobIds=[job1,job2,...]&isPause=[true/false]`
+
+This endpoint is used to abort mutilple running loading jobs.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=g&jobIds=jobId1' 
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=g&jobIds=jobId1&isPause=true' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
+{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== abort one loading job
+
+`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=[graphName]&isPause=[true/false]`
+
+This endpoint is used to abort a one loading job by job Id.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=g' 
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=g&isPause=true' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
+{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== resume loading job
+
+`GET /gsql/v1/loading-jobs/resume/{jobId}`
+
+This endpoint is used to resume a paused loading job by job Id.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/resume/jobId1'  
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully resumed loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== get loading job status
+
+`GET /gsql/v1/loading-jobs/status?jobIds=[job1,job2,...]`
+
+This endpoint is used to get multiple loading jobs status.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=test_graph.load_ldbc_snb.jdbc.all.1111111111121'  
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"test_graph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+----
+--
+====
+
+'''
+
+=== get one loading job status
+
+`GET /gsql/v1/loading-jobs/status/{jobId}`
+
+This endpoint is used to get a loading job's status by job Id.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/test_graph.load_ldbc_snb.jdbc.all.1111111111121'  
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"test_graph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+----
+--
+====
+
+'''
+
+=== list query names
+
+`GET /gsql/v1/queries?graph=[graphName]`
+
+This endpoint is used to get all query names of a graph.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/quries?graph=g'  
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":["query1","query2"]}
+----
+--
+====
+
+'''
+
+=== create query
+
+`POST /gsql/v1/queries?graph=[graphName]`
+
+This endpoint is used to create a query.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/quries?graph=g'  -d 'create query q1 {...}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created queries: [q1].\n"}
+----
+--
+====
+
+'''
+
+=== delete query
+
+`DELETE /gsql/v1/queires?query=[q1,q2,...]&graph=[graphName]`
+
+This endpoint is used to drop quries.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/query=q1?graph=g'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"failedToDrop":[],"dropped":["q1"],"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== get query content
+
+`GET /gsql/v1/queries/{queryName}?graph=[graphName]`
+
+This endpoint is to get the content of a query by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/queires/test?graph=g
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"queryContent":"CREATE QUERY test() { print 1;}","name":"test","syntax":"GSQL v2","error":false,"message":"","status":"VALID"}
+----
+--
+====
+
+'''
+
+=== run query
+
+`POST /gsql/v1/queires/{queryName}`
+
+The endpoint is used to run a query by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queires/test?graph=g
+-d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"param1":"1"}}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"1":1}]}}
+----
+--
+====
+
+'''
+
+=== drop query
+
+`DELETE /gsql/v1/queries/{queryName}`
+
+This endpoint is used to drop a query by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queires/q1?graph=g
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"failedToDrop":[],"dropped":["q1"],"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== interpret query
+
+`POST /gsql/v1/interpret?graph=[graphName]`
+
+This endpoint is used to intepret query.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/queries/interpret?p1=skill&p1=members' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH test_graph syntax v1 {  print p1; }'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"p1":["members","skill"]}]}
+----
+--
+====
+
+'''
+
+=== get query info
+
+`GET /gsql/v1/queries/info?graph=[graphName]&query=[optional]&status=[optional,query status]`
+
+This endpoint is used to get the query's information.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/queries/info?graph=test_graph'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"graphUpdate":false,"installed":true,"endpoint":{"query":{"test_graph":{"q1":{"GET/POST":{"graphUpdate":false,"summary":"This is query entrance","readDataList":{},"alternative_endpoint":"/query/q1","graph_name":"test_graph","needReadRole":false,"executeGranted":false,"updateDataList":{},"enabled":true,"target":"GPE","deleteDataList":{},"libudf":"libudf-test_graph-1","payload":[{"rule":"AS_JSON"},{"rule":"AS_QUERY_STRING"}],"function":"queryDispatcher","needCurrentRoles":false,"createDataList":{},"action":"query","executorList":[],"parameters":{"query":{"default":"q1","type":"STRING"}}}}}}},"code":"create query q1(){ print 1;}","callerQueries":[],"isACLSpecified":false,"name":"q1","syntax":"GSQL v2","installing":false,"enabled":true,"isHidden":false,"status":"VALID"}]}
+----
+--
+====
+
+'''
+
+=== get query signature
+
+`GET /gsql/v1/queries/signature?graph=[graphName]&queryName=[queryName]&interpret=[true/false]`
+
+This endpoint is used to get query's signature by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X GET 'localhost:8123/gsql/v1/queries/signature?queryName=q1&graph=test_graph'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"output":[{"1":"int"}],"input":[],"queryname":"q1","error":false,"message":"","version":{"schema":0,"edition":"ENTERPRISE_EDITION","api":"V2"}}
+----
+--
+====
+
+'''
+
+=== drop all
+
+`GET /gsql/v1/drop-all`
+
+This endpoint is used to drop all.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/drop-all'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped all."}
+----
+--
+====
+
+'''
+
+=== graph export
+
+`POST /gsql/v1/db-export`
+
+This endpoint is used to export database.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/db-export' -d  '{"path":"pass","graphNames":["*"],"schema":false,"template":false,"data":false,"users":false,"password":"password","separator":"\u001d","eol":"\u001c"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully exported database."}
+----
+--
+====
+
+'''
+
+=== graph import
+
+`POST /gsql/v1/db-import`
+
+This endpoint is used to import database.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/db-import' -d  '{"path":"pass","graphNames":["*"],"keepUsers":false,"password":"password"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully imported database."}
+----
+--
+====
+
+'''
+
+=== saml sp metadata
+
+`GET /gsql/v1/saml/meta`
+
+This endpoint is used to get saml meta data.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/meta' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+----
+--
+====
+
+'''
+
+=== saml login
+
+`GET /gsql/v1/saml/authnrequest`
+
+This endpoint is used to saml login.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/authnrequest' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+----
+--
+====
+
+'''
+
+=== oidc login
+
+`GET /gsql/v1/oidc/authnrequest`
+
+This endpoint is used to oidc login.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/meta' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+----
+--
+====
+
+'''
+
+=== call template query
+
+`POST /gsql/v1/library/{functionName}?graph=[graphName]`
+
+This endpoint is used to call template query.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/library/gds_community_printVertex_0000000000?graph=g' -d '{parameters: {"param1": ""}}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"generatedQueryName":"gds_community_printVertex_0000000000","error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"a":"3"}]}}
+----
+--
+====
+
+'''
+
+=== get template query info
+
+`GET /gsql/v1/library/{functionName}?isRegularExpression=[true/false]`
+
+This endpoint is used to get template query's information.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/library/printVertex'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"query":"CREATE template QUERY gds.community.printVertex(vertex a) SYNTAX V1 {\n  print a;\n}","name":"printVertex","params":{"a":{"id_type":"$a.type","type":"STRING","is_id":"true","min_count":0},"a.type":{"type":"STRING","min_count":0}}}]}
+----
+--
+====
+
+'''
+
+=== get replication info
+
+`GET /gsql/v1/internal/replication`
+
+This endpoint is used to get replica information.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/internal/replication'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"numChangesToBeReplicated":0,"lastSeqId":50,"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== set replication seq id
+
+`POST /gsql/v1/internal/replication?newSeqId=[int]`
+
+This endpoint is used to set replica seq id.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/internal/replication?newSeqId=1'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
+{"lastSeqId":1,"error":false,"message":"Successfully updated lastSeqId: 1."}
+----
+--
+====
+
+'''
+
+=== query semantic check
+
+`POST /gsql/v1/internal/check/query`
+
+This endpoint is used to query semantic check.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/internal/check/query' -d ' {"code":"query text"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"warnings":[],"errors":[]}
+----
+--
+====
+
+'''
+
+=== check input output policy
+
+`GET /gsql/v1/internal/check/file-policy?path=[filePath]&input=[true/false]`
+
+This endpoint is used to check file input/output policy
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/internal/check/file-policy'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== list all tuples
+
+`GET /gsql/v1/udt/tuples`
+
+This endpoint is used to get all tuples.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/tuples'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":"","results":[{"name":"TestTup","fields":[{"fieldName":"da","length":8,"fieldType":"UINT"},{"fieldName":"flow","length":8,"fieldType":"STRING"}]}]}
+----
+--
+====
+
+'''
+
+=== list one tuple
+
+`GET /gsql/v1/udt/tuples/{tupleName}`
+
+This endpoint is used to get tuple by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/tuples/TestTup'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":"","results":[{"name":"TestTup","fields":[{"fieldName":"da","length":8,"fieldType":"UINT"},{"fieldName":"flow","length":8,"fieldType":"STRING"}]}]}
+----
+--
+====
+
+'''
+
+=== create tuple
+
+`POST /gsql/udt/tuples`
+
+This endpoint is used to create a tuple.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/udt/tuples?gsql=true' -d '{"gsql":"create tuple commands"}'
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/udt/tuples' -d '{"tuples":[{"Name":"tuple1","TupleElements":[{"name":"attr1","AttributeType":"int"}]}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":"Successfully create tuples: TestTup."}
+----
+--
+====
+
+'''
+
+=== delete multiple tuples
+
+`DELETE /gsql/v1/udt/tuples?tupleName=[tup1,tup2,...]`
+
+This endpoint is used to delte multiple tuples.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/udt/tuples?tupleName=TestTuple'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":"Successfully dropped userDefinedTuple: [TestTup]."}
+----
+--
+====
+
+'''
+
+=== delete one tuple
+
+`DELETE /gsql/v1/udt/tuples/{tupleName}`
+
+This endpoint is used to delete one tuple by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/udt/tuples/TestTuple'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----	
+{"error":false,"message":"Successfully dropped userDefinedTuple: [TestTup]."}
+----
+--
+====
+
+'''
+
+=== list all accumulators
+
+`GET /gsql/v1/udt/accum`
+
+This endpoint is used to get all accumulators.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/accum'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----		
+{"error":false,"message":"","results":[{"myGroup":"GroupByAccum<int a, SumAccum<int> b> myGroup\n"}]}
+----
+--
+====
+
+'''
+
+=== list one accumulator
+
+`GET /gsql/v1/udt/accum/{accumName}`
+
+This endpoint is used to get one accumulator by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/accum/myGroup'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----		
+{"error":false,"message":"","results":[{"myGroup":"GroupByAccum<int a, SumAccum<int> b> myGroup\n"}]}
+----
+--
+====
+
+'''
+
+=== create accumulators
+
+`POST /gsql/v1/udt/accum`
+
+This endpoint is used to create one accumulator.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/udt/accum' -d '{"AccumString":"typedef GroupByAccum or typedef HeapAccum"}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----		
+{"error":false,"message":"Successfully create accumulator."}
+----
+--
+====
+
+'''
+
+=== delete mulitple accumulators
+
+`DELETE /gsql/v1/udt/accum?accumName=[all or accum1, accum2, ...]`
+
+This endpoint is used to delete multiple accumulators.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/udt/accum?accumName=myGroup'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----		
+{"error":false,"message":"Successfully dropped accumulator: [myGroup]."}
+----
+--
+====
+
+'''
+
+=== delete one accumulator
+
+`DELETE /gsql/v1/udt/accum/{accumName}`
+
+This endpoint is used to delete one accumulator.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/udt/accum/myGroup'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----		
+{"error":false,"message":"Successfully dropped accumulator: [myGroup]."}
+----
+--
+====
+
+'''
+
+=== download expr files
+
+`GET /gsql/v1/udt/files/{fileName}`  fileName is one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank
+
+This endpoint is used to download one file by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/files/TokenBank'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"results": {"TokenBank": "TokenBank File Content"}}
+----
+--
+====
+
+'''
+
+=== download all files
+
+`GET /gsql/v1/udt/files`
+
+This endpoint is used to get all files.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/files'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"results": {"TokenBank": "TokenBank File Content", "ExprFunctions": "ExprFunctions file content", "ExprUtil": "", "tg_ExprFunctions": "", "tg_ExprUtil": ""}}
+----
+--
+====
+
+'''
+
+=== upload file
+
+`PUT /gsql/v1/udt/files/{fileName}`
+
+This endpoint is used to upload file.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X PUT 'localhost:8123/gsql/v1/udt/files/' -d 'Token Bank file content'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message": "Successfully update file: TokenBank"}
+----
+--
+====
+
+'''
+
+=== upload file
+
+`PUT /gsql/v1/udt/files`
+
+This endpoint is used to upload all files.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X PUT 'localhost:8123/gsql/v1/udt/files' -d  '{"files":[{"Name":"ExprUtil","Content":"file content"}]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message": "All files get updated: [TokenBank, ExprFunctions]."}
+----
+--
+====
+
+'''
+
+=== get token bank functions
+
+`GET /gsql/v1/udt/token-functions/{functionName}`
+
+This endpoint is used to get function content by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/token-functions/_Concat' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"","results":{"code":"token bank function code","name":"_Concat","returnType":"string"}}
+----
+--
+====
+
+'''
+
+=== get all token bank functions
+
+`GET /gsql/v1/udt/token-functions`
+
+This endpoint is used to get all token bank functions.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/token-functions' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"","results":[{"code":"token bank function code","name":"_Concat","returnType":"string"}]}
+----
+--
+====
+
+'''
+
+=== get all package names
+
+`GET /gsql/v1/packages`
+
+This endpoint is used to get all package names.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/packages 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"","results":["gds","gds.community"]}
+----
+--
+====
+
+'''
+
+=== get package content
+
+`GET /gsql/v1/package/{packageName}`
+
+This endpoint is used to get package by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/packages/gds 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"","results":{"fullPackageName":"gds.community","functions":[],"templateQueries":["printVertex"],"subpackageNames":[]}}
+----
+--
+====
+
+'''
+
+=== create package
+
+`POST /gsql/v1/package/{packageName}`
+
+This endpoint is used to create package.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/packages/gds.commumity1 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully created package: [gds.community1]."}
+----
+--
+====
+
+'''
+
+=== drop package
+
+`DELETE /gsql/v1/package/{packageName}`
+
+This endpoint is used to drop package by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/packages/gds.commumity1 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully dropped package: [gds.community1]."}
+----
+--
+====
+
+'''
+
+=== create function
+
+`POST /gsql/v1/package/function`
+
+This endpoint is used to create function
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/function -d 'create function func1' 
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully created function: [gds.community.func1]."}
+----
+--
+====
+
+'''
+
+=== delete function
+
+`DELETE /gsql/v1/package/{functionName}`
+
+This endpoint is used to delete function by its name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X DELETE 'localhost:8123/gsql/v1/packages/function/func1'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully dropped function: [gds.community.func1]."}
+----
+--
+====
+
+'''
+
+=== create template query
+
+`POST /gsql/v1/package/template` 
+
+This endpoint is used to create template query.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/template' -d 'create template query templateQuery1'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully created template query: [gds.community.templateQuery1]."}
+----
+--
+====
+
+'''
+
+=== drop template query
+
+`DELETE /gsql/v1/package/template/{queryName}`
+
+This endpoint is used to drop template query.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X DELETE 'localhost:8123/gsql/v1/packages/template/templateQuery1'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully dropped template query: [gds.community.templateQuery1]."}
+----
+--
+====
+
+'''
+
+=== import package
+
+`POST /gsql/v1/package/import/{packageName}`
+
+This endpoint is used to import package.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/import/pkg'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully import package pkg."}
+----
+--
+====
+
+'''

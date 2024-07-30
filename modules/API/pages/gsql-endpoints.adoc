@@ -3355,7 +3355,7 @@ Sample Response::
 
 '''
 
-=== show all privilages
+=== show all privileges
 
 `GET /gsql/v1/privileges`
 
@@ -3690,7 +3690,7 @@ or grant role(s) on global level if the parameter is missing
 
 '''
 
-=== revoke privilege(s) from role(s)
+=== revoke role(s) from user(s)
 
 `POST /gsql/v1/roles/revoke`
 

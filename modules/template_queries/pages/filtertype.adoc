@@ -36,7 +36,7 @@ The supported fields of the FilterType are as follows, with each field being opt
   "source_set": "L1",
   "edge_set": "ANY",
   "target_set" : "account"
-  "filter": "(src.age >= 21 AND tgt.name == "Bob") OR e.amount >= 10,000"
+  "filter": "(src.age >= 21 AND tgt.name == \"Bob\") OR e.amount >= 10,000"
 }
 ----
 |===
@@ -339,16 +339,17 @@ a|
   "source_set": "person",
   "edge_set": "likes",
   "target_set": "person\|comments",
-  "filter": "src.age > 40 and tgt.age > 21 and e.date > to_datetime(\"2010-01-01\")"
+  "filter": "src.age > 40 and e.date > to_datetime(\"2010-01-01\")"
 }
 ----
 a| 
 [source,gsql]
 ----
-vset = select src 
+vset = select src
        from person:src  - (likes:e) - (person\|comments):tgt
-       where src.age > 40 and tgt.age > 21 and e.date > to_datetime("2010-01-01");
+       where src.age > 40
+             and e.date > to_datetime("2010-01-01");
 ----
-| Retrieve all person vertices with an 'age' attribute greater than 40 who like another person with an 'age' attribute greater than 21, and the liking relationship started after January 1, 2010.
+| Retrieve all person vertices with an 'age' attribute greater than 40 who like another person, and the liking relationship started after January 1, 2010.
 
 |===

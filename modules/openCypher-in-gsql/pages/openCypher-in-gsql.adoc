@@ -266,6 +266,8 @@ N/A
 
 |relationships() |List Returns a list containing all the relationships in a path.
 
+|reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
+
 |size() |Scalar Returns the number of subgraphs matching the pattern expression. (When applied to
 pattern expression)
 
@@ -280,8 +282,6 @@ pattern expression)
 |toInteger() |Scalar Converts a floating point or string value to an integer value.
 
 |type() |Scalar Returns the string representation of the relationship type.
-
-|reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
 
 |===
 

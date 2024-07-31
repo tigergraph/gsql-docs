@@ -4,6 +4,64 @@
 
 This page lists the list (ListAccum) functions that are available in the GSQL query language.
 
+=== `head()`
+
+==== Syntax
+
+`head(list)`
+
+==== Description
+
+`head()` returns the first element in a list. It is semantically the same as `list.get(0)`
+
+==== Return type
+
+`ELEMENT`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `list`
+| A ListAccum parameter, where we want to retrieve the first element in the list
+| `ListAccum<ELEMENT>`
+|===
+
+==== Example
+[source,text]
+----
+head(["a", "b", "c"]) -> "a"
+----
+
+=== `last()`
+
+==== Syntax
+
+`last(list)`
+
+==== Description
+
+`last()` returns the last element in a list. It is semantically the same as `list.get(list.size() - 1)`
+
+==== Return type
+
+`ELEMENT`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `list`
+| A ListAccum parameter, where we want to retrieve the last element in the list
+| `ListAccum<ELEMENT>`
+|===
+
+==== Example
+[source,text]
+----
+last(["a", "b", "c"]) -> "c"
+----
+
 === `range()`
 
 ==== Syntax
@@ -45,6 +103,35 @@ range(5, 0, -1) -> [5, 4, 3, 2, 1, 0]
 range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
 ----
 
+=== `size()`
+
+==== Syntax
+
+`size(list)`
+
+==== Description
+
+`size()` returns the number of elements in a `ListAccum`
+
+==== Return type
+
+`UINT`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `list`
+| A ListAccum parameter
+| `ListAccum<ELEMENT>`
+|===
+
+==== Example
+[source,text]
+----
+size(["a", "b", "c"]) -> 3
+----
+
 === `split()`
 
 ==== Syntax
@@ -75,7 +162,35 @@ range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
 ==== Example
 [source,text]
 ----
-split('one,two', ',') -> ['one', 'two']
-split('aaabcaabca', 'abc') -> ['aa', 'a', 'a']
+split("one,two", ",") -> ["one", "two"]
+split("aaabcaabca", "abc") -> ["aa", "a", "a"]
 ----
 
+=== `tail()`
+
+==== Syntax
+
+`tail(list)`
+
+==== Description
+
+`tail()` returns the copy of the list that includes all but the first element in the parameter list.
+
+==== Return type
+
+`ListAccum<ELEMENT>`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `list`
+| A ListAccum parameter
+| `ListAccum<ELEMENT>`
+|===
+
+==== Example
+[source,text]
+----
+tail(["a", "b", "c"]) -> ["b", "c"]
+----

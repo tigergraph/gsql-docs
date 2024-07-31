@@ -96,18 +96,6 @@ If the original query was installed, you'll need to reinstall the new query.
 +
 However, if there are any errors in this query definition, then the previous query definition is maintained.
 If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
-+
-Only the xref:tigergraph-server:user-access:access-control-model.adoc#_query_owner[query owner] is allowed to run `CREATE OR REPLACE` on a query.
-However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph, you can execute `DROP QUERY` to drop the query and create a new one with the same name.
-+
-[NOTE]
-====
-The difference between `CREATE OR REPLACE` and dropping and recreating a query are the following:
-
-* Only the query owner is allowed to run `CREATE OR REPLACE` on a query directly, while anyone with the `WRITE_QUERY` privilege on the corresponding graph and drop and recreate the query.
-* The ACLs on the original query are dropped when you drop the query.
-`CREATE OR REPLACE` keeps the original ACLs intact.
-====
 `DISTRIBUTED`::
 The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
 If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.
@@ -538,6 +526,15 @@ Queries are not saved as drafts in the following situations:
 ** However, a recursive call (A calls A) is allowed.
 
 If a query is saved as a draft before it reaches valid status, any queries that call it are also set to draft status.
+
+[NOTE]
+====
+If a user creates a query, this user should become the owner of this query automatically. That means, this user can read, update, drop, install and execute this query.
+
+At the same time, this user can grant the query privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity (a user or a role), the previous owner should lose `OWNERSHIP` privilege on this query.
+
+For the detail description, please refer to xref:xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc
+====
 
 == `INTERPRET QUERY`
 

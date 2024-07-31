@@ -3,19 +3,14 @@
 ++++
 <html>
 
-<embed src = "Query Writing Best Practices.pdf" width = "800px" height = "2100px" />
-
-
-
+<iframe src="pdfs/Query_Writing_Practices.pdf" height="100%" width="100%" scrolling="auto"></iframe>
+<iframe src="pdfs/Schema_Best_Practices.pdf" height="100%" width="100%" scrolling="auto"></iframe>
+<iframe src="pdfs/Troubleshooting_Best_Practice.pdf" height="100%" width="100%" scrolling="auto"></iframe>
 
 
 </html>
 ++++
-image::Query Writing Best Practices.pdf[pages=1,2]
 
-image::Schema Design Best Practices.pdf[]
-
-image::Troubleshooting Best Practice.pdf[]
 
 
 

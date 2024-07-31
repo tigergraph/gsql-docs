@@ -174,7 +174,12 @@ The table below illustrates the raw FilterType value alongside its corresponding
 a| 
 [source,json]
 ----
-{"type":"select"} or {}
+{"type":"select"}
+----
+or
+[source,json]
+----
+{}
 ----
 a|
 [source,gsql]

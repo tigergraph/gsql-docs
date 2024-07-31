@@ -5857,3 +5857,336 @@ Response::
 ====
 
 '''
+
+=== create new JWT token
+
+`POST /gsql/v1/tokens`
+
+This endpoint is used to create a new JWT token.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/tokens'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"expiration":"Wed Jul 10 06:12:47 UTC 2024","error":false,"message":"Generate new JWT token successfully.","token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs"}
+----
+--
+====
+==== Payload:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `secret`
+| no
+| the secret denotes the user 
+
+| `graph`
+| no
+| the graph the token created for
+
+| `lifetime`
+| no
+| the duration time of the token
+|===
+
+'''
+
+=== drop JWT tokens
+
+`DELETE /gsql/v1/tokens?clear=[true/false]`
+
+This endpoint is used to drop specific a list of tokens.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/tokens' -d {"tokens": "$token1,$token2"}
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"Successfully dropped the specified JWT tokens"}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `clear`
+| no
+| default:false. clear is true means clear out the current block list
+|===
+
+'''
+
+=== check JWT token
+
+`POST /gsql/v1/tokens/check`
+
+This endpoint is used to check JWT token is valid or not.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/tokens/check' -d {"token": "$token1"}
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			
+{"error":false,"message":"The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs verification succeed."}
+----
+--
+====
+
+'''
+
+=== create secret
+
+`POST /gsql/v1/secrets?userName=[user]&value=[secret content]&alias=[alias]`
+
+This endpoint is used to create a secret.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/secrets?alias=s1'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			 	
+{"error":false,"message":"","results":{"alias":"s1","value":"59ccqdlqmkfcqjl99u2jv4qt2telmeoj"}}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user the secret created for
+
+| `value`
+| no
+| the secret content
+
+| `alias`
+| no
+| the alias of the secret created
+|===
+
+'''
+
+=== show secrets
+
+`GET /gsql/v1/secrets?userName=[user]`
+
+This endpoint is used to show secrets for the user.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/secrets'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			 	
+{"error":false,"message":"","results":{"alias":"s1","value":"59ccqdlqmkfcqjl99u2jv4qt2telmeoj"}}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to show the secrets
+|===
+
+'''
+
+=== delete secrets
+
+`DELETE /gsql/v1/secrets?userName=[user]`
+
+This endpoint is used to delete the secrets of the user.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/secrets' -d '{"secrets":[$secret1,$secret2]}'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			 	
+{"error":false,"message":"Successfully removed the secrets for user tigergraph."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secrets
+|===
+
+'''
+
+=== get secret by alias
+
+`GET /gsql/v1/secrets/{alias}?userName=[user]`
+
+This endpoint is used to get the secrets by its alias name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/secrets/s2'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			 	
+{"error":false,"message":"","results":{"alias":"s2","value":"g2ea27q79tes6nsark3k3ecp718rp4ej"}}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to get the secret
+|===
+
+'''
+
+=== drop secret by alis
+
+`DELETE /gsql/v1/secrets/{alias}?userName=[user]`
+
+This endpoint is used to delete the secret of the user by its alias name.
+
+==== Example
+
+[,tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/secrets/s2'
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----			 	
+{"error":false,"message":"Successfully removed the secrets for user tigergraph."}
+----
+--
+====
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secret
+|===
+
+'''

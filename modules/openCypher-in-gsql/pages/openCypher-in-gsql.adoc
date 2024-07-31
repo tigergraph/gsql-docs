@@ -205,8 +205,6 @@ See below for restrictions.
 
 |trim() |String Returns the original string with leading and trailing whitespace removed.
 
-|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
-
 |===
 
 === Expressions
@@ -259,6 +257,10 @@ N/A
 |length() |Scalar Returns the length of a path.
 
 |nodes() |List Returns a list containing all the nodes in a path.
+
+|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
+|percentileDisc() |Aggregating Returns the percentile of the given value over a group using a rounding method.
 
 |properties() |Scalar Returns a map containing all the properties of a node or relationship.
 

@@ -1,0 +1,349 @@
+= FilterType
+ 
+== What's FilterType?
+
+The `FilterType` represents a specific parameter type within the Template Query framework. It is designed to facilitate the invocation of template queries with constrained vertex sets, exemplified by queries such as Person older than 20 and Communities within Minnesota.
+
+== Create a template query with FilterType parameter
+
+The utilization of the type name `FilterType` adheres to the conventions established for other fundamental types, such as int and string, allowing it to be positioned flexibly within a parameter list.
+
+[source,gsql]
+----
+create template query packageName.example(
+       FilterType Select_Template1, 
+       FilterType Select_Template2, 
+       otherType paramName1, 
+       other...) {
+  # generate a select statement due to the condition: Select_Template1
+  L1 = {Select_Template1}
+       WHERE getvid(src) < getvid(tgt)
+       ACCUM
+          tgt.@curr_list += [getvid(src)]
+       HAVING tgt.@curr_list.size() > 0;
+  # generate a single select statement due to the condition: Select_Template2
+  L2 = {Select_Template2};
+}
+----
+
+== Grammar of FilterType
+The supported fields of the FilterType are as follows, with each field being optional:
+[source,json]
+----
+{
+  "type":"select",
+  "select": "src",
+  "source_set": "L1",
+  "edge_set": "ANY",
+  "target_set" : "account"
+  "filter": "(src.age >= 21 AND tgt.name == "Bob") OR e.amount >= 10,000"
+}
+----
+|===
+| Attribute Name | Default value | Meaning | Values Example
+
+| type
+| `select`
+| the type of the json command.
+| MUST BE `select`
+
+| select
+| `src`
+| the selected vertex alias
+| MUST be one of `src`, `tgt`
+
+| source_set
+| `ANY`
+a| the source vertex set name.
+`ANY`, `_` , a vertex type name or their combination with '\|', or a named set of vertices that can be referenced within the context where the filter is applied.
+a| 
+* `ANY`
+* `person`
+* `person \| comments`
+* `L1`(vertex set declared before)
+
+| target_set
+| `ANY`
+| the target vertex set name.
+`ANY`, `_` , a vertex type name or their combination with '\|', or a named set of vertices that can be referenced within the context where the filter is applied.
+a| 
+* `ANY`
+* `person`
+* `person \| comments`
+* `L1`(vertex set declared before)
+
+| edge_set
+| `ANY`
+| `ANY`, `_` , a edge type name or their combination with '\|'
+a| 
+* `ANY`
+* `knows`
+* `knows \| like`
+
+| filter
+| no filter
+a| Combination of GSQL where filter with:
+
+* `src` as source vertex type reference
+* `tgt` as targert vertex type reference
+* `e` as edge type reference
+a|
+* src.age > 20
+* tgt.age > 20
+* e.date > to_datetime("2010-01-01")
+* src.age > 20 and tgt.age > 20
+* src.age > 20 or e.isDirected()
+|===
+
+== Call a template query with FilterType
+The template filter utilizes a JSON string data type, characterized by its non-schema nature and flexibility.
+
+Below is a demonstration illustrating the invocation of a template query with a template filter:
+[source,gsql]
+----
+use graph ExampleGraph
+call packageName.example({"type":"select", "source_set": "L1"}, {"type":"select", "source_set": "company", "filter": "src.name = \"Bob\""})
+----
+[NOTE]
+The call command is required to be formatted as a single-line command, and it does not support word wrapping.
+[NOTE]
+The JSON data type does not necessitate being enclosed within double quotes to denote a string type.
+
+== Comprehensive Example
+=== 1. Create a graph:
+[source,gsql]
+----
+CREATE VERTEX person(PRIMARY_ID id STRING, name STRING, height DOUBLE, string company, birthYear INT)
+CREATE UNDIRECTED EDGE knows(FROM person, TO person, date DATETIME)
+CREATE UNDIRECTED EDGE likes(FROM person, TO person, date DATETIME)
+create graph exampleGraph(*)
+----
+
+=== 2. Create a template query:
+[source,gsql]
+----
+create template query pkg.example(
+       FilterType Select_Template1, 
+       FilterType Select_Template2, 
+       int age, 
+       double height) {
+       
+  ListAccum<int> @curr_list;
+  # generate a select statement due to the condition: Select_Template1
+  L1 = {Select_Template1}
+       WHERE src.age > age and getvid(src) < getvid(tgt)
+       ACCUM tgt.@curr_list += [getvid(src)]
+       HAVING tgt.@curr_list.size() > 0;
+
+  # generate a single select statement due to the condition: Select_Template2
+  L2 = {Select_Template2};
+  
+}
+----
+=== 3. Call the template query
+[source,gsql]
+----
+use graph exampleGraph
+call pkg.example({"type":"select","source_set":"person"}, {"type":"select","select": "tgt","source_set":"L1","e_set":"knows","target_set":"person","filter":"src.company = \"BOA\""}, 20, 170)
+----
+=== 4. Generated query
+The subsequent GSQL query will be automatically formulated.
+[source,gsql]
+----
+create query example_[HASH](int age, double height) {
+  # generate a select statement due to the condition: Select_Template1
+  L1 = SELECT src 
+       FROM person:src
+       WHERE src.age > age and getvid(src) < getvid(tgt)
+       ACCUM tgt.@curr_list += [getvid(src)]
+       HAVING tgt.@curr_list.size() > 0;
+
+  # generate a single select statement due to the condition: Select_Template2
+  L2 = SELECT tgt
+       FROM L1:src - (knows:e) - person:tgt 
+       WHERE src.company = "BOA";
+}
+----
+
+
+== Transformation Example (Syntax V1)
+The table below illustrates the raw FilterType value alongside its corresponding transformed value.
+|===
+| Filter | Translated statement of `vset = {Select_Template1};` | Description
+
+a| 
+[source,json]
+----
+{"type":"select"} or {}
+----
+a|
+[source,gsql]
+----
+vset = {ANY};
+----
+| Retrieve all vertices
+
+a| 
+[source,json]
+----
+{
+  "type":"select",
+  "select": "src",
+  "source_set": "company"
+}
+----
+a| 
+[source,gsql]
+----
+vset = {company.*};
+----
+| Retrieve all vertices with the type 'company'.
+
+a| 
+[source,json]
+----
+{
+  "type":"select", 
+  "target_set": "company"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from ANY:src - (:e) - company:tgt;
+----
+| Retrieve all vertices that have a neighbor with the type 'company'.
+
+a| 
+[source,json]
+----
+{
+  "type":"select",
+  "select": "tgt",
+  "target_set": "company"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select tgt 
+       from ANY:src - (:e) - company:tgt;
+----
+| Retrieve all vertices of type 'company' that act as the target of at least one edge in the graph.
+
+a| 
+[source,json]
+----
+{
+  "type":"select",
+  "source_set": "person",
+  "filter": "src.age > 21"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from ANY:src - (:e) - person:tgt
+       where tgt.age > 21;
+----
+| Retrieve all vertices that have a neighbor of type 'person' with an 'age' attribute greater than 21.
+
+a| 
+[source,json]
+----
+{
+  "type":"select",
+  "source_set": "company",
+  "edge_set": "ANY"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from company:src - (:e) - :tgt;
+----
+| Retrieve all company vertices that have at least one neighbor.
+
+a| 
+[source,json]
+----
+{
+  "type": "select",
+  "source_set": "person",
+  "target_set": "person",
+  "filter": "tgt.age > 21"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from person:src  - (:e) - person:tgt
+       where tgt.age > 21;
+----
+| Retrieve all person vertices who have neighbors with an 'age' attribute greater than 21.
+
+a| 
+[source,json]
+----
+{
+  "type": "select",
+  "source_set": "person",
+  "edge_set": "knows",
+  "target_set": "person",
+  "filter": "src.age > 40 and tgt.age > 21"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from person:src  - (knows:e) - person:tgt
+       where src.age > 40 and tgt.age > 21;
+----
+| Retrieve all person vertices with an 'age' attribute greater than 40 who know a person with an 'age' attribute greater than 21.
+
+a| 
+[source,json]
+----
+{
+  "type": "select",
+  "source_set": "person",
+  "edge_set": "knows\|likes",
+  "target_set": "person",
+  "filter": "src.age > 40 and tgt.age > 21"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from person:src  - ((knows\|likes):e) - person:tgt
+       where src.age > 40 and tgt.age > 21;
+----
+| Retrieve all person vertices with an 'age' attribute greater than 40 who know or like a person with an 'age' attribute greater than 21.
+
+a| 
+[source,json]
+----
+{
+  "type": "select",
+  "source_set": "person",
+  "edge_set": "likes",
+  "target_set": "person\|comments",
+  "filter": "src.age > 40 and tgt.age > 21 and e.date > to_datetime(\"2010-01-01\")"
+}
+----
+a| 
+[source,gsql]
+----
+vset = select src 
+       from person:src  - (likes:e) - (person\|comments):tgt
+       where src.age > 40 and tgt.age > 21 and e.date > to_datetime("2010-01-01");
+----
+| Retrieve all person vertices with an 'age' attribute greater than 40 who like another person with an 'age' attribute greater than 21, and the liking relationship started after January 1, 2010.
+
+|===

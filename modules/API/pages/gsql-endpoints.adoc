@@ -4190,6 +4190,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the loading job names of which graph
+|===
 
 '''
 
@@ -4220,6 +4231,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| create/update loading job of which graph
+|===
 
 '''
 
@@ -4254,6 +4276,21 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| get the loading job information under which graph
+
+| `json`
+| no
+| get loading job information in json format
+|===
 
 '''
 
@@ -4289,6 +4326,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| run the loading job under which graph
+|===
 
 '''
 
@@ -4319,6 +4367,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| drop the loading job under which graph
+|===
 
 '''
 
@@ -4351,6 +4410,25 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| run the loading job under which graph
+
+| `jobId`
+| yes
+| the loading job Id
+
+| `isPause`
+| no
+| pause or abort the loading job
+|===
 
 '''
 
@@ -4383,6 +4461,26 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| run the loading job under which graph
+
+| `jobId`
+| yes
+| the loading job Id
+
+| `isPause`
+| no
+| pause or abort the loading job
+|===
+
 
 '''
 
@@ -4413,6 +4511,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
 
 '''
 
@@ -4443,6 +4552,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobIds`
+| yes
+| the loading job Ids
+|===
 
 '''
 
@@ -4473,6 +4593,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
 
 '''
 
@@ -4503,6 +4634,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query name of which graph
+|===
 
 '''
 
@@ -4533,6 +4675,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query created under which graph
+|===
 
 '''
 
@@ -4563,6 +4716,21 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `query`
+| yes
+| the queries to be dropped
+
+| `graph`
+| yes
+| the queries dropped under which graph
+|===
 
 '''
 
@@ -4593,6 +4761,21 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the content of which query
+
+| `graph`
+| yes
+| the query under which graph
+|===
 
 '''
 
@@ -4624,6 +4807,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the query to run
+|===
 
 '''
 
@@ -4654,6 +4848,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the query to drop
+|===
 
 '''
 
@@ -4684,6 +4889,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query interpreted under which graph
+|===
 
 '''
 
@@ -4714,6 +4930,25 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query under which graph
+
+| `query`
+| no
+| the query name
+
+| `status`
+| no
+| the query status
+|===
 
 '''
 
@@ -4744,6 +4979,25 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query under which graph
+
+| `queryName`
+| no
+| the query name to get query signature
+
+| `interpret`
+| no
+| false/true
+|===
 
 '''
 
@@ -4954,6 +5208,21 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the function under which graph
+
+| `functionName`
+| yes
+| the function name to call
+|===
 
 '''
 
@@ -4984,6 +5253,21 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `functionName`
+| yes
+| the function name of the tempalte query
+
+| `isRegularExpression`
+| no
+| decide is regulare expression or not
+|===
 
 '''
 
@@ -5104,6 +5388,21 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the file path
+
+| `input`
+| no
+| is input or output policy
+|===
 
 '''
 
@@ -5164,6 +5463,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple name to get information
+|===
 
 '''
 
@@ -5225,6 +5535,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple names to be dropped
+|===
 
 '''
 
@@ -5375,6 +5696,17 @@ Response::
 ----
 --
 ====
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `accumName`
+| yes
+| the accumulator names to drop
+|===
 
 '''
 

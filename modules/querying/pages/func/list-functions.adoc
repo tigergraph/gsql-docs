@@ -1,0 +1,81 @@
+= List Functions
+:description: A list of list (ListAccum) functions in GSQL.
+:page-toclevel: 1
+
+This page lists the list (ListAccum) functions that are available in the GSQL query language.
+
+=== `range()`
+
+==== Syntax
+
+`range(start, end [, step])`
+
+==== Description
+
+`range()` returns a `ListAccum` of integer values within a range bounded by a start value `start` and end value `end`, and an optional step size `step`. The range is inclusive, so the arithmetic progression will always contain `start`, and it may contain `end`.
+
+==== Return type
+
+`ListAccum<INT>`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `start`
+| The starting value of the range
+| `UINT`, `INT`
+
+| `end`
+| The ending value of the range
+| `UINT`, `INT`
+
+| `step`
+| (Optional)
+
+The difference between any two consecutive values in the range
+| `UINT`, `INT`
+|===
+
+==== Example
+[source,text]
+----
+range(0, 5) -> [0, 1, 2, 3, 4, 5]
+range(5, 0, -1) -> [5, 4, 3, 2, 1, 0]
+range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
+----
+
+=== `split()`
+
+==== Syntax
+
+`split(original, splitDelimiter)`
+
+==== Description
+
+`split()` returns a list of strings resulting from the splitting of the original string on matches of the given delimiter.
+
+==== Return type
+
+`ListAccum<STRING>`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+| `original`
+| The original string to split
+| `STRING`
+
+| `splitDelimiter`
+| The delimiter to split the original string on
+| `STRING`
+|===
+
+==== Example
+[source,text]
+----
+split('one,two', ',') -> ['one', 'two']
+split('aaabcaabca', 'abc') -> ['aa', 'a', 'a']
+----
+

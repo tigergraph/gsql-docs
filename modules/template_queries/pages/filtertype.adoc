@@ -166,7 +166,7 @@ create query example_[HASH](int age, double height) {
 ----
 
 
-== Transformation Example (Syntax V1)
+== Transformation Example
 The table below illustrates the raw FilterType value alongside its corresponding transformed value.
 |===
 | Filter | Translated statement of `vset = {Select_Template1};` | Description

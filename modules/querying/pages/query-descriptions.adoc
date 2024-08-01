@@ -67,7 +67,6 @@ Support is provided for displaying descriptions of multiple targets simultaneous
 DROP DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
 
 Required privilege
-
 UPDATE_QUERY
 
 To drop a description, run the DROP DESCRIPTION command like below.

@@ -4165,9 +4165,9 @@ Response::
 
 === get loading job names
 
-`GET /gsql/v1/loading-jobs?graph=[graphName]`
+`GET /gsql/v1/loading-jobs?graph=<graphName>`
 
-This endpoint is used to get all loading job names of a graph.
+This endpoint is used to get all loading job names in a graph.
 
 ==== Example
 
@@ -4206,9 +4206,11 @@ Response::
 
 === create/update a loading job
 
-`POST/PUT /gsql/v1/loading-jobs?graph=[graphName]`
+`POST /gsql/v1/loading-jobs?graph=<graphName>`+
+`PUT /gsql/v1/loading-jobs?graph=<graphName>`
 
-This endpoint is used to create/update a new/existed loading job.
+
+This endpoint is used to create a new loading job/update an existing loading job.
 
 ==== Example
 
@@ -4219,7 +4221,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST/PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '[loading job statement]'
+curl -H 'Content-Type: text/plain' -X POST/PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '<loading job statement>'
 ----
 --
 Response::
@@ -4227,7 +4229,7 @@ Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully created loading job: [jobName]"}
+{"error":false,"message":"Successfully created loading job: <jobName>"}
 ----
 --
 ====
@@ -4247,7 +4249,7 @@ Response::
 
 === get loading job info
 
-`GET /gsql/v1/loading-jobs/{jobName}?graph=[graphName]&json=[true/false]`
+`GET /gsql/v1/loading-jobs/{jobName}?graph=<graphName>&json=<true/false>`
 
 This endpoint is used to get a specific loading job's information.
 
@@ -4296,7 +4298,7 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 
 === run loading job
 
-`POST /gsql/v1/loading-jobs/run?graph=[graphName]`
+`POST /gsql/v1/loading-jobs/run?graph=<graphName>`
 
 This endpoint is used to run a loading job.
 
@@ -4342,7 +4344,7 @@ Response::
 
 === drop a loading job
 
-`DELETE /gsql/v1/loading-jobs/{jobName}?graph=[graphName]`
+`DELETE /gsql/v1/loading-jobs/{jobName}?graph=<graphName>`
 
 This endpoint is used to drop a loading job by name.
 
@@ -4381,9 +4383,9 @@ Response::
 
 '''
 
-=== abort loading job
+=== abort loading job(s)
 
-`GET /gsql/v1/loading-jobs/abort?graph=[graphName]&jobIds=[job1,job2,...]&isPause=[true/false]`
+`GET /gsql/v1/loading-jobs/abort?graph=<graphName>&jobIds=<job1,job2,...>&isPause=<true/false>`
 
 This endpoint is used to abort mutilple running loading jobs.
 
@@ -4396,8 +4398,8 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=g&jobIds=jobId1' 
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=g&jobIds=jobId1&isPause=true' 
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=g&jobIds=jobId1' 
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=g&jobIds=jobId1&isPause=true' 
 ----
 --
 Response::
@@ -4419,7 +4421,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 | `graph`
 | yes
-| run the loading job under which graph
+| abort the loading job under which graph
 
 | `jobId`
 | yes
@@ -4427,14 +4429,14 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 | `isPause`
 | no
-| pause or abort the loading job
+| true means pause or abort the loading job, false means run the loading job.
 |===
 
 '''
 
 === abort one loading job
 
-`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=[graphName]&isPause=[true/false]`
+`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=<graphNam>&isPause=<true/false>`
 
 This endpoint is used to abort a one loading job by job Id.
 
@@ -4470,7 +4472,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 | `graph`
 | yes
-| run the loading job under which graph
+| abort the loading job under which graph
 
 | `jobId`
 | yes
@@ -4478,7 +4480,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 | `isPause`
 | no
-| pause or abort the loading job
+| true means pause or abort the loading job, false means run the loading job.
 |===
 
 
@@ -4527,7 +4529,7 @@ Response::
 
 === get loading job status
 
-`GET /gsql/v1/loading-jobs/status?jobIds=[job1,job2,...]`
+`GET /gsql/v1/loading-jobs/status?jobIds=<job1,job2,...>`
 
 This endpoint is used to get multiple loading jobs status.
 
@@ -4609,7 +4611,7 @@ Response::
 
 === list query names
 
-`GET /gsql/v1/queries?graph=[graphName]`
+`GET /gsql/v1/queries?graph=<graphName>`
 
 This endpoint is used to get all query names of a graph.
 
@@ -4650,7 +4652,7 @@ Response::
 
 === create query
 
-`POST /gsql/v1/queries?graph=[graphName]`
+`POST /gsql/v1/queries?graph=<graphName>`
 
 This endpoint is used to create a query.
 
@@ -4689,9 +4691,9 @@ Response::
 
 '''
 
-=== delete query
+=== drop query
 
-`DELETE /gsql/v1/queires?query=[q1,q2,...]&graph=[graphName]`
+`DELETE /gsql/v1/queires?query=<q1,q2,...>&graph=<graphName>`
 
 This endpoint is used to drop quries.
 
@@ -4736,7 +4738,7 @@ Response::
 
 === get query content
 
-`GET /gsql/v1/queries/{queryName}?graph=[graphName]`
+`GET /gsql/v1/queries/{queryName}?graph=<graphName>`
 
 This endpoint is to get the content of a query by its name.
 
@@ -4821,7 +4823,7 @@ Response::
 
 '''
 
-=== drop query
+=== drop one query
 
 `DELETE /gsql/v1/queries/{queryName}`
 
@@ -4864,7 +4866,7 @@ Response::
 
 === interpret query
 
-`POST /gsql/v1/interpret?graph=[graphName]`
+`POST /gsql/v1/interpret?graph=<graphName>`
 
 This endpoint is used to intepret query.
 
@@ -4905,7 +4907,7 @@ Response::
 
 === get query info
 
-`GET /gsql/v1/queries/info?graph=[graphName]&query=[optional]&status=[optional,query status]`
+`GET /gsql/v1/queries/info?graph=<graphName>&query=<optional>&status=<optional,query status>`
 
 This endpoint is used to get the query's information.
 
@@ -4954,7 +4956,7 @@ Response::
 
 === get query signature
 
-`GET /gsql/v1/queries/signature?graph=[graphName]&queryName=[queryName]&interpret=[true/false]`
+`GET /gsql/v1/queries/signature?graph=<graphName>&queryName=<queryName>&interpret=<true/false>`
 
 This endpoint is used to get query's signature by its name.
 
@@ -5106,7 +5108,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/meta' 
+curl -H 'Content-Type: text/plain' -X GET 'localhost:8123/gsql/v1/saml/meta' 
 ----
 --
 Response::
@@ -5114,7 +5116,7 @@ Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+<?xml version="1.0"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2024-08-03T08:24:45Z" cacheDuration="PT604800S" entityID="http://127.0.0.1:14240/gsql/v1/saml/meta" ID="ONELOGIN_5296b4b6-3dec-41b3-9f37-531db41aba25"><md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://127.0.0.1:14240/logout"/><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat><md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://127.0.0.1:14240/api/auth/saml/acs" index="1"/></md:SPSSODescriptor><md:Organization><md:OrganizationName xml:lang="en">TigerGraph Inc.</md:OrganizationName><md:OrganizationDisplayName xml:lang="en">TigerGraph Inc.</md:OrganizationDisplayName><md:OrganizationURL xml:lang="en">https://www.tigergraph.com/</md:OrganizationURL></md:Organization><md:ContactPerson contactType="technical"><md:GivenName>TigerGraph Support Team</md:GivenName><md:EmailAddress>support@tigergraph.com</md:EmailAddress></md:ContactPerson><md:ContactPerson contactType="support"><md:GivenName>TigerGraph Support Team</md:GivenName><md:EmailAddress>support@tigergraph.com</md:EmailAddress></md:ContactPerson></md:EntityDescriptor>
 ----
 --
 ====
@@ -5183,7 +5185,7 @@ Response::
 
 === call template query
 
-`POST /gsql/v1/library/{functionName}?graph=[graphName]`
+`POST /gsql/v1/library/{functionName}?graph=<graphName>`
 
 This endpoint is used to call template query.
 
@@ -5228,7 +5230,7 @@ Response::
 
 === get template query info
 
-`GET /gsql/v1/library/{functionName}?isRegularExpression=[true/false]`
+`GET /gsql/v1/library/{functionName}?isRegularExpression=<true/false>`
 
 This endpoint is used to get template query's information.
 
@@ -5302,7 +5304,7 @@ Response::
 
 === set replication seq id
 
-`POST /gsql/v1/internal/replication?newSeqId=[int]`
+`POST /gsql/v1/internal/replication?newSeqId=<SeqId>`
 
 This endpoint is used to set replica seq id.
 
@@ -5345,7 +5347,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/internal/check/query' -d ' {"code":"query text"}'
+curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/internal/check/query' -d ' {"code":""}'
 ----
 --
 Response::
@@ -5362,7 +5364,7 @@ Response::
 
 === check input output policy
 
-`GET /gsql/v1/internal/check/file-policy?path=[filePath]&input=[true/false]`
+`GET /gsql/v1/internal/check/file-policy?path=<filePath>&input=<true/false>`
 
 This endpoint is used to check file input/output policy
 
@@ -5508,7 +5510,7 @@ Response::
 
 === delete multiple tuples
 
-`DELETE /gsql/v1/udt/tuples?tupleName=[tup1,tup2,...]`
+`DELETE /gsql/v1/udt/tuples?tupleName=<tup1,tup2,...>`
 
 This endpoint is used to delte multiple tuples.
 
@@ -5668,7 +5670,7 @@ Response::
 
 === delete mulitple accumulators
 
-`DELETE /gsql/v1/udt/accum?accumName=[all or accum1, accum2, ...]`
+`DELETE /gsql/v1/udt/accum?accumName=<all or accum1, accum2, ...>`
 
 This endpoint is used to delete multiple accumulators.
 
@@ -5738,9 +5740,9 @@ Response::
 
 === download expr files
 
-`GET /gsql/v1/udt/files/{fileName}`  fileName is one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank
+`GET /gsql/v1/udt/files/{fileName}`  
 
-This endpoint is used to download one file by its name.
+This endpoint is used to download one file by its name, {fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
 
 ==== Example
 
@@ -5796,7 +5798,7 @@ Response::
 
 '''
 
-=== upload file
+=== upload one file
 
 `PUT /gsql/v1/udt/files/{fileName}`
 
@@ -6237,7 +6239,7 @@ Response::
 
 === drop JWT tokens
 
-`DELETE /gsql/v1/tokens?clear=[true/false]`
+`DELETE /gsql/v1/tokens?clear=<true/false>`
 
 This endpoint is used to drop specific a list of tokens.
 
@@ -6308,7 +6310,7 @@ Response::
 
 === create secret
 
-`POST /gsql/v1/secrets?userName=[user]&value=[secret content]&alias=[alias]`
+`POST /gsql/v1/secrets?userName=<user>&value=<secret content>&alias=<alias>`
 
 This endpoint is used to create a secret.
 
@@ -6357,7 +6359,7 @@ Response::
 
 === show secrets
 
-`GET /gsql/v1/secrets?userName=[user]`
+`GET /gsql/v1/secrets?userName=<user>`
 
 This endpoint is used to show secrets for the user.
 
@@ -6398,7 +6400,7 @@ Response::
 
 === delete secrets
 
-`DELETE /gsql/v1/secrets?userName=[user]`
+`DELETE /gsql/v1/secrets?userName=<user>`
 
 This endpoint is used to delete the secrets of the user.
 
@@ -6438,7 +6440,7 @@ Response::
 
 === get secret by alias
 
-`GET /gsql/v1/secrets/{alias}?userName=[user]`
+`GET /gsql/v1/secrets/{alias}?userName=<user>`
 
 This endpoint is used to get the secrets by its alias name.
 
@@ -6478,7 +6480,7 @@ Response::
 
 === drop secret by alis
 
-`DELETE /gsql/v1/secrets/{alias}?userName=[user]`
+`DELETE /gsql/v1/secrets/{alias}?userName=<user>`
 
 This endpoint is used to delete the secret of the user by its alias name.
 

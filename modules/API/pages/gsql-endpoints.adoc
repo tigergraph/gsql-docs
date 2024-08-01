@@ -5255,7 +5255,6 @@ Response::
 ====
 ===== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -5390,7 +5389,6 @@ Response::
 ====
 ===== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -5465,7 +5463,6 @@ Response::
 ====
 ===== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -5493,6 +5490,7 @@ Request::
 [source,bash]
 ----
 curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/udt/tuples?gsql=true' -d '{"gsql":"create tuple commands"}'
+or
 curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/udt/tuples' -d '{"tuples":[{"Name":"tuple1","TupleElements":[{"name":"attr1","AttributeType":"int"}]}]}'
 ----
 --
@@ -5537,7 +5535,6 @@ Response::
 ====
 ===== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -5698,7 +5695,6 @@ Response::
 ====
 ===== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -5763,7 +5759,7 @@ Response::
 --
 [source.wrap,console]
 ----			
-{"error":false,"results": {"TokenBank": "TokenBank File Content"}}
+{"error":false,"results": {"TokenBank": "<TokenBank File Content>"}}
 ----
 --
 ====
@@ -5815,7 +5811,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X PUT 'localhost:8123/gsql/v1/udt/files/' -d 'Token Bank file content'
+curl -H 'Content-Type: text/plain' -X PUT 'localhost:8123/gsql/v1/udt/files/' -d '<Token Bank file content>'
 ----
 --
 Response::
@@ -5845,7 +5841,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X PUT 'localhost:8123/gsql/v1/udt/files' -d  '{"files":[{"Name":"ExprUtil","Content":"file content"}]}'
+curl -H 'Content-Type: application/json' -X PUT 'localhost:8123/gsql/v1/udt/files' -d  '{"files":[{"Name":"ExprUtil","Content":"<file content>"}]}'
 ----
 --
 Response::
@@ -5875,7 +5871,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/token-functions/_Concat' 
+curl -X GET 'localhost:8123/gsql/v1/udt/token-functions/_Concat' 
 ----
 --
 Response::
@@ -5905,7 +5901,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/udt/token-functions' 
+curl -X GET 'localhost:8123/gsql/v1/udt/token-functions' 
 ----
 --
 Response::
@@ -5965,7 +5961,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/packages/gds 
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/packages/gds.community 
 ----
 --
 Response::
@@ -5995,7 +5991,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/packages/gds.commumity1 
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/gds.commumity1 
 ----
 --
 Response::
@@ -6025,7 +6021,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:8123/gsql/v1/packages/gds.commumity1 
+curl -X DELETE 'localhost:8123/gsql/v1/packages/gds.commumity1 
 ----
 --
 Response::
@@ -6055,7 +6051,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/function -d 'create function func1' 
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/function -d 'create function gds.community.func1 {content}' 
 ----
 --
 Response::
@@ -6085,7 +6081,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X DELETE 'localhost:8123/gsql/v1/packages/function/func1'
+curl -X DELETE 'localhost:8123/gsql/v1/packages/function/gds.community.func1'
 ----
 --
 Response::
@@ -6115,7 +6111,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/template' -d 'create template query templateQuery1'
+curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/template' -d 'create template query gds.community.templateQuery1 {<content>}'
 ----
 --
 Response::
@@ -6145,7 +6141,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X DELETE 'localhost:8123/gsql/v1/packages/template/templateQuery1'
+curl -X DELETE 'localhost:8123/gsql/v1/packages/template/gds.community.templateQuery1'
 ----
 --
 Response::
@@ -6175,7 +6171,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'localhost:8123/gsql/v1/packages/import/pkg'
+curl -X POST 'localhost:8123/gsql/v1/packages/import/pkg'
 ----
 --
 Response::
@@ -6275,7 +6271,7 @@ Response::
 
 | `clear`
 | no
-| default:false. clear is true means clear out the current block list
+| default:false. clear is true means clear out the current block list.
 |===
 
 '''
@@ -6346,15 +6342,15 @@ Response::
 
 | `userName`
 | no
-| the user the secret created for
+| the user the secret created for. The default user is the logged-in user if not specified.
 
 | `value`
 | no
-| the secret content
+| the secret content. 
 
 | `alias`
 | no
-| the alias of the secret created
+| the alias of the secret created.
 |===
 
 '''
@@ -6395,7 +6391,7 @@ Response::
 
 | `userName`
 | no
-| the user who wants to show the secrets
+| the user who wants to show the secrets. The default user is the logged-in user if not specified.
 |===
 
 '''
@@ -6429,14 +6425,13 @@ Response::
 ====
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
 | `userName`
 | no
-| the user who wants to delete the secrets
+| the user who wants to delete the secrets. The default user is the logged-in user if not specified.
 |===
 
 '''
@@ -6470,14 +6465,13 @@ Response::
 ====
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
 | `userName`
 | no
-| the user who wants to get the secret
+| the user who wants to get the secret. The default user is the logged-in user if not specified.
 |===
 
 '''
@@ -6511,14 +6505,13 @@ Response::
 ====
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
 | `userName`
 | no
-| the user who wants to delete the secret
+| the user who wants to delete the secret. The default user is the logged-in user if not specified.
 |===
 
 '''

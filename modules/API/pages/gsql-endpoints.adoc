@@ -4184,7 +4184,7 @@ Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+{"error":false,"message":"","results":{"ssoBinding":"GET","SAMLRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
 ----
 --
 ====
@@ -4206,7 +4206,7 @@ Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/meta' 
+curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/oidc/authnrequest' 
 ----
 --
 Response::
@@ -4306,7 +4306,7 @@ Response::
 
 | `clear`
 | no
-| default:false. clear is true means clear out the current block list.
+| true means clear out the current block list, default value is false.
 |===
 
 '''

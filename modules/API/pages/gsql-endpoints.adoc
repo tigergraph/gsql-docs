@@ -14,6 +14,17 @@ This page describes the REST API endpoints accessible on a TigerGraph server.
 
 This endpoint is used to show all the local vertices on a graph or show all the global vertices
 
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph for which vertices should be displayed. If not provided, it indicates that all global vertices should be shown.
+|===
+
 ==== Example
 
 [,tabs]
@@ -36,6 +47,13 @@ Sample Response::
 --
 ====
 
+'''
+=== show a vertex
+
+`GET /gsql/v1/schema/vertices/{vertexName}`
+
+This endpoint is used to show a local/global vertex.
+
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -44,15 +62,8 @@ Sample Response::
 
 | `graph`
 | no
-| Specifies the graph for which vertices should be displayed. If not provided, it indicates that all global vertices should be shown.
+| Specifies the graph for which the vertex should be displayed. If not provided, it indicates that the global vertex should be shown.
 |===
-
-'''
-=== show a vertex
-
-`GET /gsql/v1/schema/vertices/{vertexName}`
-
-This endpoint is used to show a local/global vertex.
 
 ==== Example
 
@@ -76,24 +87,25 @@ Sample Response::
 --
 ====
 
+'''
+
+=== create vertex using gsql command
+
+`POST /gsql/v1/schema/vertices`
+
+This endpoint is used to create global vertices using json contains gsql command
+
 ==== Parameters:
+
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
-| `graph`
-| no
-| Specifies the graph for which the vertex should be displayed. If not provided, it indicates that the global vertex should be shown.
+| `gsql`
+| yes
+| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
 |===
-
-'''
-
-=== create vertex usgin gsql command
-
-`POST /gsql/v1/schema/vertices`
-
-This endpoint is used to create global vertices using gsql command
 
 ==== Example
 
@@ -116,17 +128,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
-|===
 
 
 '''
@@ -136,6 +137,22 @@ Sample Response::
 `POST /gsql/v1/schema/vertices`
 
 This endpoint is used to add existing global vertices to a local graph
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| Indicates whether to use the GSQL command for adding vertices. Must be set to false. The request body should be in JSON format.
+
+| `graph`
+| yes
+| Specifies the graph to which the global vertices should be added.
+|===
 
 ==== Example
 
@@ -159,6 +176,13 @@ Sample Response::
 --
 ====
 
+'''
+=== create vertices (create vertices in global level)
+
+`POST /gsql/v1/schema/vertices`
+
+This api is used to create global vertices using json
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -168,19 +192,8 @@ Sample Response::
 
 | `gsql`
 | yes
-| Indicates whether to use the GSQL command for adding vertices. Must be set to false. The request body should be in JSON format.
-
-| `graph`
-| yes
-| Specifies the graph to which the global vertices should be added.
+| Indicates whether to use the GSQL command for creating vertices. Must be set to false. The request body should be in JSON format.
 |===
-
-'''
-=== create vertices (create vertices in global level)
-
-`POST /gsql/v1/schema/vertices`
-
-This api is used to create global vertices using json
 
 ==== Example
 
@@ -247,18 +260,6 @@ Sample Response::
 --
 ====
 
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating vertices. Must be set to false. The request body should be in JSON format.
-|===
-
 '''
 
 === drop vertices
@@ -266,6 +267,22 @@ Sample Response::
 `DELETE /gsql/v1/schema/vertices`
 
 This endpoint is used to drop local vertices on specific graph or drop global vertices.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `vertexName`
+| yes
+| Specifies the vertex types to be deleted. If there are multiple vertex types, separate them with commas. Use "all" to delete all vertices.
+
+| `graph`
+| no
+| Specifies the graph from which vertices should be deleted. If not provided, it indicates that global vertices should be dropped.
+|===
 
 ==== Example
 
@@ -288,21 +305,7 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `vertexName`
-| yes
-| Specifies the vertex types to be deleted. If there are multiple vertex types, separate them with commas. Use "all" to delete all vertices.
-
-| `graph`
-| no
-| Specifies the graph from which vertices should be deleted. If not provided, it indicates that global vertices should be dropped.
-|===
 
 '''
 
@@ -311,6 +314,18 @@ Sample Response::
 `DELETE /gsql/v1/schema/vertices/{vertexName}`
 
 This endpoint is used to drop a local/global vertex.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph from which the vertex should be deleted. If not provided, it indicates that a global vertex should be dropped.
+|===
 
 ==== Example
 
@@ -333,17 +348,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| Specifies the graph from which the vertex should be deleted. If not provided, it indicates that a global vertex should be dropped.
-|===
 
 
 '''
@@ -353,6 +357,17 @@ Sample Response::
 `PUT /gsql/v1/schema/vertices/{vertexName}`
 
 This endpoint is used to update a vertex attributes.
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph in which the vertex attributes should be updated. If not provided, it indicates that the attributes of a global vertex should be updated.
+|===
 
 ==== Example
 
@@ -375,16 +390,7 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
 
-| `graph`
-| no
-| Specifies the graph in which the vertex attributes should be updated. If not provided, it indicates that the attributes of a global vertex should be updated.
-|===
 
 '''
 
@@ -392,6 +398,18 @@ Sample Response::
 `GET /gsql/v1/schema/indexes`
 
 This endpoint is used to display all indexes within a specific graph or across all global vertices.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph for which to display indexes. If not provided, all indexes on global vertices will be shown.
+|===
 
 ==== Example
 [,tabs]
@@ -413,6 +431,14 @@ Sample Response::
 ----
 --
 ====
+
+
+'''
+=== show an index
+`GET /gsql/v1/schema/indexes/{indexName}`
+
+This endpoint endpoint is used to retrieve information about a specific index.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -422,14 +448,8 @@ Sample Response::
 
 | `graph`
 | no
-| Specifies the graph for which to display indexes. If not provided, all indexes on global vertices will be shown.
+| Specifies the graph in which the index is located.
 |===
-
-'''
-=== show an index
-`GET /gsql/v1/schema/indexes/{indexName}`
-
-This endpoint endpoint is used to retrieve information about a specific index.
 
 ==== Example
 [,tabs]
@@ -451,6 +471,14 @@ Sample Response::
 ----
 --
 ====
+
+
+'''
+=== create indexes
+`POST /gsql/v1/schema/indexes`
+
+This endpoint is used to create indexes.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -460,14 +488,8 @@ Sample Response::
 
 | `graph`
 | no
-| Specifies the graph in which the index is located.
+| Specifies the graph where the indexes should be created. If not provided, the indexes will be created in the default graph.
 |===
-
-'''
-=== create indexes
-`POST /gsql/v1/schema/indexes`
-
-This endpoint is used to create indexes.
 
 ==== Example:
 [,tabs]
@@ -489,6 +511,14 @@ Sample Response::
 ----
 --
 ====
+
+
+'''
+=== drop an index
+`DELETE /gsql/v1/schema/indexes/{indexName}`
+
+This endpoint is used to drop an index.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -496,16 +526,14 @@ Sample Response::
 |===
 | Name | Required | Description
 
+| `vertex`
+| yes
+| Specifies the vertex from which to drop the index
+
 | `graph`
 | no
-| Specifies the graph where the indexes should be created. If not provided, the indexes will be created in the default graph.
+| Specifies the graph from which the index should be dropped. If not specified, the index will be dropped from the global vertex.
 |===
-
-'''
-=== drop an index
-`DELETE /gsql/v1/schema/indexes/{indexName}`
-
-This endpoint is used to drop an index.
 
 ==== Example:
 [,tabs]
@@ -527,6 +555,14 @@ Sample Response::
 ----
 --
 ====
+
+
+'''
+=== drop indexes
+`DELETE /gsql/v1/schema/indexes`
+
+This endpoint is used to drop indexes.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -536,18 +572,16 @@ Sample Response::
 
 | `vertex`
 | yes
-| Specifies the vertex from which to drop the index
+| Specifies the vertex on which to drop the indexes.
+
+| `indexName`
+| yes
+| Specifies the indexes to drop (separated by commas)
 
 | `graph`
 | no
-| Specifies the graph from which the index should be dropped. If not specified, the index will be dropped from the global vertex.
+| Specifies the graph from which the indexes should be dropped.
 |===
-
-'''
-=== drop indexes
-`DELETE /gsql/v1/schema/indexes`
-
-This endpoint is used to drop indexes.
 
 ==== Example:
 [,tabs]
@@ -569,25 +603,7 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `vertex`
-| yes
-| Specifies the vertex on which to drop the indexes.
-
-| `indexName`
-| yes
-| Specifies the indexes to drop (separated by commas)
-
-| `graph`
-| no
-| Specifies the graph from which the indexes should be dropped.
-|===
 
 '''
 === get all edges
@@ -595,6 +611,18 @@ Sample Response::
 `GET /gsql/v1/schema/edges`
 
 This endpoint is used to retrieve all local edges within a specific graph or retrieve all global edges.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Specifies the graph from which to retrieve the edges.
+|===
 
 ==== Example:
 [,tabs]
@@ -616,6 +644,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== retrieve a specific edge type info
+
+`GET /gsql/v1/schema/edges/{edgeName}`
+
+This endpoint is used to retrieve information about a specific edge type within a local graph, or retrieve information about a specific global edge type.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -624,16 +660,9 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-| yes
-| Specifies the graph from which to retrieve the edges.
+| no
+| Specifies the graph in which the edge type is located. If not provided, it retrieves the global edge type information.
 |===
-
-'''
-=== retrieve a specific edge type info
-
-`GET /gsql/v1/schema/edges/{edgeName}`
-
-This endpoint is used to retrieve information about a specific edge type within a local graph, or retrieve information about a specific global edge type.
 
 ==== Example:
 [,tabs]
@@ -655,17 +684,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| Specifies the graph in which the edge type is located. If not provided, it retrieves the global edge type information.
-|===
 
 
 '''
@@ -675,6 +693,18 @@ Sample Response::
 `POST /gsql/v1/schema/edges`
 
 This endpoint is used to create global edges using gsql command statement.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| Indicates whether to use the GSQL command for creating edges. Must be set to true. The request body should contain the GSQL command within the JSON object.
+|===
 
 ==== Example:
 [,tabs]
@@ -697,6 +727,15 @@ Sample Response::
 --
 ====
 
+
+'''
+
+=== add global edges to graph using json format
+
+`POST /gsql/v1/schema/edges`
+
+This endpoint is used to add global edges to graph using json format.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -706,17 +745,12 @@ Sample Response::
 
 | `gsql`
 | yes
-| Indicates whether to use the GSQL command for creating edges. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
+
+| `graph`
+| yes
+| Specifies the graph to which the global edges will be added.
 |===
-
-
-'''
-
-=== add global edges to graph using json format
-
-`POST /gsql/v1/schema/edges`
-
-This endpoint is used to add global edges to graph using json format.
 
 ==== Example:
 [,tabs]
@@ -739,6 +773,13 @@ Sample Response::
 --
 ====
 
+'''
+=== create global edges using json format
+
+`POST /gsql/v1/schema/edges`
+
+This endpoint is used to create global edges using json format.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -749,18 +790,7 @@ Sample Response::
 | `gsql`
 | yes
 | Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
-
-| `graph`
-| yes
-| Specifies the graph to which the global edges will be added.
 |===
-
-'''
-=== create global edges using json format
-
-`POST /gsql/v1/schema/edges`
-
-This endpoint is used to create global edges using json format.
 
 ==== Example:
 [,tabs]
@@ -782,17 +812,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
-|===
 
 '''
 
@@ -801,6 +820,23 @@ Sample Response::
 `DELETE /gsql/v1/schema/edges`
 
 This endpoint is used to drop edges from a graph or drop global edges.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `edgeName`
+| yes
+| Specifies the edge types to be deleted. If there are multiple edge types, separate them with a comma. Use 'all' to drop all edges.
+|
+
+| `graph`
+| yes
+| Specifies the graph from which the edges will be deleted. If not provided, it means the operation will drop global edges.
+|===
 
 ==== Example:
 [,tabs]
@@ -822,22 +858,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `edgeName`
-| yes
-| Specifies the edge types to be deleted. If there are multiple edge types, separate them with a comma. Use 'all' to drop all edges.
-|
-
-| `graph`
-| yes
-| Specifies the graph from which the edges will be deleted. If not provided, it means the operation will drop global edges.
-|===
 
 '''
 === drop an edge
@@ -845,6 +865,18 @@ Sample Response::
 `DELETE /gsql/v1/schema/edges/{edgeName}`
 
 This endpoint is used to drop a local/global edge.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Specifies the graph from which the edge will be deleted. If not provided, it means the operation will drop a global edge.
+|===
 
 ==== Example:
 [,tabs]
@@ -867,6 +899,13 @@ Sample Response::
 --
 ====
 
+'''
+=== update attribute in edge
+
+`PUT /gsql/v1/schema/edges/{edgeName}`
+
+This endpoint is used to update attributes in edge.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -876,16 +915,8 @@ Sample Response::
 
 | `graph`
 | yes
-| Specifies the graph from which the edge will be deleted. If not provided, it means the operation will drop a global edge.
+| Specifies the graph in which the edge's attributes will be updated. If not provided, it means the operation will update attributes on the global level.
 |===
-
-
-'''
-=== update attribute in edge
-
-`PUT /gsql/v1/schema/edges/{edgeName}`
-
-This endpoint is used to update attributes in edge.
 
 ==== Example:
 [,tabs]
@@ -907,17 +938,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| Specifies the graph in which the edge's attributes will be updated. If not provided, it means the operation will update attributes on the global level.
-|===
 
 
 '''
@@ -926,6 +946,10 @@ Sample Response::
 `GET /gsql/v1/schema/graphs`
 
 This endpoint is used to show all graphs info only containing names of vertices and edges.
+
+==== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -947,9 +971,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-None
 
 '''
 === show one graph detailed info with given graph name
@@ -958,6 +979,18 @@ None
 `GET /gsql/v1/schema/graphs`
 
 This endpoint is used to show one graph detailed info with given graph name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Specifies for which graph the schema details to be shown.
+|===
 
 ==== Example:
 [,tabs]
@@ -981,6 +1014,15 @@ Sample Response::
 ----
 --
 ====
+
+```
+
+=== create one graph using gsql command
+
+`POST /gsql/v1/schema/graphs?gsql=true`
+
+This endpoint is used to create one graph using gsql command.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -988,16 +1030,10 @@ Sample Response::
 |===
 | Name | Required | Description
 
-| `graph`
+| `gsql`
 | yes
-| Specifies for which graph the schema details to be shown.
+| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
 |===
-
-=== create one graph using gsql command
-
-`POST /gsql/v1/schema/graphs?gsql=true`
-
-This endpoint is used to create one graph using gsql command.
 
 ==== Example:
 [,tabs]
@@ -1019,6 +1055,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== create one graph using JSON format
+
+`POST /gsql/v1/schema/graphs`
+
+This endpoint is used to create one graph using JSON format.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1028,16 +1073,12 @@ Sample Response::
 
 | `gsql`
 | yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| Indicates whether to use a GSQL command for graph creation. Set to false to use JSON format.
+
+| `graphName`
+| yes
+| Specifies the name of the graph to be created.
 |===
-
-'''
-
-=== create one graph using JSON format
-
-`POST /gsql/v1/schema/graphs`
-
-This endpoint is used to create one graph using JSON format.
 
 ==== Example:
 [,tabs]
@@ -1060,21 +1101,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use a GSQL command for graph creation. Set to false to use JSON format.
-
-| `graphName`
-| yes
-| Specifies the name of the graph to be created.
-|===
 
 '''
 
@@ -1083,6 +1109,18 @@ Sample Response::
 `DELETE /gsql/v1/schema/graphs/{graphName}`
 
 This endpoint is used to drop one graph.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `cascade`
+| no
+|  If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
+|===
 
 ==== Example:
 [,tabs]
@@ -1104,17 +1142,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `cascade`
-| no
-|  If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
-|===
 
 '''
 
@@ -1123,6 +1150,18 @@ Sample Response::
 `DELETE /gsql/v1/schema/graphs/`
 
 This endpoint is used to drop graphs with given names.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graphNames`
+| yes
+| Specifies the names of the graphs to be dropped, separated by commas. Use 'all' to drop all graphs.
+|===
 
 ==== Example:
 [,tabs]
@@ -1144,17 +1183,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graphNames`
-| yes
-| Specifies the names of the graphs to be dropped, separated by commas. Use 'all' to drop all graphs.
-|===
 
 '''
 === drop local/global scheme change jobs
@@ -1162,6 +1190,22 @@ Sample Response::
 `DELETE /gsql/v1/schema/jobs/`
 
 This endpoint is used to drop local/global scheme change jobs.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobName`
+| yes
+| Specifies the schema jobs to drop, separated by commas.
+
+| `graph`
+| no
+| Specifies the graph whose jobs are to be dropped. If not provided, means drop the global schema change jobs.
+|===
 
 ==== Example:
 [,tabs]
@@ -1183,21 +1227,7 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobName`
-| yes
-| Specifies the schema jobs to drop, separated by commas.
-
-| `graph`
-| no
-| Specifies the graph whose jobs are to be dropped. If not provided, means drop the global schema change jobs.
-|===
 
 '''
 === create local/global scheme change job using gsql command
@@ -1205,6 +1235,22 @@ Sample Response::
 `POST /gsql/v1/schema/jobs/{jobName}`
 
 This endpoint is used to create local/global scheme change job using gsql command.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| yes
+| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+
+| `type`
+| yes
+| Specifies the type of schema change job to create. Use `global` for creating a global schema change job and `local` for creating a local schema change job.
+|===
 
 ==== Example:
 [,tabs]
@@ -1226,6 +1272,15 @@ Sample Response::
 ----
 --
 ====
+
+
+'''
+=== create global scheme change job using json
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to create global scheme change job using json.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1235,19 +1290,12 @@ Sample Response::
 
 | `gsql`
 | yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| Indicates whether to use the GSQL command for creation. Must be set to false. The request body should use the JSON object.
 
 | `type`
 | yes
-| Specifies the type of schema change job to create. Use `global` for creating a global schema change job and `local` for creating a local schema change job.
+| Specifies the type of schema change job to create. Use `global` means creating a global schema change job.
 |===
-
-'''
-=== create global scheme change job using json
-
-`POST /gsql/v1/schema/jobs/{jobName}`
-
-This endpoint is used to create global scheme change job using json.
 
 ==== Example:
 [,tabs]
@@ -1269,21 +1317,7 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creation. Must be set to false. The request body should use the JSON object.
-
-| `type`
-| yes
-| Specifies the type of schema change job to create. Use `global` means creating a global schema change job.
-|===
 
 '''
 === create local scheme change job using json
@@ -1291,6 +1325,22 @@ Sample Response::
 `POST /gsql/v1/schema/jobs/{jobName}`
 
 This endpoint is used to create local scheme change job using json.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| The graph for which the schema change job is to be created.
+
+| `type`
+| yes
+| Specifies the type of schema change job to create. Use `local` means creating a local schema change job.
+|===
 
 ==== Example:
 [,tabs]
@@ -1429,6 +1479,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== get a specific local/global schema change job
+
+`GET /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to retrieve a specific local/global schema change job.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1437,20 +1495,13 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-| yes
-| The graph for which the schema change job is to be created.
+|  no
+| the graph whose schema change job to show
 
-| `type`
+| `json`
 | yes
-| Specifies the type of schema change job to create. Use `local` means creating a local schema change job.
+| Set to `true` to receive the response in JSON format; otherwise, the response will be in text format.
 |===
-
-'''
-=== get a specific local/global schema change job
-
-`GET /gsql/v1/schema/jobs/{jobName}`
-
-This endpoint is used to retrieve a specific local/global schema change job.
 
 ==== Example:
 [,tabs]
@@ -1472,28 +1523,18 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-|  no
-| the graph whose schema change job to show
-
-| `json`
-| yes
-| Set to `true` to receive the response in JSON format; otherwise, the response will be in text format.
-|===
 
 '''
 === run global schema change job directly
 
 `POST /gsql/v1/schema/change`
 
-This endpoint is used to run global schema change job directly .
+This endpoint is used to run global schema change job directly.
+
+==== Parameters:
+
+None
+
 
 ==== Example:
 [,tabs]
@@ -1518,9 +1559,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-None
 
 '''
 === run the schema change job directly
@@ -1528,6 +1566,18 @@ None
 `POST /gsql/v1/schema/change`
 
 This endpoint is used to run the schema change job directly.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| which graph to run the local schema change job on, If not provided, means running global schema change job.
+|===
 
 ==== Example:
 [,tabs]
@@ -1670,6 +1720,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== run an existing schema change job
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to run an existing schema change job.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1678,16 +1736,9 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-| yes
-| which graph to run the local schema change job on, If not provided, means running global schema change job.
+| no
+| which graph to run the schema change job on. If not provided, means run the global schema change job.
 |===
-
-'''
-=== run an existing schema change job
-
-`POST /gsql/v1/schema/jobs/{jobName}`
-
-This endpoint is used to run an existing schema change job.
 
 ==== Example:
 [,tabs]
@@ -1709,6 +1760,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== get schema change jobs
+
+`GET /gsql/v1/schema/jobs`
+
+This endpoint is used to get all local/global schema change jobs.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1717,16 +1776,13 @@ Sample Response::
 | Name | Required | Description
 
 | `graph`
-| no
-| which graph to run the schema change job on. If not provided, means run the global schema change job.
+| yes
+| The graph whose schema change job to show. If not provided, means to get all the global schema change job.
+
+| `json`
+| yes
+| Set to `true` means response in JSON format; otherwise, the response will be in text format.
 |===
-
-'''
-=== get schema change jobs
-
-`GET /gsql/v1/schema/jobs`
-
-This endpoint is used to get all local/global schema change jobs.
 
 ==== Example:
 [,tabs]
@@ -1748,21 +1804,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| The graph whose schema change job to show. If not provided, means to get all the global schema change job.
-
-| `json`
-| yes
-| Set to `true` means response in JSON format; otherwise, the response will be in text format.
-|===
 
 '''
 
@@ -1773,6 +1814,18 @@ Sample Response::
 `GET /gsql/v1/loading-jobs?graph=<graphName>`
 
 This endpoint is used to get all loading job names in a graph.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the loading job names of which graph
+|===
 
 ==== Example
 
@@ -1795,17 +1848,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| the loading job names of which graph
-|===
 
 '''
 
@@ -2223,6 +2265,10 @@ Sample Response::
 
 This endpoint is used to get a data source.
 
+===== Parameters:
+
+None
+
 ==== Example:
 [,tabs]
 ====
@@ -2243,9 +2289,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 
@@ -2254,6 +2297,10 @@ None
 `GET /gsql/v1/data-sources`
 
 This endpoint is used to get all data sources.
+
+===== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -2275,9 +2322,7 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
 
-None
 
 '''
 === update a data source
@@ -2285,6 +2330,18 @@ None
 `PUT /gsql/v1/data-sources`
 
 This endpoint is used to update a data source .
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to update
+|===
 
 ==== Example:
 [,tabs]
@@ -2306,6 +2363,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== create data source
+
+`POST /gsql/v1/data-sources`
+
+This endpoint is used to create a data source.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2315,15 +2380,8 @@ Sample Response::
 
 | `graph`
 | no
-| the graph whose data source to update
+| the graph whose data source to create
 |===
-
-'''
-=== create data source
-
-`POST /gsql/v1/data-sources`
-
-This endpoint is used to create a data source.
 
 ==== Example:
 [,tabs]
@@ -2345,6 +2403,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== drop one data source
+
+`DELETE /gsql/v1/data-sources/{dsName}`
+
+This endpoint is used to drop one data source.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2354,15 +2420,8 @@ Sample Response::
 
 | `graph`
 | no
-| the graph whose data source to create
+| the graph whose data source to delete.
 |===
-
-'''
-=== drop one data source
-
-`DELETE /gsql/v1/data-sources/{dsName}`
-
-This endpoint is used to drop one data source.
 
 ==== Example:
 [,tabs]
@@ -2384,17 +2443,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| the graph whose data source to delete.
-|===
 
 '''
 === grant one data source
@@ -2402,6 +2450,10 @@ Sample Response::
 `POST /gsql/v1/data-sources/grant`
 
 This endpoint is used to grant one data source.
+
+===== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -2423,9 +2475,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 === revoke datasource
@@ -2433,6 +2482,18 @@ None
 `POST /gsql/v1/data-sources/revoke`
 
 This endpoint is used to revoke data source.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to revoke
+|===
 
 ==== Example:
 [,tabs]
@@ -2454,6 +2515,14 @@ Sample Response::
 ----
 --
 ====
+
+'''
+=== drop all data source
+
+`DELETE /gsql/v1/data-sources/dropAll`
+
+This endpoint is used to drop all data source.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2463,15 +2532,9 @@ Sample Response::
 
 | `graph`
 | no
-| the graph whose data source to revoke
+| If given, will delete all the data sources used by this graph. otherwise will delete all the global data sources.
 |===
 
-'''
-=== drop all data source
-
-`DELETE /gsql/v1/data-sources/dropAll`
-
-This endpoint is used to drop all data source.
 
 ==== Example:
 [,tabs]
@@ -2493,17 +2556,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| If given, will delete all the data sources used by this graph. otherwise will delete all the global data sources.
-|===
 
 '''
 === get the sample data of S3 file.uris or local files
@@ -2511,6 +2563,10 @@ Sample Response::
 `POST /gsql/v1/sample-data`
 
 This endpoint is used to get the sample data of S3 file.uris or local files.
+
+===== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -2628,9 +2684,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 === get all buckets of given S3 data source
@@ -2638,6 +2691,10 @@ None
 `GET /gsql/v1/list-buckets/{s3Name}`
 
 This endpoint is used to get all buckets of given S3 data source.
+
+===== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -2659,9 +2716,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 === get all files and directories under given S3 bucket path
@@ -2669,6 +2723,18 @@ None
 `GET /gsql/v1/list-files/{s3Name}`
 
 This endpoint is used to get all files and directories under given S3 bucket path.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| Uri of the data source. If not list files under `\`
+|===
 
 ==== Example:
 [,tabs]
@@ -2690,17 +2756,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| no
-| Uri of the data source. If not list files under `\`
-|===
 
 '''
 
@@ -2712,30 +2767,6 @@ Sample Response::
 
 This api is used for installing queries
 
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=g1&queries=q1,q2&flag=-single"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{
-"requestId": ": "121212121331",
-"message": "Successfully submitted request",
-"startTime":  "2024-07-07T23:17:06.831474Z"
-}
-----
---
-====
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2761,6 +2792,31 @@ Sample Response::
   `-cost`: Present results contains performance consumption.
   `-single` and `-legacy` cannot be used together. The other options can be combined.
 |===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=g1&queries=q1,q2&flag=-single"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+"requestId": ": "121212121331",
+"message": "Successfully submitted request",
+"startTime":  "2024-07-07T23:17:06.831474Z"
+}
+----
+--
+====
 
 '''
 
@@ -3595,6 +3651,18 @@ Sample Response::
 
 This endpoint is used to backup database in GLE side.
 
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| yes
+| the backup output path.
+|===
+
 ==== Example:
 [,tabs]
 ====
@@ -3615,17 +3683,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| yes
-| the backup output path.
-|===
 
 '''
 === restore
@@ -3634,26 +3691,6 @@ Sample Response::
 
 This endpoint is used to restore database in GLE side.
 
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"The restore request finished successfully."}
-----
---
-====
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3678,6 +3715,27 @@ Sample Response::
 | `true`, will retain users and permissions when restoring from a backup, ignoring the users in the backup. otherwise use the user in backup data.
 |===
 
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The restore request finished successfully."}
+----
+--
+====
+
 '''
 
 === recover gdict catalog
@@ -3685,6 +3743,10 @@ Sample Response::
 `POST /gsql/v1/schema/recover`
 
 This endpoint is used to recover catalog.
+
+==== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -3706,9 +3768,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-None
 
 '''
 === validate graph schema
@@ -3716,6 +3775,10 @@ None
 `POST /gsql/v1/schema/check`
 
 This endpoint is used to validate graph schema.
+
+==== Parameters:
+
+None
 
 ==== Example:
 [,tabs]
@@ -3737,9 +3800,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-None
 
 '''
 
@@ -3786,6 +3846,18 @@ Sample Response::
 
 This endpoint used for get the gsql version infomation.
 
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `verbose`
+| no
+| `bool` type, `true` will print detail info.
+|===
+
 ==== Example:
 
 [,tabs]
@@ -3811,17 +3883,6 @@ This product is protected by U.S. and international copyright and intellectual p
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `verbose`
-| no
-| `bool` type, `true` will print detail info.
-|===
 
 '''
 
@@ -4058,6 +4119,10 @@ Sample Response::
 
 This api is used for user login, mainly for GUI use.
 
+===== Parameters:
+
+None
+
 ==== Example:
 [,tabs]
 ====
@@ -4155,9 +4220,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 

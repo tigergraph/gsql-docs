@@ -535,9 +535,7 @@ If a query is saved as a draft before it reaches valid status, any queries that 
 
 [NOTE]
 ====
-If a user creates a query, this user should become the owner of this query automatically. That means, this user can read, update, drop, install and execute this query.
-
-At the same time, this user can grant the query privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity (a user or a role), the previous owner should lose `OWNERSHIP` privilege on this query.
+If a user creates a query, this user should become the owner of this query automatically.
 
 For the detail description, please refer to xref:xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc
 ====

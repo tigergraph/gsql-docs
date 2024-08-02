@@ -1,25 +1,7 @@
 = Interactive Mode With The GSQL Prompt
 
-This article details how to use interactive mode with the GSQL prompt.
-Before you are able to use the GSQL prompt, you have to enter the GSQL shell.
-
-[NOTE]
-====
-You need to have TigerGraph installed on your computer in order to use the GSQL shell.
-For more information about using TigerGraph on your computer, see xref:tigergraph-server:getting-started:index.adoc[Getting Started]
-====
-
-== Entering the GSQL Shell
-
-To enter the GSQL shell, type `gsql` into the bash terminal as the TigerGraph Linux user.
-
-[source, console]
-----
-$ gsql
-----
-
-== Multi-line Commands
-
+Please see xref:tigergraph-server:gsql-shell:index.adoc[Interactive Mode With GSQL Prompt]
+for a concise explanation on how to use the GSQL prompt.
 
 
 

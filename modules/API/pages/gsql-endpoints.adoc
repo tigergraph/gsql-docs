@@ -5800,7 +5800,7 @@ Sample Response::
 
 === get histogram statistics
 
-`GET /gsql/v1/stats/cardinality`
+`GET /gsql/v1/stats/histogram`
 
 This endpoint is used to fetch histogram statistics.
 

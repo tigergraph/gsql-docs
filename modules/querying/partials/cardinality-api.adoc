@@ -1,10 +1,12 @@
 [#_compute_cardinality_statistics]
 === Compute cardinality statistics
 
-`POST :14240/gsqlserver/gsql/stats/card`
+`POST :14240/gsql/v1/stats/cardinality`
 
 This endpoint computes the cardinality statistics for the vertex and edge types specified in the request.
 The cardinality statistics describe the number of vertices of a specified type, and the number of edges of a specified type between a specified pair of vertex types.
+
+The following header is also required: `-H 'Content-Type: application/json'`
 
 ==== Parameters
 
@@ -45,19 +47,23 @@ The following request computes cardinality for vertex type `Person` in the graph
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&vertex=Person"
 ----
 
 The following request computes cardinality for edge type `LIKES` from `Person` to `Post` in the graph `ldbc_snb`:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Post"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb&edge=LIKES&from=Person&to=Post"
 ----
 
 === Retrieve cardinality statistics
 
-`GET :14240/gsqlserver/gsql/stats/card`
+`GET :14240/gsql/v1/stats/cardinality`
 
 This endpoint retrieves the cardinality statistics of a graph.
 
@@ -79,12 +85,14 @@ The following request retrieves the cardinality data for graph `ldbc_snb`:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X GET "http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb"
 ----
 
 === Delete cardinality statistics
 
-`DELETE :14240/gsqlserver/gsql/stats/card`
+`DELETE :14240/gsql/v1/stats/cardinality`
 
 This endpoint deletes the cardinality statistics of a graph.
 
@@ -106,5 +114,7 @@ The following request deletes the cardinality data for graph `ldbc_snb`:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X DELETE "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X DELETE "http://localhost:14240/gsql/v1/stats/cardinality?graph=ldbc_snb"
 ----

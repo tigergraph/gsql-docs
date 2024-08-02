@@ -1816,7 +1816,7 @@ Sample Response::
 
 This endpoint is used to get all loading job names in a graph.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -1860,7 +1860,7 @@ Sample Response::
 
 This endpoint is used to create a new loading job/update an existing loading job.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -1902,7 +1902,7 @@ Sample Response::
 
 This endpoint is used to get a specific loading job's information.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -1952,7 +1952,7 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 
 This endpoint is used to run a loading job.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -1999,7 +1999,7 @@ Sample Response::
 
 This endpoint is used to drop a loading job by name.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2041,7 +2041,7 @@ Sample Response::
 
 This endpoint is used to abort mutilple running loading jobs.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2093,7 +2093,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 This endpoint is used to abort a one loading job by job Id.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2146,7 +2146,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 This endpoint is used to resume a paused loading job by job Id.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2188,7 +2188,7 @@ Sample Response::
 
 This endpoint is used to get multiple loading jobs status.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2230,7 +2230,7 @@ Sample Response::
 
 This endpoint is used to get a loading job's status by job Id.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2275,7 +2275,7 @@ Sample Response::
 
 This endpoint is used to get a data source.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -2308,7 +2308,7 @@ Sample Response::
 
 This endpoint is used to get all data sources.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -2341,7 +2341,7 @@ Sample Response::
 
 This endpoint is used to update a data source .
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2381,7 +2381,7 @@ Sample Response::
 
 This endpoint is used to create a data source.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2421,7 +2421,7 @@ Sample Response::
 
 This endpoint is used to drop one data source.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2461,7 +2461,7 @@ Sample Response::
 
 This endpoint is used to grant one data source.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -2493,7 +2493,7 @@ Sample Response::
 
 This endpoint is used to revoke data source.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2533,7 +2533,7 @@ Sample Response::
 
 This endpoint is used to drop all data source.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2574,7 +2574,7 @@ Sample Response::
 
 This endpoint is used to get the sample data of S3 file.uris or local files.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -2702,7 +2702,7 @@ Sample Response::
 
 This endpoint is used to get all buckets of given S3 data source.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -2734,7 +2734,7 @@ Sample Response::
 
 This endpoint is used to get all files and directories under given S3 bucket path.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2777,7 +2777,7 @@ Sample Response::
 
 This api is used for installing queries
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2861,9 +2861,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-None
 
 '''
 
@@ -2873,7 +2870,7 @@ None
 
 This endpoint is used to get all query names of a graph.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2915,7 +2912,7 @@ Sample Response::
 
 This endpoint is used to create a query.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2957,7 +2954,7 @@ Sample Response::
 
 This endpoint is used to drop quries.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3003,7 +3000,7 @@ Sample Response::
 
 This endpoint is to get the content of a query by its name.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3049,7 +3046,7 @@ Sample Response::
 
 The endpoint is used to run a query by its name.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3092,7 +3089,7 @@ Sample Response::
 
 This endpoint is used to drop a query by its name.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3134,7 +3131,7 @@ Sample Response::
 
 This endpoint is used to intepret query.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3176,7 +3173,7 @@ Sample Response::
 
 This endpoint is used to get the query's information.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3226,7 +3223,7 @@ Sample Response::
 
 This endpoint is used to get query's signature by its name.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3579,7 +3576,7 @@ Sample Response::
 
 This endpoint is used to call template query.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3625,7 +3622,7 @@ Sample Response::
 
 This endpoint is used to get template query's information.
 
-===== Parameters:
+==== Parameters:
 
 [%autowidth]
 |===
@@ -3673,7 +3670,7 @@ Sample Response::
 
 This endpoint is used to backup database in GLE side.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3713,7 +3710,7 @@ Sample Response::
 
 This endpoint is used to restore database in GLE side.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -3868,7 +3865,7 @@ Sample Response::
 
 This endpoint used for get the gsql version infomation.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -4094,7 +4091,7 @@ Sample Response::
 
 This endpoint is used to check file input/output policy
 
-===== Parameters:
+==== Parameters:
 
 [%autowidth]
 |===
@@ -4142,7 +4139,7 @@ Sample Response::
 
 This api is used for user login, mainly for GUI use.
 
-===== Parameters:
+==== Parameters:
 
 None
 
@@ -4660,6 +4657,18 @@ Sample Response::
 
 This endpoint is used to retrieve a group by id using scim format or gsql format.
 
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
+
 ==== Example:
 [,tabs]
 ====
@@ -4680,17 +4689,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
-|===
 
 '''
 
@@ -4699,6 +4697,18 @@ Sample Response::
 `GET /gsql/scim/v2/Groups/`
 
 This endpoint is used to retrieve groups using gsql format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `true`, using gsql format
+|===
 
 ==== Example:
 [,tabs]
@@ -4720,17 +4730,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| yes
-| `true`, using gsql format
-|===
 
 '''
 
@@ -4739,6 +4738,26 @@ Sample Response::
 `GET /gsql/scim/v2/Groups/`
 
 This endpoint is used to retrieve groups using scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| gsqlFormat
+| yes
+| Indicates whether to use the scim format. Value: false.
+
+| filter
+| yes
+| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
+
+| excludedAttributes
+| yes
+| Specifies attributes to be excluded. Currently supports only `members`.
+|===
 
 ==== Example:
 [,tabs]
@@ -4760,7 +4779,16 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== create group using scim format
+
+`POST /gsql/scim/v2/Groups/`
+
+This endpoint is used to create group using scim format.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -4770,23 +4798,7 @@ Sample Response::
 | gsqlFormat
 | yes
 | Indicates whether to use the scim format. Value: false.
-
-| filter
-| yes
-| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
-
-| excludedAttributes
-| yes
-| Specifies attributes to be excluded. Currently supports only `members`.
 |===
-
-'''
-
-=== create group using scim format
-
-`POST /gsql/scim/v2/Groups/`
-
-This endpoint is used to create group using scim format.
 
 ==== Example:
 [,tabs]
@@ -4808,7 +4820,15 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+=== create group using gsql format
+
+`POST /gsql/scim/v2/Groups/`
+
+This endpoint is used to create group using gsql format.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -4817,15 +4837,8 @@ Sample Response::
 
 | gsqlFormat
 | yes
-| Indicates whether to use the scim format. Value: false.
+| Indicates whether to use the gsql format. Value: true.
 |===
-
-'''
-=== create group using gsql format
-
-`POST /gsql/scim/v2/Groups/`
-
-This endpoint is used to create group using gsql format.
 
 ==== Example:
 [,tabs]
@@ -4847,7 +4860,15 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+=== update a group
+
+`PATCH /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to update a group.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -4856,15 +4877,8 @@ Sample Response::
 
 | gsqlFormat
 | yes
-| Indicates whether to use the gsql format. Value: true.
+| Indicates whether to use the scim format. Value: false.
 |===
-
-'''
-=== update a group
-
-`PATCH /gsql/scim/v2/Groups/{id}`
-
-This endpoint is used to update a group.
 
 ==== Example:
 [,tabs]
@@ -4887,7 +4901,16 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== drop one group by name
+
+`DELETE /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to drop one group by name.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -4896,15 +4919,8 @@ Sample Response::
 
 | gsqlFormat
 | yes
-| Indicates whether to use the scim format. Value: false.
+| Indicates whether to use the scim format. Value: false. Indicates whether to use the GSQL format. Value: true.
 |===
-
-'''
-=== drop one group by name
-
-`DELETE /gsql/scim/v2/Groups/{id}`
-
-This endpoint is used to drop one group by name.
 
 ==== Example:
 [,tabs]
@@ -4927,17 +4943,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| gsqlFormat
-| yes
-| Indicates whether to use the scim format. Value: false. Indicates whether to use the GSQL format. Value: true.
-|===
 
 '''
 
@@ -4946,6 +4951,18 @@ Sample Response::
 `POST /gsql/scim/v2/Groups`
 
 This endpoint is used to drop groups.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| action
+| yes
+| Indicates whether to delete the groups. Value: delete.
+|===
 
 ==== Example:
 [,tabs]
@@ -4967,17 +4984,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| action
-| yes
-| Indicates whether to delete the groups. Value: delete.
-|===
 
 '''
 
@@ -4986,6 +4992,18 @@ Sample Response::
 `GET /gsql/scim/v2/Users/{id}`
 
 This endpoint is used to retrieve a user by id using scim/gsql format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
 
 ==== Example:
 [,tabs]
@@ -5007,7 +5025,15 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+=== update a user
+
+`PUT /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to update a user.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -5018,13 +5044,6 @@ Sample Response::
 | yes
 | `false`, using scim format; `true`, using gsql format;
 |===
-
-'''
-=== update a user
-
-`PUT /gsql/scim/v2/Users/{id}`
-
-This endpoint is used to update a user.
 
 ==== Example:
 [,tabs]
@@ -5046,24 +5065,30 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== drop users
+
+`POST /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to drop users.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
+| `action`
+| yes
+| Indicating drop users, value: delete.
+
 | `gsqlFormat`
 | yes
 | `false`, using scim format; `true`, using gsql format;
 |===
-
-'''
-=== drop users
-
-`POST /gsql/scim/v2/Users/{id}`
-
-This endpoint is used to drop users.
 
 ==== Example:
 [,tabs]
@@ -5085,21 +5110,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `action`
-| yes
-| Indicating drop users, value: delete.
-
-| `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
-|===
 
 '''
 
@@ -5108,6 +5118,18 @@ Sample Response::
 `DELETE /gsql/scim/v2/Users/{id}`
 
 This endpoint is used to drop a user.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format; `true`, using gsql format;
+|===
 
 ==== Example:
 [,tabs]
@@ -5129,17 +5151,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
-|===
 
 '''
 
@@ -5148,6 +5159,18 @@ Sample Response::
 `POST /gsql/scim/v2/Users`
 
 This endpoint is used to create user using scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsqlFormat`
+| yes
+| `false`, using scim format;
+|===
 
 ==== Example:
 [,tabs]
@@ -5170,7 +5193,16 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== create user using gsql format
+
+`POST /gsql/scim/v2/Users`
+
+This endpoint is used to create user using gsql format.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -5179,15 +5211,8 @@ Sample Response::
 
 | `gsqlFormat`
 | yes
-| `false`, using scim format;
+| `true`, using gsql format;
 |===
-
-'''
-=== create user using gsql format
-
-`POST /gsql/scim/v2/Users`
-
-This endpoint is used to create user using gsql format.
 
 ==== Example:
 [,tabs]
@@ -5209,24 +5234,34 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== retrieve users using scim format
+
+`GET /gsql/scim/v2/Users`
+
+This endpoint is used to retrieve users using scim format.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
+| `excludedAttributes`
+| no
+| `names`, currently only support this value.
+
+| filter
+| yes
+| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName nq "u1"
+
 | `gsqlFormat`
 | yes
-| `true`, using gsql format;
+| `false`, using scim format;
 |===
-
-'''
-=== retrieve users using scim format
-
-`GET /gsql/scim/v2/Users`
-
-This endpoint is used to retrieve users using scim format.
 
 ==== Example:
 [,tabs]
@@ -5248,32 +5283,26 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
+
+'''
+
+=== retrieve users using gsql format
+
+`GET /gsql/scim/v2/Users`
+
+This endpoint is used to retrieve users using gsql format.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
 
-| `excludedAttributes`
-| no
-| `names`, currently only support this value.
-
-| filter
-| yes
-| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName nq "u1"
-
 | `gsqlFormat`
 | yes
-| `false`, using scim format;
+| `true`, using gsql format;
 |===
-
-'''
-=== retrieve users using gsql format
-
-`GET /gsql/scim/v2/Users`
-
-This endpoint is used to retrieve users using gsql format.
 
 ==== Example:
 [,tabs]
@@ -5295,17 +5324,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| yes
-| `true`, using gsql format;
-|===
 
 '''
 
@@ -5343,7 +5361,20 @@ Sample Response::
 
 `POST /gsql/v1/privileges/grant`
 
-This endpoint is used to grant RABC privileges to specific roles
+This endpoint is used to grant RABC privileges to specific roles.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the privilege(s) should be granted,
+or grant privilege(s) on global level if the parameter is missing
+|===
 
 ==== Example:
 
@@ -5366,19 +5397,6 @@ Sample Response::
 ----
 --
 ====
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| in which graph the privilege(s) should be granted,
-or grant privilege(s) on global level if the parameter is missing
-|===
 
 '''
 
@@ -5739,7 +5757,7 @@ This endpoint has to usage: 1) Fetch fresh up-to-date cardinality statistics and
 
 ==== 1) Fetch fresh up-to-date cardinality statistics and persist it to storage
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -5811,7 +5829,7 @@ Sample Response 2::
 
 ==== 2) Persist user defined cardinality statistics to storage.
 
-===== Parameters:
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -6018,7 +6036,7 @@ Sample Response::
 
 This endpoint is used to get tuple by its name.
 
-===== Parameters:
+==== Parameters:
 
 [%autowidth]
 |===
@@ -6091,7 +6109,7 @@ Sample Response::
 
 This endpoint is used to delte multiple tuples.
 
-===== Parameters:
+==== Parameters:
 
 [%autowidth]
 |===
@@ -6252,7 +6270,7 @@ Sample Response::
 
 This endpoint is used to delete multiple accumulators.
 
-===== Parameters:
+==== Parameters:
 
 [%autowidth]
 |===

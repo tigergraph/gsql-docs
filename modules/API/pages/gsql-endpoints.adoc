@@ -4184,7 +4184,18 @@ Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"ssoBinding":"GET","SAMLRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
+{
+    "error": false,
+    "message": "",
+    "results": {
+        "SAMLRequest": "PHNhbWxwOkF1dGhuUmVxdWVzdCB4bWxuczpzYW1scD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29sIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIiBJRD0iT05FTE9HSU5fZjAzODk0ZTMtNmVjMS00MTVlLTlkMWMtNDI2YzAwZDQ5YjY4IiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAyNC0wOC0wMVQxNDo0ODo0OFoiIFByb3ZpZGVyTmFtZT0iVGlnZXJHcmFwaCBJbmMuIiBEZXN0aW5hdGlvbj0iaHR0cHM6Ly9kZXYtNzEwOTc2ODUub2t0YS5jb20vYXBwL2Rldi03MTA5NzY4NV90aWdlcmdyYXBocWUwMl8xL2V4a3FleWZ2enFQSGNKVktwNWQ2L3Nzby9zYW1sIiBQcm90b2NvbEJpbmRpbmc9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpiaW5kaW5nczpIVFRQLVBPU1QiIEFzc2VydGlvbkNvbnN1bWVyU2VydmljZVVSTD0iaHR0cDovLzM0LjMxLjExNy4yNzoxNDI0MC9hcGkvYXV0aC9zYW1sL2FjcyI+PHNhbWw6SXNzdWVyPmh0dHA6Ly8zNC4zMS4xMTcuMjc6MTQyNDAvZ3NxbC92MS9zYW1sL21ldGE8L3NhbWw6SXNzdWVyPjxzYW1scDpOYW1lSURQb2xpY3kgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoxLjE6bmFtZWlkLWZvcm1hdDp1bnNwZWNpZmllZCIgQWxsb3dDcmVhdGU9InRydWUiIC8+PHNhbWxwOlJlcXVlc3RlZEF1dGhuQ29udGV4dCBDb21wYXJpc29uPSJleGFjdCI+PHNhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY+dXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFjOmNsYXNzZXM6UGFzc3dvcmQ8L3NhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY+PC9zYW1scDpSZXF1ZXN0ZWRBdXRobkNvbnRleHQ+PC9zYW1scDpBdXRoblJlcXVlc3Q+",
+        "SigAlg": "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+        "Signature": "cNBBjJqo4xg/KFWwNrny1jwp0BzdYS+ibhoHLD+IV2QrI9nxMzoP8TPjPE4enhKz5ZMYysV5CYtZRtJcmY26Icbm6ugZ4KBINIT3Zj4od+QU/garFMNjKxkBb8VfIa18RES6oL/OcsdnYghunTpHwQI7qui1+zOckfXPpOuOPWQmF0/+OUQhuHBQlBNaFAUy4otolzsUbMlzj2nrudl6DrMyIr6rlBfc+s32Ch0pfUEWVN0vO7oC43D0kaDGJ1gqbOLCDbH5ovyy1iAV2G9IxfiSd3QhyFvFRjblTtXdmz+6xTj443+TFBUpatK+5sU6zHgYcVOYgDguxhotx5VxQjWg2xTzfdVSZZVYM4+czD4khEN/fmKBAZ7vtkkLjR+CqTgixxJCaFg2+l9eYWUIU3K+WZ5RGPIQgLLVkd6/iz5IOl96vOWgMZT8+XYtAgKMXgM/jAYd0qPtQhXRXGGsEcCY167QYAODwiNsZoc0ILETDeGx0nChQh8sqNCQn8ouzGccLXV63LoZ91p6lzXtIgXkZjT9zdU4QmvJCdndQCIIcQ6TFVUz33uT5Ws7jYKZA6f6dRA1s2hRa/mZKChP5mHuknDzc7FRlxP3ofpnvZu5vf11t9k0ZdHULEGFpBt7DFZh8fQz3bk3zNdtbaoKc9GJPTUJMd6wAlIEjnK7W0Q=",
+        "ssoBinding": "POST",
+        "ssoUrl": "https://dev-71097685.okta.com/app/dev-71097685_tigergraphqe02_1/exkqeyfvzqPHcJVKp5d6/sso/saml"
+    }
+}
+
 ----
 --
 ====

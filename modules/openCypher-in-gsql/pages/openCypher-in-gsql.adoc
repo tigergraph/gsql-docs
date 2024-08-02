@@ -117,7 +117,7 @@ See below for restrictions.
 
 |atan2() |Trigonometric Returns the arctangent2 of a set of coordinates in radians.
 
-|avg() |Aggregating Returns the average of a set of values.
+|avg() |Aggregating Returns the average of a set of numeric values.
 
 |ceil() |Numeric Returns the smallest floating point number that is greater than or equal to a number and equal to a mathematical integer.
 
@@ -185,7 +185,7 @@ See below for restrictions.
 
 |stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
 
-|stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
+|stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population
 
 |substring() |String Returns a substring of the original string, beginning with a 0-based index start and length.
 

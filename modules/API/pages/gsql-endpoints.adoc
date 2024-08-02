@@ -1860,6 +1860,18 @@ Sample Response::
 
 This endpoint is used to create a new loading job/update an existing loading job.
 
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| create/update loading job of which graph
+|===
+
 ==== Example
 
 [,tabs]
@@ -1881,6 +1893,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== get loading job info
+
+`GET /gsql/v1/loading-jobs/{jobName}?graph=<graphName>&verbose=<true/false>`
+
+This endpoint is used to get a specific loading job's information.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1890,16 +1911,12 @@ Sample Response::
 
 | `graph`
 | yes
-| create/update loading job of which graph
+| get the loading job information under which graph
+
+| `verbose`
+| no
+| default: false, true means get loading job information in json format
 |===
-
-'''
-
-=== get loading job info
-
-`GET /gsql/v1/loading-jobs/{jobName}?graph=<graphName>&json=<true/false>`
-
-This endpoint is used to get a specific loading job's information.
 
 ==== Example
 
@@ -1926,6 +1943,15 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 ----
 --
 ====
+
+'''
+
+=== run loading job
+
+`POST /gsql/v1/loading-jobs/run?graph=<graphName>`
+
+This endpoint is used to run a loading job.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1935,20 +1961,8 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 
 | `graph`
 | yes
-| get the loading job information under which graph
-
-| `json`
-| no
-| get loading job information in json format
+| run the loading job under which graph
 |===
-
-'''
-
-=== run loading job
-
-`POST /gsql/v1/loading-jobs/run?graph=<graphName>`
-
-This endpoint is used to run a loading job.
 
 ==== Example
 
@@ -1976,6 +1990,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== drop a loading job
+
+`DELETE /gsql/v1/loading-jobs/{jobName}?graph=<graphName>`
+
+This endpoint is used to drop a loading job by name.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -1985,16 +2008,8 @@ Sample Response::
 
 | `graph`
 | yes
-| run the loading job under which graph
+| drop the loading job under which graph
 |===
-
-'''
-
-=== drop a loading job
-
-`DELETE /gsql/v1/loading-jobs/{jobName}?graph=<graphName>`
-
-This endpoint is used to drop a loading job by name.
 
 ==== Example
 
@@ -2017,6 +2032,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== abort loading job(s)
+
+`GET /gsql/v1/loading-jobs/abort?graph=<graphName>&jobIds=<job1,job2,...>&isPause=<true/false>`
+
+This endpoint is used to abort mutilple running loading jobs.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2026,16 +2050,16 @@ Sample Response::
 
 | `graph`
 | yes
-| drop the loading job under which graph
+| abort the loading job under which graph
+
+| `jobId`
+| yes
+| the loading job Id
+
+| `isPause`
+| no
+| default: false, true means pause or abort the loading job, false means run the loading job.
 |===
-
-'''
-
-=== abort loading job(s)
-
-`GET /gsql/v1/loading-jobs/abort?graph=<graphName>&jobIds=<job1,job2,...>&isPause=<true/false>`
-
-This endpoint is used to abort mutilple running loading jobs.
 
 ==== Example
 
@@ -2060,6 +2084,15 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 ----
 --
 ====
+
+'''
+
+=== abort one loading job
+
+`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=<graphNam>&isPause=<true/false>`
+
+This endpoint is used to abort a one loading job by job Id.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2077,16 +2110,9 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 | `isPause`
 | no
-| true means pause or abort the loading job, false means run the loading job.
+| default: false, true means pause or abort the loading job, false means run the loading job.
 |===
 
-'''
-
-=== abort one loading job
-
-`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=<graphNam>&isPause=<true/false>`
-
-This endpoint is used to abort a one loading job by job Id.
 
 ==== Example
 
@@ -2111,26 +2137,6 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| abort the loading job under which graph
-
-| `jobId`
-| yes
-| the loading job Id
-
-| `isPause`
-| no
-| true means pause or abort the loading job, false means run the loading job.
-|===
-
 
 '''
 
@@ -2139,6 +2145,18 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 `GET /gsql/v1/loading-jobs/resume/{jobId}`
 
 This endpoint is used to resume a paused loading job by job Id.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
 
 ==== Example
 
@@ -2161,17 +2179,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobId`
-| yes
-| the loading job Id
-|===
 
 '''
 
@@ -2180,6 +2187,18 @@ Sample Response::
 `GET /gsql/v1/loading-jobs/status?jobIds=<job1,job2,...>`
 
 This endpoint is used to get multiple loading jobs status.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobIds`
+| yes
+| the loading job Ids
+|===
 
 ==== Example
 
@@ -2202,17 +2221,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobIds`
-| yes
-| the loading job Ids
-|===
 
 '''
 
@@ -2221,6 +2229,18 @@ Sample Response::
 `GET /gsql/v1/loading-jobs/status/{jobId}`
 
 This endpoint is used to get a loading job's status by job Id.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
 
 ==== Example
 
@@ -2243,17 +2263,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobId`
-| yes
-| the loading job Id
-|===
 
 '''
 
@@ -2864,6 +2873,18 @@ None
 
 This endpoint is used to get all query names of a graph.
 
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query name of which graph
+|===
+
 ==== Example
 
 [,tabs]
@@ -2885,6 +2906,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== create query
+
+`POST /gsql/v1/queries?graph=<graphName>`
+
+This endpoint is used to create a query.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -2894,16 +2924,8 @@ Sample Response::
 
 | `graph`
 | yes
-| the query name of which graph
+| the query created under which graph
 |===
-
-'''
-
-=== create query
-
-`POST /gsql/v1/queries?graph=<graphName>`
-
-This endpoint is used to create a query.
 
 ==== Example
 
@@ -2926,17 +2948,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| the query created under which graph
-|===
 
 '''
 
@@ -2945,6 +2956,22 @@ Sample Response::
 `DELETE /gsql/v1/queires?query=<q1,q2,...>&graph=<graphName>`
 
 This endpoint is used to drop quries.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `query`
+| yes
+| the queries to be dropped
+
+| `graph`
+| yes
+| the queries dropped under which graph
+|===
 
 ==== Example
 
@@ -2967,21 +2994,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `query`
-| yes
-| the queries to be dropped
-
-| `graph`
-| yes
-| the queries dropped under which graph
-|===
 
 '''
 
@@ -2990,6 +3002,22 @@ Sample Response::
 `GET /gsql/v1/queries/{queryName}?graph=<graphName>`
 
 This endpoint is to get the content of a query by its name.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the content of which query
+
+| `graph`
+| yes
+| the query under which graph
+|===
 
 ==== Example
 
@@ -3012,6 +3040,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== run query
+
+`POST /gsql/v1/queires/{queryName}`
+
+The endpoint is used to run a query by its name.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3021,20 +3058,8 @@ Sample Response::
 
 | `queryName`
 | yes
-| the content of which query
-
-| `graph`
-| yes
-| the query under which graph
+| the query to run
 |===
-
-'''
-
-=== run query
-
-`POST /gsql/v1/queires/{queryName}`
-
-The endpoint is used to run a query by its name.
 
 ==== Example
 
@@ -3058,6 +3083,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== drop one query
+
+`DELETE /gsql/v1/queries/{queryName}`
+
+This endpoint is used to drop a query by its name.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3067,16 +3101,8 @@ Sample Response::
 
 | `queryName`
 | yes
-| the query to run
+| the query to drop
 |===
-
-'''
-
-=== drop one query
-
-`DELETE /gsql/v1/queries/{queryName}`
-
-This endpoint is used to drop a query by its name.
 
 ==== Example
 
@@ -3099,17 +3125,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `queryName`
-| yes
-| the query to drop
-|===
 
 '''
 
@@ -3118,6 +3133,18 @@ Sample Response::
 `POST /gsql/v1/interpret?graph=<graphName>`
 
 This endpoint is used to intepret query.
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query interpreted under which graph
+|===
 
 ==== Example
 
@@ -3140,6 +3167,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== get query info
+
+`GET /gsql/v1/queries/info?graph=<graphName>&query=<optional>&status=<optional,query status>`
+
+This endpoint is used to get the query's information.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3149,16 +3185,16 @@ Sample Response::
 
 | `graph`
 | yes
-| the query interpreted under which graph
+| the query under which graph
+
+| `query`
+| no
+| the query name
+
+| `status`
+| no
+| the query status
 |===
-
-'''
-
-=== get query info
-
-`GET /gsql/v1/queries/info?graph=<graphName>&query=<optional>&status=<optional,query status>`
-
-This endpoint is used to get the query's information.
 
 ==== Example
 
@@ -3181,6 +3217,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== get query signature
+
+`GET /gsql/v1/queries/signature?graph=<graphName>&queryName=<queryName>&interpret=<true/false>`
+
+This endpoint is used to get query's signature by its name.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3192,22 +3237,15 @@ Sample Response::
 | yes
 | the query under which graph
 
-| `query`
+| `queryName`
 | no
-| the query name
+| the query name to get query signature
 
-| `status`
+| `interpret`
 | no
-| the query status
+| false/true
 |===
 
-'''
-
-=== get query signature
-
-`GET /gsql/v1/queries/signature?graph=<graphName>&queryName=<queryName>&interpret=<true/false>`
-
-This endpoint is used to get query's signature by its name.
 
 ==== Example
 
@@ -3230,25 +3268,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| the query under which graph
-
-| `queryName`
-| no
-| the query name to get query signature
-
-| `interpret`
-| no
-| false/true
-|===
 
 '''
 
@@ -3560,6 +3579,22 @@ Sample Response::
 
 This endpoint is used to call template query.
 
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the function under which graph
+
+| `functionName`
+| yes
+| the function name to call
+|===
+
 ==== Example
 
 [,tabs]
@@ -3581,21 +3616,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| the function under which graph
-
-| `functionName`
-| yes
-| the function name to call
-|===
 
 '''
 
@@ -3604,6 +3624,21 @@ Sample Response::
 `GET /gsql/v1/library/{functionName}?isRegularExpression=<true/false>`
 
 This endpoint is used to get template query's information.
+
+===== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `functionName`
+| yes
+| the function name of the tempalte query
+
+| `isRegularExpression`
+| no
+| deafult: false, is regulare expression or not
+|===
 
 ==== Example
 
@@ -3626,20 +3661,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `functionName`
-| yes
-| the function name of the tempalte query
-
-| `isRegularExpression`
-| no
-| decide is regulare expression or not
-|===
 
 '''
 
@@ -4073,6 +4094,21 @@ Sample Response::
 
 This endpoint is used to check file input/output policy
 
+===== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| the file path
+
+| `input`
+| no
+| is input or output policy
+|===
+
 ==== Example
 
 [,tabs]
@@ -4094,20 +4130,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| no
-| the file path
-
-| `input`
-| no
-| is input or output policy
-|===
 
 '''
 
@@ -4301,6 +4323,26 @@ Sample Response::
 
 This endpoint is used to create a new JWT token.
 
+==== Payload:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `secret`
+| no
+| the secret denotes the user
+
+| `graph`
+| no
+| the graph the token created for
+
+| `lifetime`
+| no
+| default: one week, the duration time of the token
+|===
+
 ==== Example
 
 [,tabs]
@@ -4322,25 +4364,6 @@ Sample Response::
 ----
 --
 ====
-==== Payload:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `secret`
-| no
-| the secret denotes the user
-
-| `graph`
-| no
-| the graph the token created for
-
-| `lifetime`
-| no
-| the duration time of the token
-|===
 
 '''
 
@@ -4349,6 +4372,18 @@ Sample Response::
 `DELETE /gsql/v1/tokens?clear=<true/false>`
 
 This endpoint is used to drop specific a list of tokens.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `clear`
+| no
+| default: false, true means clear out the current block list.
+|===
 
 ==== Example
 
@@ -4371,17 +4406,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `clear`
-| no
-| true means clear out the current block list, default value is false.
-|===
 
 '''
 
@@ -4421,6 +4445,26 @@ Sample Response::
 
 This endpoint is used to create a secret.
 
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user the secret created for. The default user is the logged-in user if not specified.
+
+| `value`
+| no
+| the secret content.
+
+| `alias`
+| no
+| the alias of the secret created.
+|===
+
 ==== Example
 
 [,tabs]
@@ -4442,6 +4486,15 @@ Sample Response::
 ----
 --
 ====
+
+'''
+
+=== show secrets
+
+`GET /gsql/v1/secrets?userName=<user>`
+
+This endpoint is used to show secrets for the user.
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -4451,24 +4504,8 @@ Sample Response::
 
 | `userName`
 | no
-| the user the secret created for. The default user is the logged-in user if not specified.
-
-| `value`
-| no
-| the secret content.
-
-| `alias`
-| no
-| the alias of the secret created.
+| the user who wants to show the secrets. The default user is the logged-in user if not specified.
 |===
-
-'''
-
-=== show secrets
-
-`GET /gsql/v1/secrets?userName=<user>`
-
-This endpoint is used to show secrets for the user.
 
 ==== Example
 
@@ -4491,17 +4528,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `userName`
-| no
-| the user who wants to show the secrets. The default user is the logged-in user if not specified.
-|===
 
 '''
 
@@ -4510,6 +4536,17 @@ Sample Response::
 `DELETE /gsql/v1/secrets?userName=<user>`
 
 This endpoint is used to delete the secrets of the user.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secrets. The default user is the logged-in user if not specified.
+|===
 
 ==== Example
 
@@ -4532,16 +4569,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `userName`
-| no
-| the user who wants to delete the secrets. The default user is the logged-in user if not specified.
-|===
 
 '''
 
@@ -4550,6 +4577,17 @@ Sample Response::
 `GET /gsql/v1/secrets/{alias}?userName=<user>`
 
 This endpoint is used to get the secrets by its alias name.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to get the secret. The default user is the logged-in user if not specified.
+|===
 
 ==== Example
 
@@ -4572,16 +4610,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `userName`
-| no
-| the user who wants to get the secret. The default user is the logged-in user if not specified.
-|===
 
 '''
 
@@ -4590,6 +4618,17 @@ Sample Response::
 `DELETE /gsql/v1/secrets/{alias}?userName=<user>`
 
 This endpoint is used to delete the secret of the user by its alias name.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secret. The default user is the logged-in user if not specified.
+|===
 
 ==== Example
 
@@ -4612,16 +4651,6 @@ Sample Response::
 ----
 --
 ====
-==== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `userName`
-| no
-| the user who wants to delete the secret. The default user is the logged-in user if not specified.
-|===
 
 '''
 
@@ -5359,6 +5388,19 @@ or grant privilege(s) on global level if the parameter is missing
 
 This endpoint is used to revoke RABC privileges from specific roles
 
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the privilege(s) should be revoked,
+or revoke privilege(s) on global level if the parameter is missing
+|===
+
 ==== Example:
 
 [,tabs]
@@ -5380,19 +5422,6 @@ Sample Response::
 ----
 --
 ====
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| in which graph the privilege(s) should be revoked,
-or revoke privilege(s) on global level if the parameter is missing
-|===
 
 '''
 
@@ -5430,6 +5459,19 @@ Sample Response::
 
 `POST /gsql/v1/roles`
 
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph to create local roles,
+or create global roles if the parameter is missing
+|===
+
 ==== Example:
 
 [,tabs]
@@ -5452,6 +5494,12 @@ Sample Response::
 --
 ====
 
+'''
+
+=== Delete roles
+
+`DELETE /gsql/v1/roles`
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -5461,15 +5509,13 @@ Sample Response::
 
 | `graph`
 | no
-| in which graph to create local roles,
-or create global roles if the parameter is missing
+| in which graph to delete local roles,
+or delete global roles if the parameter is missing
+
+| `roles`
+| yes
+| roles to delete
 |===
-
-'''
-
-=== Delete roles
-
-`DELETE /gsql/v1/roles`
 
 ==== Example:
 
@@ -5492,23 +5538,6 @@ Sample Response::
 ----
 --
 ====
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| in which graph to delete local roles,
-or delete global roles if the parameter is missing
-
-| `roles`
-| yes
-| roles to delete
-|===
 
 '''
 
@@ -5578,6 +5607,19 @@ Sample Response::
 
 This endpoint is used to grant roles to specific users
 
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the role(s) should be granted,
+or grant role(s) on global level if the parameter is missing
+|===
+
 ==== Example:
 
 [,tabs]
@@ -5600,6 +5642,14 @@ Sample Response::
 --
 ====
 
+'''
+
+=== revoke role(s) from user(s)
+
+`POST /gsql/v1/roles/revoke`
+
+This endpoint is used to revoke roles from specific users
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -5609,17 +5659,9 @@ Sample Response::
 
 | `graph`
 | no
-| in which graph the role(s) should be granted,
-or grant role(s) on global level if the parameter is missing
+| in which graph the role(s) should be revoked,
+or revoke role(s) on global level if the parameter is missing
 |===
-
-'''
-
-=== revoke role(s) from user(s)
-
-`POST /gsql/v1/roles/revoke`
-
-This endpoint is used to revoke roles from specific users
 
 ==== Example:
 
@@ -5643,20 +5685,6 @@ Sample Response::
 --
 ====
 
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| in which graph the role(s) should be revoked,
-or revoke role(s) on global level if the parameter is missing
-|===
-
-
 '''
 
 == Statistics
@@ -5666,6 +5694,18 @@ or revoke role(s) on global level if the parameter is missing
 `GET /gsql/v1/stats/cardinality`
 
 This endpoint is used to fetch cardinality statistics.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Get the cardinality stats of which graph
+|===
 
 ==== Example:
 
@@ -5689,18 +5729,6 @@ Sample Response::
 --
 ====
 
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| Get the cardinality stats of which graph
-|===
-
 '''
 
 === post cardinality statistics
@@ -5710,6 +5738,34 @@ Sample Response::
 This endpoint has to usage: 1) Fetch fresh up-to-date cardinality statistics and persist it to storage. 2) Persist user defined cardinality statistics to storage.
 
 ==== 1) Fetch fresh up-to-date cardinality statistics and persist it to storage
+
+===== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Persist the cardinality stats to which graph
+
+| `vertex`
+| no
+| Fetch fresh up-to-date cardinality stats for specific vertex types and persist them to storage
+
+| `edge`
+| no
+| Fetch fresh up-to-date cardinality stats for specific edge types and persist them to storage, if `vertex` is not empty, this parameter will be ignored
+
+| `from`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also from specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `to`.
+
+| `to`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also to specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `from`.
+|===
 
 ===== Example:
 
@@ -5753,6 +5809,8 @@ Sample Response 2::
 --
 ======
 
+==== 2) Persist user defined cardinality statistics to storage.
+
 ===== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -5763,25 +5821,7 @@ Sample Response 2::
 | `graph`
 | yes
 | Persist the cardinality stats to which graph
-
-| `vertex`
-| no
-| Fetch fresh up-to-date cardinality stats for specific vertex types and persist them to storage
-
-| `edge`
-| no
-| Fetch fresh up-to-date cardinality stats for specific edge types and persist them to storage, if `vertex` is not empty, this parameter will be ignored
-
-| `from`
-| no
-| Fetch fresh up-to-date cardinality stats for not only specific edge types but also from specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `to`.
-
-| `to`
-| no
-| Fetch fresh up-to-date cardinality stats for not only specific edge types but also to specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `from`.
 |===
-
-==== 2) Persist user defined cardinality statistics to storage.
 
 ===== Example:
 
@@ -5805,7 +5845,15 @@ Sample Response::
 --
 ======
 
-===== Parameters:
+'''
+
+=== delete cardinality statistics
+
+`DELETE /gsql/v1/stats/cardinality`
+
+This endpoint is used to remove cardinality statistics from storage.
+
+==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -5814,16 +5862,8 @@ Sample Response::
 
 | `graph`
 | yes
-| Persist the cardinality stats to which graph
+| Delete the cardinality stats of indicated graph from storage
 |===
-
-'''
-
-=== delete cardinality statistics
-
-`DELETE /gsql/v1/stats/cardinality`
-
-This endpoint is used to remove cardinality statistics from storage.
 
 ==== Example:
 
@@ -5846,18 +5886,6 @@ Sample Response::
 ----
 --
 ====
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| Delete the cardinality stats of indicated graph from storage
-|===
 
 '''
 
@@ -5990,6 +6018,17 @@ Sample Response::
 
 This endpoint is used to get tuple by its name.
 
+===== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple name to get information
+|===
+
 ==== Example
 
 [,tabs]
@@ -6011,16 +6050,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `tupleName`
-| yes
-| the tuple name to get information
-|===
 
 '''
 
@@ -6062,6 +6091,17 @@ Sample Response::
 
 This endpoint is used to delte multiple tuples.
 
+===== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple names to be dropped
+|===
+
 ==== Example
 
 [,tabs]
@@ -6083,16 +6123,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `tupleName`
-| yes
-| the tuple names to be dropped
-|===
 
 '''
 
@@ -6222,6 +6252,17 @@ Sample Response::
 
 This endpoint is used to delete multiple accumulators.
 
+===== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `accumName`
+| yes
+| the accumulator names to drop
+|===
+
 ==== Example
 
 [,tabs]
@@ -6243,16 +6284,6 @@ Sample Response::
 ----
 --
 ====
-===== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `accumName`
-| yes
-| the accumulator names to drop
-|===
 
 '''
 

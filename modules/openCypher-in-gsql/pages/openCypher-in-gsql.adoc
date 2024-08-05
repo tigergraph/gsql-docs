@@ -189,8 +189,6 @@ See below for restrictions.
 
 |timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
 
-|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
-
 |===
 
 === Expressions
@@ -247,6 +245,10 @@ N/A
 |length() |Scalar Returns the length of a path.
 
 |nodes() |List Returns a list containing all the nodes in a path.
+
+|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
+|percentileDisc() |Aggregating Returns the percentile of the given value over a group using a rounding method.
 
 |properties() |Scalar Returns a map containing all the properties of a node or relationship.
 

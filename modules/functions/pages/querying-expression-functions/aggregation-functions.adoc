@@ -1,0 +1,245 @@
+= Aggregation Functions
+
+This page lists the aggregation functions available in the GSQL query language. These functions take a single `SET/BAG`, `SetAccum/BagAccum`, or `ListAccum` as the parameter and return an aggregated value from all members of the set or bag.
+
+[NOTE]
+====
+The ``DISTINCT`` keyword can be used to include repeated values only once when aggregating.
+====
+
+== avg()
+
+[discrete]
+=== Syntax
+
+`avg( [DISTINCT] setExp )`
+
+[discrete]
+=== Description
+
+Returns the average of all elements in a set or bag. The function can only take set/bag expressions whose members are numeric types.
+
+[discrete]
+=== Return type
+
+A numeric type. If all members of the set/bag expression are integers, the return value will also be rounded down to be an integer.
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `setExp`
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
+| `SET`, `BAG`, `SetAccum`, `BagAccum`
+|===
+
+[discrete]
+=== Example
+
+[source,text]
+----
+avg([5, 4, 1, 0, 0, 0]) -> 1
+avg([3, 2, 1]) -> 2
+----
+
+== count()
+
+[discrete]
+=== Syntax
+
+`count( [DISTINCT] setExp )`
+
+[discrete]
+=== Description
+
+Returns the size of the set or bag.
+
+[discrete]
+=== Return type
+
+`INT`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `setExp`
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
+| `SET`, `BAG`, `SetAccum`, `BagAccum`
+|===
+
+[discrete]
+=== Example
+[source,text]
+----
+count([1, 2, 3]) => 3
+count([1, 1, 2, 2) => 4
+----
+
+== percentileCont()
+
+[discrete]
+=== Syntax
+
+`percentileCont(expression, percent)`
+
+[discrete]
+=== Description
+
+Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
+[discrete]
+=== Return type
+
+`INT`
+
+[discrete]
+=== Parameters
+|===
+| Parameter | Description | Data type
+
+|percentileCont(expression, percent)
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`.
+
+In GSQL, the second parameter should be percent or percentage.
+While, in an openCypher reference its percentile.
+In statistics percentile refers to a type of quantiles, obtained by adopting a subdivision into 100 groups.
+| `SET`, `BAG`, `SetAccum`, `BagAccum`, `percent`
+
+|===
+
+[discrete]
+=== Example
+[source,text]
+----
+CREATE OR REPLACE OPENCYPHER QUERY test1(){
+    MATCH (n:Person)
+    RETURN percentileCont(n.age, 0.4)
+}
+
+CREATE OR REPLACE QUERY test2() SYNTAX V2 {
+    SELECT percentileCont(p.id, 0.4) INTO T
+    FROM   Person:p
+    WHERE  p.firstName=="John";
+    PRINT  T;
+}
+
+CREATE OR REPLACE  QUERY test3() SYNTAX V2 {
+  PRINT percentileCont(DISTINCT [5, 4, 1, 0, 0, 0], 0.5);
+  PRINT percentileCont([5, 4, 1, 0, 0, 0], 0.5);
+}
+----
+
+
+== max()
+
+[discrete]
+=== Syntax
+
+`max( [DISTINCT] setExp )`
+
+[discrete]
+=== Description
+
+Returns the member with the maximum value in a set or bag.
+The function can only take set/bag expressions whose members are numeric types.
+
+[discrete]
+=== Return type
+
+A numeric type.
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `setExp`
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
+| `SET`, `BAG`, `SetAccum`, `BagAccum`
+|===
+
+[discrete]
+=== Example
+[source,text]
+----
+max([1, 2, -3, 4]) => 4
+max([1, 1, 3, 3]) => 3
+----
+
+== min()
+
+[discrete]
+=== Syntax
+
+`min( [DISTINCT] setExp )`
+
+[discrete]
+=== Description
+
+Returns the member with the minimum value in a set or bag. The function can only take set/bag expressions whose members are numeric types.
+
+[discrete]
+=== Return type
+
+A numeric type.
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `setExp`
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
+| `SET`, `BAG`, `SetAccum`, `BagAccum`
+|===
+
+[discrete]
+=== Example
+[source,text]
+----
+min([1, 2, -3, 4]) => -3
+min([1, 1, 3, 3]) => 1
+----
+
+== sum()
+
+[discrete]
+=== Syntax
+
+`sum( [DISTINCT] setExp )`
+
+[discrete]
+=== Description
+
+Returns the sum of all members in a set or bag. The function can only take set/bag expressions whose members are numeric types.
+
+[discrete]
+=== Return type
+
+A numeric type.
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `setExp`
+| An expression that evaluates to a `SET`, `BAG`, `SetAccum` or `BagAccum`
+| `SET`, `BAG`, `SetAccum`, `BagAccum`
+|===
+
+[discrete]
+=== Example
+[source,text]
+----
+sum([1, 2, -3, 4]) => 4
+sum([1, 1, 3, 3]) => 8
+----

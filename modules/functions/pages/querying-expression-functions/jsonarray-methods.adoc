@@ -1,0 +1,193 @@
+= JSON Array Methods
+
+This page lists the methods of a JSONARRAY object. Methods can be accessed via the dot(`.`) operator.
+
+== `getBool()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getBool( idx )`
+
+[discrete]
+=== Description
+
+Returns the boolean value at a specified index.
+
+[discrete]
+=== Return value
+
+`BOOL`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `getDouble()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getDouble( idx )`
+
+[discrete]
+=== Description
+
+Returns the double at a specified index.
+
+[discrete]
+=== Return value
+
+`DOUBLE`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `getInt()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getInt( idx )`
+
+[discrete]
+=== Description
+
+Returns the integer value at a specified index.
+
+[discrete]
+=== Return value
+
+`INT`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `getJsonArray()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getJSONArray( idx )`
+
+[discrete]
+=== Description
+
+Returns the JSONArray value at a specified index.
+
+[discrete]
+=== Return value
+
+`BOOL`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `getJsonObject()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getJsonObject( idx )`
+
+[discrete]
+=== Description
+
+Returns the JSONOBJECT value at a specified index.
+
+[discrete]
+=== Return value
+
+`JSONOBJECT`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `getString()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.getString( idx )`
+
+[discrete]
+=== Description
+
+Returns the boolean value at a specified index.
+
+[discrete]
+=== Return value
+
+`STRING`
+
+[discrete]
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `idx`
+| The index of the value to return
+| `INT`
+|===
+
+== `size()`
+
+[discrete]
+=== Syntax
+
+`jsonarray.size()`
+
+[discrete]
+=== Description
+
+Returns the size of the array.
+
+[discrete]
+=== Return value
+
+`INT`
+
+[discrete]
+=== Parameters
+
+None.

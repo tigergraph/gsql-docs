@@ -1,0 +1,127 @@
+= Context Functions
+
+Context functions are a set of built-in functions that provide insights into the user's information during their current session.
+They offer valuable insights into user roles, making it easier to manage access and privileges within TigerGraph.
+
+They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
+
+== Enable Context Functions
+
+Before users can use Context Functions, you must enable REST++ authentication.
+If it's not enabled, users will see an error message.
+To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
+
+In order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:tigergraph-server:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_context_functions[Context Functions].
+
+== current_roles()
+
+===  Syntax
+
+`current_roles()`
+
+
+===  Description
+
+Returns a `SetAccum` of strings of role names granted to the current user.
+
+===  Return type
+
+`STRING`
+
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| None
+| None
+| None
+|===
+
+===  Example
+
+.Then, run a query like this:
+[console,gsql]
+----
+GSQL > create query test() {
+print current_roles();
+}
+----
+
+.Ex. The result will show the user's roles:
+[console,gsql]
+----
+GSQL > run query test()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "current_roles()": [
+            "USregion",
+            "NAregion"
+        ]
+    }
+    ]
+}
+----
+
+== is_granted_to_current_roles(string roleName)
+
+=== Syntax
+
+`is_granted_to_current_roles( "roleName" )`
+
+=== Description
+
+Returns true/false if the current user holds a particular role specified in the parameter.
+
+===  Return type
+
+`BOOL`
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `roleName`
+| A role name to check against current users roles.
+| `STRING`
+|===
+
+===  Example
+
+.Ex. Create a query that prints `is_granted_to_current_roles()` and input `USregion`:
+[console, gsql]
+----
+create query test2() {
+print is_granted_to_current_roles("USregion");
+}
+----
+
+.Ex. Run the query and the result will show whether the user has the specified role:
+[console,gsql]
+----
+GSQL > run query test2()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "is_granted_to_current_roles(\"USregion\")": true
+    }
+    ]
+}
+----

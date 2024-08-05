@@ -1,65 +1,1015 @@
 = Mathematical Functions
+:stem: latexmath
+:description: A list of mathematical functions in GSQL.
+:page-toclevel: 1
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+This page lists the mathematical functions that are available in the GSQL query language. They are divided into three categories:
 
-== Beautiful Vertex Information
+* General
+* Logarithmic
+* Trigonometric
 
-* A list of concise information, perfectly
-* getting the message across
+== General
 
-`a small code block that adds understanding`
-
-[source,gsql]
-----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
-
-SELECT p FROM etc etc
-
-}
-----
+=== abs()
 
 
-=== A sub-section about vertex information
+==== Syntax
 
-* Here is a bullet point about some information
-- here's a second bullet point
-
+`abs( num )`
 
 
+==== Description
+
+Returns the absolute value of a number.
 
 
+==== Return type
 
+Number
+
+
+==== Parameters
 
 |===
-| Tables | are | the | best | thing | ever
+| Parameter | Description | Data type
 
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
+| `num`
+| The number to return the absolute value for
+| Number
+|===
+
+=== ceil()
+
+
+==== Syntax
+
+`ceil(num)`
+
+
+==== Description
+
+Rounds a number up to the smallest integer that's greater than or equal to the number.
+
+
+==== Return type
+
+`INT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to round up from
+| num
+|===
+
+=== *exp()*
+
+
+==== Syntax
+
+`exp(num)`
+
+
+==== Description
+
+Returns the base-e exponential of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The exponent
+| Number
+|===
+
+=== float_to_int()
+
+
+==== Syntax
+
+`float_to_int (num)`
+
+
+==== *Description*
+
+Converts a floating-point number to an integer by truncating the floating part.
+
+
+==== Return type
+
+`INT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The floating-point number to convert to integer
+| `FLOAT`
+|===
+
+=== floor()
+
+
+==== Syntax
+
+`floor(num)`
+
+
+==== Description
+
+Rounds a number down to the biggest integer that is smaller than or equal to the number.
+
+
+==== Return type
+
+`INT`
+
+
+==== Parameter
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to round down from
+| Number
+|===
+
+=== fmod()
+
+
+==== Syntax
+
+`fmod(numer, denom)`
+
+
+==== Description
+
+Returns the floating-point remainder of `numer` divided by `denom`
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `numer`
+| The dividend
+| Number
+
+| `denom`
+| The divisor
+| Number
+|===
+
+=== ldexp()
+
+
+==== Syntax
+
+`ldexp(x, exp)`
+
+
+==== Description
+
+Returns `x` multiplied by 2 raised to the power of `exp`
+
+[stem]
+++++
+x*2^{exp}
+++++
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `x`
+| The base
+| Number
+
+| `exp`
+| The exponent of 2
+| Number
+|===
+
+=== PI()
+
+
+==== Syntax
+
+`PI()`
+
+
+==== Description
+
+Returns the value of π.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+None.
+
+
+==== Example
+
+[,text]
+----
+ PI() * 1000000000 -> 3.141592653589793E9
+----
+
+=== pow()
+
+
+==== Syntax
+
+`pow(base, exp)`
+
+
+==== Description
+
+Returns the power of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `base`
+| The base
+| Number
+
+| `exp`
+| The exponent
+| Number
+|===
+
+=== rand()
+
+
+==== Syntax
+
+`rand( [seed] )`
+
+
+==== Description
+
+Returns a completely random number >= 0 and <1. If `seed` is specified, it returns a repeatable sequence of random numbers. If no seed is specified, it returns a completely random number.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `seed`
+| Optional. If `seed` is specified, it returns a repeatable sequence of random numbers. If no seed is specified, it returns a completely random number
+| `UINT`
 |===
 
 
-== now for another section
+==== Example
 
-[NOTE]
-this is a note
+[,text]
+----
+rand(5) -> 0.05518
+rand(5) -> 0.83133
+rand(5) -> 0.36374
+----
 
-[WARNING]
-this is a warning
+=== round()
 
-[IMPORTANT]
-this is important information
 
-.Only a few more lines left
-- Surprise +
-page break
+==== Syntax
 
-a random line
+`round ( num[, integer] )`
 
----
 
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]
+==== Description
+
+Rounds a number to a specified place relative to the decimal point and returns the result.
+
+
+==== Return type
+
+A numeric type.
+
+
+==== Parameters
+[width="100%",cols="1,2,1",options="header",]
+|===
+|Parameter |Description |Data type
+|`+num+` |The number to be rounded |`+NUM+`
+
+|`+integer+` a|
+Optional. An integer value indicating the place to round the first
+argument to. +
++
+
+If `+integer+` is positive, the function returns `+num+` rounded to
+`+integer+` places to the right of the decimal point. If you omit
+`+integer+`, then `+num+` is rounded to zero places. If `+integer+` is
+negative, then `+num+` is rounded off to the left of the decimal point.
+
+|`+INT+`
+|===
+
+
+==== Examples
+
+[,text]
+----
+round(15.213) => 15
+round(15.213, -1) => 20
+round(2.15, 1) => 2.2
+round(2.25, 1) => 2.3
+----
+
+=== sign()
+
+
+==== Syntax
+
+`sign( num )`
+
+
+==== Description
+
+Returns the sign of a number. If the number is positive, return `1`; if the number is negative, return `-1`; if the number is `0`, return `0`
+
+
+==== Return type
+
+`INT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value
+| `INT`, `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+sign(100) => 1
+sign(0) => 0
+sign(-1.23) => -1
+----
+
+=== square()
+
+
+==== Syntax
+
+`square( num )`
+
+
+==== Description
+
+Returns the square of a number.
+
+
+==== Return type
+
+A numeric type.
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value.
+| `INT`, `FLOAT`, or `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+square(0) => 0
+square(50) => 2500
+square(-50) => 2500
+----
+
+=== sqrt()
+
+
+==== Syntax
+
+`sqrt(num)`
+
+
+==== Description
+
+Returns the square root of a number
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to get square root for.
+| Number
+|===
+
+=== trunc()
+
+
+==== Syntax
+
+`trunc( num, [decimal_place] )`
+
+
+==== Description
+
+Returns a number truncated to a specified decimal place.
+
+
+==== Return type
+
+A numeric type.
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to be truncated
+| `INT`, `FLOAT` or `DOUBLE`
+
+| `decimal_place`
+| Optional. The integer indicating the decimal place to truncate the number to.   If `decimal_plac` is positive, the function returns the number truncated to `decimal_place` decimal places. If `decimal_place` is omitted, then the number is truncated to 0 places. `decimal_place` can be negative to truncate (make zero) `decimal_place` digits left of the decimal point.
+| `INT`
+|===
+
+
+==== Examples
+
+[,text]
+----
+trunc(9.99) => 9
+trunc(-9.99) => 9
+trunc(99.999. -1) => 90
+trunc(9.99, 1) => 9.9
+----
+
+== Logarithmic
+
+=== *log*()
+
+
+==== Syntax
+
+`log(num)`
+
+
+==== Description
+
+Returns the natural logarithm of a number (base e).
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute natural logarithm for
+| Number
+|===
+
+=== log2()
+
+
+==== Syntax
+
+`log2( num )`
+
+
+==== Description
+
+Returns the base-2 logarithm of a number.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value
+| `INT`, `FLOAT`, `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+log2(0.5) => -1
+log2(1) => 0
+log2(3) => 1.58
+----
+
+=== log10()
+
+
+==== Syntax
+
+`log10(num)`
+
+
+==== Description
+
+Return the common logarithm of a number (base 10).
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute common logarithm for
+| Number
+|===
+
+== Trigonometric
+
+=== acos()
+
+
+==== Syntax
+
+`acos(num)`
+
+
+==== Description
+
+Returns the arc cosine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute arccosine for
+| Number
+|===
+
+=== *asin()*
+
+
+==== Syntax
+
+`asin(num)`
+
+
+==== Description
+
+Returns the arc sine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute arcsine for
+| Number
+|===
+
+=== *atan()*
+
+
+==== Syntax
+
+`atan(num)`
+
+
+==== Description
+
+Returns the arctangent of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute arctangent for
+| Number
+|===
+
+=== *atan2()*
+
+
+==== Syntax
+
+`atan2(y, x)`
+
+
+==== Description
+
+Returns the arctangent of a fraction.
+
+[stem]
+++++
+atan(\frac{y}x)
+++++
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `y`
+| The dividend of the fraction to compute arctangent for
+| Number
+
+| `x`
+| The divisor of the fraction to compute arctangent for
+| Number
+|===
+
+=== *cos*()
+
+
+==== Syntax
+
+`cos(num)`
+
+
+==== Description
+
+Returns the cosine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to return cosine for
+| Number
+|===
+
+=== *cosh()*
+
+
+==== Syntax
+
+`cosh(num)`
+
+
+==== Description
+
+Returns the hyperbolic cosine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute hyperbolic cosine for
+| Number
+|===
+
+=== cot()
+
+
+==== Syntax
+
+`cot( num )`
+
+
+==== Description
+
+Returns the cotangent of a number.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value
+| `INT`, `FLOAT`, or `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+cot(6) => -3.4363530041801278
+cot(-1) => -0.64209261593433065
+----
+
+=== degrees()
+
+
+==== Syntax
+
+`degrees( num )`
+
+
+==== Description
+
+Converts a value in radians to degrees.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value
+| `INT`, `FLOAT`, or `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+degrees(2) => 114.59155902616465
+degrees(1) => -57.29577951308232
+----
+
+=== radians()
+
+
+==== Syntax
+
+`radians( num )`
+
+
+==== Description
+
+Converts a value in degrees to radians.
+
+
+==== Return type
+
+`DOUBLE`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| A numeric value
+| `INT`, `FLOAT`, or `DOUBLE`
+|===
+
+
+==== Examples
+
+[,text]
+----
+radians( 45 ) => -0.7853981633974483
+radians( 30 ) => 0.5235987755982988
+radians( 50 ) => 0.8726646259971648
+----
+
+=== sin()
+
+
+==== Syntax
+
+`sin(num)`
+
+
+==== Description
+
+Returns the sine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute sine for
+| Number
+|===
+
+=== *sinh()*
+
+
+==== Syntax
+
+`sinh(num)`
+
+
+==== Description
+
+Returns the hyperbolic sine of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute hyperbolic sine for
+| Number
+|===
+
+=== *tan()*
+
+
+==== Syntax
+
+`tan(num)`
+
+
+==== Description
+
+Returns the tangent of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute tangent for
+| Number
+|===
+
+=== tanh()
+
+
+==== Syntax
+
+`tanh(num)`
+
+
+==== Description
+
+Returns the hyperbolic tangent of a number.
+
+
+==== Return type
+
+`FLOAT`
+
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to compute hyperbolic tangent for
+| Number
+|===

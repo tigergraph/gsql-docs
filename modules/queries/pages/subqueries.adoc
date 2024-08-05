@@ -11,7 +11,7 @@ A subquery must be created before the query that calls the subquery. A subquery 
 
 The subquery can be called within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
 
-.Subquery Syntax
+*Syntax:*
 [source, gsql]
 ----
 CREATE OR REPLACE QUERY subq(/* parameters */) RETURNS (type) SYNTAX V2 {
@@ -33,6 +33,60 @@ CREATE OR REPLACE QUERY subq(/* parameters */) RETURNS (type) SYNTAX V2 {
 == Example 1
 
 Below shows a distributed query main() calling two subqueries, which takes a primitive parameter type, and returns the same primitive type. Note that we first need to install the subqueries before we can install the main query.
+
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+//subquery cannot use distributed keyword.
+CREATE OR REPLACE QUERY subq_INT(INT a) RETURNS(INT) SYNTAX V2 {
+
+    INT result;
+    result = 100 - a;
+    RETURN result;
+}
+
+//subquery cannot use distributed keyword.
+CREATE OR REPLACE QUERY subq_STRING(STRING a) RETURNS(STRING) SYNTAX V2 {
+
+    STRING result;
+    result = "hello " + a;
+    RETURN result;
+}
+
+
+INSTALL QUERY subq_INT, subq_STRING
+
+//main query calling subqueries
+CREATE OR REPLACE DISTRIBUTED QUERY mainQuery() {
+
+    ListAccum<INT> @@resultListInt;
+    ListAccum<STRING> @@resultListSTRING;
+
+    S = SELECT s
+        FROM Account:s - (Transfer>:e) - :tgt
+        WHERE s.name == "Dave"
+        ACCUM
+          // Put the elements returned from the subQuery
+          @@resultListInt += subq_INT(e.amount),
+          @@resultListSTRING += subq_STRING(s.name);
+
+
+    PRINT @@resultListInt, @@resultListSTRING;
+}
+
+INSTALL QUERY mainQuery
+
+
+RUN QUERY mainQuery()
+
+----
+
+== Example 2
+Below shows a distributed query main() calling three subqueries, which returns a collection type, and in the main query, we either loop the element of the collection type, or add the returned collection to another accumulator.
+
+Note that we first need to install the subqueries before we can install the main query.
+
 
 [source,gsql]
 ----

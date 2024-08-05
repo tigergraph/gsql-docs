@@ -18,7 +18,7 @@ a value matching the `CASE` value.
 
 The `CASE` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at a top-statement level -- the same level as the `SELECT` query block
 
-.Syntax
+*Syntax:*
 [source,gsql]
 ----
 //if-else semantics
@@ -38,7 +38,7 @@ CASE expr
 END
 ----
 
-.CASE Example
+*Example:*
 [source,gsql]
 ----
 USE GRAPH financialGraph
@@ -111,7 +111,7 @@ INSTALL QUERY CaseWhenTest
 RUN QUERY CaseWhenTest()
 ----
 
-.Results
+*Results:*
 [source,json]
 ----
 {
@@ -147,7 +147,7 @@ The `IF` statement provides conditional branching: execute a block of statements
 
 The `IF` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
 
-.Syntax
+*Syntax:*
 [source,gsql]
 ----
 IF condition1 THEN statement(s)
@@ -157,7 +157,7 @@ IF condition1 THEN statement(s)
 END
 ----
 
-.IF Example
+*Example:*
 [source,gsql]
 ----
 USE GRAPH financialGraph
@@ -221,7 +221,7 @@ The `FOREACH` statement provides bounded iteration over a block of statements.
 The `FOREACH` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
 
 
-.Syntax
+*Syntax:*
 [source,gsql]
 ----
 FOREACH loop_var IN rangeExpr DO
@@ -246,7 +246,7 @@ var in “FOREACH var IN setBagExpr”).
 ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
 
-.Example
+==== Example:
 [source,gsql]
 ----
 
@@ -337,12 +337,17 @@ RUN QUERY ForeachTest()
 
 
 
+----
 
-CONTINUE and BREAK
+== CONTINUE and BREAK
 
 The CONTINUE and BREAK statements can only be used within a block of a WHILE or FOREACH statement. The CONTINUE statement branches control flow to the end of the loop, skipping any remaining statements in the current iteration, and proceeding to the next iteration. That is, everything in the loop block after the CONTINUE statement will be skipped, and then the loop will continue as normal.
 The BREAK statement branches control flow out of the loop, i.e., it will exit the loop and stop iteration.
-Example
+
+==== Example:
+
+[source,gsql]
+----
 USE GRAPH financialGraph
 CREATE OR REPLACE QUERY ContinueAndBreakTest ( ) {
 

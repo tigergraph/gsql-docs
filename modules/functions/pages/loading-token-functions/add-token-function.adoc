@@ -1,0 +1,242 @@
+= Add a User-defined Token Function
+:pp: {plus}{plus}
+
+In GSQL's Data Definition and Loading (DDL) language, users can define
+their own token functions if the built-in token functions do not meet
+their needs.
+
+Token functions are written in C{pp} and stored in a file named `tokenbank.cpp`.
+
+There are two ways to modify this file to add token functions to GSQL:
+
+* Store the file in a GitHub repository, and configure GSQL to read from the repository.
+* Use `GET` and `PUT` commands to download, modify, and store the file locally.
+
+This section first explains how to define a token function, then how to integrate token functions into GSQL.
+
+== Define a token function in C{pp}
+
+Token functions can either return a value that is
+used for an attribute expression or used in a `WHERE` clause as a
+condition expression. Depending on the return type of the function, the
+signature of the function must match the allowed format.
+
+If your token function is used to return an attribute expression, the
+signature of the function must follow the format specified in the table
+below depending on the attribute type.
+
+[cols=",,",options="header",]
+|===
+|Attribute type |Function signature |Function return type
+|`STRING`
+|`extern "C" void funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum,  char* const oToken, uint32_t& oTokenLen)`
+|`void`. The value of `oToken` will be returned in GSQL
+
+|`BOOL`
+|`extern "C" bool funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)`
+|`bool`
+
+|`UINT`
+|`extern "C" uint64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)`
+|`uint64_t`
+
+|`INT`
+|`extern "C" int64_t funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)`
+|`int64_t`
+
+|`FLOAT`
+|`extern "C" float funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)`
+|`float`
+
+|`DOUBLE`
+|`extern "C" double funcName (const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum)`
+|`double`
+|===
+
+The parameters `iToken`, `iTokenLen`, and `iTokenNum` must be
+named exactly as such, and are used to describe the input tokens:
+
+* `iToken` is an array of the string tokens
+* `iTokenLen` is an array of the lengths of the string tokens
+* `iTokenNum` is the number of tokens
+
+Token functions for attribute types `STRING` have a C{pp} function return type of `void`.
+Use the parameter `oToken` to store the string you want returned, and
+in GSQL the token function will return the string stored in `oToken`:
+
+* `oToken` is the returned string value
+* `oTokenLen` is the length of the return string
+
+Note that the input tokens are always in string (`char*`) format. If
+necessary, convert them to other types inside the function.
+
+
+=== Example
+
+The built-in token function `gsql_concat` is used in the following example.
+It takes multiple token parameters and returns a string.
+
+[source,c++]
+----
+extern "C" void gsql_concat(const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum, char* const oToken, uint32_t& oTokenLen) {
+  int k = 0;
+  for (int i=0; i < iTokenNum; i++) {
+    for (int j =0; j < iTokenLen[i]; j++) {
+           oToken[k++] = iToken[i][j];
+    }
+  }
+  oTokenLen = k;
+}
+----
+
+=== User-defined Token Functions for `WHERE` Clause
+
+User-defined token functions (described above) can also be used to
+construct the boolean conditional expression in the `WHERE` clause.
+However, there are some restrictions in the `WHERE` clause:
+
+In the clause `WHERE <conditions>`,
+
+* The only user-defined token functions allowed are those that return a
+boolean value.
+* If a user-defined token function is used in a `WHERE` clause, then
+it must constitute the entire condition; it cannot be combined with
+another function or operator to produce a subsequent value. However, the
+arguments of the token function can include other functions.
+
+The source code for the built-in token function `gsql_token_equal` is
+used as an example for how to write a user-defined token function.
+
+....
+extern "C" bool gsql_token_equal(const char* const iToken[], uint32_t iTokenLen[], uint32_t iTokenNum) {
+  if (iTokenNum != 2) {
+    return false;
+  }
+  if (iTokenLen[0] != iTokenLen[1]) {
+    return false;
+  }
+  for (int i =0; i < iTokenLen[0]; i++) {
+    if (iToken[0][i] != iToken[1][i]) {
+      return false;
+    }
+  }
+  return true;
+}
+....
+
+== Use GitHub to store token functions
+
+You can configure GSQL to read from a GitHub repository for `tokenbank.cpp`.
+
+If GitHub access is configured, GSQL will retrieve user source code files from GitHub before files added via `PUT`, so long as the files exist.
+
+[NOTE]
+TigerGraph only allows one TokenBank file at a time. Files on GitHub take priority.
+If GitHub is connected but files are missing, TigerGraph will look for a TokenBank file added via `PUT`.
+
+New additions to the files in the GitHub repository are instantly available in GSQL.
+
+You can retrieve the TokenBank from `AppRoot/dev/gdk/gsql/src/TokenBank/TokenBank.cpp` and copy it to a Git repository of your choice.
+
+The file name must remain `TokenBank.cpp` on GitHub.
+This is in contrast to the `PUT` method, where the file could have any file name.
+
+The `gadmin` configuration parameters for setting up the connection to GitHub are as follows:
+
+[header=true]
+.Parameters for GitHub
+|===
+|Parameter | Description | Example
+
+| `GSQL.GithubUserAcessToken` | The credential used to access the repository | `anonymous`
+| `GSQL.GithubRepository` | The user and repository where the files are held | `sample_user/repository`
+| `GSQL.GithubBranch`  | The branch to access | `main`
+| `GSQL.GithubPath` | Path to the directory in the repository that has `TokenBank.cpp` | `src/`
+| `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
+|===
+
+Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
+
+Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters.
+If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the token functions become available.
+
+[source]
+----
+gadmin config set GSQL.GithubUserAcessToken anonymous
+gadmin config set GSQL.GithubRepository tigergraph/ecosys
+gadmin config set GSQL.GithubBranch demo_github
+gadmin config set GSQL.GithubPath sample_code/src
+gadmin config apply
+----
+
+After the parameters are successfully configured, you can access your user-defined token functions right away.
+
+== Store token functions locally
+
+All UDF files are scanned by the system to ensure that they comply with the UDF file policy as set by configuration commands in TigerGraph Server.
+For more details, see xref:tigergraph-server:security:index.adoc[TigerGraph Server - Security].
+
+
+=== Step 1: Enable adding a TokenBank with PUT
+
+Run the following commands to enable uploading a TokenBank through the GSQL `PUT` command:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnablePutTokenBank true
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+=== Step 2: Modify the current TokenBank file
+
+Use the `GET TokenBank` command in GSQL to download
+the current file to any location on your machine. The path after the
+keyword `TO` specifies the path where the `file` will be output to.
+
+The file must end with the file extension `.cpp`.
+The file and the directories will be created if they do not exist.
+
+[source,gsql]
+----
+GSQL > GET TokenBank TO "/home/tigergraph/TokenBank.cpp"
+GET TokenBank successfully.
+----
+
+If you only supply a directory but not a filename, the file will be
+created with the default filename `TokenBank.cpp`.
+
+=== Step 3: Define your token function
+
+Write your function in `TokenBank.cpp`.
+
+[CAUTION]
+====
+If any code in `TokenBank.cpp` causes a compilation error, GSQL will be unable to run _any_ loading jobs, whether containing user-defined token functions or not.
+====
+
+=== Step 4: Store the modified TokenBank.cpp file
+
+After defining the token function, use the `PUT TokenBank` command to store the file so that GSQL can read it.
+The path after the keyword `FROM` is the absolute path to the `TokenBank.cpp` file.
+
+[source,gsql]
+----
+GSQL > PUT TokenBank FROM "/home/tigergraph/TokenBank.cpp"
+PUT TokenBank successfully.
+----
+
+The `PUT` command will automatically store the files in all nodes in a cluster, overwriting any existing files that contain token functions.
+Once the file is stored, you will be able to call the user-defined token function the next time GSQL is executed.
+This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.
+
+=== Step 5: Disable adding a TokenBank with PUT
+
+For best security practices, run the following commands to once more disable uploading a TokenBank through the GSQL `PUT` command:
+
+[source.wrap,console]
+----
+$ gadmin config set GSQL.UDF.EnablePutTokenBank false
+$ gadmin config apply
+$ gadmin restart gsql
+----

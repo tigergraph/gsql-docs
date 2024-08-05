@@ -4,7 +4,7 @@
 *** xref:querying-expression-functions/datetime-functions.adoc[]
 *** xref:querying-expression-functions/mathematical-functions.adoc[]
 *** xref:querying-expression-functions/string-functions.adoc[]
-*** xref:loading-token-functions/index.adoc[]
+** xref:loading-token-functions/index.adoc[]
 **** xref:loading-token-functions/token/index.adoc[]
 ***** xref:loading-token-functions/token/flatten.adoc[]
 ***** xref:loading-token-functions/token/flatten_json_array.adoc[]
@@ -50,3 +50,4 @@
 ***** xref:loading-token-functions/reducer/max.adoc[]
 ***** xref:loading-token-functions/reducer/min.adoc[]
 ***** xref:loading-token-functions/reducer/or.adoc[]
+**** xref:loading-token-functions/add-token-function.adoc[]

@@ -1,0 +1,125 @@
+= flatten()
+
+This function splits a multi-value field into a set of records.
+Those records are first stored in a temporary table, and then the temporary table can be loaded into vertices and/or edges.
+Only one flatten function is allowed in one temp table destination clause.
+
+== Syntax
+
+* `flatten (column_to_be_split, group_separator, number_of_sub_fields)`
+* `flatten (column_to_be_split, group_separator, sub_field_separator, number_of_sub_fields)`
+
+== Parameters
+The function can flatten a column one or two levels deep depending on the parameters.
+If you supply three parameters, the function splits the entry in the column into multiple records by the specified separator.
+
+
+column_to_be_split::
+Required.
+The column to be split into multiple records.
+group_separator::
+Required.
+The separator to split the value in the column by.
+number_of_sub_fields::
+Required.
+When you only provide three parameters to perform a one-level split on the column, the value of this parameter must be set to 1.
+
+If you supply four parameters, the function performs two levels of splitting on a column.
+It first splits the column into groups by the group separator, and then splits the group into multiple fields by the subfield separator.
+
+column_to_be_split::
+Required.
+The column to be split into multiple records.
+group_separator::
+Required.
+The separator to split the value in the column by.
+sub_field_separator::
+Optional.
+The separator to split the group obtained from separating the column value by the group separator.
+number_of_sub_fields::
+Required.
+The number of subfields in a group.
+
+== Return type
+`STRING`
+
+== Examples
+
+=== One-level flatten
+
+If we have the following data file of books and their genres, with the genre column containing multiple values:
+
+.book1.dat
+[source,csv]
+----
+101|"Harry Potter and the Philosopher's Stone"|"fiction,fantasy,young adult"
+102|"The Three-Body Problem"|"fiction,science fiction,Chinese"
+----
+
+xref:attachment$book1.dat[Download book1.dat]
+
+
+To load the different genre values in the column into the `Genre` vertex type and create edges between the book vertices and the genre vertices, we can use the flatten function to split the different values in the third column into multiple records, each matching the same values in the first and second columns.
+
+The following loading job contains two `LOAD` statements.
+The first one loads input data to Book vertices and to a `TEMP_TABLE`.
+The second one loads the `TEMP_TABLE` data to Genre vertices and `Book_Genre` edges.
+
+.One-level Flatten Function loading (load_book_flatten1.gsql)
+[source.wrap,gsql]
+----
+include::appendix:example$book_rating/c_loadingjob_flatten1.gsql[]
+----
+<1> The third column (`$2`) of each input line is split into separate tokens, with comma (`,`) as the separator.
+Each token has its own row in table `t1`.
+The first column is labeled `bookcode` with value `$0` and the second column is `genre` with one of the `$2` tokens.
+
+
+The temporary table `t1` looks like the following:
+
+|===
+| bookcode | genre
+
+| 101
+| fiction
+
+| 101
+| fantasy
+
+| 101
+| young_adult
+
+| 102
+| fiction
+
+| 102
+| science_fiction
+
+| 102
+| Chinese
+|===
+
+=== Two-level flatten
+
+If a column can be separated into values that contain subfields themselves, the flatten function can perform another level split to separate the subfields into separate columns.
+
+For example, if we have the following data.
+The third column contains codes for the genre as well as the genres themselves
+
+.book2.dat
+[source,gsql]
+----
+101|"Harry Potter and the Philosopher's Stone"|"FIC:fiction,FTS:fantasy,YA:young adult"
+102|"The Three-Body Problem"|"FIC:fiction,SF:science fiction,CHN:Chinese"
+----
+
+We can use a flatten function to split the column into separate groups, and then split the group into separate subfields:
+
+The flatten function now has four parameters instead of three.
+The additional parameter is used to record the `genre_name` in the Genre vertices.
+
+.Two-level Flatten Function loading (book_flatten2_load.gsql)
+[source.wrap,gsql]
+----
+include::appendix:example$book_rating/c_loadingjob_flatten2.gsql[]
+----

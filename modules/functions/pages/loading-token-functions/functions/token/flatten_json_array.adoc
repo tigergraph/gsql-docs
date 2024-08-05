@@ -1,0 +1,49 @@
+= flatten_json_array()
+
+This function parses a JSON array of primitive values or JSON objects, as well as JSON objects in a column of a CSV file.
+
+When it flattens a JSON array of primitive values, it returns all the values in the array, each value creating its own record.
+When it flattens a JSON array of JSON objects, it returns all the values of fields specified in the parameters; each parameter is a column, and each object creates a record.
+
+== Syntax
+* `flatten_json_array(array_name)`
+* `flatten_json_array (array_name, sub_obj_1, …, sub_obj_n)`
+* `flatten_json_array (column_name, sub_obj_1, …, sub_obj_n)`
+
+== Parameters
+
+The function can be used to flatten a JSON array of primitive values (strings, numbers and booleans), a JSON array of JSON objects or a JSON object in a CSV file.
+
+When it flattens an array of primitive values, it only takes one parameter:
+
+array_name::
+Required.
+The name of the array field in the JSON object.
+
+When it flattens an array of JSON objects, it takes multiple parameters:
+
+array_name::
+Required.
+The name of the array field in the JSON object.
+sub_obj_1...n::
+Required.
+The name of the fields in the JSON object.
+
+When it flattens a of JSON object in a CSV column, it takes multiple parameters:
+
+array_name::
+Required.
+The name of the column containing the JSON object values.
+sub_obj_1...n::
+Required.
+The name of the fields in the JSON object.
+
+== Examples
+
+
+include::partial$flatten_json_array_primitive.adoc[]
+
+include::partial$flatten_json_array_object.adoc[]
+
+include::partial$flatten_json_object.adoc[]
+

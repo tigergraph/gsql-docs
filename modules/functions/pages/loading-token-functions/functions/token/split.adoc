@@ -1,0 +1,114 @@
+= split()
+
+The SPLIT() function reads a compound token and splits it into a collection of elements, to form a set or list collection, or a map.
+
+== Syntax
+
+* `split(column, separator)`
+* `split(column, separator, [sub_separator])`
+
+
+== Parameters
+
+The function can split a column to load to a map attribute or a set/list attribute.
+
+When it loads data to a set/list attribute:
+
+column::
+Required.
+The index or the name of the column to split.
+separator::
+Required.
+The separator by which to split the values in the column.
+
+When it loads data into a map attribute:
+
+column::
+Required.
+The index or the name of the column to split.
+separator::
+Required.
+The separator that splits the key-value pairs in the column.
+For example. if the key-value pair in the column is formatted like this: `key:value`, then the separator is `:`.
+sub_separator::
+Required only when the column has multiple key-value pairs separated by a sub separator.
+For example, if the column has values such as `key1:value1,key2:value2`, then `sub_separator` is `,`.
+
+
+== Examples
+
+=== Load a `SET` or `LIST` attribute
+
+[tabs]
+====
+--
+Data file::
++
+--
+For example, if we have
+xref:attachment$split_list_set.csv[the following data file] (note that the comma is still the main separator, but in the second and third column, `|` and `#` are also used as separators):
+
+.split_list_set.csv
+[source,text]
+----
+vid,names,numbers
+v1,mike|tom|jack, 1 # 2 # 3
+v2,john, 5 # 4 # 8
+----
+--
+Schema and loading job::
++
+--
+The first instance of the function splits the second column by `|` and the second instance splits the third column by `#`.
+All items in the column that are derived from separation form the list or set that is loaded into the attribute.
+
+.Example: SET/LIST loading by SPLIT() example
+[source,gsql]
+----
+include::appendix:example$test-schema/c_loading_job_split.gsql[]
+----
+====
+
+
+=== Load a `MAP` attribute
+
+[tabs]
+====
+Data file 1::
++
+--
+xref:attachment$one_key_value.csv[Download one_key_value.csv]
+
+.Example data with one key-value pair per line
+[source,text]
+----
+vid,key_value
+v1,1:mike
+v2,2:tom
+v1,3:lucy
+----
+--
+Data file 2::
++
+--
+xref:attachment$multi_key_value.csv[Download multi_key_value.csv]
+
+.Example data with multiple key-value pairs per line
+[source,text]
+----
+vid,key_value_list
+v1,1:mike#4:lin
+v2,2:tom
+v1,3:lucy#1:john#6:jack
+----
+--
+Loading job::
++
+--
+.Loading a MAP by SPLIT() function
+[source,gsql]
+----
+include::appendix:example$test-schema/c_loadingjob_map_split.gsql[]
+----
+--
+====

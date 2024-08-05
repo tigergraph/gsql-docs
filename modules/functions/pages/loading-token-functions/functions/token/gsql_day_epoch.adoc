@@ -1,0 +1,21 @@
+= gsql_day_epoch()
+
+
+Returns the day number (1 - 31) from a Unix https://en.wikipedia.org/wiki/Unix_time[epoch time] value.
+
+== Syntax
+`gsql_day_epoch(epoch)`
+
+== Parameters
+epoch::
+Required.
+A Unix epoch time value.
+
+== Return type
+`INT`
+
+== Example
+
+----
+gsql_year_epoch(1657327158) -> 9
+----

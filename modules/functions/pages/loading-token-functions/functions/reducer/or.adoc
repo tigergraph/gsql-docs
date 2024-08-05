@@ -1,0 +1,60 @@
+= or()
+
+This function checks if any tokens received can be interpreted as a boolean `false`.
+If any can, the function returns false.
+Otherwise, the function returns true.
+
+
+== Acceptable parameter types
+
+* `INT`: `INT` type parameters must be 1 or 0.
+1 means true and 0 means false.
+* `BOOL`
+** True: `TRUE`, `True`, `true`, 1
+** False: `FALSE`, `False`, `false`, 0
+
+== Return value
+
+* Returns 1 if any input value is 1.
+Returns 0 if all input values are 0.
+* Returns boolean `TRUE` if all input values are `TRUE`, `True`, or `true`.
+Returns boolean `FALSE` if one input value is `FALSE`, `False`, or `false`.
+
+== Example
+
+If we have the following data in a CSV file of the different pass/fail results of tests taken by students.
+To give a student vertex a result attribute of value `true`, all of their test results must be `true`.
+Otherwise, the attribute is set to false.
+
+
+|===
+|name |result
+
+|Tommy
+|true
+
+|Tommy
+|true
+
+|Tommy
+|false
+
+|Amy
+|true
+
+|Amy
+|true
+
+|Amy
+|true
+|===
+
+We can use the `or()` reduce function to load the boolean attribute:
+
+[,gsql]
+----
+LOAD f TO VERTEX Person
+  VALUES ($"name", REDUCE(or($"result"))
+----
+
+After loading, both Tommy and Amy have a `result` of true.

@@ -1,0 +1,24 @@
+= gsql_regex_replace()
+
+Returns the string resulting from replacing all substrings in the input string that match the given regex token with the substitute string.
+
+== Syntax
+`gsql_regex_replace(str, regex, replace_substr)`
+
+== Parameters
+str::
+Required.
+The original string.
+regex::
+Required.
+The regex for the original string to match against.
+replace_substr::
+Required.
+The substring to replace all instances of substrings that match the provided regex.
+
+== Return type
+`STRING`
+
+
+== See also
+* xref:functions/token/gsql_replace.adoc[]

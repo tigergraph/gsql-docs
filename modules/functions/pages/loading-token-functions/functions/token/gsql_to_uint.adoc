@@ -1,0 +1,22 @@
+= gsql_to_uint()
+
+Converts the string representation of an unsigned integer to an unsigned integer.
+
+* If the input string is the string representation of an unsigned int, the function returns that integer.
+* If the input string is the string representation of a non-negative float, the function returns that number cast as an int.
+
+== Syntax
+`gsql_to_uint(in_string)`
+
+== Parameters
+in_string::
+The input string representation of an unsigned integer.
+
+== Return type
+`UINT`
+
+== Example
+
+----
+gsql_to_uint("15") -> 15
+----

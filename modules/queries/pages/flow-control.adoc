@@ -1,65 +1,378 @@
-= Flow Control
+= Flow Control in GSQL
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+== CASE WHEN
+One `CASE` statement contains one or more `WHEN-THEN` clauses, each `WHEN` presenting one expression. The `CASE` statement
+may also have one `ELSE` clause whose statements are executed if none of the preceding conditions are true.
 
-== Beautiful Vertex Information
+The `CASE` statement can be used in two different syntaxes:
+One equivalent to an if-else statement, and the other equivalent to a switch statement.
 
-* A list of concise information, perfectly
-* getting the message across
+The if-else version evaluates the boolean condition within each `WHEN` clause and executes the first block of statements
+whose condition is true. The optional concluding `ELSE` clause is executed only if all `WHEN` clause conditions are false.
 
-`a small code block that adds understanding`
+The switch version evaluates the expression following the keyword `WHEN` and compares its value to the expression immediately
+following the keyword `CASE`. These expressions do not need to be boolean; the `CASE` statement compares pairs of expressions
+to see if their values are equal. The first `WHEN-THEN` clause to have an expression value equal to the `CASE` expression value
+is executed; the remaining clauses are skipped. The optional `ELSE` clause is executed only if no `WHEN` clause expression has
+a value matching the `CASE` value.
 
+The `CASE` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at a top-statement level -- the same level as the `SELECT` query block
+
+.Syntax
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+//if-else semantics
+CASE
+  WHEN condition1 THEN statement(s)
+  WHEN condition2 THEN statement(s)
+  ...
+  ELSE statement(s)
+END
 
-SELECT p FROM etc etc
+//or switch semantics
+CASE expr
+  WHEN constant1 THEN statement(s)
+  WHEN constant2 THEN statement(s)
+  ...
+  ELSE statement(s)
+END
+----
 
+.CASE Example
+[source,gsql]
+----
+USE GRAPH financialGraph
+CREATE OR REPLACE QUERY CaseWhenTest () {
+
+  SumAccum<INT> @@isBlocked;
+  SumAccum<INT> @@unBlocked;
+  SumAccum<INT> @@others;
+
+  SumAccum<INT> @@isBlocked2;
+  SumAccum<INT> @@unBlocked2;
+  SumAccum<INT> @@others2;
+
+
+  //case-when in a query block
+  S1 = SELECT a
+       FROM (Account):a
+       ACCUM
+          //if-else semantic: within query block, statement
+          //does not need a semicolon to end.
+          CASE
+            WHEN a.isBlocked == "yes" THEN @@isBlocked += 1
+            WHEN a.isBlocked == "no" THEN @@unBlocked += 1
+            ELSE  @@others += 1
+          END;
+
+
+  PRINT @@isBlocked, @@unBlocked, @@others;
+
+  S2 = SELECT a
+       FROM (Account):a
+       ACCUM
+          //switch semantic: within query block, statement
+          //does not need a semicolon to end.
+          CASE a.isBlocked
+            WHEN "yes" THEN @@isBlocked2 += 1
+            WHEN "no" THEN @@unBlocked2 += 1
+            ELSE  @@others2 += 1
+          END;
+
+  PRINT @@isBlocked2, @@unBlocked2, @@others2;
+
+  STRING drink = "Juice";
+  SumAccum<INT> @@calories = 0;
+
+ //if-else version. Top-statement level. Each statement
+ //needs to end by a semicolon, including the “END”.
+  CASE
+    WHEN drink == "Juice" THEN @@calories += 50;
+    WHEN drink == "Soda"  THEN @@calories += 120;
+    ELSE @@calories = 0;       // Optional else-clause
+  END;
+  // Since drink = "Juice", 50 will be added to calories
+
+  //switch version. Top-statement level. Each statement
+  //needs to end by a semicolon, including the “END”.
+  CASE drink
+    WHEN "Juice" THEN @@calories += 50;
+    WHEN "Soda"  THEN @@calories += 120;
+    ELSE  @@calories = 0;    // Optional else-clause
+  END;
+
+  PRINT @@calories;
+
+
+}
+
+INSTALL QUERY CaseWhenTest
+
+RUN QUERY CaseWhenTest()
+----
+
+.Results
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@isBlocked": 1,
+      "@@unBlocked": 5,
+      "@@others": 0
+    },
+    {
+      "@@isBlocked2": 1,
+      "@@unBlocked2": 5,
+      "@@others2": 0
+    },
+    {
+      "@@calories": 100
+    }
+  ]
 }
 ----
 
+== `IF` statement
 
-=== A sub-section about vertex information
+The `IF` statement provides conditional branching: execute a block of statements only if a given condition is true. The
+`IF` statement allows for zero or more `ELSE-IF` clauses, followed by an optional `ELSE` clause. It always close by the `END` keyword.
 
-* Here is a bullet point about some information
-- here's a second bullet point
+The `IF` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
+
+.Syntax
+[source,gsql]
+----
+IF condition1 THEN statement(s)
+ ELSE IF condition2 THEN statement(s)
+  ...
+ ELSE statement(s)
+END
+----
+
+.IF Example
+[source,gsql]
+----
+USE GRAPH financialGraph
+CREATE OR REPLACE QUERY WhileTest (VERTEX<Account> seed) {
+  //mark if a node has been seen
+  OrAccum @visited;
+  //empty vertex set var
+  reachable_vertices = {};
+  //declare a visited_vertices var, annotated its type
+  //as ANY type so that it can take any vertex
+  visited_vertices (ANY) = {seed};
+
+  // Loop terminates when all neighbors are visited
+  WHILE visited_vertices.size() !=0 DO
+       //s is all neighbors of visited_vertices
+       //which have not been visited
+     visited_vertices = SELECT s
+                        FROM visited_vertices-(Transfer>)-:s
+                        WHERE s.@visited == FALSE
+                           POST-ACCUM
+                                s.@visited = TRUE;
+
+    reachable_vertices = reachable_vertices UNION visited_vertices;
+  END;
+
+  PRINT reachable_vertices;
+
+    //reset vertex set variables
+    reachable_vertices = {};
+    visited_vertices (ANY) = {seed};
+
+
+     //clear the visited flag
+  S1 = SELECT s
+       FROM  Account:s
+       ACCUM s.@visited = FALSE;
+
+    // Loop terminates when condition met or reach 2 iterations
+  WHILE visited_vertices.size() !=0 LIMIT 2 DO
+     visited_vertices = SELECT s
+                        FROM visited_vertices-(Transfer>)-:s
+                        WHERE s.@visited == FALSE
+                        POST-ACCUM
+                              s.@visited = TRUE;
+
+     reachable_vertices = reachable_vertices UNION visited_vertices;
+  END;
+
+  PRINT reachable_vertices;
+}
+
+
+INSTALL QUERY WhileTest
+
+RUN QUERY WhileTest("Dave")
+----
+
+== FOREACH Statement
+The `FOREACH` statement provides bounded iteration over a block of statements.
+
+The `FOREACH` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
+
+
+.Syntax
+[source,gsql]
+----
+FOREACH loop_var IN rangeExpr DO
+   statements
+END
+
+//loop_var and rangExpr can be the following forms
+name IN setBagExpr
+(key, value) pair IN setBagExpr // because it’s a Map
+name IN RANGE [ expr, expr ]
+name IN RANGE [ expr, expr ].STEP ( expr )
+----
+
+=== Semantics
+*The `FOREACH` statement has the following semantic restrictions:*
+
+* In a query block `FOREACH`, it is never permissible to update the loop variable (the variable declared before `IN`, e.g.,
+var in “FOREACH var IN setBagExpr”).
+
+* In a query-body level `FOREACH`, in most cases it is not permissible to update the loop variable. The following exceptions apply:
+** If the iteration is over a ListAccum, its values can be updated.
+** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
+* If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
+
+.Example
+[source,gsql]
+----
+
+USE GRAPH financialGraph
+CREATE OR REPLACE QUERY ForeachTest ( ) {
+
+  ListAccum<UINT>  @@listVar = [1, 2, 3];
+  SetAccum<UINT>   @@setVar = (1, 2, 3);
+  BagAccum<UINT>   @@bagVar =  (1, 2, 3);
+
+  SetAccum<UINT> @@set1;
+  SetAccum<UINT> @@set2;
+  SetAccum<UINT> @@set3;
+
+  #FOREACH item in collection accumlators variables
+  S = SELECT tgt
+      FROM Account:s -(Transfer>:e)- :tgt
+      ACCUM
+        @@listVar += e.amount,
+        @@setVar += e.amount,
+        @@bagVar += e.amount;
+
+  PRINT @@listVar, @@setVar, @@bagVar;
+
+  //loop element in a list
+  FOREACH i IN @@listVar DO
+      @@set1 += i;
+  END;
+
+  //loop element in a set
+  FOREACH i IN @@setVar DO
+     @@set2 += i;
+  END;
+
+  //loop element in a bag
+  FOREACH i IN @@bagVar DO
+      @@set3 += i;
+  END;
+
+  PRINT @@set1, @@set2, @@set3;
+
+  //show step of loop var
+  ListAccum<INT> @@st;
+  FOREACH k IN RANGE[-1,4].STEP(2) DO
+      @@st += k;
+  END;
+
+  PRINT @@st;
+
+  ListAccum<INT> @@t;
+
+  //nested loop:
+  // outer loop iterates 0, 1, 2.
+  // inner loop iterates 0 to i
+  FOREACH i IN RANGE[0, 2] DO
+    @@t += i;
+    S = SELECT s
+        FROM Account:s
+        WHERE s.name =="Dave"
+        ACCUM
+          FOREACH j IN RANGE[0, i] DO
+            @@t += j
+          END;
+  END;
+  PRINT @@t;
+
+  MapAccum<STRING,STRING> @@mapVar, @@mapVarResult;
+  S = SELECT s
+      FROM Account:s
+      WHERE s.name =="Dave" OR s.name == "Jay"
+      ACCUM @@mapVar += (s.name -> s.isBlocked);
+
+   //loop (k,v) pairs of a map
+   FOREACH (keyI, valueJ) IN @@mapVar DO
+    @@mapVarResult += (keyI -> valueJ);
+   END;
+
+  PRINT  @@mapVar, @@mapVarResult;
+
+}
+
+
+
+INSTALL QUERY ForeachTest
+
+RUN QUERY ForeachTest()
 
 
 
 
 
+CONTINUE and BREAK
+
+The CONTINUE and BREAK statements can only be used within a block of a WHILE or FOREACH statement. The CONTINUE statement branches control flow to the end of the loop, skipping any remaining statements in the current iteration, and proceeding to the next iteration. That is, everything in the loop block after the CONTINUE statement will be skipped, and then the loop will continue as normal.
+The BREAK statement branches control flow out of the loop, i.e., it will exit the loop and stop iteration.
+Example
+USE GRAPH financialGraph
+CREATE OR REPLACE QUERY ContinueAndBreakTest ( ) {
+
+   //output: 1, 3
+   INT i = 0;
+   WHILE (i < 3) DO
+      i = i + 1;
+      IF (i == 2) THEN
+         CONTINUE; //go directly to WHILE condition
+      END;
+      PRINT i;
+    END;
+
+    //output: 1
+    i = 0;
+    WHILE (i < 3) DO
+      i = i + 1;
+      IF (i == 2) THEN
+        Break; //jump out of the WHILE loop
+      END;
+      PRINT i;
+    END;
+
+}
 
 
-|===
-| Tables | are | the | best | thing | ever
 
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
+INSTALL QUERY ContinueAndBreakTest
+
+RUN QUERY ContinueAndBreakTest()
+----
 
 
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

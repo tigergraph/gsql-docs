@@ -5,7 +5,7 @@ The token functions in this section are used in the attribute expressions in the
 [width="100%",cols="2,1,2",options="header",]
 |===
 |Function |Output type |Description
-|xref:3.10.1@gsql-ref:ddl-and-loading:functions:token:gsql_reverse.adoc[gsql_reverse(_in_string_)]
+|xref:3.10.1@gsql-ref:ddl-and-loading:functions/token/gsql_reverse.adoc[gsql_reverse(_in_string_)]
 |`STRING`
 |Returns a string with the
 characters in the reverse order of the input string _in_string_.

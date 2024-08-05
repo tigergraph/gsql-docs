@@ -153,7 +153,7 @@ A subquery parameter can only be one of the following types:
 * A set or bag of primitive or `VERTEX` elements
 
 == Return Types
-A subquery’s return value can be any xref:3.10.1@gsql-ref:querying/declaration-and-assignment-statements.adoc#_base_type_variables[base type variable] or accumulator with the following exceptions:
+A subquery’s return value can be any xref:3.10.1@gsql-ref:querying:declaration-and-assignment-statements.adoc#_base_type_variables[base type variable] or accumulator with the following exceptions:
 
 * If the return type is a `HeapAccum` or `GroupByAccum` that has a user-defined tuple as an element, the user-defined tuple must be xref:3.10.1@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc,`TYPEDEF`[defined at the catalog level].
 * If the return type is a `BagAccum`, `SetAccum`, or `ListAccum` with a tuple as its element, the tuple does not need to be defined at the catalog level and can be anonymous.

@@ -58,8 +58,8 @@ Token functions are functions that operate on input tokens during data loading. 
 
 There are four types of token functions:
 
-* xref:gsql-ref:ddl-and-loading:functions:token.adoc[Token Functions]
-* xref:gsql-ref:ddl-and-loading:functions:token_where.adoc[Token Functions in WHERE Clause]
-* xref:gsql-ref:ddl-and-loading:functions:reducer.adoc[Reducer Functions]
-* xref:gsql-ref:ddl-and-loading:add-token-function.adoc[User-defined token functions]
+* xref:3.10.1@gsql-ref:ddl-and-loading:functions/token.adoc[Token Functions]
+* xref:3.10.1@gsql-ref:ddl-and-loading:functions/token_where.adoc[Token Functions in WHERE Clause]
+* xref:3.10.1@gsql-ref:ddl-and-loading:functions/reducer.adoc[Reducer Functions]
+* xref:3.10.1@gsql-ref:ddl-and-loading:add-token-function.adoc[User-defined token functions]
 

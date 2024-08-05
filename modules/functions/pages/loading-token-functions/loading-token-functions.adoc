@@ -1,6 +1,6 @@
 = Loading Functions
 
-The token functions in this section are used in the attribute expressions in the destination clause or as part of a condition in xref:functions/token_where/index.adoc#_token_functions_with_logical_operators[the `WHERE` clause of a `LOAD` statement].
+The token functions in this section are used in the attribute expressions in the destination clause or as part of a condition in xref:gsql-ref:ddl-and-loading:functions/token_where/index.adoc#_token_functions_with_logical_operators[the `WHERE` clause of a `LOAD` statement].
 
 [width="100%",cols="2,1,2",options="header",]
 |===

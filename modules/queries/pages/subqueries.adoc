@@ -1,65 +1,142 @@
-= Subqueries
+= Subqueries in GSQL
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+A query defined with a `RETURNS` header following its `CREATE` statement is called a subquery. Subqueries act as callable functions in GSQL: they take parameters, perform a set of actions and return a value.
 
-== Beautiful Vertex Information
 
-* A list of concise information, perfectly
-* getting the message across
+A subquery must end with a xref:3.10.1@gsql-ref:querying:output-statements-and-file-objects.adoc[return statement] to pass its output value to the calling query. Exactly one type is allowed in the RETURNS header, and thus the RETURN statement can only return one expression.
 
-`a small code block that adds understanding`
 
-[source,gsql]
+A subquery must be created before the query that calls the subquery. A subquery must be installed either before or in the same `INSTALL QUERY` command with the query that calls the subquery.
+
+
+The subquery can be called within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
+
+.Subquery Syntax
+[source, gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+CREATE OR REPLACE QUERY subq(/* parameters */) RETURNS (type) SYNTAX V2 {
+    // Query body
+    V1= Query_Block_1;
 
-SELECT p FROM etc etc
+    V2= Query_Block_2;
 
+        .
+        .
+        .
+
+    V_n = Query_Block_n;
+
+    RETURN expr; //expr matches the query signature defined RETURN type
 }
 ----
 
+== Example 1
 
-=== A sub-section about vertex information
+Below shows a distributed query main() calling two subqueries, which takes a primitive parameter type, and returns the same primitive type. Note that we first need to install the subqueries before we can install the main query.
 
-* Here is a bullet point about some information
-- here's a second bullet point
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+//subquery cannot use distributed keyword
+//return a list of int
+CREATE OR REPLACE QUERY subq_ListAccum_INT()
+RETURNS (ListAccum<INT>)
+{
+   ListAccum<INT> @@listAcc;
+   @@listAcc += 1;
+   @@listAcc += 2;
+   @@listAcc += 3;
+   @@listAcc += 9999;
+   RETURN @@listAcc;
+}
+
+//return nested list accum
+CREATE OR REPLACE QUERY subq_ListAccum_nested_INT()
+RETURNS (ListAccum<ListAccum<INT>>)
+{
+   ListAccum<INT> @@listAcc;
+   ListAccum<ListAccum<INT>> @@listAccNested;
+   @@listAcc += 111;
+   @@listAccNested += @@listAcc;
+   @@listAcc += 222;
+   @@listAccNested += @@listAcc;
+   RETURN @@listAccNested;
+}
 
 
+//create a user defined tuple named “TUP” in the global scope
+TYPEDEF TUPLE <i INT, j FLOAT, k STRING> TUP
+
+CREATE OR REPLACE QUERY subq_ListAccum_TUP()
+RETURNS (ListAccum<TUP>)
+{
+   ListAccum<TUP> @@listAcc;
+   @@listAcc += TUP(9, 9.9, "hello");
+   @@listAcc += TUP(10, 10.9, "world");
+   RETURN @@listAcc;
+}
+
+CREATE OR REPLACE QUERY subq_MapAccum(VERTEX<Account> node)
+RETURNS(MapAccum<STRING, STRING>)
+{
+    MapAccum<STRING, STRING> @@res;
+    Start = {node};
+    Result = SELECT t
+             FROM   Start:t
+             ACCUM @@res += (t.name -> t.isBlocked);
+
+    RETURN @@res;
+}
 
 
+//install the subqueries first
+INSTALL QUERY subq_ListAccum_INT, subq_ListAccum_nested_INT, subq_ListAccum_TUP, subq_MapAccum
 
+CREATE OR REPLACE DISTRIBUTED QUERY mainQuery() {
 
+  ListAccum<INT> @@resultListInt;
+  ListAccum<STRING> @@resultListSTRING;
 
-|===
-| Tables | are | the | best | thing | ever
+  //loop the returned collection from subquery
+  FOREACH i IN subq_ListAccum_INT() DO
+       @@resultListInt += i;
+  END;
 
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
+  PRINT @@resultListInt;
 
+  ListAccum<INT> @@resultListInt2;
+  # Nested collection return type
+  FOREACH i IN subq_ListAccum_nested_INT() DO
+    FOREACH j IN i DO
+        @@resultListInt2 += j;
+    END;
+    PRINT @@resultListInt2;
+    //clear the collection type using system reset function
+    reset_collection_accum(@@resultListInt2);
+  END;
 
-== now for another section
+ //loop returned list of user-defined tuples
+ ListAccum<TUP> @@resultListTup;
+ FOREACH i IN subq_ListAccum_TUP() DO
+    @@resultListTup += i;
+ END;
+ PRINT @@resultListTup;
 
-[NOTE]
-this is a note
+ //call a subquery for each matched account “s”
+ MapAccum<STRING, STRING> @@resultMap;
+ S = SELECT s
+     FROM Account:s
+     ACCUM  @@resultMap += subq_MapAccum(s);
 
-[WARNING]
-this is a warning
+ PRINT @@resultMap;
 
-[IMPORTANT]
-this is important information
+}
 
-.Only a few more lines left
-- Surprise +
-page break
+INSTALL QUERY mainQuery
 
-a random line
+RUN QUERY mainQuery()
+----
 
----
+== Subquery Limitations
 
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

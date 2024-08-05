@@ -62,8 +62,11 @@ install query  q1
 
 //run the query
 run query q1()
+----
 
-//result
+[source,json]
+.Result
+----
 {
   "version": {
     "edition": "enterprise",

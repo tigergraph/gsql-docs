@@ -246,7 +246,7 @@ var in “FOREACH var IN setBagExpr”).
 ** If the iteration is over a MapAccum, its values can be updated, but its keys cannot.
 * If the iteration is over a set of vertices, it is not permissible to access (read or write) their vertex-attached accumulators.
 
-==== Example:
+*Example:*
 [source,gsql]
 ----
 
@@ -344,7 +344,7 @@ RUN QUERY ForeachTest()
 The CONTINUE and BREAK statements can only be used within a block of a WHILE or FOREACH statement. The CONTINUE statement branches control flow to the end of the loop, skipping any remaining statements in the current iteration, and proceeding to the next iteration. That is, everything in the loop block after the CONTINUE statement will be skipped, and then the loop will continue as normal.
 The BREAK statement branches control flow out of the loop, i.e., it will exit the loop and stop iteration.
 
-==== Example:
+*Example:*
 
 [source,gsql]
 ----

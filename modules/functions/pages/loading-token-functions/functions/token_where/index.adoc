@@ -2,7 +2,7 @@
 
 The token functions in this section can only be used in the `WHERE` clause of a `LOAD` statement.
 
-NOTE: Besides the functions in the following table, all xref:functions/token/index.adoc[token functions for attribute expressions] can also be used in the `WHERE` clause, including xref:add-token-function.adoc[user-defined functions].
+NOTE: Besides the functions in the following table, all xref:loading-token-functions/functions/token/index.adoc[token functions for attribute expressions] can also be used in the `WHERE` clause, including xref:add-token-function.adoc[user-defined functions].
 
 |===
 | Function name | Output type | Description of function

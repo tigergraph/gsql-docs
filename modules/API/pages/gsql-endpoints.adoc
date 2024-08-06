@@ -103,8 +103,8 @@ This endpoint is used to create global vertices using json contains gsql command
 | Name | Required | Description
 
 | `gsql`
-| yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| no
+| Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
 |===
 
 ==== Example
@@ -145,13 +145,9 @@ This endpoint is used to add existing global vertices to a local graph
 |===
 | Name | Required | Description
 
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for adding vertices. Must be set to false. The request body should be in JSON format.
-
 | `graph`
-| yes
-| Specifies the graph to which the global vertices should be added.
+| no
+| Specifies the graph to which the global vertices should be added. Here must provide.
 |===
 
 ==== Example
@@ -163,7 +159,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?gsql=false&graph=empty_graph" -d '{"addVertices":["user","website"]}'
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?graph=empty_graph" -d '{"addVertices":["user","website"]}'
 ----
 --
 Sample Response::
@@ -185,15 +181,7 @@ This api is used to create global vertices using json
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating vertices. Must be set to false. The request body should be in JSON format.
-|===
+None
 
 ==== Example
 
@@ -204,7 +192,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?gsql=false" -d '{
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices" -d '{
     "createVertices": [
         {
             "Config": {
@@ -275,7 +263,7 @@ This endpoint is used to drop local vertices on specific graph or drop global ve
 |===
 | Name | Required | Description
 
-| `vertexName`
+| `vertex`
 | yes
 | Specifies the vertex types to be deleted. If there are multiple vertex types, separate them with commas. Use "all" to delete all vertices.
 
@@ -293,7 +281,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertexName=user2,user3&graph=recommend"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertex=user2,user3&graph=recommend"
 ----
 --
 Sample Response::
@@ -702,8 +690,8 @@ This endpoint is used to create global edges using gsql command statement.
 | Name | Required | Description
 
 | `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating edges. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| no
+| Indicates whether to use the GSQL command for creating edges. Here must set to true. The request body should contain the GSQL command within the JSON object.
 |===
 
 ==== Example:
@@ -743,10 +731,6 @@ This endpoint is used to add global edges to graph using json format.
 |===
 | Name | Required | Description
 
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
-
 | `graph`
 | yes
 | Specifies the graph to which the global edges will be added.
@@ -760,7 +744,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false&graph=empty_graph" -d '{"addEdges":["has_account"]}'
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?graph=empty_graph" -d '{"addEdges":["has_account"]}'
 ----
 --
 Sample Response::
@@ -782,15 +766,8 @@ This endpoint is used to create global edges using json format.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
+None
 
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creating edges. Must be set to false. The request body should use the JSON object.
-|===
 
 ==== Example:
 [,tabs]
@@ -800,7 +777,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?gsql=false" -d ' {"createEdges":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr1"}],"FromVertexTypeName":"user3","Name":"edge1"},{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr2"}],"FromVertexTypeName":"user2","Name":"edge2"}]}'
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":[{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr1"}],"FromVertexTypeName":"user3","Name":"edge1"},{"IsDirected":false,"ToVertexTypeName":"product","Config":{},"Attributes":[{"AttributeType":{"Name":"FLOAT"},"AttributeName":"attr2"}],"FromVertexTypeName":"user2","Name":"edge2"}]}'
 ----
 --
 Sample Response::
@@ -828,13 +805,13 @@ This endpoint is used to drop edges from a graph or drop global edges.
 |===
 | Name | Required | Description
 
-| `edgeName`
+| `edge`
 | yes
 | Specifies the edge types to be deleted. If there are multiple edge types, separate them with a comma. Use 'all' to drop all edges.
-|
+
 
 | `graph`
-| yes
+| no
 | Specifies the graph from which the edges will be deleted. If not provided, it means the operation will drop global edges.
 |===
 
@@ -874,7 +851,7 @@ This endpoint is used to drop a local/global edge.
 | Name | Required | Description
 
 | `graph`
-| yes
+| no
 | Specifies the graph from which the edge will be deleted. If not provided, it means the operation will drop a global edge.
 |===
 
@@ -914,7 +891,7 @@ This endpoint is used to update attributes in edge.
 | Name | Required | Description
 
 | `graph`
-| yes
+| no
 | Specifies the graph in which the edge's attributes will be updated. If not provided, it means the operation will update attributes on the global level.
 |===
 
@@ -1020,7 +997,7 @@ Sample Response::
 
 === create one graph using gsql command
 
-`POST /gsql/v1/schema/graphs?gsql=true`
+`POST /gsql/v1/schema/graphs`
 
 This endpoint is used to create one graph using gsql command.
 
@@ -1032,8 +1009,12 @@ This endpoint is used to create one graph using gsql command.
 | Name | Required | Description
 
 | `gsql`
+| no
+| default: false. Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+
+| `graphName`
 | yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| Specifies the name of the graph to be created.
 |===
 
 ==== Example:
@@ -1073,8 +1054,8 @@ This endpoint is used to create one graph using JSON format.
 | Name | Required | Description
 
 | `gsql`
-| yes
-| Indicates whether to use a GSQL command for graph creation. Set to false to use JSON format.
+| no
+| default: false. Indicates whether to use a GSQL command for graph creation. Here must set to false to use JSON format.
 
 | `graphName`
 | yes
@@ -1120,7 +1101,7 @@ This endpoint is used to drop one graph.
 
 | `cascade`
 | no
-|  If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
+| default: `false`. If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
 |===
 
 ==== Example:
@@ -1245,12 +1226,16 @@ This endpoint is used to create local/global scheme change job using gsql comman
 | Name | Required | Description
 
 | `gsql`
-| yes
-| Indicates whether to use the GSQL command for creation. Must be set to true. The request body should contain the GSQL command within the JSON object.
+| no
+| Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+
+| `graph`
+| no
+| Which graph to create schema change. Global schema change doesn't need provide.
 
 | `type`
-| yes
-| Specifies the type of schema change job to create. Use `global` for creating a global schema change job and `local` for creating a local schema change job.
+| no
+| Use `global` for creating a global schema change job. schema change job don't need provide this.
 |===
 
 ==== Example:
@@ -1284,19 +1269,7 @@ This endpoint is used to create global scheme change job using json.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsql`
-| yes
-| Indicates whether to use the GSQL command for creation. Must be set to false. The request body should use the JSON object.
-
-| `type`
-| yes
-| Specifies the type of schema change job to create. Use `global` means creating a global schema change job.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -1306,7 +1279,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4?gsql=false&type=global" -d '{"graphs": [{"graphName":"empty_graph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"empty_graph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
 ----
 --
 Sample Response::
@@ -1335,12 +1308,8 @@ This endpoint is used to create local scheme change job using json.
 | Name | Required | Description
 
 | `graph`
-| yes
-| The graph for which the schema change job is to be created.
-
-| `type`
-| yes
-| Specifies the type of schema change job to create. Use `local` means creating a local schema change job.
+| no
+| The graph whose schema change job is to be created. Here should provide.
 |===
 
 ==== Example:
@@ -1351,7 +1320,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?type=local&graph=recommend" -d
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=recommend" -d
 '{
     "dropVertexTypes": [
         "desk"
@@ -1497,7 +1466,7 @@ This endpoint is used to retrieve a specific local/global schema change job.
 
 | `graph`
 |  no
-| the graph whose schema change job to show
+| the graph whose schema change job to show. don't provide this if get a global schema change job.
 
 | `json`
 | yes
@@ -1535,7 +1504,6 @@ This endpoint is used to run global schema change job directly.
 ==== Parameters:
 
 None
-
 
 ==== Example:
 [,tabs]
@@ -1576,8 +1544,8 @@ This endpoint is used to run the schema change job directly.
 | Name | Required | Description
 
 | `graph`
-| yes
-| which graph to run the local schema change job on, If not provided, means running global schema change job.
+| no
+| which graph to run the local schema change job on, run local schema change need provide this. If not provided, means running global schema change job.
 |===
 
 ==== Example:
@@ -1777,7 +1745,7 @@ This endpoint is used to get all local/global schema change jobs.
 | Name | Required | Description
 
 | `graph`
-| yes
+| no
 | The graph whose schema change job to show. If not provided, means to get all the global schema change job.
 
 | `json`
@@ -2350,7 +2318,7 @@ This endpoint is used to update a data source .
 
 | `graph`
 | no
-| the graph whose data source to update
+| the graph whose data source to update. If not provided, means to update a global data source.
 |===
 
 ==== Example:
@@ -2390,7 +2358,7 @@ This endpoint is used to create a data source.
 
 | `graph`
 | no
-| the graph whose data source to create
+| the graph whose data source to create. If not provided, means to create a global data source.
 |===
 
 ==== Example:
@@ -2430,7 +2398,7 @@ This endpoint is used to drop one data source.
 
 | `graph`
 | no
-| the graph whose data source to delete.
+| the graph whose data source to delete. If not provided, means to delete a global data source.
 |===
 
 ==== Example:
@@ -2495,15 +2463,7 @@ This endpoint is used to revoke data source.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| no
-| the graph whose data source to revoke
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -2743,7 +2703,7 @@ This endpoint is used to get all files and directories under given S3 bucket pat
 
 | `path`
 | no
-| Uri of the data source. If not list files under `\`
+| Uri of the data source. If not list files under `/`
 |===
 
 ==== Example:
@@ -2786,7 +2746,7 @@ This api is used for installing queries
 
 | `graph`
 | yes
-| the graph on who to install queries
+| which graph to install queries
 
 | `queries`
 | yes
@@ -3664,99 +3624,6 @@ Sample Response::
 
 == Database Utilities
 
-=== backup
-
-`GET /gsql/v1/internal/backup`
-
-This endpoint is used to backup database in GLE side.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| yes
-| the backup output path.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/internal/backup?path=/to/your/path"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"gsql.replica":1,"error":false,"message":"The backup request finished successfully."}
-----
---
-====
-
-'''
-=== restore
-
-`GET /gsql/v1/internal/restore`
-
-This endpoint is used to restore database in GLE side.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| yes
-| the path where the data located used to restore the data
-
-| `reinstall`
-| no
-| `true`, force to install all queries, otherwise will not.
-
-| `restore`
-| no
-| `true`, will clean replicationManager unwritten replicas. otherwise will not.
-
-| `keepUser`
-| no
-| `true`, will retain users and permissions when restoring from a backup, ignoring the users in the backup. otherwise use the user in backup data.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/internal/restore?path=/to/your/path&install=true&restore=true"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"The restore request finished successfully."}
-----
---
-====
-
-'''
-
 === recover gdict catalog
 
 `POST /gsql/v1/schema/recover`
@@ -3995,324 +3862,7 @@ Sample Response::
 
 '''
 
-=== saml sp metadata
-
-`GET /gsql/v1/saml/meta`
-
-This endpoint is used to get saml meta data.
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: text/plain' -X GET 'localhost:8123/gsql/v1/saml/meta'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-<?xml version="1.0"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2024-08-03T08:24:45Z" cacheDuration="PT604800S" entityID="http://127.0.0.1:14240/gsql/v1/saml/meta" ID="ONELOGIN_5296b4b6-3dec-41b3-9f37-531db41aba25"><md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://127.0.0.1:14240/logout"/><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat><md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://127.0.0.1:14240/api/auth/saml/acs" index="1"/></md:SPSSODescriptor><md:Organization><md:OrganizationName xml:lang="en">TigerGraph Inc.</md:OrganizationName><md:OrganizationDisplayName xml:lang="en">TigerGraph Inc.</md:OrganizationDisplayName><md:OrganizationURL xml:lang="en">https://www.tigergraph.com/</md:OrganizationURL></md:Organization><md:ContactPerson contactType="technical"><md:GivenName>TigerGraph Support Team</md:GivenName><md:EmailAddress>support@tigergraph.com</md:EmailAddress></md:ContactPerson><md:ContactPerson contactType="support"><md:GivenName>TigerGraph Support Team</md:GivenName><md:EmailAddress>support@tigergraph.com</md:EmailAddress></md:ContactPerson></md:EntityDescriptor>
-----
---
-====
-
-'''
-
-=== get replication info
-
-`GET /gsql/v1/internal/replication`
-
-This endpoint is used to get replica information.
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/internal/replication'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"numChangesToBeReplicated":0,"lastSeqId":50,"error":false,"message":""}
-----
---
-====
-
-'''
-
-=== set replication seq id
-
-`POST /gsql/v1/internal/replication?newSeqId=<SeqId>`
-
-This endpoint is used to set replica seq id.
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X POST 'localhost:8123/gsql/v1/internal/replication?newSeqId=1'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"lastSeqId":1,"error":false,"message":"Successfully updated lastSeqId: 1."}
-----
---
-====
-
-'''
-
-=== check input output policy
-
-`GET /gsql/v1/internal/check/file-policy?path=<filePath>&input=<true/false>`
-
-This endpoint is used to check file input/output policy
-
-==== Parameters:
-
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `path`
-| no
-| the file path
-
-| `input`
-| no
-| is input or output policy
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/internal/check/file-policy'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":""}
-----
---
-====
-
-'''
-
-
 == Security
-
-=== Login API
-
-`GET /gsql/v1/auth/simple`
-
-This api is used for user login, mainly for GUI use.
-
-==== Parameters:
-
-None
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET "http://localhost:14240/gsql/v1/auth/simple"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{
-    "error": false,
-    "message": "successfully authored.",
-    "results": {
-        "disabled": false,
-        "failedAttempts": 0,
-        "isSuperUser": true,
-        "lastSuccessLogin": "Fri Jul 26 09:18:09 UTC 2024",
-        "name": "tigergraph",
-        "nextValidLogin": "Fri Jul 26 09:18:09 UTC 2024",
-        "privileges": {
-            "1": {
-                "privileges": [
-                    "READ_SCHEMA",
-                    "WRITE_SCHEMA",
-                    "READ_LOADINGJOB",
-                    "EXECUTE_LOADINGJOB",
-                    "WRITE_LOADINGJOB",
-                    "CREATE_QUERY",
-                    "WRITE_DATASOURCE",
-                    "READ_ROLE",
-                    "WRITE_ROLE",
-                    "READ_USER",
-                    "WRITE_USER",
-                    "READ_PROXYGROUP",
-                    "WRITE_PROXYGROUP",
-                    "READ_FILE",
-                    "WRITE_FILE",
-                    "DROP_GRAPH",
-                    "EXPORT_GRAPH",
-                    "CLEAR_GRAPHSTORE",
-                    "DROP_ALL",
-                    "ACCESS_TAG",
-                    "READ_DATA",
-                    "CREATE_DATA",
-                    "UPDATE_DATA",
-                    "DELETE_DATA",
-                    "APP_ACCESS_DATA",
-                    "READ_POLICY",
-                    "WRITE_POLICY",
-                    "USE_FUNCTION",
-                    "WRITE_FUNCTION",
-                    "READ_WORKLOAD_QUEUE",
-                    "WRITE_WORKLOAD_QUEUE"
-                ]
-            },
-            "ldbc_fin": {
-                "privileges": []
-            },
-            "test_graph": {
-                "childPermissions": {
-                    "test_loop_withContinueBreak": {
-                        "privileges": [
-                            "OWNER"
-                        ]
-                    }
-                },
-                "privileges": []
-            }
-        },
-        "roles": {
-            "1": [
-                "superuser"
-            ],
-            "ldbc_fin": [
-                "superuser"
-            ],
-            "test_graph": [
-                "superuser"
-            ]
-        },
-        "secrets": [],
-        "securityRecommendations": [
-            "Change default tigergraph user's password"
-        ],
-        "showAlterPasswordWarning": false
-    }
-}
-----
---
-====
-
-'''
-
-=== saml login
-
-`GET /gsql/v1/saml/authnrequest`
-
-This endpoint is used to saml login.
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/saml/authnrequest'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{
-    "error": false,
-    "message": "",
-    "results": {
-        "SAMLRequest": "PHNhbWxwOkF1dGhuUmVxdWVzdCB4bWxuczpzYW1scD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29sIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIiBJRD0iT05FTE9HSU5fZjAzODk0ZTMtNmVjMS00MTVlLTlkMWMtNDI2YzAwZDQ5YjY4IiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAyNC0wOC0wMVQxNDo0ODo0OFoiIFByb3ZpZGVyTmFtZT0iVGlnZXJHcmFwaCBJbmMuIiBEZXN0aW5hdGlvbj0iaHR0cHM6Ly9kZXYtNzEwOTc2ODUub2t0YS5jb20vYXBwL2Rldi03MTA5NzY4NV90aWdlcmdyYXBocWUwMl8xL2V4a3FleWZ2enFQSGNKVktwNWQ2L3Nzby9zYW1sIiBQcm90b2NvbEJpbmRpbmc9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpiaW5kaW5nczpIVFRQLVBPU1QiIEFzc2VydGlvbkNvbnN1bWVyU2VydmljZVVSTD0iaHR0cDovLzM0LjMxLjExNy4yNzoxNDI0MC9hcGkvYXV0aC9zYW1sL2FjcyI+PHNhbWw6SXNzdWVyPmh0dHA6Ly8zNC4zMS4xMTcuMjc6MTQyNDAvZ3NxbC92MS9zYW1sL21ldGE8L3NhbWw6SXNzdWVyPjxzYW1scDpOYW1lSURQb2xpY3kgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoxLjE6bmFtZWlkLWZvcm1hdDp1bnNwZWNpZmllZCIgQWxsb3dDcmVhdGU9InRydWUiIC8+PHNhbWxwOlJlcXVlc3RlZEF1dGhuQ29udGV4dCBDb21wYXJpc29uPSJleGFjdCI+PHNhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY+dXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFjOmNsYXNzZXM6UGFzc3dvcmQ8L3NhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY+PC9zYW1scDpSZXF1ZXN0ZWRBdXRobkNvbnRleHQ+PC9zYW1scDpBdXRoblJlcXVlc3Q+",
-        "SigAlg": "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
-        "Signature": "cNBBjJqo4xg/KFWwNrny1jwp0BzdYS+ibhoHLD+IV2QrI9nxMzoP8TPjPE4enhKz5ZMYysV5CYtZRtJcmY26Icbm6ugZ4KBINIT3Zj4od+QU/garFMNjKxkBb8VfIa18RES6oL/OcsdnYghunTpHwQI7qui1+zOckfXPpOuOPWQmF0/+OUQhuHBQlBNaFAUy4otolzsUbMlzj2nrudl6DrMyIr6rlBfc+s32Ch0pfUEWVN0vO7oC43D0kaDGJ1gqbOLCDbH5ovyy1iAV2G9IxfiSd3QhyFvFRjblTtXdmz+6xTj443+TFBUpatK+5sU6zHgYcVOYgDguxhotx5VxQjWg2xTzfdVSZZVYM4+czD4khEN/fmKBAZ7vtkkLjR+CqTgixxJCaFg2+l9eYWUIU3K+WZ5RGPIQgLLVkd6/iz5IOl96vOWgMZT8+XYtAgKMXgM/jAYd0qPtQhXRXGGsEcCY167QYAODwiNsZoc0ILETDeGx0nChQh8sqNCQn8ouzGccLXV63LoZ91p6lzXtIgXkZjT9zdU4QmvJCdndQCIIcQ6TFVUz33uT5Ws7jYKZA6f6dRA1s2hRa/mZKChP5mHuknDzc7FRlxP3ofpnvZu5vf11t9k0ZdHULEGFpBt7DFZh8fQz3bk3zNdtbaoKc9GJPTUJMd6wAlIEjnK7W0Q=",
-        "ssoBinding": "POST",
-        "ssoUrl": "https://dev-71097685.okta.com/app/dev-71097685_tigergraphqe02_1/exkqeyfvzqPHcJVKp5d6/sso/saml"
-    }
-}
-
-----
---
-====
-
-'''
-
-=== oidc login
-
-`GET /gsql/v1/oidc/authnrequest`
-
-This endpoint is used to oidc login.
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'localhost:8123/gsql/v1/oidc/authnrequest'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":{"ssoBinding":"GET","OIDCRequest":"https://auth.tgcloud-dev.com/authorize?organization=sample_org_id&scope=openid+profile+email&response_type=id_token+token&redirect_uri=http%3A%2F%2F127.0.0.1%3A14240%2Fapi%2Fauth%2Foidc%2Fcallback&nonce=sample_string&client_id=sample_client_id&response_mode=form_post"}}
-----
---
-====
-
-'''
 
 === create new JWT token
 
@@ -4655,7 +4205,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Groups/{id}`
 
-This endpoint is used to retrieve a group by id using scim format or gsql format.
+This endpoint is used to retrieve a group by id response scim format or gsql format JSON.
 
 ==== Parameters:
 
@@ -4665,8 +4215,8 @@ This endpoint is used to retrieve a group by id using scim format or gsql format
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -4696,7 +4246,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Groups/`
 
-This endpoint is used to retrieve groups using gsql format.
+This endpoint is used to retrieve groups response gsql format JSON.
 
 ==== Parameters:
 
@@ -4706,8 +4256,8 @@ This endpoint is used to retrieve groups using gsql format.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `true`, using gsql format
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -4746,16 +4296,16 @@ This endpoint is used to retrieve groups using scim format.
 |===
 | Name | Required | Description
 
-| gsqlFormat
-| yes
-| Indicates whether to use the scim format. Value: false.
+| `gsqlFormat`
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 
-| filter
-| yes
+| `filter`
+| no
 | The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
 
-| excludedAttributes
-| yes
+| `excludedAttributes`
+| no
 | Specifies attributes to be excluded. Currently supports only `members`.
 |===
 
@@ -4795,9 +4345,9 @@ This endpoint is used to create group using scim format.
 |===
 | Name | Required | Description
 
-| gsqlFormat
-| yes
-| Indicates whether to use the scim format. Value: false.
+| `gsqlFormat`
+| no
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format; Here must set to `false`.
 |===
 
 ==== Example:
@@ -4835,9 +4385,9 @@ This endpoint is used to create group using gsql format.
 |===
 | Name | Required | Description
 
-| gsqlFormat
-| yes
-| Indicates whether to use the gsql format. Value: true.
+| `gsqlFormat`
+| no
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format; Here must set to `true`.
 |===
 
 ==== Example:
@@ -4875,9 +4425,9 @@ This endpoint is used to update a group.
 |===
 | Name | Required | Description
 
-| gsqlFormat
-| yes
-| Indicates whether to use the scim format. Value: false.
+| `gsqlFormat`
+| no
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
 |===
 
 ==== Example:
@@ -4917,9 +4467,9 @@ This endpoint is used to drop one group by name.
 |===
 | Name | Required | Description
 
-| gsqlFormat
-| yes
-| Indicates whether to use the scim format. Value: false. Indicates whether to use the GSQL format. Value: true.
+| `gsqlFormat`
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -4959,9 +4509,9 @@ This endpoint is used to drop groups.
 |===
 | Name | Required | Description
 
-| action
-| yes
-| Indicates whether to delete the groups. Value: delete.
+| `action`
+| no
+| default: `create`. Possible values: `create`, `delete`. `delete` indicates drop groups; `create` indicates create groups.
 |===
 
 ==== Example:
@@ -4991,7 +4541,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Users/{id}`
 
-This endpoint is used to retrieve a user by id using scim/gsql format.
+This endpoint is used to retrieve a user by id respond with scim or gsql format.
 
 ==== Parameters:
 
@@ -5001,8 +4551,8 @@ This endpoint is used to retrieve a user by id using scim/gsql format.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -5041,8 +4591,8 @@ This endpoint is used to update a user.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
+| no
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
 |===
 
 ==== Example:
@@ -5082,12 +4632,12 @@ This endpoint is used to drop users.
 | Name | Required | Description
 
 | `action`
-| yes
-| Indicating drop users, value: delete.
+| no
+| default: `create`. Possible values: `create`, `delete`. `delete` indicates to drop users; `create` indicates to create users. Here set the value `delete`.
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -5127,8 +4677,8 @@ This endpoint is used to drop a user.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format; `true`, using gsql format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -5168,8 +4718,8 @@ This endpoint is used to create user using scim format.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format;
+| no
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
 |===
 
 ==== Example:
@@ -5211,7 +4761,7 @@ This endpoint is used to create user using gsql format.
 
 | `gsqlFormat`
 | yes
-| `true`, using gsql format;
+| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
 |===
 
 ==== Example:
@@ -5241,7 +4791,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Users`
 
-This endpoint is used to retrieve users using scim format.
+This endpoint is used to retrieve users response scim format.
 
 ==== Parameters:
 
@@ -5254,13 +4804,13 @@ This endpoint is used to retrieve users using scim format.
 | no
 | `names`, currently only support this value.
 
-| filter
-| yes
+| `filter`
+| no
 | The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName nq "u1"
 
 | `gsqlFormat`
-| yes
-| `false`, using scim format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:
@@ -5290,7 +4840,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Users`
 
-This endpoint is used to retrieve users using gsql format.
+This endpoint is used to retrieve users response gsql format JSON.
 
 ==== Parameters:
 
@@ -5300,8 +4850,8 @@ This endpoint is used to retrieve users using gsql format.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| `true`, using gsql format;
+| no
+| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
 |===
 
 ==== Example:

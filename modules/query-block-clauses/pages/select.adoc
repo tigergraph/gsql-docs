@@ -1,73 +1,94 @@
 = SELECT
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+The `SELECT`  clause in GSQL is used to specify which objects, columns or expressions to retrieve from a matched pattern in the `FROM` clause. It is the primary means of querying data in GSQL and can be customized to fetch specific vertex variables, edge variables, graph element columns, computed expressions.
 
-== Beautiful Vertex Information
+It has two general forms:
 
-* A list of concise information, perfectly
-* getting the message across
+* If a vertex variable is selected, the `SELECT` clause is an assignment statement with a `SELECT` block on the right-hand side of the assignment (“=”) and a vertex set variable on the left of the assignment (“=”.
+* If an expression list is selected, the expression list will be output into a table.
 
-`a small code block that adds understanding`
+The `SELECT` clause uses the pattern defined in the `FROM` clause as the input source.  There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set. The final output of a query is either a vertex set known as the result vertex set or a table.
 
+There is a maximum size limit of 2 GB for the result set of a `SELECT` block. If the result of the `SELECT` block is larger than 2 GB, the system will return no data. No error message is produced.
+
+
+*Syntax:*
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
-
-SELECT p FROM etc etc
-
-}
+selectClause
+  : SELECT var #SelectVar
+  | SELECT DISTINCT? columnExpr (COMMA columnExpr)* INTO tableName #SelectTable
+  | SELECT DISTINCT? * INTO tableName #SelectStar
 ----
-.cool title name
-****
-activate sidebar block
 
-[discrete]
-== this is a discrete heading
-TIP: here's a nice tidbit
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
 
-****
+CREATE OR REPLACE DISTRIBUTED QUERY mainQuery() {
 
-=== A sub-section about vertex information
-
-* Here is a bullet point about some information
-- here's a second bullet point
-
-
+  //select target vertex set c, assign it to S1
+  S1 = SELECT c
+       FROM Account:a-(isLocatedIn>)-City:c
+       WHERE a.name == "Dave";
+  //output S1
+  PRINT S1;
 
 
+  //select vertex set p, assign it to S2
+  S2 = SELECT p
+       FROM Phone:p;
+  //output S2
+  PRINT S2;
+
+  //select the edge count into table T1
+  SELECT COUNT(*) INTO T1
+  FROM   -(Transfer>)-;
+  //output T1
+  PRINT T1;
+
+  //select c,h into table T2
+  //note * will include all binding variables in the FROM pattern
+  //If any two binding variables' elements have same column name,
+  //a semantic check error will be thrown. Below we cannot include
+  //the target variable as it is Account, conflicting on column names
+  SELECT * INTO T2
+  FROM   Account:c -(Transfer>:h)- ;
+  //output T2
+  PRINT T2;
+
+  //select clause group by f, and count each group, and output count>1's row
+  SELECT f, COUNT(e) AS cnt INTO T3
+  FROM   Account:a  -(hasPhone:e)- :f
+  WHERE a.name == "Dave" or a.name == "Jay"
+  HAVING cnt > 1;
+  //output T3
+  PRINT T3;
+
+  //aggregate distinct phone, and count transfer edge.
+  SELECT a, t, p.number INTO T4
+  FROM Account:a -(<Transfer:t)- Account:b-(hasPhone)-Phone:p
+  WHERE b.name == "Dave";
+  //output T4
+  PRINT T4;
+
+  //group by a, and aggregate on t.amount
+  //note "group by a" can be skipped.
+  SELECT a,
+      avg(distinct t.amount) AS avg_amount,
+      sum(distinct t.amount) AS sum_amount,
+      count(t) as cnt_a,
+      max(distinct t.amount) as max_amount,
+      min(distinct t.amount) as min_amount INTO T5
+  FROM Account:a -(Transfer>:t)- Account:b -(hasPhone)- Phone:p
+  WHERE a.name == "Dave";
+  //output T5
+  PRINT T5;
+}
+
+INSTALL QUERY mainQuery
 
 
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
-
-
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]
+RUN QUERY mainQuery()
+----

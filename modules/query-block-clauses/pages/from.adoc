@@ -1,65 +1,52 @@
-= FROM
+= FROM Clause
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+The `FROM` clause describes a vertex pattern, or a single hop or a multi-hop path pattern.
 
-== Beautiful Vertex Information
+A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.
 
-* A list of concise information, perfectly
-* getting the message across
+If you project all the vertex or edge variables in the `FROM` clause into one line, they form a binding table.
 
-`a small code block that adds understanding`
+For best performance, we recommend always use 1-hop or vertex pattern. And select the vertex variable that you want to drive the next step. Use the assigned vertex set variable to drive the next query block.
 
+*Syntax:*
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+fromClause := FROM  pathPattern
 
-SELECT p FROM etc etc
+pathPattern :=  sourceVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
+----
+
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+CREATE OR REPLACE DISTRIBUTED QUERY mainQuery() {
+
+
+  //select vertex set p, assign it to S1
+  S1 = SELECT p
+       FROM Phone:p
+       WHERE p.number in ("111", "222");
+  //output S1
+  PRINT S1;
+
+
+  //Use S1 to drive another 2-hop pattern
+  //select target vertex set c, assign it to S2
+  S2 = SELECT c
+       FROM S1 -(hasPhone)-Account:c-(Transfer>)-Account:b;
+
+  //output S2
+  PRINT S2;
+
 
 }
+
+INSTALL QUERY mainQuery
+
+
+RUN QUERY mainQuery()
 ----
 
 
-=== A sub-section about vertex information
-
-* Here is a bullet point about some information
-- here's a second bullet point
-
-
-
-
-
-
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
-
-
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

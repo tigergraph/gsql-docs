@@ -161,6 +161,91 @@ END
 [source,gsql]
 ----
 USE GRAPH financialGraph
+CREATE OR REPLACE QUERY IfElseTest () {
+
+  SumAccum<INT> @@isBlocked;
+  SumAccum<INT> @@unBlocked;
+  SumAccum<INT> @@others;
+
+  S1 = SELECT a
+       FROM (Account):a
+       ACCUM
+             IF a.isBlocked == "yes" THEN @@isBlocked += 1
+              ELSE IF a.isBlocked == "no" THEN @@unBlocked += 1
+              ELSE  @@others += 1
+             END;
+
+  PRINT @@isBlocked, @@unBlocked, @@others;
+
+  STRING drink = "Juice";
+  SumAccum<INT> @@calories = 0;
+
+ //if-else. Top-statement level. Each statement
+ //needs to end by a semicolon, including the “END”.
+
+  IF drink == "Juice" THEN @@calories += 50;
+   ELSE IF drink == "Soda"  THEN @@calories += 120;
+   ELSE @@calories = 0;   // Optional else-clause
+ END;
+  // Since drink = "Juice", 50 will be added to calories
+
+
+  PRINT @@calories;
+
+
+}
+
+INSTALL QUERY IfElseTest
+
+RUN QUERY IfElseTest()
+----
+
+*Result:*
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@isBlocked": 1,
+      "@@unBlocked": 5,
+      "@@others": 0
+    },
+    {
+      "@@calories": 50
+    }
+  ]
+}
+
+----
+== WHILE Statement
+The `WHILE` statement provides unbounded iteration over a block of statements. `WHILE` statements can be used at query block level or top-statement level.
+
+The `WHILE` statement iterates over its body until the condition evaluates to false or until the iteration limit is met. A condition is any expression that evaluates to a boolean. The condition is evaluated before each iteration. `CONTINUE` statements can be used to change the control flow within the while block. `BREAK` statements can be used to exit the while loop.
+
+
+A `WHILE` statement may have an optional `LIMIT` clause. `LIMIT` clauses has a constant positive integer value or integer variable to constrain the maximum number of loop iterations.
+
+The `WHILE` statement can appear within a query block `ACCUM` or `POST-ACCUM` clause, or at top-statement level-- the same level as the `SELECT` query block.
+
+*Syntax:*
+[source,gsql]
+----
+WHILE condition (LIMIT maxIter)? DO
+    statement(s)
+END
+----
+
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
 CREATE OR REPLACE QUERY WhileTest (VERTEX<Account> seed) {
   //mark if a node has been seen
   OrAccum @visited;
@@ -213,7 +298,9 @@ CREATE OR REPLACE QUERY WhileTest (VERTEX<Account> seed) {
 INSTALL QUERY WhileTest
 
 RUN QUERY WhileTest("Dave")
+
 ----
+
 
 == FOREACH Statement
 The `FOREACH` statement provides bounded iteration over a block of statements.

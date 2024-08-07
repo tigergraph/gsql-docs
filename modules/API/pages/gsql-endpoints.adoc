@@ -608,8 +608,8 @@ This endpoint is used to retrieve all local edges within a specific graph or ret
 | Name | Required | Description
 
 | `graph`
-| yes
-| Specifies the graph from which to retrieve the edges.
+| no
+| Specifies the graph from which to retrieve the edges. If not provided, means to get all global edges.
 |===
 
 ==== Example:
@@ -732,8 +732,8 @@ This endpoint is used to add global edges to graph using json format.
 | Name | Required | Description
 
 | `graph`
-| yes
-| Specifies the graph to which the global edges will be added.
+| no
+| Specifies the graph to which the global edges will be added. Here must provide.
 |===
 
 ==== Example:
@@ -1235,7 +1235,7 @@ This endpoint is used to create local/global scheme change job using gsql comman
 
 | `type`
 | no
-| Use `global` for creating a global schema change job. schema change job don't need provide this.
+| When creating a global schema change job, provide `global`. This is not required for local schema change jobs.
 |===
 
 ==== Example:
@@ -2695,7 +2695,7 @@ This endpoint is used to get all files and directories under given S3 bucket pat
 
 | `path`
 | no
-| Uri of the data source. If not list files under `/`
+| Uri of the data source. If not provide, list files under `/`
 |===
 
 ==== Example:
@@ -4204,7 +4204,7 @@ This endpoint is used to retrieve a group by id response scim format or gsql for
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4245,7 +4245,7 @@ This endpoint is used to retrieve groups response gsql format JSON.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4286,7 +4286,7 @@ This endpoint is used to retrieve groups using scim format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 
 | `filter`
 | no
@@ -4335,7 +4335,7 @@ This endpoint is used to create group using scim format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format; Here must set to `false`.
+| The default value is `false`. When set to `false`, the request body uses the SCIM format; when set to `true`, the request body uses the GSQL format. Here must set to `false`.
 |===
 
 ==== Example:
@@ -4375,7 +4375,7 @@ This endpoint is used to create group using gsql format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format; Here must set to `true`.
+| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON. Here must set to `true`.
 |===
 
 ==== Example:
@@ -4415,7 +4415,7 @@ This endpoint is used to update a group.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
+| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
 |===
 
 ==== Example:
@@ -4457,7 +4457,7 @@ This endpoint is used to drop one group by name.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4499,7 +4499,7 @@ This endpoint is used to drop groups.
 
 | `action`
 | no
-| default: `create`. Possible values: `create`, `delete`. `delete` indicates drop groups; `create` indicates create groups.
+| The default value is `create`. Possible values are `create` and `delete`. `Delete` indicates dropping groups, while `create`  indicates creating groups.
 |===
 
 ==== Example:
@@ -4540,7 +4540,7 @@ This endpoint is used to retrieve a user by id respond with scim or gsql format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4580,7 +4580,7 @@ This endpoint is used to update a user.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
+| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
 |===
 
 ==== Example:
@@ -4625,7 +4625,7 @@ This endpoint is used to drop users.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4666,7 +4666,7 @@ This endpoint is used to drop a user.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4707,7 +4707,7 @@ This endpoint is used to create user using scim format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
+| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
 |===
 
 ==== Example:
@@ -4748,8 +4748,8 @@ This endpoint is used to create user using gsql format.
 | Name | Required | Description
 
 | `gsqlFormat`
-| yes
-| default: `false`. `false`, request body using scim format; `true`, request body using gsql format;
+| no
+| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON. Here must set to `true`
 |===
 
 ==== Example:
@@ -4798,7 +4798,7 @@ This endpoint is used to retrieve users response scim format.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4839,7 +4839,7 @@ This endpoint is used to retrieve users response gsql format JSON.
 
 | `gsqlFormat`
 | no
-| default: `false`. `false`, response scim format JSON. `true`, response GSQL format JSON.
+| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:

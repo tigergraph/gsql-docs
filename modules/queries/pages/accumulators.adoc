@@ -205,18 +205,18 @@ CREATE OR REPLACE QUERY AccumBindingTableTest () FOR GRAPH financialGraph SYNTAX
 }
 ----
 
-image::BindingTableAccum.png[]
+image::BindingTableAccum.png[width=8000]
 
-[cols="2", stripes=even, align="center",valign=middle, width=75]
+[cols="2", caption="hello", role=center ,width=75]
 |===
-.6+| WHERE a.isBlocked == "no"
+.7+| WHERE a.isBlocked == "no"
 ^|Account:a
 ^|Scott
 ^|Mike
 ^|Charles
 ^|Dave
 ^|Aretha
-^|[.line-through]#Jay#
+^|[.line-through]#-      Jay     -#
 
 
 |===

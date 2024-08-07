@@ -1,0 +1,19 @@
+= GSQL Implementation of LDBC SNB Benchmark Queries
+
+We will use the xref:https://arxiv.org/pdf/2001.02299.pdf[LDBC SNB Benchmark workload] to illustrate the GSQL syntax with many examples. Studying these GSQL examples will help you master GSQL quickly.
+
+== DDL
+* xref:https://github.com/tigergraph/ecosys/blob/ldbc_108T/tigergraph/ddl/schema.gsql[Schema Definition Script].
+
+NOTE: we replicated the dynamic vertex types 3 times, creating Comment1 ~ Comment3, Person1 ~  Person3, Post1 ~ Post3,
+and Forum1 ~ Forum3. These derived schema will help us to illustrate how to specify multiple-pairs of source and target
+in a single edge type.
+
+* xref:https://github.com/tigergraph/ecosys/blob/ldbc_108T/tigergraph/ddl/setup.sh[Driver Script]
+* Loading Scripts
+** xref:https://github.com/tigergraph/ecosys/blob/ldbc_108T/tigergraph/ddl/load_static.gsql[load-static.gsql]
+** xref:https://github.com/tigergraph/ecosys/blob/ldbc_108T/tigergraph/ddl/load_dynamic.gsql[load-dynamic.gsql]
+
+== DML
+xref:https://github.com/tigergraph/ecosys/tree/ldbc_108T/tigergraph/dml[DML Scripts]
+

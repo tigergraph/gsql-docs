@@ -274,8 +274,8 @@ CREATE OR REPLACE QUERY AccumPostAccumBindingTableTest () FOR GRAPH financialGra
 image::BindingTablePostAccum.png[]
 
 
-In this more complex example, the `ACCUM` clause will again iterate for every matched row that satisfies the `WHERE` clause. Note that the local accumulator `@individualNumTransfers` will add one to the current vertex `b` in each matched path in the table.
-The `POST-ACCUM` clause will then iterate for every unique `b` vertex in the table, adding up the total amount of transfers using each vertex’s local value.
+In this more complex example, the `ACCUM` clause will again iterate for every matched row that satisfies the `WHERE` clause. Note that the local accumulator `@individualNumTransfers` will add one to the current vertex "b" in each matched path in the table.
+The `POST-ACCUM` clause will then iterate for every unique "b" vertex in the table, adding up the total amount of transfers using each vertex’s local value.
 
 *Result:*
 [source,json]

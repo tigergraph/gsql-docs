@@ -1883,7 +1883,7 @@ This endpoint is used to get a specific loading job's information.
 
 | `verbose`
 | no
-| default: false, true means get loading job information in json format
+| default: false, true means show verbose version, true means show concise version.
 |===
 
 ==== Example
@@ -2084,7 +2084,6 @@ Sample Request::
 [source,bash]
 ----
 curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=g'
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=g&isPause=true'
 ----
 --
 Sample Response::

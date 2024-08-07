@@ -207,7 +207,7 @@ CREATE OR REPLACE QUERY AccumBindingTableTest () FOR GRAPH financialGraph SYNTAX
 
 image::BindingTableAccum.png[width=8000]
 
-[cols="2", caption="hello", role=center ,width=75]
+[cols="2", caption="hello", role="center" ,width=75]
 |===
 .7+| WHERE a.isBlocked == "no"
 ^|Account:a

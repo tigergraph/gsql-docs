@@ -1,65 +1,72 @@
-= ACCUM
+= ACCUM Clause
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+The primary purpose of the optional `ACCUM` clause is to collect information about the graph using the current matched
+patterns to update accumulators (via `+=` or `=`). However, other kinds of statements (e.g., branching, iteration, local assignments)
+are permitted to support more complex computations or to log activity.
 
-== Beautiful Vertex Information
-
-* A list of concise information, perfectly
-* getting the message across
-
-`a small code block that adds understanding`
-
+*Syntax:*
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+accumClause := ACCUM dmlSubStmtList
+dmlSubStmtList := dmlSubStmt ["," dmlSubStmt]*
+dmlSubStmt := assignStmt           // Assignment
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | dmlSubCaseStmt       // Control Flow
+            | dmlSubIfStmt         // Control Flow
+            | dmlSubWhileStmt      // Control Flow
+            | dmlSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | dmlSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
 
-SELECT p FROM etc etc
+== Semantics
 
+*Example 1:*
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+CREATE OR REPLACE DISTRIBUTED QUERY q1 (/* parameters */) FOR GRAPH financialGraph SYNTAX V2 {
+
+    SumAccum<INT> @cnt = 0; //local accumulator
+    SumAccum<INT>  @@hasPhoneCnt = 0; //global accumulator
+
+   S = SELECT a
+       FROM Account:a - (hasPhone:e) - Phone:p
+       WHERE a.isBlocked == TRUE
+       ACCUM  a.@cnt +=1,
+              p.@cnt +=1,
+              @@hasPhoneCnt +=1;
+
+   PRINT S;
+   PRINT @@hasPhoneCnt;
 }
 ----
 
+=== FROM-WHERE Produces a Binding Table
 
-=== A sub-section about vertex information
+We can think of the `FROM` and `WHERE` clauses specify a binding table, where the `FROM` clause specifies the pattern, and the
+`WHERE` clause does a post-filter of the matched pattern instances-- the result is a table, each row in the table is a pattern
+instance with the binding variables specified in the `FROM` clause as columns. In Example 1, the `FROM` clause produces a result table
+(a, e, p) where “a” is the Account variable, “e” is the “hasPhone” variable, and “p” is the Phone variable.
 
-* Here is a bullet point about some information
-- here's a second bullet point
+=== ACCUM Loops Each Row in the Binding Table
+The `ACCUM` clause executes its statement(s) once for each row in the result table. The execution is done in a map-reduce fashion
 
+Map-Reduce Interpretation: The ACCUM clause uses snapshot semantics, executing in two phases:
 
+1. *Map Phase*: Each row in the binding table is processed in parallel, starting with the same accumulator snapshot to compute inputs. The snapshot of accumulator values is taken before the start of the `ACCUM` clause.
+2. *Reduce Phase:* These inputs are aggregated into their respective accumulators, creating a new snapshot of accumulator values.
 
-
-
-
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
+The new snapshot is available for access after the ACCUM clause finishes.
 
 
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

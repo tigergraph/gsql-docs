@@ -108,7 +108,7 @@ In the above example, six different accumulator variables (those with prefix @@)
 
 * SumAccum<INT> allows user to keep adding INT values
 * MinAccum<INT> keeps the smallest INT number it has seen. As the @@min_accum statements show, we accumulated 1 and 2 to the MinAccum accumulator, and end up with the value 0, as neither of 1 nor 2 is smaller than the initial state value 0.
-*  MaxAccum<INT> is symmetric to MinAccum. It returns the MAX INT value it has seen. The max_accum statements accumulate 1 and 2 into it, and end up with the value 2.
+*  MaxAccum<INT> is the opposite of MinAccum. It returns the MAX INT value it has seen. The max_accum statements accumulate 1 and 2 into it, and end up with the value 2.
 * OrAccum keeps OR-ing the internal boolean state variable with new boolean variables that accumulate to it. The initial default value is assigned FALSE. We accumulate TRUE and FALSE into it, and end up with the TRUE value.
 * AndAccum is symmetric to OrAccum. Instead of using OR, it uses the AND accumulation semantics. We accumulate TRUE and FALSE into it, and end up with the FALSE value.
 * ListAccum<INT> keeps appending new integer(s) into its internal list variable. We append 1, 2, and [3,4] to the accumulator, and end up with [1,2,3,4].
@@ -134,7 +134,7 @@ CREATE OR REPLACE DISTRIBUTED QUERY q1 (/* parameters */) FOR GRAPH financialGra
     SumAccum<INT> @cnt = 0; //local accumulator
     SumAccum<INT>  @@hasPhoneCnt = 0; //global accumulator
 
-   S = SELECT c
+   S = SELECT a
        FROM Account:a - (hasPhone:e) - Phone:p
        WHERE a.isBlocked == TRUE
        ACCUM  a.@cnt +=1,
@@ -159,9 +159,9 @@ The ACCUM clause will execute its statements for each pattern matched in the FRO
 
 * The FROM clause identifies the edge patterns that match Account -[hasPhone]- Phone.
 * The WHERE clause filters the edge patterns based on the Account.isBlocked attribute.
-* The ACCUM clause will execute once for each pattern that passes the WHERE clause.
+* The ACCUM clause will execute once for each matched pattern that passes the WHERE clause.
 
-For each matching pattern that survive the WHERE clause, the following will occur:
+For each matching pattern that satisfies the WHERE clause, the following will occur:
 
 * a.@cnt += 1
 * p.@cnt += 1
@@ -181,15 +181,130 @@ a result table (a, e, p) where “a” is the Account variable, “e” is the �
 === ACCUM Loop Each Row in the Binding Table
 `ACCUM` clause executes its statement(s) once for each row in the result table. Further, ACCUM parallelly executes its statements. Most local accumulators or global accumulators are accumulated in the `ACCUM` clause. Using the example in Figure 1, for each (a,e,p) in the result table, we increment the a.@cnt accumulator, and the p.@cnt accumulator. Also, we increment the global accumulator @@hasPhoneCnt.
 
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+USE GRAPH financialGraph
+
+
+CREATE OR REPLACE QUERY AccumBindingTableTest () FOR GRAPH financialGraph SYNTAX V2 {
+
+
+   SetAccum<STRING> @@unblockedPeople;
+
+
+   S = SELECT a
+       FROM Account:a
+       WHERE a.isBlocked == "no"
+       ACCUM @@unblockedPeople += a.name;
+   PRINT @@unblockedPeople;
+
+
+}
+----
+
+image::BindingTableAccum.png[]
+
+In this example, the `ACCUM` clause will add an account name to `@@unblockedPeople` for every matched row that satisfies the `WHERE` clause: in this case, every account that is unblocked.
+
+*Result:*
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@unblockedPeople": [
+        "Scott",
+        "Aretha",
+        "Dave",
+        "Charles",
+        "Mike"
+      ]
+    }
+  ]
+}
+----
+
+
 === POST-ACCUM Loop One Projected Vertex Column In the Binding Table
 
-`POST-ACCUM` clause is designed to access the aggregated accumulator value computed in the `ACCUM` clause. It executes its statements(s) once for each distinct value of a referenced vertex column from the binding table. You can have multiple `POST-ACCUM` clauses. But each `POST-ACCUM` clause can only refer to one vertex variable specified in the `FROM` clause.
+The `POST-ACCUM` clause is designed to access the aggregated accumulator value computed in the `ACCUM` clause. It executes its statements(s) once for each distinct value of a referenced vertex column from the binding table. You can have multiple `POST-ACCUM` clauses, but each `POST-ACCUM` clause can only refer to one vertex variable specified in the `FROM` clause.
 
-*I will add examples based on the data here - Mitchell*
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+CREATE OR REPLACE QUERY AccumPostAccumBindingTableTest () FOR GRAPH financialGraph SYNTAX V2 {
+
+
+
+  MaxAccum<INT> @@largestTransfer;
+  AvgAccum @@averageTransferAmount;
+
+
+  SumAccum<INT> @individualNumTransfers;
+  SumAccum<Int> @@numTransfers;
+
+
+  S1 = SELECT a
+       FROM Account:a - (Transfer>:e) - Account:b
+       WHERE e.date < to_datetime("2020-07-02")
+       ACCUM @@largestTransfer += e.amount, @@averageTransferAmount += e.amount, b.@individualNumTransfers += 1
+       POST_ACCUM @@numTransfers += b.@individualNumTransfers;
+
+  PRINT @@largestTransfer, @@numTransfers, @@averageTransferAmount;
+
+}
+
+#INSTALL QUERY AccumPostAccumBindingTableTest
+#RUN QUERY AccumPostAccumBindingTableTest()
+
+----
+
+image::BindingTablePostAccum.png[]
+
+
+In this more complex example, the `ACCUM` clause will again iterate for every matched row that satisfies the `WHERE` clause. Note that the local accumulator `@individualNumTransfers` will add one to the current vertex `b` in each matched path in the table.
+The `POST-ACCUM` clause will then iterate for every unique `b` vertex in the table, adding up the total amount of transfers using each vertex’s local value.
+
+*Result:*
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@largestTransfer": 10,
+      "@@numTransfers": 6,
+      "@@averageTransferAmount": 8.666666666666666
+    }
+  ]
+}
+
+
+----
 
 == Accumulator as a Query Block Composition Tool
 
-The scope of the accumulator declaration may cover a sequence of query blocks, in which case the accumulated values computed by a block can be read (and further modified) by subsequent blocks. This enables powerful composition effects that support the concise specification of multi-pass algorithms, with each pass specified declaratively.
+The scope of the accumulator declaration may cover a sequence of query blocks, in which case the accumulated values computed
+by a block can be read (and further modified) by subsequent blocks. This enables powerful composition effects that support
+the concise specification of multi-pass algorithms, with each pass specified declaratively.
 
 
 

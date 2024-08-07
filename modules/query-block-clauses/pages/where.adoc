@@ -1,65 +1,62 @@
-= WHERE
+= WHERE Clause
 
-Introductory text(this is garbeldy-gook to see what the articles would look like)
+The `WHERE` clause is an optional clause that filters the `FROM` clause matched pattern instances.
 
-== Beautiful Vertex Information
-
-* A list of concise information, perfectly
-* getting the message across
-
-`a small code block that adds understanding`
-
+*Syntax:*
 [source,gsql]
 ----
-//A large code block that can act as an example
-CREATE DISTRIBUTED QUERY count-sheep syntax v3{
+whereClause := WHERE condition
+----
 
-SELECT p FROM etc etc
+The condition expression may use constants or any variables or parameters within the scope of the `SELECT` block. The
+expression may use arithmetic operators, comparison operators, boolean operators, set operators and parentheses to
+enforce precedence.
+
+The `WHERE` conditional expression may use any of the variables within its scope: global accumulators, vertex set variables,
+query input parameters, the `FROM` clause’s vertex and edge variables, or any of the attributes or accumulators of the vertex
+and edge variables.
+
+Using built-in vertex and edge attributes and functions, such as `.type` and `.neighbors()`, the `WHERE` clause can be used
+to implement sophisticated selection rules for the edge traversal. In the following example, the selection conditions are
+completely specified in the `WHERE` clause, with no edge types or vertex types mentioned in the `FROM` clause.
+
+*Example:*
+[source,gsql]
+----
+USE GRAPH financialGraph
+
+CREATE OR REPLACE DISTRIBUTED QUERY mainQuery() {
+
+       // “_” means any undirected edge. “_>” means any right-pointing edge
+      // we start from Account or Phone vertices.
+   //in the WHERE clause, we check if edge type is either “hasPhone” or “Transfer”.
+   // and we also check if the tgt vertex is in source’s 1-hop neighbors via “hasPhone” edge.
+  S1 = SELECT p
+
+
+         FROM (Account|Phone):p -((_>|_):e) - :tgt
+         WHERE e.type in ("hasPhone", "Transfer") and tgt IN p.neighbors("hasPhone");
+
+  //output S1
+  PRINT S1;
+
+   //start from all vertices: any means any type
+   // the WHERE clause check the vertex’s type, and NOT signifies the inversion of the condition.
+   S2 = SELECT v
+           FROM Any:v
+           WHERE v.type == "Account" AND NOT v.name == "Dave" OR v.type == "Phone";
+
+   //output S2
+   PRINT S2;
 
 }
+
+INSTALL QUERY mainQuery
+
+
+RUN QUERY mainQuery()
 ----
 
 
-=== A sub-section about vertex information
-
-* Here is a bullet point about some information
-- here's a second bullet point
 
 
-
-
-
-
-
-|===
-| Tables | are | the | best | thing | ever
-
-| `integer`
-| induction
-| sales
-| my cousin's birthday
-| python
-| ok
-|===
-
-
-== now for another section
-
-[NOTE]
-this is a note
-
-[WARNING]
-this is a warning
-
-[IMPORTANT]
-this is important information
-
-.Only a few more lines left
-- Surprise +
-page break
-
-a random line
-
----
-
-and for my last trick, I will xref:intro-v3:index.adoc[Disappear]

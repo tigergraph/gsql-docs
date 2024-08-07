@@ -562,7 +562,7 @@ This endpoint is used to drop indexes.
 | yes
 | Specifies the vertex on which to drop the indexes.
 
-| `indexName`
+| `index`
 | yes
 | Specifies the indexes to drop (separated by commas)
 
@@ -579,7 +579,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=g&vertex=name1&indexName=index1,index2"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=g&vertex=name1&index=index1,index2"
 ----
 --
 Sample Response::
@@ -823,7 +823,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edgeName=e1&graph=recommend"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edge=e1&graph=recommend"
 ----
 --
 Sample Response::
@@ -1780,7 +1780,7 @@ Sample Response::
 
 === get loading job names
 
-`GET /gsql/v1/loading-jobs?graph=<graphName>`
+`GET /gsql/v1/loading-jobs`
 
 This endpoint is used to get all loading job names in a graph.
 
@@ -1822,8 +1822,8 @@ Sample Response::
 
 === create/update a loading job
 
-`POST /gsql/v1/loading-jobs?graph=<graphName>`+
-`PUT /gsql/v1/loading-jobs?graph=<graphName>`
+`POST /gsql/v1/loading-jobs`+
+`PUT /gsql/v1/loading-jobs`
 
 
 This endpoint is used to create a new loading job/update an existing loading job.
@@ -1866,7 +1866,7 @@ Sample Response::
 
 === get loading job info
 
-`GET /gsql/v1/loading-jobs/{jobName}?graph=<graphName>&verbose=<true/false>`
+`GET /gsql/v1/loading-jobs/{jobName}`
 
 This endpoint is used to get a specific loading job's information.
 
@@ -1916,7 +1916,7 @@ json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","
 
 === run loading job
 
-`POST /gsql/v1/loading-jobs/run?graph=<graphName>`
+`POST /gsql/v1/loading-jobs/run`
 
 This endpoint is used to run a loading job.
 
@@ -1963,7 +1963,7 @@ Sample Response::
 
 === drop a loading job
 
-`DELETE /gsql/v1/loading-jobs/{jobName}?graph=<graphName>`
+`DELETE /gsql/v1/loading-jobs/{jobName}`
 
 This endpoint is used to drop a loading job by name.
 
@@ -2005,7 +2005,7 @@ Sample Response::
 
 === abort loading job(s)
 
-`GET /gsql/v1/loading-jobs/abort?graph=<graphName>&jobIds=<job1,job2,...>&isPause=<true/false>`
+`GET /gsql/v1/loading-jobs/abort`
 
 This endpoint is used to abort mutilple running loading jobs.
 
@@ -2020,13 +2020,9 @@ This endpoint is used to abort mutilple running loading jobs.
 | yes
 | abort the loading job under which graph
 
-| `jobId`
+| `jobIds`
 | yes
-| the loading job Id
-
-| `isPause`
-| no
-| default: false, true means pause or abort the loading job, false means run the loading job.
+| the loading job Ids
 |===
 
 ==== Example
@@ -2057,7 +2053,7 @@ default behavior: {"error": false,"message":"Successfully dropped loading job(s)
 
 === abort one loading job
 
-`GET /gsql/v1/loading-jobs/abort/{jobId}?graph=<graphNam>&isPause=<true/false>`
+`GET /gsql/v1/loading-jobs/abort/{jobId}`
 
 This endpoint is used to abort a one loading job by job Id.
 
@@ -2075,10 +2071,6 @@ This endpoint is used to abort a one loading job by job Id.
 | `jobId`
 | yes
 | the loading job Id
-
-| `isPause`
-| no
-| default: false, true means pause or abort the loading job, false means run the loading job.
 |===
 
 
@@ -2152,7 +2144,7 @@ Sample Response::
 
 === get loading job status
 
-`GET /gsql/v1/loading-jobs/status?jobIds=<job1,job2,...>`
+`GET /gsql/v1/loading-jobs/status`
 
 This endpoint is used to get multiple loading jobs status.
 
@@ -2826,7 +2818,7 @@ Sample Response::
 
 === list query names
 
-`GET /gsql/v1/queries?graph=<graphName>`
+`GET /gsql/v1/queries`
 
 This endpoint is used to get all query names of a graph.
 
@@ -2868,7 +2860,7 @@ Sample Response::
 
 === create query
 
-`POST /gsql/v1/queries?graph=<graphName>`
+`POST /gsql/v1/queries`
 
 This endpoint is used to create a query.
 
@@ -2910,7 +2902,7 @@ Sample Response::
 
 === drop query
 
-`DELETE /gsql/v1/queires?query=<q1,q2,...>&graph=<graphName>`
+`DELETE /gsql/v1/queires`
 
 This endpoint is used to drop quries.
 
@@ -2956,7 +2948,7 @@ Sample Response::
 
 === get query content
 
-`GET /gsql/v1/queries/{queryName}?graph=<graphName>`
+`GET /gsql/v1/queries/{queryName}`
 
 This endpoint is to get the content of a query by its name.
 
@@ -3087,7 +3079,7 @@ Sample Response::
 
 === interpret query
 
-`POST /gsql/v1/interpret?graph=<graphName>`
+`POST /gsql/v1/interpret`
 
 This endpoint is used to intepret query.
 
@@ -3129,7 +3121,7 @@ Sample Response::
 
 === get query info
 
-`GET /gsql/v1/queries/info?graph=<graphName>&query=<optional>&status=<optional,query status>`
+`GET /gsql/v1/queries/info`
 
 This endpoint is used to get the query's information.
 
@@ -3179,7 +3171,7 @@ Sample Response::
 
 === get query signature
 
-`GET /gsql/v1/queries/signature?graph=<graphName>&queryName=<queryName>&interpret=<true/false>`
+`GET /gsql/v1/queries/signature`
 
 This endpoint is used to get query's signature by its name.
 
@@ -3200,7 +3192,7 @@ This endpoint is used to get query's signature by its name.
 
 | `interpret`
 | no
-| false/true
+| default: false, false means the query in compiled mode and true means the query in interpret mode
 |===
 
 
@@ -3532,7 +3524,7 @@ Sample Response::
 
 === call template query
 
-`POST /gsql/v1/library/{functionName}?graph=<graphName>`
+`POST /gsql/v1/library/{functionName}`
 
 This endpoint is used to call template query.
 
@@ -3578,7 +3570,7 @@ Sample Response::
 
 === get template query info
 
-`GET /gsql/v1/library/{functionName}?isRegularExpression=<true/false>`
+`GET /gsql/v1/library/{functionName}`
 
 This endpoint is used to get template query's information.
 
@@ -3594,7 +3586,7 @@ This endpoint is used to get template query's information.
 
 | `isRegularExpression`
 | no
-| deafult: false, is regulare expression or not
+| deafult: false, true means using the regex pattern to match function name
 |===
 
 ==== Example
@@ -3916,7 +3908,7 @@ Sample Response::
 
 === drop JWT tokens
 
-`DELETE /gsql/v1/tokens?clear=<true/false>`
+`DELETE /gsql/v1/tokens`
 
 This endpoint is used to drop specific a list of tokens.
 
@@ -3988,7 +3980,7 @@ Sample Response::
 
 === create secret
 
-`POST /gsql/v1/secrets?userName=<user>&value=<secret content>&alias=<alias>`
+`POST /gsql/v1/secrets`
 
 This endpoint is used to create a secret.
 
@@ -4002,10 +3994,6 @@ This endpoint is used to create a secret.
 | `userName`
 | no
 | the user the secret created for. The default user is the logged-in user if not specified.
-
-| `value`
-| no
-| the secret content.
 
 | `alias`
 | no
@@ -4038,7 +4026,7 @@ Sample Response::
 
 === show secrets
 
-`GET /gsql/v1/secrets?userName=<user>`
+`GET /gsql/v1/secrets`
 
 This endpoint is used to show secrets for the user.
 
@@ -4080,7 +4068,7 @@ Sample Response::
 
 === delete secrets
 
-`DELETE /gsql/v1/secrets?userName=<user>`
+`DELETE /gsql/v1/secrets`
 
 This endpoint is used to delete the secrets of the user.
 
@@ -4121,7 +4109,7 @@ Sample Response::
 
 === get secret by alias
 
-`GET /gsql/v1/secrets/{alias}?userName=<user>`
+`GET /gsql/v1/secrets/{alias}`
 
 This endpoint is used to get the secrets by its alias name.
 
@@ -4162,7 +4150,7 @@ Sample Response::
 
 === drop secret by alis
 
-`DELETE /gsql/v1/secrets/{alias}?userName=<user>`
+`DELETE /gsql/v1/secrets/{alias}`
 
 This endpoint is used to delete the secret of the user by its alias name.
 
@@ -5655,7 +5643,7 @@ Sample Response::
 
 === delete multiple tuples
 
-`DELETE /gsql/v1/udt/tuples?tupleName=<tup1,tup2,...>`
+`DELETE /gsql/v1/udt/tuples`
 
 This endpoint is used to delte multiple tuples.
 
@@ -5816,7 +5804,7 @@ Sample Response::
 
 === delete mulitple accumulators
 
-`DELETE /gsql/v1/udt/accum?accumName=<all or accum1, accum2, ...>`
+`DELETE /gsql/v1/udt/accum`
 
 This endpoint is used to delete multiple accumulators.
 

@@ -1129,7 +1129,7 @@ Sample Response::
 
 === drop graphs with given names
 
-`DELETE /gsql/v1/schema/graphs/`
+`DELETE /gsql/v1/schema/graphs`
 
 This endpoint is used to drop graphs with given names.
 
@@ -1169,7 +1169,7 @@ Sample Response::
 '''
 === drop local/global scheme change jobs
 
-`DELETE /gsql/v1/schema/jobs/`
+`DELETE /gsql/v1/schema/jobs`
 
 This endpoint is used to drop local/global scheme change jobs.
 
@@ -4232,7 +4232,7 @@ Sample Response::
 
 === retrieve groups using gsql format
 
-`GET /gsql/scim/v2/Groups/`
+`GET /gsql/scim/v2/Groups`
 
 This endpoint is used to retrieve groups response gsql format JSON.
 
@@ -4273,7 +4273,7 @@ Sample Response::
 
 === retrieve groups using scim format
 
-`GET /gsql/scim/v2/Groups/`
+`GET /gsql/scim/v2/Groups`
 
 This endpoint is used to retrieve groups using scim format.
 
@@ -4322,7 +4322,7 @@ Sample Response::
 
 === create group using scim format
 
-`POST /gsql/scim/v2/Groups/`
+`POST /gsql/scim/v2/Groups`
 
 This endpoint is used to create group using scim format.
 
@@ -4362,7 +4362,7 @@ Sample Response::
 '''
 === create group using gsql format
 
-`POST /gsql/scim/v2/Groups/`
+`POST /gsql/scim/v2/Groups`
 
 This endpoint is used to create group using gsql format.
 

@@ -1820,13 +1820,11 @@ Sample Response::
 
 '''
 
-=== create/update a loading job
+=== create a loading job
 
-`POST /gsql/v1/loading-jobs`+
-`PUT /gsql/v1/loading-jobs`
+`POST /gsql/v1/loading-jobs`
 
-
-This endpoint is used to create a new loading job/update an existing loading job.
+This endpoint is used to create a new loading job
 
 ==== Parameters:
 
@@ -1837,7 +1835,7 @@ This endpoint is used to create a new loading job/update an existing loading job
 
 | `graph`
 | yes
-| create/update loading job of which graph
+| create loading job of which graph
 |===
 
 ==== Example
@@ -1849,7 +1847,49 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST/PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '<loading job statement>'
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '<loading job statement>'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created loading job: <jobName>"}
+----
+--
+====
+
+'''
+
+=== upload a loading job
+
+`PUT /gsql/v1/loading-jobs`
+
+This endpoint is used to update an existing loading job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| update loading job of which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=g' -d '<loading job statement>'
 ----
 --
 Sample Response::

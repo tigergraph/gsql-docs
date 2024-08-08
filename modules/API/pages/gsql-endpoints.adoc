@@ -2861,18 +2861,6 @@ Sample Response::
 
 This endpoint is used to get all query names of a graph.
 
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| the query name of which graph
-|===
-
 ==== Example
 
 [,tabs]
@@ -2941,7 +2929,7 @@ Sample Response::
 
 === drop query
 
-`DELETE /gsql/v1/queires`
+`DELETE /gsql/v1/queries`
 
 This endpoint is used to drop quries.
 
@@ -2970,7 +2958,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/query=q1?graph=g'
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queries?query=q1&graph=g'
 ----
 --
 Sample Response::

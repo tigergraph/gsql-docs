@@ -4216,23 +4216,15 @@ Sample Response::
 
 '''
 
-=== retrieve a group by id using scim/gsql format
+=== retrieve a group by id using gsql format
 
-`GET /gsql/scim/v2/Groups/{id}`
+`GET /gsql/v1/groups/{id}`
 
 This endpoint is used to retrieve a group by id response scim format or gsql format JSON.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4242,7 +4234,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2?gsqlFormat=false"
+curl -X GET "http://localhost:14240/gsql//gsql/v1/groups/g2"
 ----
 --
 Sample Response::
@@ -4250,7 +4242,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"displayName":"g2","meta":{"location":"/scim/v2/Groups/54ba8a0f-693c-4cf3-9c53-5caaa244049a","resourceType":"Group"},"members":[],"id":"54ba8a0f-693c-4cf3-9c53-5caaa244049a"}
+{"error":false,"message":"","results":{"lastSuccessLogin":"Thu Aug 08 16:31:56 HKT 2024","privileges":{},"nextValidLogin":"Thu Aug 08 16:31:56 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=th-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
 ----
 --
 ====
@@ -4259,21 +4251,13 @@ Sample Response::
 
 === retrieve groups using gsql format
 
-`GET /gsql/scim/v2/Groups`
+`GET /gsql/v1/groups`
 
 This endpoint is used to retrieve groups response gsql format JSON.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4283,7 +4267,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true"
+curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups"
 ----
 --
 Sample Response::
@@ -4298,112 +4282,15 @@ Sample Response::
 
 '''
 
-=== retrieve groups using scim format
-
-`GET /gsql/scim/v2/Groups`
-
-This endpoint is used to retrieve groups using scim format.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-
-| `filter`
-| no
-| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
-
-| `excludedAttributes`
-| no
-| Specifies attributes to be excluded. Currently supports only `members`.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&gsqlFormat=false&filter=displayName%20nq%20'g2'%20and%20displayName%20sw%20'g1'"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"totalResults":1,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0570fc42-79ea-427e-aa2e-2b53a0470163","resourceType":"Group"},"id":"0570fc42-79ea-427e-aa2e-2b53a0470163"}]}
-----
---
-====
-
-'''
-
-=== create group using scim format
-
-`POST /gsql/scim/v2/Groups`
-
-This endpoint is used to create group using scim format.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format; when set to `true`, the request body uses the GSQL format. Here must set to `false`.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=false" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"displayName":"scimG3","meta":{"location":"/scim/v2/Groups/706d0ad6-2165-4190-8512-de5abfd06988","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"16c1e6cc-3b2a-4d57-9a2e-fb55a5d14804"},{"display":"user4","type":"User","value":"457b9982-d5fb-4ad6-b50a-266919bf0c16"}],"id":"706d0ad6-2165-4190-8512-de5abfd06988"}
-----
---
-====
-
-'''
 === create group using gsql format
 
-`POST /gsql/scim/v2/Groups`
+`POST /gsql/v1/groups`
 
 This endpoint is used to create group using gsql format.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON. Here must set to `true`.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4413,7 +4300,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?gsqlFormat=true" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
 ----
 --
 Sample Response::
@@ -4427,23 +4314,15 @@ Sample Response::
 ====
 
 '''
-=== update a group
+=== update a group using gsql format
 
-`PATCH /gsql/scim/v2/Groups/{id}`
+`PUT /gsql/v1/groups/{id}`
 
 This endpoint is used to update a group.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4453,8 +4332,8 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=false" -d '
-{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '
+{"name": "g1", "rule": "rule1"}'
 ----
 --
 Sample Response::
@@ -4462,30 +4341,22 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0b181bc8-d055-4fcb-af52-20c560324c6f","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"5cdad092-af32-435e-9865-c2ad06b9d6f8"},{"display":"user4","type":"User","value":"c14765de-ea78-422a-bd87-88f3f7d3ceda"}],"id":"0b181bc8-d055-4fcb-af52-20c560324c6f"}
+{"error": true, "message": "Successfully change the proxy rule for group g1"}
 ----
 --
 ====
 
 '''
 
-=== drop one group by name
+=== drop one group by name using gsql format
 
-`DELETE /gsql/scim/v2/Groups/{id}`
+`DELETE /gsql/v1/groups/{id}`
 
 This endpoint is used to drop one group by name.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4495,8 +4366,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1?gsqlFormat=false" -d '
-{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1"
 ----
 --
 Sample Response::
@@ -4511,9 +4381,9 @@ Sample Response::
 
 '''
 
-=== drop groups
+=== drop groups using gsql format
 
-`POST /gsql/scim/v2/Groups`
+`POST /gsql/v1/groups`
 
 This endpoint is used to drop groups.
 
@@ -4537,7 +4407,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups?action=delete" -d '{"groupNames":["g1"]}'
 ----
 --
 Sample Response::
@@ -4552,23 +4422,15 @@ Sample Response::
 
 '''
 
-=== retrieve a user by id using scim/gsql format
+=== retrieve a user by id using gsql format
 
-`GET /gsql/scim/v2/Users/{id}`
+`GET /gsql/v1/users/{id}`
 
-This endpoint is used to retrieve a user by id respond with scim or gsql format.
+This endpoint is used to retrieve a user by id respond gsql format.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4578,7 +4440,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"
+curl -X GET "http://localhost:14240/gsql/v1/users/u1"
 ----
 --
 Sample Response::
@@ -4586,29 +4448,21 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+{"error":false,"message":"","results":{"lastSuccessLogin":"Thu Aug 08 16:51:23 HKT 2024","privileges":{"recommend":{"privileges":[]}},"nextValidLogin":"Thu Aug 08 16:51:23 HKT 2024","roles":{"recommend":["r1"]},"failedAttempts":0,"name":"u1","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
 ----
 --
 ====
 
 '''
-=== update a user
+=== update a user using gsql format
 
-`PUT /gsql/scim/v2/Users/{id}`
+`PUT /gsql/v1/users`
 
 This endpoint is used to update a user.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4618,7 +4472,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
+curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"  -d '{"name": "tigergraph", "password": "123"}'
 ----
 --
 Sample Response::
@@ -4626,16 +4480,16 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+{"error": false, "message": "Successfully updated user tigergraph"}
 ----
 --
 ====
 
 '''
 
-=== drop users
+=== drop users for gsql format
 
-`POST /gsql/scim/v2/Users/{id}`
+`POST /gsql/v1/users`
 
 This endpoint is used to drop users.
 
@@ -4649,10 +4503,6 @@ This endpoint is used to drop users.
 | `action`
 | no
 | default: `create`. Possible values: `create`, `delete`. `delete` indicates to drop users; `create` indicates to create users. Here set the value `delete`.
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
 |===
 
 ==== Example:
@@ -4663,7 +4513,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=false&action=delete"  -d ' {"userNames":["u1"]}'
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users?action=delete"  -d ' {"userNames":["u1"]}'
 ----
 --
 Sample Response::
@@ -4678,23 +4528,15 @@ Sample Response::
 
 '''
 
-=== drop a user
+=== drop a user using gsql format
 
-`DELETE /gsql/scim/v2/Users/{id}`
+`DELETE /gsql/v1/users/{id}`
 
 This endpoint is used to drop a user.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4704,7 +4546,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1?gsqlFormat=true"
+curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users/u1"
 ----
 --
 Sample Response::
@@ -4719,65 +4561,15 @@ Sample Response::
 
 '''
 
-=== create user using scim format
-
-`POST /gsql/scim/v2/Users`
-
-This endpoint is used to create user using scim format.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=false" -d '
-{"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"meta":{"location":"/scim/v2/Users/d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"active":true,"id":"d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","userName":"scimUser2"}
-----
---
-====
-
-'''
-
 === create user using gsql format
 
-`POST /gsql/scim/v2/Users`
+`POST /gsql/v1/users`
 
 This endpoint is used to create user using gsql format.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| The default value is `false`. When set to `false`, the request body uses the SCIM format JSON; when set to `true`, the request body uses the gsql format JSON. Here must set to `true`
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4787,7 +4579,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true" -d ' {"password":"tiger123","username":"user2"}'
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users" -d ' {"password":"tiger123","username":"user2"}'
 ----
 --
 Sample Response::
@@ -4802,72 +4594,15 @@ Sample Response::
 
 '''
 
-=== retrieve users using scim format
-
-`GET /gsql/scim/v2/Users`
-
-This endpoint is used to retrieve users response scim format.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `excludedAttributes`
-| no
-| `names`, currently only support this value.
-
-| `filter`
-| no
-| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `nq`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName nq "u1"
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
-
-==== Example:
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20nq%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&gsqlFormat=false&excludedAttributes=names"
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"totalResults":2,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"meta":{"location":"/scim/v2/Users/7a004538-8d41-4f85-b5e7-2a26358f0173","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"7a004538-8d41-4f85-b5e7-2a26358f0173","userName":"tigergraph"},{"meta":{"location":"/scim/v2/Users/0a71523d-9623-4b04-908d-395096e288f4","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"0a71523d-9623-4b04-908d-395096e288f4","userName":"u1"}]}
-----
---
-====
-
-'''
-
 === retrieve users using gsql format
 
-`GET /gsql/scim/v2/Users`
+`GET /gsql/v1/users`
 
 This endpoint is used to retrieve users response gsql format JSON.
 
 ==== Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `gsqlFormat`
-| no
-| By default, the response is in SCIM formatted JSON (default: `false`). Setting it to `true` will respond in GSQL formatted JSON.
-|===
+None
 
 ==== Example:
 [,tabs]
@@ -4877,7 +4612,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?gsqlFormat=true"
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"
 ----
 --
 Sample Response::
@@ -5264,6 +4999,447 @@ Sample Response::
 [source.wrap,console]
 ----
 {"error":false,"message":"","results":"Successfully revoked roles [observer, r1] on graph 'recommend' from users [user1, user2]."}
+----
+--
+====
+
+'''
+
+
+== SCIM APIS for users/groups
+
+=== retrieve a group by id using scim format
+
+`GET /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to retrieve a group by id response scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g2","meta":{"location":"/scim/v2/Groups/54ba8a0f-693c-4cf3-9c53-5caaa244049a","resourceType":"Group"},"members":[],"id":"54ba8a0f-693c-4cf3-9c53-5caaa244049a"}
+----
+--
+====
+
+'''
+
+=== retrieve groups using scim format
+
+`GET /gsql/scim/v2/Groups`
+
+This endpoint is used to retrieve groups response scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `filter`
+| no
+| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `ne`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
+
+| `excludedAttributes`
+| no
+| Specifies attributes to be excluded. Currently supports only `members`.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&filter=displayName%ne%20'g2'%20and%20displayName%20sw%20'g1'"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":1,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0570fc42-79ea-427e-aa2e-2b53a0470163","resourceType":"Group"},"id":"0570fc42-79ea-427e-aa2e-2b53a0470163"}]}
+----
+--
+====
+
+'''
+
+=== create group using scim format
+
+`POST /gsql/scim/v2/Groups`
+
+This endpoint is used to create group using scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"scimG3","meta":{"location":"/scim/v2/Groups/706d0ad6-2165-4190-8512-de5abfd06988","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"16c1e6cc-3b2a-4d57-9a2e-fb55a5d14804"},{"display":"user4","type":"User","value":"457b9982-d5fb-4ad6-b50a-266919bf0c16"}],"id":"706d0ad6-2165-4190-8512-de5abfd06988"}
+----
+--
+====
+
+'''
+
+=== update a group using scim format
+
+`PATCH /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to update a group.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0b181bc8-d055-4fcb-af52-20c560324c6f","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"5cdad092-af32-435e-9865-c2ad06b9d6f8"},{"display":"user4","type":"User","value":"c14765de-ea78-422a-bd87-88f3f7d3ceda"}],"id":"0b181bc8-d055-4fcb-af52-20c560324c6f"}
+----
+--
+====
+
+'''
+
+=== drop one group by name using scim format
+
+`DELETE /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to drop one group by name.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped group g1"}
+----
+--
+====
+
+'''
+
+=== drop groups using scim format
+
+`POST /gsql/scim/v2/Groups`
+
+This endpoint is used to drop groups.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| The default value is `create`. Possible values are `create` and `delete`. `Delete` indicates dropping groups, while `create`  indicates creating groups.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped groups: [g1]"}
+----
+--
+====
+
+'''
+
+=== retrieve a user by id using scim format
+
+`GET /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to retrieve a user by id respond with scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+
+'''
+=== update a user using scim format
+
+`PUT /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to update a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+
+'''
+
+=== drop users using scim format
+
+`POST /gsql/scim/v2/Users`
+
+This endpoint is used to drop users.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| default: `create`. Possible values: `create`, `delete`. `delete` indicates to drop users; `create` indicates to create users. Here set the value `delete`.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?action=delete"  -d ' {"userNames":["u1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped users: [u1]"}
+----
+--
+====
+
+'''
+
+=== drop a user using scim format
+
+`DELETE /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to drop a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped user u1"}
+----
+--
+====
+
+'''
+
+=== create user using scim format
+
+`POST /gsql/scim/v2/Users`
+
+This endpoint is used to create user using scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users" -d '
+{"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"active":true,"id":"d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","userName":"scimUser2"}
+----
+--
+====
+
+'''
+
+=== retrieve users using scim format
+
+`GET /gsql/scim/v2/Users`
+
+This endpoint is used to retrieve users response scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `excludedAttributes`
+| no
+| `names`, currently only support this value.
+
+| `filter`
+| no
+| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `ne`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName ne "u1"
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20ne%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&excludedAttributes=names"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":2,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"meta":{"location":"/scim/v2/Users/7a004538-8d41-4f85-b5e7-2a26358f0173","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"7a004538-8d41-4f85-b5e7-2a26358f0173","userName":"tigergraph"},{"meta":{"location":"/scim/v2/Users/0a71523d-9623-4b04-908d-395096e288f4","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"0a71523d-9623-4b04-908d-395096e288f4","userName":"u1"}]}
 ----
 --
 ====

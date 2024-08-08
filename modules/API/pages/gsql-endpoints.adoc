@@ -3661,7 +3661,7 @@ This endpoint is used to execute any GSQL command asynchronously or synchronousl
 
 | `timeout`
 | no
-| default: 0; the request will be aborted if not finished in timeout seconds
+| default: 0; the request will be aborted if not finished in timeout seconds. A value of 0 means the request will never time out.
 |===
 
 ==== Example:

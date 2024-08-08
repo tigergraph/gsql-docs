@@ -4332,8 +4332,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '
-{"name": "g1", "rule": "rule1"}'
+curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '{"name": "g1", "rule": "rule1"}'
 ----
 --
 Sample Response::

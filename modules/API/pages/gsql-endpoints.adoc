@@ -4234,7 +4234,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql//gsql/v1/groups/g2"
+curl -X GET "http://localhost:14240/gsql/v1/groups/g2"
 ----
 --
 Sample Response::
@@ -4267,7 +4267,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups"
+curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/v1/groups"
 ----
 --
 Sample Response::
@@ -4332,7 +4332,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '{"name": "g1", "rule": "rule1"}'
+curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '{"name": "g1", "rule": ""group=tech-department""}'
 ----
 --
 Sample Response::
@@ -5005,7 +5005,7 @@ Sample Response::
 '''
 
 
-== SCIM APIS for users/groups
+== SCIM APIs for users/groups
 
 === retrieve a group by id using scim format
 

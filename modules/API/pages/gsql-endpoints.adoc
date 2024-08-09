@@ -4745,7 +4745,7 @@ This endpoint is used to retrieve users response gsql format JSON.
 | no
 | If the graph is not provided and the current user has global READ_USER privilege, they can view all users. Otherwise, no user information can be accessed.
 
-If the graph is provided, users with global read_user privilege can view all users. If the current user holds local READ_USER privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
+If the graph is provided, users with global READ_USER privilege can view all users. If the current user holds local READ_USER privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
 |===
 ==== Example:
 [,tabs]

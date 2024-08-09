@@ -4384,7 +4384,16 @@ This endpoint is used to retrieve groups response gsql format JSON.
 
 ==== Parameters:
 
-None
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| If the graph is not specified and the current user has global proxygroup read privilege, they can see all proxy groups. Otherwise, no proxy group information can be accessed.
+
+If the graph is specified and the current user has local proxygroup read privilege for this graph, they can only view the proxy groups on this specific graph.
+|===
 
 ==== Example:
 [,tabs]
@@ -4409,11 +4418,11 @@ Sample Response::
 
 '''
 
-=== create group using gsql format
+=== create a group using gsql format
 
 `POST /gsql/v1/groups`
 
-This endpoint is used to create group using gsql format.
+This endpoint is used to create a group using gsql format.
 
 ==== Parameters:
 
@@ -4443,7 +4452,7 @@ Sample Response::
 '''
 === update a group using gsql format
 
-`PUT /gsql/v1/groups/{id}`
+`PUT /gsql/v1/groups`
 
 This endpoint is used to update a group.
 
@@ -4459,7 +4468,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1" -d '{"name": "g1", "rule": ""group=tech-department""}'
+curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"name": "g1", "rule": ""group=tech-department""}'
 ----
 --
 Sample Response::
@@ -4687,11 +4696,11 @@ Sample Response::
 
 '''
 
-=== create user using gsql format
+=== create a user using gsql format
 
 `POST /gsql/v1/users`
 
-This endpoint is used to create user using gsql format.
+This endpoint is used to create a user using gsql format.
 
 ==== Parameters:
 
@@ -4728,8 +4737,16 @@ This endpoint is used to retrieve users response gsql format JSON.
 
 ==== Parameters:
 
-None
+[%autowidth]
+|===
+| Name | Required | Description
 
+| `graph`
+| no
+| If the graph is not provided and the current user has global read_user privilege, they can view all users. Otherwise, no user information can be accessed.
+
+If the graph is provided, users with global read_user privilege can view all users. If the current user holds local read_user privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
+|===
 ==== Example:
 [,tabs]
 ====
@@ -5212,11 +5229,11 @@ Sample Response::
 
 '''
 
-=== create group using scim format
+=== create a group using scim format
 
 `POST /gsql/scim/v2/Groups`
 
-This endpoint is used to create group using scim format.
+This endpoint is used to create a group using scim format.
 
 ==== Parameters:
 
@@ -5493,11 +5510,11 @@ Sample Response::
 
 '''
 
-=== create user using scim format
+=== create a user using scim format
 
 `POST /gsql/scim/v2/Users`
 
-This endpoint is used to create user using scim format.
+This endpoint is used to create a user using scim format.
 
 ==== Parameters:
 

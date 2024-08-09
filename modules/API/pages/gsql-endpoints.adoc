@@ -4390,9 +4390,9 @@ This endpoint is used to retrieve groups response gsql format JSON.
 
 | `graph`
 | no
-| If the graph is not specified and the current user has global proxygroup read privilege, they can see all proxy groups. Otherwise, no proxy group information can be accessed.
+| If the graph is not specified and the current user has global READ_PROXYGROUP privilege, they can see all proxy groups. Otherwise, no proxy group information can be accessed.
 
-If the graph is specified and the current user has local proxygroup read privilege for this graph, they can only view the proxy groups on this specific graph.
+If the graph is specified and the current user has local READ_PROXYGROUP privilege for this graph, they can only view the proxy groups on this specific graph.
 |===
 
 ==== Example:
@@ -4743,9 +4743,9 @@ This endpoint is used to retrieve users response gsql format JSON.
 
 | `graph`
 | no
-| If the graph is not provided and the current user has global read_user privilege, they can view all users. Otherwise, no user information can be accessed.
+| If the graph is not provided and the current user has global READ_USER privilege, they can view all users. Otherwise, no user information can be accessed.
 
-If the graph is provided, users with global read_user privilege can view all users. If the current user holds local read_user privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
+If the graph is provided, users with global read_user privilege can view all users. If the current user holds local READ_USER privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
 |===
 ==== Example:
 [,tabs]

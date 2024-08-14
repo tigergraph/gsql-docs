@@ -102,12 +102,10 @@ Below is a demonstration illustrating the invocation of a template query with a 
 [source,gsql]
 ----
 use graph ExampleGraph
-call packageName.example({"type":"select", "source_set": "L1"}, {"type":"select", "source_set": "company", "filter": "src.name = \"Bob\""})
+call packageName.example("{\"type\":\"select\", \"source_set\": \"L1\"}", "{\"type\":\"select\", \"source_set\": \"company\", \"filter\": \"src.name = \\\"Bob\\\"\"}")
 ----
 [NOTE]
 The call command is required to be formatted as a single-line command, and it does not support word wrapping.
-[NOTE]
-The JSON data type does not necessitate being enclosed within double quotes to denote a string type.
 
 == Comprehensive Example
 === 1. Create a graph:
@@ -144,7 +142,7 @@ create template query pkg.example(
 [source,gsql]
 ----
 use graph exampleGraph
-call pkg.example({"type":"select","source_set":"person"}, {"type":"select","select": "tgt","source_set":"L1","e_set":"knows","target_set":"person","filter":"src.company = \"BOA\""}, 20, 170)
+call pkg.example("{\"type\":\"select\",\"source_set\":\"person\"}", "{\"type\":\"select\",\"select\": \"tgt\",\"source_set\":\"L1\",\"e_set\":\"knows\",\"target_set\":\"person\",\"filter\":\"src.company = \\\"BOA\\\"\"}", 20, 170)
 ----
 === 4. Generated query
 The subsequent GSQL query will be automatically formulated.

@@ -842,6 +842,16 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 | Accessor
 | Returns the value at the given _index_ position in the list. The index begins at 0. If the index is out of bound (including any negative value), the default value of the element type is returned.
 
+| `.head( )`
+| T
+| Accessor
+| Returns the first element in a list. If the list is empty, the default value of the element type is returned.
+
+| `.last( )`
+| T
+| Accessor
+| Returns the last element in a list. If the list is empty, the default value of the element type is returned.
+
 | `.clear()`
 | `VOID`
 | Mutator

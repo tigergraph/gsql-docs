@@ -74,7 +74,7 @@ INSTALL QUERY recommend_message
 ----
 GSQL > INSTALL QUERY recommend_message
 Start installing queries, about 1 minute ...
-recommend_message query: curl -X GET 'http://127.0.0.1:9000/query/ldbc_snb/recommend_message?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+recommend_message query: curl -X GET 'http://127.0.0.1:14240/restpp/query/ldbc_snb/recommend_message?fn=VALUE&ln=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
 
 [========================================================================================================] 100% (1/1)
 GSQL > run query recommend_message("Viktor", "Akhiezer")

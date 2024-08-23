@@ -3,7 +3,7 @@
 :description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
 :toc:
 
-This page describes the REST API endpoints accessible on a TigerGraph server. Assume all the sample requests and sample response are based on this sample schema (graph name is "financial_graph"):
+This page describes the REST API endpoints accessible on a TigerGraph server. Assume all the sample requests and sample response are based on this sample schema (graph name is "financialGraph"):
 
 .Sample schema
 image::schema Graph GSQL.png[]
@@ -37,7 +37,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/schema/vertices?graph=financial_graph"
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -45,7 +45,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"number"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Phone"}]}
+{"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Phone"}]}
 ----
 --
 ====
@@ -77,7 +77,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financial_graph"
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -85,7 +85,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Account"}}
+{"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Account"}}
 ----
 --
 ====
@@ -119,7 +119,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
 ----
 --
 Sample Response::
@@ -162,7 +162,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices?graph=financial_graph" -d '{"addVertices":["UserA","UserB"]}'
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
 ----
 --
 Sample Response::
@@ -170,7 +170,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully add vertices: [UserA, UserB] on graph financial_graph"}
+{"error":false,"message":"Successfully add vertices: [UserA, UserB] on graph financialGraph"}
 ----
 --
 ====
@@ -195,7 +195,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices" -d '{
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices" -d '{
     "createVertices": [
         {
             "Config": {
@@ -284,7 +284,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
 ----
 --
 Sample Response::
@@ -327,7 +327,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financial_graph"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -369,7 +369,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financial_graph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
+curl -X PUT -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
 ----
 --
 Sample Response::
@@ -410,7 +410,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=financial_graph"
+curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -450,7 +450,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financial_graph"
+curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -490,7 +490,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=financial_graph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
+curl -X POST -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
 ----
 --
 Sample Response::
@@ -534,7 +534,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
 ----
 --
 Sample Response::
@@ -582,7 +582,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/indexes?graph=financial_graph&vertex=Account&index=nameIndex"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
 ----
 --
 Sample Response::
@@ -623,7 +623,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/schema/edges?graph=financial_graph"
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -631,7 +631,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},{"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}, {"IsDirected":false,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"date"}],"FromVertexTypeName":"Account","Name":"Transfer"}]}
+{"error":false,"message":"","results":[{"IsDirected":true,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"DiscriminatorCount":1,"Attributes":[{"AttributeType":{"Name":"DATETIME"},"IsDiscriminator":true,"AttributeName":"date"},{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"}],"FromVertexTypeName":"Account","CompositeDiscriminator":["date"],"Name":"Transfer"},{"IsDirected":false,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"},{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"}]}
 ----
 --
 ====
@@ -663,7 +663,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financial_graph"
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -705,7 +705,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
 ----
 --
 Sample Response::
@@ -747,7 +747,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges?graph=financial_graph" -d '{"addEdges":["has_account"]}'
+curl -X POST -H "content-type: application/json" -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
 ----
 --
 Sample Response::
@@ -755,7 +755,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":true,"message":"Failed to create edges [has_account]. Semantic Check Fails: The schema change job tries to add edge has_account to graph financial_graph, but the FROM vertex type user does not exist on the graph.\n"}
+{"error":true,"message":"Failed to create edges [has_account]. Semantic Check Fails: The schema change job tries to add edge has_account to graph financialGraph, but the FROM vertex type user does not exist on the graph.\n"}
 ----
 --
 ====
@@ -780,7 +780,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
 ----
 --
 Sample Response::
@@ -826,7 +826,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financial_graph"
+curl -X DELETE -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -866,7 +866,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financial_graph"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -906,7 +906,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financial_graph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
+curl -X PUT -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
 ----
 --
 Sample Response::
@@ -921,7 +921,7 @@ Sample Response::
 
 
 '''
-=== show all graphs info only containing names of vertices and edges
+=== show all graphs info that only contains the name of vertices and edges
 
 `GET /gsql/v1/schema/graphs`
 
@@ -939,7 +939,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs"
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs"
 ----
 --
 Sample Response::
@@ -947,7 +947,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"graphs":[{"graphName":"financial_graph","vertices":["Account","Phone","City"],"edges":["isLocatedIn","hasPhone","Transfer"]}],"error":false,"message":""}
+{"graphs":[{"graphName":"financialGraph","vertices":["Account","City","Phone"],"edges":["Transfer","Transfer_Reverse","hasPhone","isLocatedIn"]}],"error":false,"message":""}
 ----
 --
 ====
@@ -980,7 +980,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=financial_graph"
+curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs?graphName=financialGraph"
 ----
 --
 Sample Response::
@@ -989,7 +989,7 @@ Sample Response::
 [source.wrap,console]
 ----
 
-{"error":false,"message":"","results":{"GraphName":"financial_graph","VertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"number"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Phone"}],"EdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},{"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}, {"IsDirected":false,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"date"}],"FromVertexTypeName":"Account","Name":"Transfer"}]}}
+{"error":false,"message":"","results":{"GraphName":"financialGraph","VertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"number"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Phone"}],"EdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},{"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}, {"IsDirected":false,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"date"}],"FromVertexTypeName":"Account","Name":"Transfer"}]}}
 
 ----
 --
@@ -1115,7 +1115,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/financial_graph?cascade=true"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/financialGraph?cascade=true"
 ----
 --
 Sample Response::
@@ -1123,7 +1123,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully dropped graph: financial_graph."}
+{"error":false,"message":"Successfully dropped graph: financialGraph."}
 ----
 --
 ====
@@ -1156,7 +1156,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=financial_graph,recommend"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=financialGraph,recommend"
 ----
 --
 Sample Response::
@@ -1164,7 +1164,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully dropped graphs: [financial_graph, recommend]."}
+{"error":false,"message":"Successfully dropped graphs: [financialGraph, recommend]."}
 ----
 --
 ====
@@ -1200,7 +1200,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=financial_graph"
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1249,7 +1249,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph financial_graph;}"}'
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph financialGraph;}"}'
 ----
 --
 Sample Response::
@@ -1282,7 +1282,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"financial_graph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"financialGraph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
 ----
 --
 Sample Response::
@@ -1323,7 +1323,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financial_graph" -d
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d
 '{
     "dropVertexTypes": [
         "desk"
@@ -1484,7 +1484,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?json=true&graph=financial_graph"
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?json=true&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1492,7 +1492,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH financial_graph;\n    }\n"}}
+{"error":false,"message":"","results":{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH financialGraph;\n    }\n"}}
 ----
 --
 ====
@@ -1559,7 +1559,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financial_graph" -d
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d
 '{
     "dropVertexTypes": [
     ],
@@ -1720,7 +1720,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?graph=financial_graph"
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1764,7 +1764,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=financial_graph"
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1808,7 +1808,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -1850,7 +1850,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=financial_graph' -d '<loading job statement>'
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
 ----
 --
 Sample Response::
@@ -1892,7 +1892,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=financial_graph' -d '<loading job statement>'
+curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
 ----
 --
 Sample Response::
@@ -1938,7 +1938,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: applicaiton/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financial_graph&json=[true/false]'
+curl -H 'Content-Type: applicaiton/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
 ----
 --
 Sample Response::
@@ -1984,7 +1984,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
 payload could be one of these:
 kafka loading: [{"name":"load_kafka","dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}],"streaming":false}]
 s3: [{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]
@@ -2031,7 +2031,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/loading-jobs/jobName?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/loading-jobs/jobName?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -2077,8 +2077,8 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financial_graph&jobIds=jobId1'
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financial_graph&jobIds=jobId1&isPause=true'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1&isPause=true'
 ----
 --
 Sample Response::
@@ -2126,7 +2126,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -2211,7 +2211,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financial_graph.load_ldbc_snb.jdbc.all.1111111111121'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
 ----
 --
 Sample Response::
@@ -2219,7 +2219,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financial_graph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
 ----
 --
 ====
@@ -2253,7 +2253,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/financial_graph.load_ldbc_snb.jdbc.all.1111111111121'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
 ----
 --
 Sample Response::
@@ -2261,7 +2261,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financial_graph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
 ----
 --
 ====
@@ -2363,7 +2363,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=financial_graph" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=financialGraph" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
 Sample Response::
@@ -2403,7 +2403,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=financial_graph" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=financialGraph" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
 Sample Response::
@@ -2443,7 +2443,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=financial_graph" -d '{"error":false,"message":"Data source k1 is dropped."}'
+curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=financialGraph" -d '{"error":false,"message":"Data source k1 is dropped."}'
 ----
 --
 Sample Response::
@@ -2805,7 +2805,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=financial_graph1&queries=q1,q2&flag=-single"
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=financialGraph1&queries=q1,q2&flag=-single"
 ----
 --
 Sample Response::
@@ -2873,7 +2873,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/quries?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/quries?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -2915,7 +2915,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/quries?graph=financial_graph'  -d 'create query q1 {...}'
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/quries?graph=financialGraph'  -d 'create query q1 {...}'
 ----
 --
 Sample Response::
@@ -2961,7 +2961,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queries?query=q1&graph=financial_graph'
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queries?query=q1&graph=financialGraph'
 ----
 --
 Sample Response::
@@ -3007,7 +3007,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/queires/q1?graph=financial_graph
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
 ----
 --
 Sample Response::
@@ -3058,7 +3058,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queires/q1?graph=financial_graph
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
 -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"param1":"1"}}'
 ----
 --
@@ -3101,7 +3101,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queires/q1?graph=financial_graph
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
 ----
 --
 Sample Response::
@@ -3143,7 +3143,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financial_graph syntax v1 {  print p1; }'
+curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
 ----
 --
 Sample Response::
@@ -3193,7 +3193,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/queries/info?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/queries/info?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -3201,7 +3201,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"graphUpdate":false,"installed":true,"endpoint":{"query":{"financial_graph":{"q1":{"GET/POST":{"graphUpdate":false,"summary":"This is query entrance","readDataList":{},"alternative_endpoint":"/query/q1","graph_name":"financial_graph","needReadRole":false,"executeGranted":false,"updateDataList":{},"enabled":true,"target":"GPE","deleteDataList":{},"libudf":"libudf-financial_graph-1","payload":[{"rule":"AS_JSON"},{"rule":"AS_QUERY_STRING"}],"function":"queryDispatcher","needCurrentRoles":false,"createDataList":{},"action":"query","executorList":[],"parameters":{"query":{"default":"q1","type":"STRING"}}}}}}},"code":"create query q1(){ print 1;}","callerQueries":[],"isACLSpecified":false,"name":"q1","syntax":"GSQL v2","installing":false,"enabled":true,"isHidden":false,"status":"VALID"}]}
+{"error":false,"message":"","results":[{"graphUpdate":false,"installed":true,"endpoint":{"query":{"financialGraph":{"q1":{"GET/POST":{"graphUpdate":false,"summary":"This is query entrance","readDataList":{},"alternative_endpoint":"/query/q1","graph_name":"financialGraph","needReadRole":false,"executeGranted":false,"updateDataList":{},"enabled":true,"target":"GPE","deleteDataList":{},"libudf":"libudf-financialGraph-1","payload":[{"rule":"AS_JSON"},{"rule":"AS_QUERY_STRING"}],"function":"queryDispatcher","needCurrentRoles":false,"createDataList":{},"action":"query","executorList":[],"parameters":{"query":{"default":"q1","type":"STRING"}}}}}}},"code":"create query q1(){ print 1;}","callerQueries":[],"isACLSpecified":false,"name":"q1","syntax":"GSQL v2","installing":false,"enabled":true,"isHidden":false,"status":"VALID"}]}
 ----
 --
 ====
@@ -3244,7 +3244,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X GET 'localhost:14240/gsql/v1/queries/signature?queryName=q1&graph=financial_graph'
+curl -H 'Content-Type: text/plain' -X GET 'localhost:14240/gsql/v1/queries/signature?queryName=q1&graph=financialGraph'
 ----
 --
 Sample Response::
@@ -3592,7 +3592,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/library/gds_community_printVertex_0000000000?graph=financial_graph' -d '{parameters: {"vertex": ""}}'
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/library/gds_community_printVertex_0000000000?graph=financialGraph' -d '{parameters: {"vertex": ""}}'
 ----
 --
 Sample Response::
@@ -4846,7 +4846,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/grant?graph=financial_graph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/grant?graph=financialGraph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
 ----
 --
 Sample Response::
@@ -4889,7 +4889,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/revoke?graph=financial_graph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/revoke?graph=financialGraph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
 ----
 --
 Sample Response::
@@ -4960,7 +4960,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/roles?graph=financial_graph" -d "{"roles":["r1", "r2"]}"
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/roles?graph=financialGraph" -d "{"roles":["r1", "r2"]}"
 ----
 --
 Sample Response::
@@ -4968,7 +4968,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":"Successfully created local roles on graph 'financial_graph': [r1, r2]."}
+{"error":false,"message":"","results":"Successfully created local roles on graph 'financialGraph': [r1, r2]."}
 ----
 --
 ====
@@ -5005,7 +5005,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles?graph=financial_graph&role=r1,r2"
+curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles?graph=financialGraph&role=r1,r2"
 ----
 --
 Sample Response::
@@ -5043,7 +5043,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"Graph":"financial_graph","roleName":"r1","isGlobal":false,"rolePrivileges":{"financial_graph":{"privileges":["READ_DATA","CREATE_DATA"]}}}}
+{"error":false,"message":"","results":{"Graph":"financialGraph","roleName":"r1","isGlobal":false,"rolePrivileges":{"financialGraph":{"privileges":["READ_DATA","CREATE_DATA"]}}}}
 ----
 --
 ====
@@ -5108,7 +5108,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/grant?graph=financial_graph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/grant?graph=financialGraph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
 ----
 --
 Sample Response::
@@ -5116,7 +5116,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":"Successfully granted roles [observer, r1] on graph 'financial_graph' to users [user1, user2]."}
+{"error":false,"message":"","results":"Successfully granted roles [observer, r1] on graph 'financialGraph' to users [user1, user2]."}
 ----
 --
 ====
@@ -5151,7 +5151,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/revoke?graph=financial_graph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/revoke?graph=financialGraph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
 ----
 --
 Sample Response::
@@ -5159,7 +5159,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":"Successfully revoked roles [observer, r1] on graph 'financial_graph' from users [user1, user2]."}
+{"error":false,"message":"","results":"Successfully revoked roles [observer, r1] on graph 'financialGraph' from users [user1, user2]."}
 ----
 --
 ====
@@ -5636,7 +5636,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -5696,7 +5696,7 @@ Sample Request 1::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financial_graph&vertex=Account'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph&vertex=Account'
 ----
 --
 Sample Response 1::
@@ -5716,7 +5716,7 @@ Sample Request 2::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financial_graph&edge=isLocatedIn&from=Account&to=City'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph&edge=isLocatedIn&from=Account&to=City'
 ----
 --
 Sample Response 2::
@@ -5752,7 +5752,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financial_graph' -d '{"vertex_counts":[{"type": "Account","count": 5}], "edge_counts":[{"type":"hasPhone","count":5},{"type":"isLocatedIn","from":"Account","to":"City","count":10}]}'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph' -d '{"vertex_counts":[{"type": "Account","count": 5}], "edge_counts":[{"type":"hasPhone","count":5},{"type":"isLocatedIn","from":"Account","to":"City","count":10}]}'
 ----
 --
 Sample Response::
@@ -5794,7 +5794,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financial_graph'
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -5824,7 +5824,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financial_graph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name", "bucket":10}'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name", "bucket":10}'
 ----
 --
 Sample Response::
@@ -5854,7 +5854,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/histogram' -d '{"graph":"financial_graph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/histogram' -d '{"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
 ----
 --
 Sample Response::
@@ -5884,7 +5884,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financial_graph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
 ----
 --
 Sample Response::

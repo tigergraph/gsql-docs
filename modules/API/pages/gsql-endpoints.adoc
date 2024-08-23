@@ -2980,7 +2980,7 @@ Sample Response::
 
 `GET /gsql/v1/queries/{queryName}`
 
-This endpoint is to get the content of a query by its name.
+This endpoint is to get the content of a query by its name. Please note that calling this endpoint needs to set 'Content-Type: application/json' in header.
 
 ==== Parameters:
 
@@ -3118,9 +3118,9 @@ Sample Response::
 
 === interpret query
 
-`POST /gsql/v1/interpret`
+`POST /gsql/v1/queries/interpret`
 
-This endpoint is used to intepret query.
+This endpoint is used to intepret query. Please note that calling this endpont need to set 'Content-Type: text/plain' in header. 
 
 ==== Parameters:
 

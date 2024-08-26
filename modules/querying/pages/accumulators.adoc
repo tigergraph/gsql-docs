@@ -52,7 +52,7 @@ Accumulators are declared to have one of three types of association: _global_, _
 
 [NOTE]
 ====
-TigerGraph supports edge accumulators starting in 3.10.0, but only for Single GPR mode query.
+TigerGraph supports edge accumulators starting in 3.10.0, but only for Single GPR mode(a new internal engine framework for compiling non-distributed queries) query.
 ====
 More technically, accumulators are mutable mutex (mutual exclusion) variables shared among all the graph computation threads exploring the graph within a given query.
 To improve performance, the graph processing engine employs multithreaded processing.
@@ -129,7 +129,8 @@ A statement such as ``v1.@neighbors += 1``will only impact `v1` 's `@neighbors` 
 
 [NOTE]
 ====
-Currently, we only support edge attached accumulators in single GPR mode! Please install the query with 'set single_gpr = true' or '-single' flag to use this feature.
+Currently, we only support edge attached accumulators in single GPR mode, a new internal engine framework for compiling non-distributed queries.
+Please install the query with 'set single_gpr = true' or '-single' flag to use this feature.
 ====
 
 Edge-attached accumulators are mutable state variables that are attached to each edge in the graph for the duration of the query's lifetime.

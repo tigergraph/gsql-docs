@@ -52,7 +52,7 @@ Accumulators are declared to have one of three types of association: _global_, _
 
 [NOTE]
 ====
-TigerGraph supports edge accumulators starting in 3.10.0, but only for a single-hop distributed query.
+TigerGraph supports edge accumulators starting in 3.10.0, but only for Single GPR mode query.
 ====
 More technically, accumulators are mutable mutex (mutual exclusion) variables shared among all the graph computation threads exploring the graph within a given query.
 To improve performance, the graph processing engine employs multithreaded processing.
@@ -184,7 +184,7 @@ CREATE QUERY test() {
 Edge accumulators cannot be used in `POST-ACCUM` clauses.
 ====
 
-Known Issues
+=== Known Issues
 
 - Placing a vertex as a key and an edge accumulator as a value in a MapAccum can cause the query creation to fail.
 

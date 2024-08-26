@@ -1170,11 +1170,11 @@ Sample Response::
 ====
 
 '''
-=== drop local/global scheme change jobs
+=== drop local/global schema change jobs
 
 `DELETE /gsql/v1/schema/jobs`
 
-This endpoint is used to drop local/global scheme change jobs.
+This endpoint is used to drop local/global schema change jobs.
 
 ==== Parameters:
 
@@ -1215,11 +1215,11 @@ Sample Response::
 
 
 '''
-=== create local/global scheme change job using gsql command
+=== create local/global schema change job using gsql command
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create local/global scheme change job using gsql command.
+This endpoint is used to create local/global schema change job using gsql command.
 
 ==== Parameters:
 
@@ -1264,11 +1264,11 @@ Sample Response::
 
 
 '''
-=== create global scheme change job using json
+=== create global schema change job using json
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create global scheme change job using json.
+This endpoint is used to create global schema change job using json.
 
 ==== Parameters:
 
@@ -1297,11 +1297,11 @@ Sample Response::
 
 
 '''
-=== create local scheme change job using json
+=== create local schema change job using json
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create local scheme change job using json.
+This endpoint is used to create local schema change job using json.
 
 ==== Parameters:
 
@@ -1316,6 +1316,42 @@ This endpoint is used to create local scheme change job using json.
 |===
 
 ==== Example:
+Assuming we already have the following vertices and edges in the local graph financialGraph:
+
+[source]
+----
+VERTEX LocalAccount (
+    name STRING PRIMARY KEY,
+    isBlocked BOOL
+)
+
+VERTEX LocalCity (
+    name STRING PRIMARY KEY
+)
+
+VERTEX LocalPhone (
+    name STRING PRIMARY KEY,
+    isBlocked BOOL
+)
+
+DIRECTED EDGE LocalTransfer (
+    FROM Account,
+    TO Account,
+    DISCRIMINATOR(date DATETIME),
+    amount UINT
+) WITH REVERSE_EDGE="LocalTransfer_Reverse"
+
+UNDIRECTED EDGE LocalhasPhone (
+    FROM Account,
+    TO Phone
+)
+
+DIRECTED EDGE LocalisLocatedIn (
+    FROM Account,
+    TO City
+)
+----
+
 [,tabs]
 ====
 Sample Request::
@@ -1323,17 +1359,14 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d
-'{
+curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
+{
     "dropVertexTypes": [
-        "desk"
+        "LocalPhone"
     ],
     "alterVertexTypes": [
         {
-            "name": "house",
-            "dropAttributes": [
-                "height"
-            ],
+            "name": "LocalAccount",
             "addAttributes": [
                 {
                     "DefaultValue": "defaultValue1",
@@ -1343,16 +1376,10 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
                     "AttributeName": "attr2"
                 }
             ],
-            "dropIndexAttributes": [
-                {
-                    "indexName": "Index_Type_Name",
-                    "attributeName": "area"
-                }
-            ],
             "addIndexAttributes": [
                 {
                     "indexName": "ppIndex",
-                    "attributeName": "pp"
+                    "attributeName": "name"
                 }
             ]
         }
@@ -1420,12 +1447,12 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
         }
     ],
     "dropEdgeTypes": [
-        "e1"
+        "LocalhasPhone"
     ],
     "alterEdgeTypes": [
         {
             "dropAttributes": [
-                "attr1"
+                "amount"
             ],
             "addAttributes": [
                 {
@@ -1436,11 +1463,10 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
                     "AttributeName": "attr2"
                 }
             ],
-            "name": "e2"
+            "name": "LocalTransfer"
         }
     ]
-}
-'
+}'
 ----
 --
 Sample Response::
@@ -1484,7 +1510,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?json=true&graph=financialGraph"
+curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/job12?json=true&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1492,7 +1518,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"test1":"CREATE GLOBAL SCHEMA_CHANGE JOB test1 {\n      ADD VERTEX user TO GRAPH financialGraph;\n    }\n"}}
+{"error":false,"message":"","results":{"job12":{"dropVertexTypes":[],"addTags":[],"name":"job12","alterVertexTypes":[],"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalAccount"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalCity"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalPhone"}],"addEdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"LocalTransfer_Reverse"},"DiscriminatorCount":1,"Attributes":[{"AttributeType":{"Name":"DATETIME"},"IsDiscriminator":true,"AttributeName":"date"},{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"}],"FromVertexTypeName":"Account","Name":"LocalTransfer"},{"IsDirected":false,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"LocalhasPhone"},{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"LocalisLocatedIn"}],"dropEdgeTypes":[],"graph":"financialGraph","alterEdgeTypes":[],"dropTags":[]}}}
 ----
 --
 ====
@@ -1516,7 +1542,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change" -d '
+curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/change" -d '
  {"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
 {"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
 ]}'
@@ -1527,7 +1553,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully created vertices: [User5, User4]."}
+{"error":false,"message":"Global schema change runs successfully"}
 ----
 --
 ====
@@ -1559,15 +1585,13 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d
-'{
-    "dropVertexTypes": [
-    ],
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d '
+{
+    "dropVertexTypes": [],
     "alterVertexTypes": [
         {
-            "name": "house",
-            "dropAttributes": [
-            ],
+            "name": "LocalAccount",
+            "dropAttributes": [],
             "addAttributes": [
                 {
                     "DefaultValue": "defaultValue1",
@@ -1577,24 +1601,15 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
                     "AttributeName": "attr2"
                 }
             ],
-            "dropIndexAttributes": [
-                {
-                    "indexName": "Index_Type_Name",
-                    "attributeName": "area"
-                },
-                {
-                    "indexName": "height_type_name",
-                    "attributeName": "height"
-                }
-            ],
+            "dropIndexAttributes": [],
             "addIndexAttributes": [
                 {
                     "indexName": "xIndex",
-                    "attributeName": "x"
+                    "attributeName": "name"
                 },
                 {
                     "indexName": "yIndex",
-                    "attributeName": "y"
+                    "attributeName": "isBlocked"
                 }
             ]
         }
@@ -1645,9 +1660,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
         {
             "IsDirected": true,
             "ToVertexTypeName": "User4",
-            "Config": {
-
-            },
+            "Config": {},
             "IsLocal": true,
             "Attributes": [
                 {
@@ -1661,13 +1674,10 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
             "Name": "edge1"
         }
     ],
-    "dropEdgeTypes": [
-    ],
+    "dropEdgeTypes": [],
     "alterEdgeTypes": [
         {
-            "dropAttributes": [
-                "attr1"
-            ],
+            "dropAttributes": ["isBlocked"],
             "addAttributes": [
                 {
                     "DefaultValue": "defaultValue1",
@@ -1677,7 +1687,7 @@ curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1
                     "AttributeName": "attr2"
                 }
             ],
-            "name": "e1"
+            "name": "LocalPhone"
         }
     ]
 }'
@@ -1720,7 +1730,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test1?graph=financialGraph"
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1764,7 +1774,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
+curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1772,7 +1782,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":[{"add2":{"dropVertexTypes":[],"addTags":[],"name":"add2","alterVertexTypes":[],"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE","PRIMARY_ID_AS_ATTRIBUTE":true},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"lastName"},{"AttributeType":{"Name":"INT"},"AttributeName":"age"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"birthday"},{"AttributeType":{"Name":"FLOAT"},"AttributeName":"weight"},{"AttributeType":{"Name":"DOUBLE"},"AttributeName":"salary"},{"AttributeType":{"Name":"BOOL"},"AttributeName":"marriage"},{"AttributeType":{"ValueTypeName":"STRING","Name":"LIST"},"AttributeName":"speaks"},{"AttributeType":{"ValueTypeName":"STRING","Name":"SET"},"AttributeName":"email"},{"AttributeType":{"ValueTypeName":"STRING","KeyTypeName":"INT","Name":"MAP"},"AttributeName":"familyMember"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"test_person"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE","PRIMARY_ID_AS_ATTRIBUTE":true},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"url"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"test_city"}],"addEdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"test_city","Config":{},"Attributes":[{"AttributeType":{"Name":"DATETIME"},"AttributeName":"live_date"}],"FromVertexTypeName":"test_person","Name":"test_live_in"}],"dropEdgeTypes":[],"graph":"person_movie","alterEdgeTypes":[],"dropTags":[]}}]}
+{"error":false,"message":"","results":[{"job12":"CREATE SCHEMA_CHANGE JOB job12 FOR GRAPH financialGraph {\n      ADD VERTEX LocalAccount(name STRING primary key, isBlocked BOOL) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX LocalCity(name STRING primary key) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX LocalPhone(name STRING primary key, isBlocked BOOL) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD DIRECTED EDGE LocalTransfer(FROM Account, TO Account, DISCRIMINATOR( date DATETIME), amount UINT) WITH REVERSE_EDGE=\"LocalTransfer_Reverse\";\n      ADD UNDIRECTED EDGE LocalhasPhone(FROM Account, TO Phone);\n      ADD DIRECTED EDGE LocalisLocatedIn(FROM Account, TO City);\n    }\n"},{"test5":"CREATE SCHEMA_CHANGE JOB test5 {\n      ADD VERTEX User5(PRIMARY_ID user_id UINT, name STRING) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX User4(PRIMARY_ID user_id UINT, name STRING) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD DIRECTED EDGE edge1(FROM User5, TO User4, live_date DATETIME);\n      DROP VERTEX LocalPhone;\n      DROP EDGE LocalhasPhone;\n      ALTER VERTEX LocalAccount ADD ATTRIBUTE (attr2 STRING DEFAULT \"defaultValue1\");\n      ALTER VERTEX LocalAccount ADD INDEX ppIndex ON (name);\n      ALTER EDGE LocalTransfer ADD ATTRIBUTE (attr2 STRING DEFAULT \"defaultValue1\");\n      ALTER EDGE LocalTransfer DROP ATTRIBUTE (amount);\n    }\n"}]}
 ----
 --
 ====

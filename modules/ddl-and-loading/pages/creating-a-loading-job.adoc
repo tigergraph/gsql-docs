@@ -1104,7 +1104,7 @@ CREATE LOADING JOB abc FOR GRAPH Graph_Name {
   DELETE VERTEX vertex_type_name (PRIMARY_ID id_expr) FROM f [WHERE condition] ;
 
   // Delete each edge which has the given edge type, source vertex id, target vertex id, and discriminator value if provided.
-  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr, DISCRIMINATOR (id_expr)) FROM f [WHERE condition] ;
+  DELETE EDGE edge_type_name (FROM id_expr, TO id_expr[, DISCRIMINATOR (id_expr)]) FROM f [WHERE condition] ;
 
   // Delete all edges which have the given edge type and source vertex id. (Destination vertex id is left open.)
   DELETE EDGE edge_type_name (FROM id_expr) FROM f [WHERE condition] ;

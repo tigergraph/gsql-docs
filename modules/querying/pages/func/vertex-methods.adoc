@@ -1172,7 +1172,7 @@ GSQL > RUN QUERY to_vertex_test("Dan", "person")
 
 [WARNING]
 ==== 
-Since 4.1.0, we cannot use `to_vertex_set()` in ACCUM or POST-ACCUM clauses any more. An error message will be prompted when we try to do so.
+Since v4.1.0, `to_vertex_set()` may not be used in ACCUM or POST-ACCUM clauses.
 
 ====  Example
 

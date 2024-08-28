@@ -877,7 +877,7 @@ To run the query in all-vertex mode, use the -av option in shell mode or include
 GSQL > RUN QUERY -av test()
 
 ## In a curl URL call.  Note the use of both single and double underscores.
-curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL_ACTIVE_MODE=true'
+curl -X GET 'http://localhost:14240/restpp/query/graphname/queryname?__GQUERY__USING_ALL_ACTIVE_MODE=true'
 ----
 
 ==== Detached mode -async option
@@ -910,7 +910,7 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 
 [source.wrap,console]
 ----
-$ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
+$ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:14240/restpp/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
 To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
@@ -976,7 +976,7 @@ The following REST response misspells the name of the endpoint
 
 [source,bash]
 ----
-curl -X GET "http://localhost:9000/eco"
+curl -X GET "http://localhost:14240/restpp/eco"
 ----
 
 

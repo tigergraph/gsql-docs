@@ -260,7 +260,7 @@ SHOW LOADING ERROR <job_id> LIMIT <num_of_lines>`
 ----
 
 [NOTE]
-User privileges for showing loading errors are the same as running loading jobs.
+User privileges for showing loading errors are the same as for running loading jobs.
 
 The file level report points out the two data level errors in this Movie loading job.
 The `load_output` log file contains more detailed information.

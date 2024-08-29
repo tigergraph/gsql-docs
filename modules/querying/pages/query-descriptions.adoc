@@ -10,7 +10,7 @@ After creating a query, you can add a description for the query.
 UPDATE DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>] <description>
 
 Required privilege
-WRITE_QUERY
+UPDATE_QUERY
 
 To update a description, run the UPDATE DESCRIPTION command as shown below. You can update the description of a query or a query parameter. If you choose not to specify a graph in the command, the current scope will be used as the scope of the description.
 
@@ -67,8 +67,7 @@ Support is provided for displaying descriptions of multiple targets simultaneous
 DROP DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
 
 Required privilege
-
-WRITE_QUERY
+UPDATE_QUERY
 
 To drop a description, run the DROP DESCRIPTION command like below.
 Similar to the update command, you can drop the description of a global type object or a local type object.

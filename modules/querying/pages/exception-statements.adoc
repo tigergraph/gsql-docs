@@ -99,7 +99,7 @@ As of TigerGraph v1.2, the format for the GET /query endpoint has changed.  The 
 
 [source,gsql]
 ----
-$ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=7"
+$ curl -X GET "http://localhost:14240/restpp/query/minimalNet/excpBuiltin?n1=7"
 {
     "error": false,
     "message": "",
@@ -115,7 +115,7 @@ $ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=7"
     }
 }
 
-$ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=a"
+$ curl -X GET "http://localhost:14240/restpp/query/minimalNet/excpBuiltin?n1=a"
 {
     "code": "REST-30000",
     "error": true,
@@ -127,7 +127,7 @@ $ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=a"
     }
 }
 
-$ curl -X GET "http://localhost:9000/query/minimalNet/excpBuiltin?n1=0"
+$ curl -X GET "http://localhost:14240/restpp/query/minimalNet/excpBuiltin?n1=0"
 {
     "error": true,
     "message": "Runtime Error: divider is zero.",
@@ -220,7 +220,7 @@ include::appendix:example$social_net/exception_raise.gsql[]
 [source,gsql]
 ----
 // Valid input: no exceptions
-$ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?v_set=person2&vSet=person6&eType=posted"
+$ curl -X GET "http://localhost:14240/restpp/query/socialNet/excpCountActivity?v_set=person2&vSet=person6&eType=posted"
 {
   "error": false,
   "message": "",
@@ -238,7 +238,7 @@ $ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?v_set=per
 }
 
 // empty input set (due to spelling error in parameter name)
-$ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vset=person2&vset=person6&eType=posted"
+$ curl -X GET "http://localhost:14240/restpp/query/socialNet/excpCountActivity?vset=person2&vset=person6&eType=posted"
 {
   "code": "40001",
   "error": true,
@@ -252,7 +252,7 @@ $ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vset=pers
 
 
 // no edges (due to unknown edge type)
-$ curl -X GET "http://localhost:9000/query/socialNet/excpCountActivity?vSet=person2&vSet=person6&eType=commented"
+$ curl -X GET "http://localhost:14240/restpp/query/socialNet/excpCountActivity?vSet=person2&vSet=person6&eType=commented"
 {
   "code": "40002",
   "error": true,

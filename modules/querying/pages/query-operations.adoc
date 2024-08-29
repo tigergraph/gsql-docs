@@ -68,6 +68,12 @@ There are some limitations to Interpreted Mode. See the section on <<Interpret a
 [#_create_query]
 == `CREATE QUERY`
 
+Required privilege:
+CREATE_QUERY or UPDATE_QUERY
+
+If create or replace a query that does not exist, only require `CREATE_QUERY` privilege.
+If create or replace an existing query, only require `UPDATE_QUERY` privilege.
+
 [source,ebnf]
 ----
 createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
@@ -96,18 +102,6 @@ If the original query was installed, you'll need to reinstall the new query.
 +
 However, if there are any errors in this query definition, then the previous query definition is maintained.
 If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
-+
-Only the xref:tigergraph-server:user-access:access-control-model.adoc#_query_owner[query owner] is allowed to run `CREATE OR REPLACE` on a query.
-However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph, you can execute `DROP QUERY` to drop the query and create a new one with the same name.
-+
-[NOTE]
-====
-The difference between `CREATE OR REPLACE` and dropping and recreating a query are the following:
-
-* Only the query owner is allowed to run `CREATE OR REPLACE` on a query directly, while anyone with the `WRITE_QUERY` privilege on the corresponding graph and drop and recreate the query.
-* The ACLs on the original query are dropped when you drop the query.
-`CREATE OR REPLACE` keeps the original ACLs intact.
-====
 `DISTRIBUTED`::
 The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
 If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.
@@ -539,6 +533,13 @@ Queries are not saved as drafts in the following situations:
 
 If a query is saved as a draft before it reaches valid status, any queries that call it are also set to draft status.
 
+[NOTE]
+====
+If a user creates a query, this user becomes the owner of this query automatically.
+
+For a detailed description, please refer to xref:xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc
+====
+
 == `INTERPRET QUERY`
 
 `INTERPRET QUERY` runs a query by translating it line-by-line.
@@ -565,6 +566,8 @@ interpretQuery := INTERPRET QUERY "(" ")"
                "{" queryBody "}"
 ----
 
+Required privilege: No specific query privilege required.
+
 This syntax is similar in concept to SQL queries.
 Queries are not named, do not accept parameters, and are not saved after being run.
 
@@ -589,6 +592,9 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
 
+Required privilege:
+EXECUTE_QUERY
+
 This syntax is like `RUN` query, except
 
 * The keyword `RUN` is replaced with `INTERPRET`.
@@ -610,6 +616,9 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryName]* )
 ----
 
+Required privilege:
+INSTALL_QUERY
+
 `INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
@@ -624,7 +633,7 @@ If a subquery that was previously installed is dropped from the graph, all insta
 
 When a single `INSTALL QUERY` command installs multiple queries, each query is installed independently. If one query fails to be installed, it will not affect the installation of other queries.
 
-To install a query, the user needs to have the `WRITE_QUERY` privilege on the graph where the query is to be installed or on the global scope.
+To install a query, the user needs to have the `INSTALL_QUERY` privilege on the given query and subqueries that need to be installed in order to install given query. If a subquery has already been installed, then the user is not required to have `INSTALL_QUERY` privilege on it.
 
 Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, using either of the following commands:
 
@@ -701,7 +710,8 @@ parameterValueList := parameterValue ["," parameterValue]*
 parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
 ----
 
-
+Required privilege:
+EXECUTE_QUERY
 
 === Query parameters
 
@@ -877,7 +887,7 @@ To run the query in all-vertex mode, use the -av option in shell mode or include
 GSQL > RUN QUERY -av test()
 
 ## In a curl URL call.  Note the use of both single and double underscores.
-curl -X GET 'http://localhost:9000/query/graphname/queryname?__GQUERY__USING_ALL_ACTIVE_MODE=true'
+curl -X GET 'http://localhost:14240/restpp/query/graphname/queryname?__GQUERY__USING_ALL_ACTIVE_MODE=true'
 ----
 
 ==== Detached mode -async option
@@ -910,7 +920,7 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 
 [source.wrap,console]
 ----
-$ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
+$ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:14240/restpp/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
 To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
@@ -976,7 +986,7 @@ The following REST response misspells the name of the endpoint
 
 [source,bash]
 ----
-curl -X GET "http://localhost:9000/eco"
+curl -X GET "http://localhost:14240/restpp/eco"
 ----
 
 
@@ -1012,6 +1022,9 @@ This statement sets a persistent system parameter. Each version of the TigerGrap
 ----
 showQuery := SHOW QUERY queryName
 ----
+
+Required privilege:
+READ_QUERY
 
 To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`.
 See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
@@ -1078,6 +1091,9 @@ CREATE QUERY valid3(){
 ----
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
+
+Required privilege:
+DROP_QUERY
 
 To drop a query, run `DROP QUERY query_name`.
 The query will be uninstalled (if it has been installed) and removed from the dictionary.

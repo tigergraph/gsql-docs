@@ -117,7 +117,7 @@ INSTALL QUERY hello
 ----
 GSQL > INSTALL QUERY hello
 Start installing queries, about 1 minute ...
-hello query: curl -X GET 'http://127.0.0.1:9000/query/social/hello?p=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
+hello query: curl -X GET 'http://127.0.0.1:14240/restpp/query/social/hello?p=VALUE'. Add -H "Authorization: Bearer TOKEN" if authentication is enabled.
 Select 'm1' as compile server, now connecting ...
 Node 'm1' is prepared as compile server.
 
@@ -192,7 +192,7 @@ Our parameterized query thus becomes an HTTP service.
 .Linux shell
 [source,bash]
 ----
-curl -X GET 'http://localhost:9000/query/Social/hello?p=Tom'
+curl -X GET 'http://localhost:14240/restpp/query/Social/hello?p=Tom'
 ----
 
 Finally, to see the GSQL text of a query in the catalog, you can use `SHOW QUERY <query_name>`.

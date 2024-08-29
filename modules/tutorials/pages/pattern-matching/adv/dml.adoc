@@ -46,7 +46,7 @@ Check the inserted vertex.
 [source,bash]
 ----
 // check the inserted vertex
-curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/vertices/Person/100000000" | jq .
 
 // result
 {
@@ -87,7 +87,7 @@ Check the inserted edges.
 [source,bash]
 ----
 // check the inserted edges using tiger's id (100,000,000)
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
 // result
 {
   "version": {
@@ -134,7 +134,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" 
   ]
 }
 // note you can use the vertex lookup API to verify the three connected authors. E.g
-curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/8796093025410" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/vertices/Person/8796093025410" | jq .
 ----
 
 
@@ -166,7 +166,7 @@ Check Tiger Woods' creation_date and language he speaks.
 
 [source,gsql]
 ----
-curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/vertices/Person/100000000" | jq .
 // result
 {
   "version": {
@@ -208,7 +208,7 @@ Check Knows edges whose source is tiger woods.
 
 [source,gsql]
 ----
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
 
 // result
 {
@@ -283,7 +283,7 @@ To verify the result, you can use built-in REST calls.
 
 [source,gsql]
 ----
-curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/vertices/Person/100000000" | jq .
 #vertexresults
 {
   "version": {
@@ -296,7 +296,7 @@ curl -X GET "http://localhost:9000/graph/ldbc_snb/vertices/Person/100000000" | j
   "code": "601"
 }
 
-curl -X GET "http://localhost:9000/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/ldbc_snb/edges/Person/100000000/Knows" | jq .
 #edge results
 {
   "version": {

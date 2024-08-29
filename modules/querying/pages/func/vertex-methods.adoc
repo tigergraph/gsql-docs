@@ -1074,6 +1074,32 @@ Running `to_vertex() and to_vertex_set()` requires real-time conversion of an ex
 
 * If the user can always know the id before running the query, define the query with `VERTEX` or `SET<VERTEX>` parameters instead of `STRING` or `SET<STRING>` parameters, and avoid calling `to_vertex()` or `to_vertex_set()`.
 * Calling `to_vertex_set()` one time is much faster than calling `to_vertex()` multiple times. Use `to_vertex_set()` instead of `to_vertex()` as much as possible.
+
+Since v4.1.0, `to_vertex()` may not be used in ACCUM or POST-ACCUM clauses.
+
+====  Example
+
+.Example query using to_vertex() in Accum should propmt an error message
+
+[source,gsql]
+----
+CREATE QUERY myTest() {
+    ListAccum<VERTEX> @@myVertices;
+    vSet = SELECT src from Person:src
+      Accum
+        @@myVertices += to_vertex("m1","Person")    # such use case should not be allowed anymore
+    ;
+}
+----
+
+You should receive a similar error message.
+
+[source,text]
+----
+Using a vertex function 'to_vertex' or 'to_vertex_set' in ACCUM/POST-ACCUM,
+this has been deprecated. Please rewrite your query.
+----
+
 ==== 
 
 
@@ -1144,6 +1170,34 @@ GSQL > RUN QUERY to_vertex_test("Dan", "person")
 
 === `to_vertex_set()`
 
+[WARNING]
+==== 
+Since v4.1.0, `to_vertex_set()` may not be used in ACCUM or POST-ACCUM clauses.
+
+====  Example
+
+.Example query using to_vertex_set() in Accum should propmt an error message
+
+[source,gsql]
+----
+CREATE QUERY myTest2(SET<String> myIds) {
+    SetAccum<VERTEX> @@myVertices;
+    vSet = SELECT src from Person:src
+      Accum
+        @@myVertices += to_vertex_set(myIds, "Person")    # such use case should not be allowed anymore
+    ;
+}
+----
+
+You should receive a similar error message.
+
+[source,text]
+----
+Using a vertex function 'to_vertex' or 'to_vertex_set' in ACCUM/POST-ACCUM,
+this has been deprecated. Please rewrite your query.
+----
+
+==== 
 
 ====  Syntax
 

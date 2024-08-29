@@ -68,6 +68,12 @@ There are some limitations to Interpreted Mode. See the section on <<Interpret a
 [#_create_query]
 == `CREATE QUERY`
 
+Required privilege:
+CREATE_QUERY or UPDATE_QUERY
+
+If create or replace a query that does not exist, only require `CREATE_QUERY` privilege.
+If create or replace an existing query, only require `UPDATE_QUERY` privilege.
+
 [source,ebnf]
 ----
 createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
@@ -565,6 +571,8 @@ interpretQuery := INTERPRET QUERY "(" ")"
                "{" queryBody "}"
 ----
 
+Required privilege: No specific query privilege required.
+
 This syntax is similar in concept to SQL queries.
 Queries are not named, do not accept parameters, and are not saved after being run.
 
@@ -589,6 +597,9 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
 
+Required privilege:
+EXECUTE_QUERY
+
 This syntax is like `RUN` query, except
 
 * The keyword `RUN` is replaced with `INTERPRET`.
@@ -610,6 +621,9 @@ INTERPRET QUERY createQueryEx ("Jane.Doe")
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryName]* )
 ----
 
+Required privilege:
+INSTALL_QUERY
+
 `INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
@@ -624,7 +638,7 @@ If a subquery that was previously installed is dropped from the graph, all insta
 
 When a single `INSTALL QUERY` command installs multiple queries, each query is installed independently. If one query fails to be installed, it will not affect the installation of other queries.
 
-To install a query, the user needs to have the `WRITE_QUERY` privilege on the graph where the query is to be installed or on the global scope.
+To install a query, the user needs to have the `INSTALL_QUERY` privilege on the given query and subqueries that need to be installed in order to install given query. If a subquery has already been installed, then the user is not required to have `INSTALL_QUERY` privilege on it.
 
 Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, using either of the following commands:
 
@@ -701,7 +715,8 @@ parameterValueList := parameterValue ["," parameterValue]*
 parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
 ----
 
-
+Required privilege:
+EXECUTE_QUERY
 
 === Query parameters
 
@@ -1013,6 +1028,9 @@ This statement sets a persistent system parameter. Each version of the TigerGrap
 showQuery := SHOW QUERY queryName
 ----
 
+Required privilege:
+READ_QUERY
+
 To show the GSQL text of a query, run `SHOW QUERY query_name` . The `query_name` argument can use `*` or `?` wildcards from Linux globbing, or it can be a regular expression when preceded by  `-r`.
 See  xref:ddl-and-loading:defining-a-graph-schema.adoc#_show__view_parts_of_the_catalog[SHOW: View Parts of the Catalog]
 
@@ -1078,6 +1096,9 @@ CREATE QUERY valid3(){
 ----
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
+
+Required privilege:
+DROP_QUERY
 
 To drop a query, run `DROP QUERY query_name`.
 The query will be uninstalled (if it has been installed) and removed from the dictionary.

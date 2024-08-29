@@ -52,7 +52,7 @@ Accumulators are declared to have one of three types of association: _global_, _
 
 [NOTE]
 ====
-TigerGraph supports edge accumulators starting in 3.10.0, but only for a single-hop distributed query.
+TigerGraph supports edge accumulators starting in 3.10.0, but only for Single GPR mode(a new internal engine framework for compiling non-distributed queries) query.
 ====
 More technically, accumulators are mutable mutex (mutual exclusion) variables shared among all the graph computation threads exploring the graph within a given query.
 To improve performance, the graph processing engine employs multithreaded processing.
@@ -129,12 +129,9 @@ A statement such as ``v1.@neighbors += 1``will only impact `v1` 's `@neighbors` 
 
 [NOTE]
 ====
-TigerGraph will support edge accumulator starting in 3.10.0, but only for single-hop distributed query.
+Currently, we only support edge attached accumulators in single GPR mode, a new internal engine framework for compiling non-distributed queries.
+Please install the query with 'set single_gpr = true' or '-single' flag to use this feature.
 ====
-//[NOTE]
-//====
-//Edge-attached Accumulators can only be used in a distributed and interpreted queries.
-//====
 
 Edge-attached accumulators are mutable state variables that are attached to each edge in the graph for the duration of the query's lifetime.
 They act as run-time attributes of a edge.
@@ -187,6 +184,14 @@ CREATE QUERY test() {
 ====
 Edge accumulators cannot be used in `POST-ACCUM` clauses.
 ====
+
+=== Known Issues
+
+- Placing a vertex as a key and an edge accumulator as a value in a MapAccum can cause the query creation to fail.
+
+- Attaching an ArrayAccum to an edge that is not connected to the target vertex can cause the query creation to fail.
+
+- Edge accumulator feature is not supported with Distributed GPR mode with distributed calculation, and need data synchronization for any undirected edge types or reverse edge types.
 
 == Global accumulators
 

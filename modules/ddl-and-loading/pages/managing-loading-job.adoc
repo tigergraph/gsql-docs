@@ -227,7 +227,12 @@ The above loading job and data generate the following reports:
 Sampling error data can be viewed by executing the 'SHOW LOADING ERROR <job_id>'.
 ----
 
-As mentioned in the report, The command `SHOW LOADING ERROR <job_id>` shows the error data sampled during data loading.
+== `SHOW LOADING ERROR`
+
+Beginning with TigerGraph 4.1, the loader will log a sample of the data lines that it could not load.
+The command `SHOW LOADING ERROR <job_id>` presents a table of the sample of malformed data lines.
+Each row reports not only a data line and its location, but also its error type.  This information helps users to quickly identify and understand errors, leading to quicker resolution of data format problems.
+
 
 Error Data Example
 [source,gsql]

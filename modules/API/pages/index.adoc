@@ -1,7 +1,7 @@
 = GSQL SERVER REST API
 :description: Overview of GSQL SERVER's REST API.
 :pp: {plus}{plus}
-:page-aliases: API:intro.adoc, api:intro.adoc
+:page-aliases: API:intro.adoc, api:intro.adoc, tigergraph-server:API:intro.adoc, tigergraph-server:api:intro.doc
 
 This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:gsql-endpoints.adoc[] describes in detail each endpoint and its input and output.
 

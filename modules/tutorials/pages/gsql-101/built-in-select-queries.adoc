@@ -19,7 +19,7 @@ We recommend you install jq and redirect the REST call result to jq before it is
 [.wrap,bash]
 ----
 // Get vertex cardinality
-curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
+curl -X POST 'http://localhost:14240/restpp/builtins/Social' -d  '{"function":"stat_vertex_number","type":"*"}'  | jq .
 ----
 
 
@@ -49,7 +49,7 @@ curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_vert
 [.wrap,bash]
 ----
 # get edge cardinality
-curl -X POST 'http://localhost:9000/builtins/Social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
+curl -X POST 'http://localhost:14240/restpp/builtins/Social' -d  '{"function":"stat_edge_number","type":"*"}' | jq .
 ----
 
 [,javascript]
@@ -78,7 +78,7 @@ If you want to look up the details about a vertex with its primary ID, you can u
 .Linux Shell
 [.wrap,bash]
 ----
-curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
+curl -X GET "http://localhost:14240/restpp/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}"
 ----
 
 
@@ -88,7 +88,7 @@ curl -X GET "http://localhost:9000/graph/{graph_name}/vertices/{vertex_type}/{ve
 .Linux Shell
 [.wrap,bash]
 ----
- curl -X GET "http://localhost:9000/graph/Social/vertices/Person/Tom" | jq .
+ curl -X GET "http://localhost:14240/restpp/graph/Social/vertices/Person/Tom" | jq .
 ----
 
 
@@ -127,10 +127,10 @@ To describe an edge, you name the types of vertices and edges in the two parts o
 [.wrap,bash]
 ----
 #two parts
-curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
+curl -X GET "http://localhost:14240/restpp/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/"
 
 #three parts
-curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}"
+curl -X GET "http://localhost:14240/restpp/graph/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}"
 ----
 
 
@@ -140,7 +140,7 @@ curl -X GET "http://localhost:9000/graph/edges/{source_vertex_type}/{source_vert
 .Linux Shell
 [.wrap,bash]
 ----
-curl -X GET "http://localhost:9000/graph/Social/edges/Person/Tom/Friendship/" | jq .
+curl -X GET "http://localhost:14240/restpp/graph/Social/edges/Person/Tom/Friendship/" | jq .
 ----
 
 

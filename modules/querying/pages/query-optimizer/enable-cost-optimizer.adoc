@@ -63,43 +63,49 @@ You need the following histogram statistics:
 ** `creationDate` attribute of type `LIKES` from `Person` to `Comment`.
 
 === Compute cardinality data
-To compute cardinality data (the count of each type), use the xref:query-optimizer/stats-api.adoc#_compute_cardinality_statistics[`POST :14240/gsqlserver/gsql/stats/card` endpoint].
+To compute cardinality data (the count of each type), use the xref:query-optimizer/stats-api.adoc#_compute_cardinality_statistics[`POST :14240/gsql/v1/stats/cardinality` endpoint].
 
 For example, to compute the cardinality data of the vertex `Person` in graph `ldbc_snb`, make the following request:
 
 [source.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&vertex=Person"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/card?graph=ldbc_snb&vertex=Person"
 ----
 
 For another example, to compute the cardinality data of the refined edge type `LIKES` from a `Person` vertex to a `Comment` vertex, make the following request:
 
 [.wrap,console]
 ----
-curl -s --user tigergraph:tigergraph -X POST "http://localhost:14240/gsqlserver/gsql/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Comment"
+curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/card?graph=ldbc_snb&edge=LIKES&from=Person&to=Comment"
 ----
 
 For best results, compute the cardinality data for every type you identified in the previous step, each with its own request.
 
 === Compute histogram data
-To compute histogram data, use the xref:query-optimizer/stats-api.adoc#_compute_histogram_statistics[`POST :14240/gsqlserver/gsql/stats/histogram` endpoint].
+To compute histogram data, use the xref:query-optimizer/stats-api.adoc#_compute_histogram_statistics[`POST :14240/gsql/v1/stats/histogram` endpoint].
 
 For example, to compute the histogram data for attribute `gender` of vertex type `Person` on graph `ldbc_snb`, make the following request:
 
 [.wrap,console]
 ----
-$ $ curl --user tigergraph:tigergraph -X POST \
-"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"gender", "buckets":10}'
+$ $ curl --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/histogram" \
+-d '{"graph":"ldbc_snb", "vertex":"Person", "attribute":"gender", "bucket":10}'
 ----
 
 To compute the histogram data for attribute `creationDate` of refined edge type `LIKES` from vertex type `Person` to vertex type `Comment`, make the following request:
 
 [.wrap,console]
 ----
-$ curl -s --user tigergraph:tigergraph -X POST \
-"http://localhost:14240/gsqlserver/gsql/stats/histogram" \
--d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "buckets":10}' | jq .
+$ curl -s --user tigergraph:tigergraph \
+-H 'Content-Type: application/json' \
+-X POST "http://localhost:14240/gsql/v1/stats/histogram" \
+-d '{"graph":"ldbc_snb", "edge":"LIKES", "from":"Person", "to":"Comment", "attribute":"creationDate", "bucket":10}' | jq .
 ----
 
 For best results, compute the histogram data for every attribute referenced in a `WHERE` clause of a `SELECT` statement.

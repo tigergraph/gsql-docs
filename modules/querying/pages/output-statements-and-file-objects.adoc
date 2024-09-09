@@ -439,6 +439,7 @@ GSQL > RUN QUERY print_example_v2("person1")
 === Printing CSV to a FILE Object
 
 Instead of printing output in JSON format, output can be written to a `FILE` object in comma-separated values (CSV) format by appending the keyword `TO_CSV` followed by the `FILE` object name to the `PRINT` statement:
+The FILE object can be a local file or a S3 bucket storage object, allowing flexibility in how and where the output is stored.
 
 [source,gsql]
 ----

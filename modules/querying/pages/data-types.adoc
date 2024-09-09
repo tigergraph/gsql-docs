@@ -485,7 +485,10 @@ For S3 bucket connection errors, refer to error code `GSQL-5301`.
 
 [NOTE]
 ====
-A FILE object can be passed as a parameter to another query. When a query receives a FILE object as a parameter, for a file on the local machine, it can append data to that FILE, as can every other query which receives this FILE object as a parameter. However, for an S3 path, the FILE cannot be modified or appended, it will overwrite any existing object at the same path when the query finishes running.
+A `FILE` object can be passed as a parameter to another query.
+When a query receives a `FILE` object as a parameter, for a file on the local machine, it can append data to that `FILE`, as can every other query which receives this FILE object as a parameter.
+However, an S3 bucket `FILE` object cannot be appended to.
+When you write to an S3 path, any existing object will be overwritten.
 ====
 
 == Query parameter types

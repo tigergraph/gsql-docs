@@ -451,7 +451,7 @@ include::appendix:example$investment_net/datatypes_udt_results.json[]
 
 == `FILE` Object
 
-A `FILE` object is a sequential data storage object, associated with a text file on the local machine or on S3 bucket.
+A `FILE` object is a sequential data storage object, associated with a text file on the local machine or with an S3 bucket.
 
 [NOTE]
 ====

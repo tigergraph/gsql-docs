@@ -474,6 +474,8 @@ createVirtualEdge := CREATE DIRECTED|UNDIRECTED VIRTUAL EDGE Virtual_Edge_Type_N
 ----
 CREATE OR REPLACE DISTRIBUTED QUERY exampleQuery(){
   CREATE DIRECTED VIRTUAL EDGE virtualE1(from v1, to v2, attr1 int);
+
+  CREATE DIRECTED VIRTUAL EDGE virtualE2(from v1|v3|v5, to v2|v4|v6, attr1 int, attr2 float);
   ...
 }
 ----

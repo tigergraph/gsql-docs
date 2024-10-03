@@ -12,7 +12,7 @@ To safely update the graph schema, the user should follow this procedure:
 
 [WARNING]
 ====
-A schema change will invalidate any loading jobs or query jobs which relate to an altered part of the schema. Specifically:
+A schema change will invalidate any loading jobs or query which relate to an altered part of the schema. Specifically:
 
 * A loading job becomes invalid if it refers to a vertex or and an edge which has been *dropped* (deleted) or *altered* .
 * A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been *dropped* .

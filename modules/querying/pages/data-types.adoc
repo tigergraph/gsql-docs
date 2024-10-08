@@ -505,7 +505,7 @@ Result::
 [source,gsql]
 ----
 GSQL > RUN QUERY exampleQuery()
-include::appendix:example$virtual_edge/sample_query.json[]
+include::appendix:example$virtual_edge/sample_query_result.json[]
 ----
 --
 ====

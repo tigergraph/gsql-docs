@@ -219,22 +219,6 @@ ALTER VERTEX|EDGE Object_Type_Name DROP ATTRIBUTE (
 ----
 
 
-
-=== `ALTER VERTEX ... WITH`  (Deprecated)
-
-IMPORTANT: Tag-based Vertex-Level Access Control is deprecated as of October 2023. This feature will be completely removed in v4.0.
-
-
-`The` statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable.
-Vertex types are untaggable by default.
-When a vertex type is marked as taggable, the vertex type can be used to xref:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
-
-.Syntax
-[source,gsql]
-----
-ALTER VERTEX Vertex_Type_Name WITH TAGGABLE = ("true" | "false")
-----
-
 == `DROP VERTEX | EDGE`
 
 The DROP statement removes the specified vertex type or edge type from the database dictionary.
@@ -256,31 +240,6 @@ For tuples that are defined within a graph schema, you can drop them by using th
 ----
 DROP TUPLE Tuple_Name [',' Tuple_Name]*
 ----
-
-== `ADD TAG`
-
-IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
-
-`ADD TAG` defines a tag for the graph. Tags can be used to create tag-based graphs, allowing for finer grain access control.
-
-.Syntax for ADD TAG
-
-[source,gsql]
-----
-ADD TAG <tag_name> [DESCRIPTION <tag_description>]
-----
-
-== `DROP TAG`
-IMPORTANT: Tag-based Vertex-Access Access Control is deprecated as of October 2023.  TigerGraph will be introducing a more flexible scheme in an upcoming release.
-
-`DROP TAG` drops a tag or multiple tags from the schema, and deletes the tag from each vertex to which it is attached. `DROP TAG` cannot be run if the tag to be dropped is used in the definition of a tag-based graph; the graph must be dropped first.
-
-.Syntax for DROP TAG
-[source,gsql]
-----
-DROP TAG <tag_name> ["," <tag_name>]*
-----
-
 
 
 == `RUN SCHEMA_CHANGE JOB`
@@ -457,20 +416,6 @@ The syntax for `+ALTER ... DROP+` is analogous to that of `+ALTER ... ADD+`.
 ALTER VERTEX|EDGE Object_Type_Name DROP ATTRIBUTE (
       attribute_name [',' attribute_name]* );
 ----
-
-
-
-==== `+ALTER VERTEX ... WITH+` (Beta)
-
-The statement `ALTER VERTEX WITH TAGGABLE` is used to mark a vertex type as taggable or untaggable. Vertex types are untaggable by default. When a vertex type is marked as taggable, the vertex type can be used to xref:defining-a-graph-schema.adoc#_create_graph___as_beta[create a tag-based graph]. Additionally, users with the tag-access privilege can tag vertices whose vertex type is marked as taggable.
-
-.ALTER VERTEX WITH TAGGABLE
-
-[source,gsql]
-----
-ALTER VERTEX Vertex_Type_Name WITH TAGGABLE = ("true" | "false")
-----
-
 
 
 === *`DROP VERTEX | EDGE` (global)*

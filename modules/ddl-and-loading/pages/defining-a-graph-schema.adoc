@@ -295,10 +295,9 @@ CREATE UNDIRECTED EDGE::
 ----
 CREATE UNDIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
-   ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
-   [ ( attribute_name type DISCRIMINATOR ) |
-     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
-   ["," attribute_name type [DEFAULT default_value]]*
+   [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
+   [ "," DISCRIMINATOR "(" attribute_name type ("," attribute_name type)* ")"]
+   [ "," attribute_name type [DEFAULT default_value]]* ")"
 ")"
 ----
 --
@@ -309,11 +308,9 @@ CREATE DIRECTED EDGE::
 ----
 CREATE DIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
-   ["|" FROM Vertex_Type_Name, TO Vertex_Type_Name]*
-   [ ( attribute_name type DISCRIMINATOR ) |
-     ( DISCRIMINATOR "(" attribute_name ("," attribute_name)* ")" )]
-   ["," attribute_name type [DEFAULT default_value]]* ")"
-   [WITH REVERSE_EDGE="Rev_Name"]
+   [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
+   [ "," DISCRIMINATOR "(" attribute_name type ("," attribute_name type)* ")"]
+   [ "," attribute_name type [DEFAULT default_value]]* ")"
 ----
 --
 ====

@@ -118,10 +118,10 @@ ADD EDGE::
 --
 ----
 ADD UNDIRECTED EDGE Edge_Type_Name (
-    FROM Vertex_Type_Name, TO Vertex_Type_Name
-    [| FROM Vertex_Type_Name, TO Vertex_Type_Name]*
-    [ DISCRIMINATOR ( attribute_name [, attribute_name]* ) ]
-    ["," attribute_name type [DEFAULT default_value]]*
+    FROM Vertex_Type_Name "," TO Vertex_Type_Name
+    [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
+    [ "," DISCRIMINATOR "(" attribute_name type ["," attribute_name type]* ")" ]
+    [ "," attribute_name type [DEFAULT default_value]]*
 )
 ----
 --

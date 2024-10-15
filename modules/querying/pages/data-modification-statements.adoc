@@ -379,7 +379,7 @@ For example, the following statement inserts an edge between two vertices with t
 [.wrap,console]
 ----
 INSERT INTO Study_At (FROM, TO, DISCRIMINATOR(class_year, class_month))
-    VALUES ("Alice" Person, "CMU" University, (2019, 01));
+    VALUES ("Alice" Person, "CMU" University, 2019, 01);
 ----
 
 === DML-sub INSERT

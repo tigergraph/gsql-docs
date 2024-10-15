@@ -28,9 +28,9 @@ The connection credentials are configured only for current user and current sess
 ==== Output
 Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket. 
 
-To handle potential conflicts and ensure unique output files, the S3 path can include a prefix based on the instance name, such as `\_GPE_{PartitionId}_{ReplicaId}`. For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE. Specifically, prefixes like `_coordinator` and `_worker` will be added, where `_coordinator` refers to the worker manager and `_worker` refers to the worker node.
+To handle potential conflicts and ensure unique output files, the S3 path can include a prefix based on the instance name, such as `\GPE_{PartitionId}_{ReplicaId}`. For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE. Specifically, prefixes like `_coordinator` and `_worker` will be added, where `_coordinator` refers to the worker manager and `_worker` refers to the worker node.
 
-The prefixes for files written by worker manager node and worker node are  `\_GPE_{PartitionId}_{ReplicaId}_coordinator` and `\_GPE_{PartitionId}_{ReplicaId}_worker` respectively.
+The prefixes for files written by worker manager node and worker node are  `\GPE_{PartitionId}_{ReplicaId}_coordinator` and `\GPE_{PartitionId}_{ReplicaId}_worker` respectively.
 
 ==== Error code
 For S3 bucket connection errors, refer to error code `GSQL-5301`.

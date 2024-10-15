@@ -4,7 +4,9 @@
 == Write Query Output to S3 File Object
 To output query results to S3, connection credentials need to be set first.
 S3 connection credentials can be set at cluster level using gadmin config. Another way to set S3 connection credentials is using GSQL Session Parameters which supports idea of multi user multi session.
+
 To use an S3 path, ensure that the necessary permissions and configurations are properly set up to allow read/write access to the specified S3 bucket.
+
 To see how to define a S3 File Object, refer to xref:data-types.adoc#_define_s3_file_object[Define s3 file object].
 [#_step_1]
 ==== Configure S3 connection credentials using gadmin config
@@ -25,7 +27,9 @@ The connection credentials are configured only for current user and current sess
 
 ==== Output
 Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket. 
+
 To handle potential conflicts and ensure unique output files, the S3 path can include a prefix based on the instance name, such as `\_GPE_{PartitionId}_{ReplicaId}`. For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE. Specifically, prefixes like `_coordinator` and `_worker` will be added, where `_coordinator` refers to the worker manager and `_worker` refers to the worker node.
+
 The prefixes for files written by worker manager node and worker node are  `\_GPE_{PartitionId}_{ReplicaId}_coordinator` and `\_GPE_{PartitionId}_{ReplicaId}_worker` respectively.
 
 ==== Error code

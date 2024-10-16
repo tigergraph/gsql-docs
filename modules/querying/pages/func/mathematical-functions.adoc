@@ -517,14 +517,11 @@ This effectively rounds the number to some power of 10.
 
 ==== Return type
 
-A numeric type:
-
-* The same type as the input, if `decimal places` is positive.
-* `INT`, if `decimal_places` is zero, negative, or omitted.
+`DOUBLE`
 
 [NOTE]
 ====
-Numbers with a positive value for `decimal_places` are returned as `DOUBLE` or `FLOAT`, which are floating point data types offering 15 or 7 significant digits, respectively.
+Numbers with a positive value for `decimal_places` are returned as `DOUBLE`, which is a floating point data type offering 15 significant digits.
 Strictly speaking, the number is being converted to the closest possible approximation of the truncated number.
 ====
 
@@ -550,7 +547,7 @@ Strictly speaking, the number is being converted to the closest possible approxi
 ----
  trunc(3.14159, 4) -> 3.1415
  trunc(3.14, 0) -> 3
- trunc(3.14) -> 3
+ trunc(-3.14) -> -3
  trunc(314159, -3) --> 314000
 ----
 

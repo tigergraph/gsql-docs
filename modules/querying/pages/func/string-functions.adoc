@@ -1,12 +1,13 @@
 = String Functions
 :description: List of string functions in GSQL.
+:toclevels: 1
 
 This page lists the string functions available in the GSQL query language. Examples of string functions are converting to uppercase or lowercase, padding or trimming characters, extracting substrings and comparing phonetic values for English words.
 
 For type conversion functions, such as converting a `STRING` to an `int` or `DATETIME`, please see the xref:func/type-conversion-functions.adoc[] page.
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 == ascii()
-
 
 ===  Syntax
 
@@ -42,8 +43,9 @@ ascii("") => 0
 ascii("A") => 65
 ----
 
-== chr()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
+== chr()
 
 ===  Syntax
 
@@ -78,6 +80,8 @@ Converts an integer to a character according to its ASCII position. If the input
 chr(65) => 'A'
 chr(322) => 'B'
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == difference()
 
@@ -122,6 +126,8 @@ difference("Johnson", "Jonson") => 4
 difference("Adams", "Addamms") => 4
 difference("Mary", "Bob") => 2
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == find_in_set()
 
@@ -170,6 +176,8 @@ find_in_set("a","a,b,c") => 0
 find_in_set("a","b,a,d") => 1
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == gsql_uuid_v4()
 
 
@@ -191,6 +199,8 @@ Generates and returns a https://en.wikipedia.org/wiki/Universally_unique_identif
 ===  Parameters
 
 None.
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == insert()
 
@@ -243,6 +253,8 @@ insert("tigergraph.com", 2, 20, "Example") => ”tiExample”
 insert("Complete blank.", 9, "every ") => "Complete every blank."
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == instr()
 
 
@@ -292,6 +304,8 @@ instr("This is the thing", "Th") -> 0;
 instr("This is the thing", "is", 3) -> 5;
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == left()
 
 
@@ -323,6 +337,8 @@ Extracts a number of characters from a string starting from position 0 (capturin
 | The number of characters to extract
 | `INT`
 |===
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == length()
 
@@ -361,6 +377,8 @@ length("hello world") -> 11
 length("") -> 0
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == ltrim()
 
 
@@ -394,6 +412,8 @@ The function begins scanning the string from its first character, removing all c
 | Optional. A string of characters. The distinct characters from the string form the set. If not specified, it defaults to a single space.
 | `STRING`
 |===
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == lower()
 
@@ -430,6 +450,8 @@ Returns the input string with all letters in lowercase.
 ----
 lower("GSQL") -> "gsql"
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == lpad()
 
@@ -477,6 +499,50 @@ Pads the left side of a string with another pad string. If the pad string `pad_s
  lpad("PQR", 10, "ABC") -> "ABCABCAPQR"
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+== repeat()
+
+
+===  Syntax
+
+`repeat(str, repetitions)`
+
+
+===  Description
+
+Repeats a string the given number of times, with no intervening space.
+
+
+===  Return type
+
+`STRING`
+
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The original string
+| `STRING`
+
+| `repetitions`
+| The number of times to include `str` in the output.
+| `INT`
+|===
+
+
+===  Example
+
+[source,text]
+----
+ repeat("Abcd", 2) -> "AbcdAbcd"
+----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == replace()
 
 
@@ -523,6 +589,47 @@ Replaces a sequence of characters in a string with another set of characters.
  replace("SSQLL", "L") -> "SSQ"
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+== reverse()
+
+
+===  Syntax
+
+`reverse(str)`
+
+
+===  Description
+
+Returns a string with its characters in reverse order.
+
+
+===  Return type
+
+`STRING`
+
+
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The original string
+| `STRING`
+|===
+
+
+===  Examples
+
+[source,text]
+----
+ reverse("0246813579") -> "9753186420"
+ reverse("Never odd or even") -> "neve ro ddo reveN"
+----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == right()
 
 
@@ -554,6 +661,8 @@ Extracts a number of characters from a string starting from the right.
 | The number of characters to extract
 | `INT`
 |===
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == rpad()
 
@@ -601,6 +710,8 @@ lpad("PQR", 2) -> "PQ"
 lpad("PQR", 10, "ABC") -> "ABCABCAPQR"
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == rtrim()
 
 
@@ -634,6 +745,8 @@ The function begins scanning the string from its last character and removes all 
 | Optional. A string of characters. The distinct characters from the string form the set. If not specified, it defaults to a single space.
 | `STRING`
 |===
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 [#_soundex]
 == soundex()
@@ -693,6 +806,8 @@ soundex("Burroughs") => "B620"
 soundex("Burrows") => "B620"
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == space()
 
 
@@ -730,6 +845,8 @@ space(0) = ””
 space(1) = ” ”
 space(5) = ”     ”
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == substr()
 
@@ -776,6 +893,8 @@ substr("ABCDE", 2) -> "CDE"
 substr("ABCDE", 2, 2) -> "CD"
 substr("ABCDE", -2, 1) -> "D"
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == translate()
 
@@ -826,6 +945,8 @@ translate(”Hello world”, "lo", "aU") => ”HeaaU wUrad”
 translate(””, "lo", "aU") => ””
 ----
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 == trim()
 
 
@@ -869,6 +990,8 @@ trim("  Abc   ") => "Abc"
 trim( LEADING " a A   ") => "a A   "
 trim( TRAILING "a" FROM "aa ABC aaa") => "aa ABC "
 ----
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 == upper()
 

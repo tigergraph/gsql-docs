@@ -494,7 +494,7 @@ Query::
 --
 [source,gsql]
 ----
-include::querying:examples$virtual_edge/virtual_edge_example.gsql
+include::querying:example$virtual_edge/virtual_edge_example.gsql[]
 ----
 This query creates a virtual edge type VirtualE1, insert edge, access, and delete just like regular edge
 --
@@ -505,7 +505,7 @@ Result::
 [source,gsql]
 ----
 GSQL > RUN QUERY virtualEdgeExample()
-include::querying:examples$virtual_edge/virtual_edge_example.json
+include::querying:example$virtual_edge/virtual_edge_example.json[]
 ----
 --
 ====

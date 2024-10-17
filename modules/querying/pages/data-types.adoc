@@ -167,7 +167,7 @@ baseType := INT
 The default value of each base type is shown in the table below.
 The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions.
 
-The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference, Part 1_].
+The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference, Part 1].
 
 |===
 | Type | Default value | Literal
@@ -248,7 +248,7 @@ All vertices have a built-in attribute `type`. The built-in attribute is of type
 For example, if you declare a vertex variable `VERTEX<person> personVertex`, then `personVertex.type` returns `"person"`.
 
 When you run a query with a vertex type, the syntax is different for typed vertex parameters and generic vertex parameters.
-See the xref:query-operations.adoc#parameter-list[RUN QUERY parameter list] for details.
+See the xref:querying:query-operations.adoc#_parameter_list[RUN QUERY parameter list] for details.
 
 
 === Edge
@@ -494,7 +494,7 @@ Query::
 --
 [source,gsql]
 ----
-include::appendix:example$virtual_edge/sample_query.gsql[]
+include::querying:examples$virtual_edge/virtual_edge_example.gsql
 ----
 This query creates a virtual edge type VirtualE1, insert edge, access, and delete just like regular edge
 --
@@ -504,8 +504,8 @@ Result::
 --
 [source,gsql]
 ----
-GSQL > RUN QUERY exampleQuery()
-include::appendix:example$virtual_edge/sample_query.json[]
+GSQL > RUN QUERY virtualEdgeExample()
+include::querying:examples$virtual_edge/virtual_edge_example.json
 ----
 --
 ====

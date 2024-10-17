@@ -1,4 +1,4 @@
-CREATE OR REPLACE DISTRIBUTED QUERY exampleQuery(){
+CREATE OR REPLACE DISTRIBUTED QUERY virtualEdgeExample(){
 
   // First we create a virtual edge type
   CREATE DIRECTED VIRTUAL EDGE VirtualE1(FROM v1, TO v2, creationDate DATETIME);

@@ -2,27 +2,37 @@
 :description: Methods available to edge aliases in a SELECT statement.
 :page-toclevels: 1
 
-This page lists all built-in edge methods that can be accessed by edge aliases using the dot (`.`) operator.
+This page lists all built-in edge functions that are available in the GSQL query language. The functions are divided into two categories.
 
-== `getAttr()`
+* Dot-syntax methods
+ ** Object-oriented methods that are invoked on an edge or edge alias, invoked using the dot (`.`) operator.
+* Edge functions
+ ** Functions that return an edge, or take in an edge as its parameter.
+
+[#_dot_syntax_methods]
+== Dot-syntax methods
+
+This section includes object-oriented methods that are invoked on an edge or edge alias, invoked using the dot (`.`) operator.
+
+=== `getAttr()`
 
 
-===  Syntax
+====  Syntax
 
 `e.getAttr( attrName, attrType )`
 
 
-===  Description
+====  Description
 
 Returns the value of an attribute of the edge.
 
 
-===  Return type
+====  Return type
 
 The data type of the attribute itself.
 
 
-===  Parameters
+====  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -43,7 +53,7 @@ For example, an edge with an attribute of type `LIST<INT>` can be retrieved as `
 |===
 
 
-===  Example
+====  Example
 
 If we have the following edge:
 
@@ -69,49 +79,49 @@ Assume the alias of the edge is `e`:
 e.getAttr("rating", "DOUBLE") -> 5.2
 ----
 
-== `isDirected()`
+=== `isDirected()`
 
 
-===  Syntax
+====  Syntax
 
 `e.isDirected()`
 
 
-===  Description
+====  Description
 
 Returns a boolean value indicating whether the edge is directed or undirected.
 
 
-===  Return type
+====  Return type
 
 `BOOL`
 
 
-===  Parameters
+====  Parameters
 
 None.
 
-== `setAttr()`
+=== `setAttr()`
 
 
-===  Syntax
+====  Syntax
 
 `e.setAttr( attrName, attrNewValue )`
 
 
-===  Description
+====  Description
 
 Sets an attribute of an edge to a new value.
 
 Type conversion is not allowed for `setAttr()`.
 The input variable types must match the types in the attribute.
 
-===  Return type
+====  Return type
 
 No return value.
 
 
-===  Parameters
+====  Parameters
 
 |===
 | Parameter | Description | Data type
@@ -126,7 +136,7 @@ No return value.
 |===
 
 
-===  Example
+====  Example
 
 [source,gsql]
 ----
@@ -140,3 +150,75 @@ CREATE QUERY setAttrExample(STRING attr){
 ----
 <1> Selected edges will have their specified attribute set to `TRUE`.
 
+== Edge functions
+
+This section includes functions that return an edge, or take in an edge as its parameter.
+
+=== `elementId()`
+
+====  Syntax
+
+`elementId(e)`
+
+
+====  Description
+
+Returns an internal string id for a vertex or edge.
+
+This internal ID is not the primary ID which the user assigned when creating the edge. It is guaranteed to remain the same across the same query run, but not across different runs.
+
+[NOTE]
+====
+See section on vertex functions for more information on `elementId(VERTEX)`.
+====
+
+====  Return type
+
+`STRING`
+
+
+====  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `e`
+| An edge
+| `EDGE`
+|===
+
+
+====  Example
+[source,gsql]
+----
+CREATE QUERY elementId_example () {
+  MinAccum<STRING> @@min_id;       //each edge's tentative string id
+
+  Start = {Person.*};
+  # Gather a sample element id for demonstration purposes
+  S = SELECT src FROM Start:src - (:e) - (:tgt)
+      ACCUM
+         @@min_id += elementId(e);
+
+  PRINT @@min_id;
+}
+----
+
+[source,gsql]
+----
+GSQL > run query elementId_example()
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@min_id": "0-2->207878"
+    }
+  ]
+}
+----

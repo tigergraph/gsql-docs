@@ -403,6 +403,10 @@ The internal ID is not the primary ID which the user assigned when creating the 
 
 The engine can access the internal ID faster than accessing the external ID, so if a query needs unique values for a large number of vertices, but doesn't care about particular values, `getvid()` can be a useful option. For example, in many community detection algorithms, we start by assigning every vertex a unique community ID. Then, as the algorithm progresses, some vertices will join the community of one of their neighbors, giving up their current community ID and copying the IDs of their neighbors.
 
+[NOTE]
+====
+We also support `id()` function that works as an alias for `getvid()`
+====
 
 ====  Return type
 
@@ -864,5 +868,74 @@ GSQL > run query to_vertex_set_test(["Dan", "Amily", "Jeff"], "person")
       "v_type": "person"
     }
   ]}]
+}
+----
+
+=== `elementId()`
+
+====  Syntax
+
+`elementId(v)`
+
+
+====  Description
+
+Returns an internal string id for a vertex or edge.
+
+This internal ID is not the primary ID which the user assigned when creating the vertex. It is guaranteed to remain the same across the same query run, but not across different runs.
+
+[NOTE]
+====
+See section on edge functions for more information on `elementId(EDGE)`.
+====
+
+====  Return type
+
+`STRING`
+
+
+====  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `v`
+| A vertex
+| `VERTEX`
+|===
+
+
+====  Example
+[source,gsql]
+----
+CREATE QUERY elementId_example () FOR GRAPH socialNet {
+  MinAccum<STRING> @@min_id;       //each vertex's tentative string id
+
+  Start = {person.*};
+  # Gather a sample element id for demonstration purposes
+  S = SELECT x FROM Start:x
+      POST-ACCUM
+         @@min_id += elementId(x);
+
+  PRINT @@min_id;
+}
+----
+
+[source,gsql]
+----
+GSQL > run query elementId_example()
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "@@min_id": "160256"
+    }
+  ]
 }
 ----

@@ -36,6 +36,8 @@ accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
        | "GroupByAccum" "<" elementType fieldName ["," elementType fieldName]* ,
 		                     accumType fieldName ["," accumType fieldName]* ">"
        | "ArrayAccum" "<" accumName ">"
+       | "DeviationAccum"
+       | "DeviationPAccum"
 
 elementType := baseType | tupleType
 
@@ -255,22 +257,24 @@ The following are the accumulator types we currently support. Each type of accum
 [source.wrap,ebnf]
 ----
 accumType := "SumAccum" "<" ( INT | FLOAT | DOUBLE | STRING) ">"
-		   | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
- 	     | "MinAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
-     	 | "AvgAccum"
-		   | "OrAccum"
-		   | "AndAccum"
-       | "BitwiseOrAccum"
-       | "BitwiseAndAccum"
-		   | "ListAccum" "<" type ">"
-		   | "SetAccum"  "<" elementType ">"
-		   | "BagAccum"  "<" elementType ">"
-       | "MapAccum"  "<" elementType "," (baseType | accumType | tupleType) ">"
-       | "HeapAccum" "<" tupleType ">" "(" simpleSize "," fieleName [ASC | DESC]
+           | "MaxAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
+           | "MinAccum" "<" ( INT | FLOAT | DOUBLE ) ">"
+           | "AvgAccum"
+           | "OrAccum"
+           | "AndAccum"
+           | "BitwiseOrAccum"
+           | "BitwiseAndAccum"
+           | "ListAccum" "<" type ">"
+           | "SetAccum"  "<" elementType ">"
+           | "BagAccum"  "<" elementType ">"
+           | "MapAccum"  "<" elementType "," (baseType | accumType | tupleType) ">"
+           | "HeapAccum" "<" tupleType ">" "(" simpleSize "," fieleName [ASC | DESC]
                                ["," fieldName [ASC | DESC]]* ")"
-		   | "GroupByAccum" "<" elementType fieldName ["," elementType fieldName]* ,
+           | "GroupByAccum" "<" elementType fieldName ["," elementType fieldName]* ,
 		                        accumType fieldName ["," accumType fieldName]* ">"
-       | "ArrayAccum" "<" accumName ">"
+           | "ArrayAccum" "<" accumName ">"
+           | "DeviationAccum"
+           | "DeviationPAccum"
 
 elementType := baseType | tupleType
 
@@ -285,9 +289,9 @@ The accumulators fall into two major groups :
  ** SumAccum
  ** MinAccum, MaxAccum
  ** AvgAccum
- ** PercentileContAccum
  ** AndAccum, OrAccum
  ** BitwiseAndAccum, BitwiseOrAccum
+ ** DeviationAccum, DeviationPAccum
 * *Collection Accumulators* store a set of values:
  ** ListAccum
  ** SetAccum
@@ -367,11 +371,9 @@ tuple first, then the next field, and so on.
 
 |`AvgAccum` |0.0 (double precision) |Updates `AvgAccum` to double precision average of right operand and all previous values accumulated to `AvgAccum`
 
-| `PercentileContAccum`
-| `0`
-| `PercentileContAccum` returns the percentile of the given value over a group using linear interpolation.
+|`DeviationAccum` |0.0 (double precision) |Updates `DeviationAccum` to double precision stdev of right operand and all previous values accumulated to `DeviationAccum`
 
-
+|`DeviationPAccum` |0.0 (double precision) |Updates `DeviationPAccum` to double precision stdevp of right operand and all previous values accumulated to `DeviationPAccum`
 
 |`AndAccum` |True |Updates `AndAccum` to boolean `AND` of right operand and `AndAccum`.
 
@@ -575,25 +577,19 @@ include::appendix:example$minimal_net/accum_avgaccum_results.json[]
 --
 ====
 
-=== PercentileContAccum
+=== DeviationAccum / DeviationPAccum
 
-PercentileContAccum returns the percentile of the given value over a group using linear interpolation.
-PercentileContAccum’s default value is `0`, and is of double type.
+The DeviationAccum and DeviationPAccum type calculate and store the cumulative standard deviation of a series of numeric values.
 
-It is similar to AvgAccum, and does not need to set the data type.
+DeviationAccum should be used when taking a sample of the population for an unbiased estimate. (Uses `N - 1` as the denominator for the standard deviation function.)
 
-.PercentileContAccum() has two way of initialization:
-[source, gsql]
-----
-PercentileContAccum @@ps; //the percent is 0.0
-PercentileContAccum<0.5> @@ps; //the percent is 0.5
-----
+DeviationPAccum should be used when the standard variation of the entire population is being calculated
 
-.PercentileContAccum also has the following functions available:
-* `setpercent(double percent)`: to set the percent, the default value of percent is `0`.
-* `getpercent()`: to check current value of a percent.
-* `clear()`: to clear the inner vector that holds all the data, and reset default value of the accumulator to `0`.
-This will not change the percent.
+Like AvgAccum, data type of a DeviationAccum variable is not declared; all DeviationAccum accumulators accept inputs of type `INT`, `UINT`, `FLOAT`, and `DOUBLE`.
+The output is always `DOUBLE` type.
+
+The `+= arg` operation updates the DeviationAccum variable's state to be the `stdev` of all the previous arguments along with the current argument.
+The `= arg` operation clears the previously accumulated state and sets the new state to accumulate a single value.
 
 ==== Example
 [tabs]
@@ -601,94 +597,10 @@ This will not change the percent.
 Query::
 +
 --
-.PercentileContAccum Example
+.DeviationAccum Example
 [source,gsql]
 ----
-CREATE OR REPLACE QUERY test1 () {
-    TYPEDEF PercentileContAccum<0.4> perc; // Usage with TYPEDEF
-    GroupByAccum<int __dummyKey, perc pc> @@T;
-    VS_XXX = SELECT p
-             FROM   Person:p
-             WHERE  p.firstName=="John"
-             ACCUM	@@T += (1 -> p.id);
-    PRINT @@T.get(1) AS T;
-}
-
-CREATE OR REPLACE QUERY test2 () {
-    PercentileContAccum<0.9> @@pa, @@ps;
-    PercentileContAccum @@ps_post;
-    // Default value of PercentileContAccum
-    print @@pa, @@pa.getpercent();
-
-    @@pa += 2.0;
-    @@pa += 3.0;
-    @@pa += 3.0;
-    @@pa += 4.0;
-
-    @@pa.setPercent(0.3);
-    print @@pa, @@pa.getpercent();
-
-    @@pa.setPercent(0.5);
-    print @@pa, @@pa.getpercent();
-
-    VS_XXX = SELECT p
-             FROM   Person:p
-             WHERE  p.firstName=="George"
-             ACCUM
-                  @@ps += datetime_to_epoch(p.creationDate)
-             POST-ACCUM
-                  @@ps_post += p.id;
-    PRINT @@ps, @@ps.getpercent(), @@ps_post, @@ps_post.getpercent();
-
-    @@ps.setpercent(0.6);
-    @@ps_post.setpercent(0.6);
-    PRINT @@ps, @@ps.getpercent(), @@ps_post, @@ps_post.getpercent();
-
-    // clear function will clear data, but not percent
-    @@ps_post.clear();
-    PRINT @@ps_post, @@ps_post.getpercent();
-}
-
-// local accumulator
-CREATE OR REPLACE QUERY test3 (DATETIME date_1, DATETIME date_2) {
-     PercentileContAccum<0.3> @lperc_1;
-     PercentileContAccum @lperc_2;
-     PercentileContAccum @@gperc;
-     @@gperc.setpercent(0.6);
-
-     S = SELECT s FROM tupPerson:s -(<TUP_MEMBER:e)- _:t
-          WHERE e.creationDate > date_1 AND e.creationDate < date_2
-          ACCUM
-               s.@lperc_2 += s.id2,
-               s.@lperc_2 += s.id2 + 1000,
-               s.@lperc_2 += s.id2 + 3000
-          POST-ACCUM(s)
-               s.@lperc_2.setpercent(0.4),
-               @@gperc += s.@lperc_2;
-
-     PRINT S [S.@lperc_2, S.@lperc_2.getpercent(), S.@lperc_1.getpercent()], @@gperc, @@gperc.getpercent();
-}
-
-CREATE OR REPLACE QUERY test4 (DATETIME date_1, DATETIME date_2) {
-     TYPEDEF PercentileContAccum<0.3> perc_1;
-     TYPEDEF PercentileContAccum perc_2;
-     perc_1 @lperc_1;
-     perc_2 @lperc_2;
-     PercentileContAccum @@gperc;
-     @@gperc.setpercent(0.6);
-
-     S = SELECT s FROM tupPerson:s -(<TUP_MEMBER:e)- _:t
-          WHERE e.creationDate > date_1 AND e.creationDate < date_2
-          ACCUM
-               s.@lperc_2 += s.id2,
-               s.@lperc_2 += s.id2 + 1000,
-               s.@lperc_2 += s.id2 + 3000
-          POST-ACCUM(s)
-               s.@lperc_2.setpercent(0.4),
-               @@gperc += s.@lperc_2;
-
-     PRINT S [S.@lperc_2, S.@lperc_2.getpercent(), S.@lperc_1.getpercent()], @@gperc, @@gperc.getpercent();
-}
+include::appendix:example$minimal_net/accum_deviationaccum.gsql[]
 ----
 --
 
@@ -697,7 +609,8 @@ Results::
 --
 [source,gsql]
 ----
-
+GSQL > RUN QUERY deviation_accum_ex()
+include::appendix:example$minimal_net/accum_deviationaccum_results.json[]
 ----
 --
 ====

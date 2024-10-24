@@ -3,6 +3,7 @@ CREATE QUERY print_example_file() FOR GRAPH Social_Net {
     ListAccum<STRING> @@str_list;
     int x = 3;
     FILE file1 ("/home/tigergraph/print_example_file.txt");
+    FILE s3_object ("s3://bucket-name/paht/print_example_file.txt");
 
     Seed = Person.*;
     A = SELECT s
@@ -19,4 +20,6 @@ CREATE QUERY print_example_file() FOR GRAPH Social_Net {
     PRINT x WHERE x > 0 TO_CSV file1;   // 3rd line: 3
     PRINT @@str_list TO_CSV file1;       // 4th line: Female Female Female
     PRINT A.gender TO_CSV file1;     // 5th line: Male\n Male\n Male\n Male\n Male
+
+    PRINT @@test_set, @@test_set2 TO_CSV s3_object;  // 1st line: 2 4 5, 1 3 6 7 8 (order not guaranteed) upload to s3 bucket
 }

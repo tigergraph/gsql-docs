@@ -39,13 +39,13 @@ Below are more illustrative examples:
   *** Exact bound. There is a chain of exactly 3 edges, where each edge is either E, F>, or <G.
 
 
-=== Remarks
+== Remarks
 
-==== No alias allowed for edge with Kleene star
+=== No alias allowed for edge with Kleene star
 
 An edge alias may not be used when a Kleene star is used. The reason is that when there are a variable number of edges, we cannot associate or bind the alias to a specific edge in the pattern.
 
-==== Shortest path semantics
+=== Shortest path semantics
 
 When an edge is repeated with a Kleene star, only the shortest matching occurrences are selected. See the example below:
 

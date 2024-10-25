@@ -610,7 +610,7 @@ Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries. The n
 
 The `RUN QUERY` command runs an installed query. To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses. Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
-You can also run an installed query through REST requests - see xref:3.2@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
+You can also run an installed query through REST requests - see xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 
 === Syntax
 

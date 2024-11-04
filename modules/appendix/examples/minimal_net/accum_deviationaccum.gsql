@@ -1,0 +1,27 @@
+CREATE QUERY deviation_accum_ex() FOR GRAPH Minimal_Net {
+    // DeviationAccum
+    DeviationAccum @@deviation_accum;
+
+    @@deviation_accum += 1;
+    @@deviation_accum += 2;
+    @@deviation_accum += 3;
+
+    PRINT @@deviation_accum;  // stdev([1, 2, 3])
+
+    @@deviation_accum = 4;
+
+    PRINT @@deviation_accum;   // stdev([4])
+
+    // DeviationPAccum
+    DeviationPAccum @@deviation_p_accum;
+
+    @@deviation_p_accum += 1;
+    @@deviation_p_accum += 2;
+    @@deviation_p_accum += 3;
+
+    PRINT @@deviation_p_accum;  // stdevp([1, 2, 3])
+
+    @@deviation_p_accum = 4;
+
+    PRINT @@deviation_p_accum; // stdevp([4])
+}

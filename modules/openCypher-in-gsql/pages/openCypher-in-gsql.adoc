@@ -107,19 +107,7 @@ See below for restrictions.
 
 [cols="1,1"]
 |===
-|left() |String Returns a string containing the specified number of leftmost characters of the original string.
-
-|right() |String Returns a string containing the specified number of rightmost characters of the original string.
-
-|reverse() |String Returns a string in which the order of all characters in the original string have been reversed.
-
-|lTrim() |String Returns the original string with leading whitespace removed.
-
-|replace() |String Returns a string in which all occurrences of a specified string in the original string have been replaced by another (specified) string.
-
-|rTrim() |String Returns the original string with trailing whitespace removed.
-
-|trim() |String Returns the original string with leading and trailing whitespace removed.
+|abs() |Numeric Returns the absolute value of a number.
 
 |acos() |Trigonometric Returns the arccosine of a number in radians.
 
@@ -129,19 +117,43 @@ See below for restrictions.
 
 |atan2() |Trigonometric Returns the arctangent2 of a set of coordinates in radians.
 
+|avg() |Aggregating Returns the average of a set of numeric values.
+
 |ceil() |Numeric Returns the smallest floating point number that is greater than or equal to a number and equal to a mathematical integer.
+
+|cos() |Trigonometric Returns the cosine of a number.
 
 |cot() |Trigonometric Returns the cotangent of a number.
 
+|count() |Aggregating Returns the number of values or records.
+
 |degrees() |Trigonometric Converts radians to degrees.
+
+|e() |Logarithmic Returns the base of the natural logarithm, e.
+
+|elementId() |Scalar Returns the String id of a relationship or node.
 
 |exp() |Logarithmic Returns e^n, where e is the base of the natural logarithm, and n is the value of the argument expression.
 
 |floor() |Numeric Returns the largest floating point number that is less than or equal to a number and equal to a mathematical integer.
 
+|head() |Scalar Returns the first element in a list.
+
+|id() |Scalar Returns the id of a relationship or node.
+
+|last() |Scalar Returns the last element in a list.
+
+|left() |String Returns a string containing the specified number of leftmost characters of the original string.
+
 |log() |Logarithmic Returns the natural logarithm of a number.
 
 |log10() |Logarithmic Returns the common logarithm (base 10) of a number.
+
+|lTrim() |String Returns the original string with leading whitespace removed.
+
+|max() |Aggregating Returns the maximum value in a set of values.
+
+|min() |Aggregating Returns the minimum value in a set of values.
 
 |pi() |Trigonometric Returns the mathematical constant pi.
 
@@ -149,33 +161,41 @@ See below for restrictions.
 
 |rand() |Numeric Returns a random floating point number in the range from 0 (inclusive) to 1 (exclusive); i.e. [0, 1).
 
+|range() |List Returns a list comprising all integer values within a specified range.
+
+|replace() |String Returns a string in which all occurrences of a specified string in the original string have been replaced by another (specified) string.
+
+|reverse() |String Returns a string in which the order of all characters in the original string have been reversed.
+
+|right() |String Returns a string containing the specified number of rightmost characters of the original string.
+
 |round() |Numeric Returns the value of a number rounded to the nearest integer.
+
+|rTrim() |String Returns the original string with trailing whitespace removed.
 
 |sign() |Numeric Returns the signum of a number: 0 if the number is 0, -1 for any negative number, and 1 for any positive number.
 
 |sin() |Trigonometric Returns the sine of a number.
 
+|size() |Scalar Returns the number of items in a list. (When applied to a list)
+
+|split() |String Returns a list of strings resulting from the splitting of the original string around matches of the given delimiter.
+
 |sqrt() |Logarithmic Returns the square root of a number.
 
-|tan() |Trigonometric Returns the tangent of a number.
+|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
 
-|abs() |Numeric Returns the absolute value of a number.
+|stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population
 
-|avg() |Aggregating Returns the average of a set of values.
-
-|coalesce() |Scalar Returns the first non-null value in a list of expressions.
-
-|cos() |Trigonometric Returns the cosine of a number.
-
-|count() |Aggregating Returns the number of values or records.
-
-|max() |Aggregating Returns the maximum value in a set of values.
-
-|min() |Aggregating Returns the minimum value in a set of values.
+|substring() |String Returns a substring of the original string, beginning with a 0-based index start and length.
 
 |sum() |Aggregating Returns the sum of a set of numeric values.
 
-|type() |Scalar Returns the string representation of the relationship type.
+|tail() |List Returns all but the first element in a list.
+
+|tan() |Trigonometric Returns the tangent of a number.
+
+|timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
 
 |toLower() |String Returns the original string in lowercase.
 
@@ -183,13 +203,7 @@ See below for restrictions.
 
 |toUpper() |String Returns the original string in uppercase.
 
-|substring() |String Returns a substring of the original string, beginning with a 0-based index start and length.
-
-|e() |Logarithmic Returns the base of the natural logarithm, e.
-
-|timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
-
-|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
+|trim() |String Returns the original string with leading and trailing whitespace removed.
 
 |===
 
@@ -228,55 +242,47 @@ N/A
 === Functions
 [cols="1,1"]
 |===
+|coalesce() |Scalar Returns the first non-null value in a list of expressions.
+
 |collect() |Aggregating Returns a list containing the values returned by an expression.
 
 |endNode() |Scalar Returns the end node of a relationship.
 
 |exists() |Predicate Returns true if a match for the pattern exists in the graph, or if the specified property exists in the node, relationship or map.
 
-|head() |Scalar Returns the first element in a list.
-
-|id() |Scalar Returns the id of a relationship or node.
-
 |keys() |List Returns a list containing the string representations for all the property names of a node, relationship, or map.
 
 |labels() |List Returns a list containing the string representations for all the labels of a node.
-
-|last() |Scalar Returns the last element in a list.
 
 |length() |Scalar Returns the length of a path.
 
 |nodes() |List Returns a list containing all the nodes in a path.
 
-|properties() |Scalar Returns a map containing all the properties of a node or relationship.
+|percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
 
-|range() |List Returns a list comprising all integer values within a specified range.
+|percentileDisc() |Aggregating Returns the percentile of the given value over a group using a rounding method.
+
+|properties() |Scalar Returns a map containing all the properties of a node or relationship.
 
 |relationships() |List Returns a list containing all the relationships in a path.
 
-|size() |Scalar Returns the number of items in a list.
-
-|size() |Applied to pattern expression Scalar Returns the number of subgraphs matching the pattern expression. size() applied to string Scalar Returns the size of a string.
-
-|split() |String Returns a list of strings resulting from the splitting of the original string around matches of the given delimiter.
-
-|startNode() |Scalar Returns the start node of a relationship.
-
-|tail() |List Returns all but the first element in a list.
-
 |reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
 
-|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
+|size() |Scalar Returns the number of subgraphs matching the pattern expression. (When applied to
+pattern expression)
 
-|stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
+|size() |Scalar Returns the size of a string. (When applied to string)
 
-|percentileDisc() |Aggregating Returns the nearest value to the given percentile over a group using a rounding method.
+|startNode() |Scalar Returns the start node of a relationship.
 
 |toBoolean() |Scalar Converts a string value to a boolean value.
 
 |toFloat() |Scalar Converts an integer or string value to a floating point number.
 
 |toInteger() |Scalar Converts a floating point or string value to an integer value.
+
+|type() |Scalar Returns the string representation of the relationship type.
+
 |===
 
 === Syntax

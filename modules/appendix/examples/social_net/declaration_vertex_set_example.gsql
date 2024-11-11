@@ -1,6 +1,7 @@
 CREATE QUERY seed_set_example (VERTEX v1, VERTEX<Person> v2, SET<VERTEX> v3, SET<VERTEX<Person>> v4) FOR GRAPH Social_Net {
     SetAccum<VERTEX> @@test_set;
     SetAccum<VERTEX<Person>> @@test_set2;
+    VERTEX v5 = to_vertex("person1", "Person");  // vertex variable
     S1 = { v1 };    // Untyped vertex parameter enclosed in curly brackets
     S2 = { v2 };    // Typed vertex parameter enclosed in curly brackets
     S3 = v3;                       // Untyped vertex set parameter
@@ -18,4 +19,5 @@ CREATE QUERY seed_set_example (VERTEX v1, VERTEX<Person> v2, SET<VERTEX> v3, SET
                                  // Inside curly brackets cannot be put another
                                  // Seedset, e.g., S1
     S13 = S11 UNION S12;           // But we can use UNION to combine S1
+    S14 = { v5 };                  // Vertex variable enclosed in curly brackets
 }

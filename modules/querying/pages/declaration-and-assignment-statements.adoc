@@ -36,6 +36,7 @@ seed := '_'
       | vertexType ".*"
       | paramName
       | "SelectVertex" selectVertParams
+      | vertexVarName
 
 selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
           stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
@@ -340,6 +341,7 @@ seed := '_'
       | vertexType ".*"
       | paramName
       | "SelectVertex" selectVertParams
+      | vertexVarName
 
 selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
      stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
@@ -358,6 +360,7 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * Copy of another vertex set
 * A combination of individual vertices, vertex set parameters, or base type variables, enclosed in curly brackets
 * Union of vertex set variables
+* A vertex variable enclosed in curly brackets
 
 .Vertex set example
 [source.wrap,gsql]

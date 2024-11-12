@@ -184,7 +184,7 @@ This is not recommended.
 |===
 
 In GSQL, SELECT statements begin with a vertex set variable. 
-This means SELECT is not in the leftmost column. If you prefer, you can break the first clause (`<vertex set variable = SELECT`) into two lines, putting an indented SELECT on the second line:
+This means SELECT is not in the leftmost column. If you prefer, you can break the first clause (`<vertex set variable> = SELECT <vertex alias>`) into two lines, putting an indented SELECT on the second line:
 
 [,gsql]
 ----

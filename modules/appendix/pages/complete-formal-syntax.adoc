@@ -1,6 +1,9 @@
 = Formal Grammar for Query Language
 :page-aliases: querying:appendix-query/complete-formal-syntax
 
+This page is being redesigned to support substantial enhancements to GSQL functionality and to express its relationship to OpenCypher and GQL.
+
+////
 This is the definition for the GSQL Query Language syntax.  It is defined as a set of rules expressed in EBNF notation.
 
 == Notation Used to Define Syntax
@@ -508,3 +511,4 @@ tryStmt         := TRY queryBodyStmts EXCEPTION caseExceptBlock+ [elseExceptBloc
 caseExceptBlock := WHEN exceptVarName THEN queryBodyStmts
 elseExceptBlock := ELSE queryBodyStmts
 ----
+////

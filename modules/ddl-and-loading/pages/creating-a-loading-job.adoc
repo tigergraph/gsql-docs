@@ -708,10 +708,15 @@ canonical string format to Unix epoch time, which is the int number of
 seconds since Jan. 1, 1970. Refer to the timestamp input format note
 below.
 
-|gsql_current_time_epoch(0)
+|gsql_current_datetime()
+|`datetime`
+|Returns the time when the engine initiates loading the specific vertex/edge that uses this function.
+
+|gsql_current_time_epoch()
 |uint
-|Returns the current time in Unix epoch seconds. *By
-convention, the input parameter should be 0, but it is ignored.
+|Returns the current time in Unix epoch seconds.
+* The original version of this function was
+`gsql_current_time_epoch(0)`, but the `0` is ignored.
 
 a|
 flatten (_column_to_be_split, group_separator, 1_)

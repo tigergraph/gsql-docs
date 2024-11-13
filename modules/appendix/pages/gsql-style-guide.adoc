@@ -142,7 +142,7 @@ CREATE QUERY hello(VERTEX<Person> p) {
 ----
 
 === Keyword justification
-In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `POST-ACCUM`, `HAVING`, `GROUP BY`, `ORDER BY`, and `LIMIT`.
+In a `SELECT` block, line up the keywords `FROM`, `SAMPLE`, `WHERE`, `ACCUM`, `POST-ACCUM`, `HAVING`, `GROUP BY`, `ORDER BY`, and `LIMIT`. 
 
 [cols="1h,5a"]
 |===
@@ -159,7 +159,8 @@ CREATE QUERY active_members (INT activity_threshold) FOR GRAPH Social_Net {
 }
 ----
 <1> `ACCUM` and `HAVING` are lined up in the `SELECT` block.
-
+<2> It is acceptable to combine SELECT and FROM on the same line, if the combined line meets the line length requirement.
+Avoid such combination for any other two query keywords.
 
 |Not recommended
 
@@ -177,9 +178,26 @@ CREATE QUERY active_members(INT activity_threshold) FOR GRAPH Social_Net
 }
 ----
 <1> `ACCUM` and `HAVING` are not lined up in this example.
+
+
 This is not recommended.
 |===
 
+In GSQL, SELECT statements begin with a vertex set variable. 
+This means SELECT is not in the leftmost column. If you prefer, you can break the first clause (`<vertex set variable> = SELECT <vertex alias>`) into two lines, putting an indented SELECT on the second line:
+
+[,gsql]
+----
+CREATE QUERY activity_align (INT activity_threshold) FOR GRAPH Social_Net {
+    SumAccum<INT> @activity_amount;
+    start = {Person.*};
+    result = 
+        SELECT v
+        FROM start:v -(:e)- Post:tgt
+        ACCUM v.@activity_amount +=1;
+    PRINT result;
+}
+----
 
 == Comments
 

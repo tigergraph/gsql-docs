@@ -1440,7 +1440,7 @@ MapAccum<STRING, GroupByAccum<VERTEX a, MaxAccum<INT> maxs>>
 MapAccum<SetAccum<INT>, INT> # illegal
 ----
 
-. GroupByAccum: All accumulator types, except for HeapAccum, can be nested within GroupByAccum as the accumulator type. For example:
+. GroupByAccum: All accumulator types can be nested within GroupByAccum as the accumulator type. For example:
 +
 [source,text]
 ----

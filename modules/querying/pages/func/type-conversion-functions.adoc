@@ -190,3 +190,120 @@ to_string(1000.1) -> "1000.1"
 to_string(0.0000000001) -> "1E-10"
 to_string(12300000000) -> "1.23E7"
 ----
+
+== `toBoolean()`
+
+  
+===  Syntax
+
+`toBoolean(str)`
+
+  
+===  Description
+
+Converts a string to a boolean value.
+
+* If the input is already a boolean, it returns the same value.
+* If the input cannot be converted to a boolean, it returns `null`.
+* If the input is `null`, it also returns `null`.
+
+  
+===  Return type
+
+`BOOLEAN`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `str`
+| The string to convert into a boolean
+| String
+|===
+
+=== Example
+
+----
+toBoolean("true") -> true  
+toBoolean("false") -> false  
+toBoolean(null) -> null
+----
+
+== `toFloat()`
+
+  
+===  Syntax
+
+`toFloat(num)`
+
+  
+===  Description
+
+Converts an integer or string to a floating-point number.
+
+* If the input is already a floating-point number, it is returned unchanged.
+* If the input cannot be converted, `null` is returned.
+* If the input is `null`, it also returns `null`.
+
+  
+===  Return type
+
+`FLOAT`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to convert into a float
+| Number
+|===
+
+=== Example
+
+----
+toFloat(14) -> 14.0  
+toFloat("-3.5") -> -3.5  
+toFloat(null) -> null  
+----
+
+== `toInteger()`
+
+  
+===  Syntax
+
+`toInteger(num)`
+
+  
+===  Description
+
+Converts a floating-point number or string to an integer.
+
+* If the input is already an integer, it is returned unchanged.
+* If the input cannot be converted, `null` is returned.
+* If the input is `null`, it also returns `null`.
+
+  
+===  Return type
+
+`INTEGER`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `num`
+| The number to convert into an integer
+| Number
+|===
+
+=== Example
+
+----
+toInteger(14.7) -> 14    
+toInteger("-10") -> -10  
+toInteger(null) -> null 
+----

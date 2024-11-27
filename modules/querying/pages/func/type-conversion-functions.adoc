@@ -201,11 +201,10 @@ to_string(12300000000) -> "1.23E7"
   
 ===  Description
 
-Converts a string to a boolean value.
+This function converts a string into a boolean value (`true` or `false`).
 
 * If the input is already a boolean, it returns the same value.
-* If the input cannot be converted to a boolean, it returns `null`.
-* If the input is `null`, it also returns `null`.
+* If the input is a string, the function tries to parse it into a boolean. For example, "true" becomes true, and "false" becomes false.
 
   
 ===  Return type
@@ -227,7 +226,7 @@ Converts a string to a boolean value.
 ----
 toBoolean("true") -> true  
 toBoolean("false") -> false  
-toBoolean(null) -> null
+toBoolean("invalid") -> null
 ----
 
 == `toFloat()`
@@ -242,9 +241,8 @@ toBoolean(null) -> null
 
 Converts an integer or string to a floating-point number.
 
-* If the input is already a floating-point number, it is returned unchanged.
-* If the input cannot be converted, `null` is returned.
-* If the input is `null`, it also returns `null`.
+* If the input is already a floating-point number, the function will return it unchanged.
+* If the input is a valid number in string format (e.g., "14.5"), the function converts it to a float (e.g., 14.5).
 
   
 ===  Return type
@@ -266,7 +264,6 @@ Converts an integer or string to a floating-point number.
 ----
 toFloat(14) -> 14.0  
 toFloat("-3.5") -> -3.5  
-toFloat(null) -> null  
 ----
 
 == `toInteger()`
@@ -282,8 +279,7 @@ toFloat(null) -> null
 Converts a floating-point number or string to an integer.
 
 * If the input is already an integer, it is returned unchanged.
-* If the input cannot be converted, `null` is returned.
-* If the input is `null`, it also returns `null`.
+* If the input is a valid number in string format (e.g., "42"), the function converts it to an integer (e.g., 42).
 
   
 ===  Return type
@@ -303,7 +299,6 @@ Converts a floating-point number or string to an integer.
 === Example
 
 ----
-toInteger(14.7) -> 14    
-toInteger("-10") -> -10  
-toInteger(null) -> null 
+toInteger(14.7) -> 14  
+toInteger("-10") -> -10
 ----

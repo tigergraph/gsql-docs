@@ -196,7 +196,7 @@ to_string(12300000000) -> "1.23E7"
   
 ===  Syntax
 
-`toBoolean(str)`
+`toBoolean(input)`
 
   
 ===  Description
@@ -204,7 +204,8 @@ to_string(12300000000) -> "1.23E7"
 This function converts a string into a boolean value (`true` or `false`).
 
 * If the input is already a boolean, it returns the same value.
-* If the input is a string, the function tries to parse it into a boolean. For example, "true" becomes true, and "false" becomes false.
+* If the input is a string equivalent of true or false (case-insensitive), it returns the corresponding boolean value.
+* For other string inputs or parsing failures, it returns `NULL`.
 
   
 ===  Return type
@@ -216,9 +217,9 @@ This function converts a string into a boolean value (`true` or `false`).
 |===
 | Parameter | Description | Data type
 
-| `str`
-| The string to convert into a boolean
-| String
+| `input`
+| An expression that returns a boolean or string
+| String/Boolean
 |===
 
 === Example
@@ -234,7 +235,7 @@ toBoolean("invalid") -> null
   
 ===  Syntax
 
-`toFloat(num)`
+`toFloat(input)`
 
   
 ===  Description
@@ -242,7 +243,7 @@ toBoolean("invalid") -> null
 Converts an integer or string to a floating-point number.
 
 * If the input is already a floating-point number, the function will return it unchanged.
-* If the input is a valid number in string format (e.g., "14.5"), the function converts it to a float (e.g., 14.5).
+* If the input is a valid number in string format (e.g., "14.5"), it converts the string to a float (e.g., 14.5).
 
   
 ===  Return type
@@ -254,9 +255,9 @@ Converts an integer or string to a floating-point number.
 |===
 | Parameter | Description | Data type
 
-| `num`
-| The number to convert into a float
-| Number
+| `input`
+| An expression that returns a numeric or string
+| String/Number
 |===
 
 === Example
@@ -271,7 +272,7 @@ toFloat("-3.5") -> -3.5
   
 ===  Syntax
 
-`toInteger(num)`
+`toInteger(input)`
 
   
 ===  Description
@@ -279,7 +280,8 @@ toFloat("-3.5") -> -3.5
 Converts a floating-point number or string to an integer.
 
 * If the input is already an integer, it is returned unchanged.
-* If the input is a valid number in string format (e.g., "42"), the function converts it to an integer (e.g., 42).
+* If the input is a valid number in string format (e.g., "42"), it converts the string to an integer (e.g., 42).
+* If the input is a floating-point number, it truncates the decimal part (e.g., 14.7 becomes 14).
 
   
 ===  Return type
@@ -291,14 +293,15 @@ Converts a floating-point number or string to an integer.
 |===
 | Parameter | Description | Data type
 
-| `num`
-| The number to convert into an integer
-| Number
+| `input`
+| An expression that returns a numeric or string
+| String/Number
 |===
 
 === Example
 
 ----
 toInteger(14.7) -> 14  
-toInteger("-10") -> -10
+toInteger("-10") -> -10  
+toInteger("five") -> NULL
 ----

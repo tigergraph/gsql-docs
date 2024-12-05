@@ -190,3 +190,121 @@ to_string(1000.1) -> "1000.1"
 to_string(0.0000000001) -> "1E-10"
 to_string(12300000000) -> "1.23E7"
 ----
+
+== `toBoolean()`
+
+  
+===  Syntax
+
+`toBoolean(input)`
+
+  
+===  Description
+
+This function converts a string into a boolean value (`true` or `false`).
+
+* If the input is already a boolean, it returns the same value.
+* If the input is a string equivalent of true or false (case-insensitive), it returns the corresponding boolean value.
+* For other string inputs or parsing failures, it returns `NULL`.
+
+  
+===  Return type
+
+`BOOLEAN`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `input`
+| An expression that returns a boolean or string
+| String/Boolean
+|===
+
+=== Example
+
+----
+toBoolean("true") -> true  
+toBoolean("false") -> false  
+toBoolean("invalid") -> null
+----
+
+== `toFloat()`
+
+  
+===  Syntax
+
+`toFloat(input)`
+
+  
+===  Description
+
+Converts an integer or string to a floating-point number.
+
+* If the input is already a floating-point number, the function will return it unchanged.
+* If the input is a valid number in string format (e.g., "14.5"), it converts the string to a float (e.g., 14.5).
+* *Scientific notation* is supported. For example, `1.45E-6` will be correctly interpreted as `1.45e-06`.
+
+  
+===  Return type
+
+`FLOAT`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `input`
+| An expression that returns a numeric or string
+| String/Number
+|===
+
+=== Example
+
+----
+toFloat(14) -> 14.0  
+toFloat("-3.5") -> -3.5  
+toFloat("1.45E-6") -> 1.45e-06  
+toFloat("invalid") -> NULL
+----
+
+== `toInteger()`
+
+  
+===  Syntax
+
+`toInteger(input)`
+
+  
+===  Description
+
+Converts a floating-point number or string to an integer.
+
+* If the input is already an integer, it is returned unchanged.
+* If the input is a valid number in string format (e.g., "42"), it converts the string to an integer (e.g., 42).
+* If the input is a floating-point number, it truncates the decimal part (e.g., 14.7 becomes 14).
+
+  
+===  Return type
+
+`INTEGER`
+  
+===  Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `input`
+| An expression that returns a numeric or string
+| String/Number
+|===
+
+=== Example
+
+----
+toInteger(14.7) -> 14  
+toInteger("-10") -> -10  
+toInteger("five") -> NULL
+----

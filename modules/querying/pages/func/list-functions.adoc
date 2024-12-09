@@ -70,7 +70,7 @@ last(["a", "b", "c"]) -> "c"
 
 ==== Description
 
-`range()` returns a `ListAccum` of integer values within a range bounded by a start value `start` and end value `end`, and an optional step size `step`. The range is inclusive, so the arithmetic progression will always contain `start`, and it may contain `end`.
+`range()` returns a `ListAccum` of integer values within a range bounded by a start value `start` and end value `end`, and an optional step size `step`. The range is inclusive, so the arithmetic progression will always contain `start`, and it may contain `end`value, depending on the step size.
 
 ==== Return type
 
@@ -102,6 +102,12 @@ range(0, 5) -> [0, 1, 2, 3, 4, 5]
 range(5, 0, -1) -> [5, 4, 3, 2, 1, 0]
 range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
 ----
+
+[NOTE]
+====
+* The range() function creates a ListAccum, which uses more memory compared to the traditional RANGE[expr, expr] method used in FOREACH.
+* For large ranges, the range() function can consume significant memory, as it generates the entire list before iteration.
+====
 
 === `size()`
 

@@ -388,7 +388,7 @@ END;
 
 ==== Alternative Method (Using `range()`)
 
-As of GSQL 4.1, FOREACH also supports using the `range()` function as an alternative. The syntax for this is:
+As of TigerGraph 4.1, FOREACH also supports using the `range()` function as an alternative. The syntax for this is:
 
 [source,text]
 ----

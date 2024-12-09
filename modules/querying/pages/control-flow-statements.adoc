@@ -386,7 +386,7 @@ FOREACH i IN RANGE[0, 5].STEP(2) DO
 END;
 ----
 
-==== Alternative Method (Using range())
+==== Alternative Method (Using `range()`)
 
 As of GSQL 4.1, FOREACH also supports using the `range()` function as an alternative. The syntax for this is:
 

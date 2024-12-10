@@ -10,16 +10,17 @@ All built-in function names are case-insensitive. However, user-defined function
 Built-in functions:
 
 * xref:func/aggregation-functions.adoc[Aggregation functions]
+* xref:func/context-functions.adoc[Context functions]
 * xref:func/datetime-functions.adoc[Datetime functions]
 * xref:func/edge-methods.adoc[Edge methods]
 * xref:func/jsonarray-methods.adoc[JSON array functions]
 * xref:func/json-object-methods.adoc[JSON object functions]
+* xref:func/list-functions.adoc[List functions]
 * xref:func/mathematical-functions.adoc[Mathematical functions]
 * xref:func/string-functions.adoc[String functions]
 * xref:func/type-conversion-functions.adoc[Type conversion functions]
-* xref:func/vertex-methods.adoc[Vertex functions]
 * xref:func/miscellaneous-functions.adoc[Miscellaneous functions]
-* xref:func/context-functions.adoc[]
-* xref:func/vector-functions.adoc[]
+* xref:func/vector-functions.adoc[Vector functions]
+* xref:func/vertex-functions.adoc[Vertex functions]
 
 In GSQL, users can supplement the language by defining their own Query User-Defined Functions (Query UDF). To learn about how to define a Query UDF, see xref:func/query-user-defined-functions.adoc[Query User-Defined Functions].

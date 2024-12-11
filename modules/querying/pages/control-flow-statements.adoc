@@ -378,6 +378,32 @@ stem:[(a, a+c, a+2*c, a+3*c, ... a+k*c)], where k = the largest integer such tha
 
 If the `.STEP` method is not given, then the step size c = 1.
 
+==== Example with the Traditional Method
+[source,text]
+----
+FOREACH i IN RANGE[0, 5].STEP(2) DO
+    PRINT "Loop 1: index=" + to_string(i);
+END;
+----
+
+==== Alternative Method (Using `range()`)
+
+As of TigerGraph 4.1, FOREACH also supports using the `range()` function as an alternative. The syntax for this is:
+
+[source,text]
+----
+FOREACH i IN range(0, 5, 2) DO
+    PRINT "Loop 2: index=" + to_string(i);
+END;
+----
+
+[NOTE]
+====
+* The traditional RANGE[expr, expr].STEP(expr) method uses O(1) space because it is a generator.
+* The new range() method is less efficient as it uses more space to generate a ListAccum before iteration.
+* For large ranges, it is recommended to use the traditional RANGE method for better memory efficiency.
+====
+
 [tabs]
 ====
 Query::

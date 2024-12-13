@@ -1,0 +1,18 @@
+= Write Query Output to Cloud
+
+Before you can write query results to an S3 bucket, you need to set up the connection to the S3 service. This requires credentials like an AWS Access Key ID and Secret Access Key. Make sure the necessary read/write permissions are granted for the S3 bucket.
+There are two methods to configure these credentials:
+
+== Using gadmin config
+
+This method configures the S3 connection for the entire TigerGraph cluster. Once you set the credentials, they apply to all users in the cluster. Here's how to do it:
+
+[source,GSQL]
+----
+gadmin config set GPE.QueryOutputS3AWSAccessKeyID <YOUR_AWS_ACCESS_KEY_ID>
+gadmin config set GPE.QueryOutputS3AWSSecretAccessKey <YOUR_AWS_SECRET_ACCESS_KEY>
+gadmin config apply -y
+gadmin restart gpe -y
+----
+
+Replace <YOUR_AWS_ACCESS_KEY_ID> and <YOUR_AWS_SECRET_ACCESS_KEY> with your actual AWS credentials

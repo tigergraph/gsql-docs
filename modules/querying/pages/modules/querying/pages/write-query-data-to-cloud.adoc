@@ -14,5 +14,44 @@ gadmin config set GPE.QueryOutputS3AWSSecretAccessKey <YOUR_AWS_SECRET_ACCESS_KE
 gadmin config apply -y
 gadmin restart gpe -y
 ----
+* Replace <YOUR_AWS_ACCESS_KEY_ID> and <YOUR_AWS_SECRET_ACCESS_KEY> with your actual AWS credentials
 
-Replace <YOUR_AWS_ACCESS_KEY_ID> and <YOUR_AWS_SECRET_ACCESS_KEY> with your actual AWS credentials
+== Using GSQL Session Parameters 
+
+This method configures the credentials only for the current session and user.
+
+[source,GSQL]
+----
+SET s3_aws_access_key_id = <YOUR_AWS_ACCESS_KEY_ID>
+SET s3_aws_secret_access_key = <YOUR_AWS_SECRET_ACCESS_KEY>
+----
+* These parameters are set per session, so each user will need to provide their own credentials if they’re working with S3.
+* All queries run during this session will use these credentials to write to S3.
+
+[NOTE]:If both methods (using gadmin config and GSQL session parameters) are applied simultaneously, the GSQL session parameters take precedence.
+
+When you execute queries in TigerGraph that produce results, the query output can be written directly to the configured S3 bucket. Since S3 is a shared storage system, multiple nodes in a TigerGraph cluster might try to upload results to the same bucket at the same time.
+
+== Unique File Paths to Avoid Conflicts
+
+To avoid naming conflicts (multiple nodes trying to write to the same file), TigerGraph allows you to include a unique prefix in the file path. The path can include:
+
+* Instance Name: A suffix like \GPE_{PartitionId}_{ReplicaId} ensures uniqueness by identifying the instance that generated the output.
+Distributed Queries: For distributed queries, TigerGraph appends suffixes to differentiate between the roles of nodes in the cluster. The two roles are:
+* Coordinator: The node managing the query (written as _coordinator).
+Worker: The node processing the query (written as _worker).
+
+So, your S3 file paths might look like:
+
+* \GPE_{PartitionId}_{ReplicaId}_coordinator
+* \GPE_{PartitionId}_{ReplicaId}_worker
+
+[NOTE]: The output is saved with the format “File_name + Suffixes”.
+
+These unique file names help ensure that no conflicts occur when multiple nodes are writing query outputs at the same time.
+
+
+
+
+
+

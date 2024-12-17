@@ -34,10 +34,10 @@ When you execute queries in TigerGraph that produce results, the query output ca
 
 == Unique File Paths to Avoid Conflicts
 
-To avoid naming conflicts (multiple nodes trying to write to the same file), TigerGraph allows you to include a unique prefix in the file path. The path can include:
+To avoid naming conflicts (multiple nodes trying to write to the same file),the S3 path can include a prefix based on the instance name :
 
 * Instance Name: A suffix like \GPE_{PartitionId}_{ReplicaId} ensures uniqueness by identifying the instance that generated the output.
-* Role: For distributed queries, TigerGraph appends suffixes to differentiate between the roles of nodes in the cluster. The two roles are:
+* Role: For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE:
 ** Coordinator: The node managing the query (written as _coordinator).
 ** Worker: The node processing the query (written as _worker).
 

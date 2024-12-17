@@ -30,11 +30,9 @@ SET s3_aws_secret_access_key = <YOUR_AWS_SECRET_ACCESS_KEY>
 
 [NOTE]:If both methods (using gadmin config and GSQL session parameters) are applied simultaneously, the GSQL session parameters take precedence.
 
-When you execute queries in TigerGraph that produce results, the query output can be written directly to the configured S3 bucket. Since S3 is a shared storage system, multiple nodes in a TigerGraph cluster might try to upload results to the same bucket at the same time.
-
 == Unique File Paths to Avoid Conflicts
 
-To avoid naming conflicts (multiple nodes trying to write to the same file),the S3 path can include a prefix based on the instance name :
+Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket.To avoid naming conflicts (multiple nodes trying to write to the same file),the S3 path can include a prefix based on the instance name :
 
 * Instance Name: A suffix like \GPE_{PartitionId}_{ReplicaId} ensures uniqueness by identifying the instance that generated the output.
 * Role: For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE:

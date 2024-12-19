@@ -186,9 +186,11 @@ Converts a number to a string using the C++ printf function with the `g` specifi
 === Example
 
 ----
-to_string(1000.1) -> "1000.1"
-to_string(0.0000000001) -> "1E-10"
-to_string(12300000000) -> "1.23E7"
+to_string(1000.1) -> "1000.1"  
+to_string(0.0000000001) -> "1E-10"  
+to_string(12300000000::INT) -> "12300000000"  
+to_string(12300000000::FLOAT) -> "1.23e+10"  
+to_string(12300000000::DOUBLE) -> "1.23e+10"  
 ----
 
 == `toBoolean()`
@@ -244,7 +246,7 @@ Converts an integer or string to a floating-point number.
 
 * If the input is already a floating-point number, the function will return it unchanged.
 * If the input is a valid number in string format (e.g., "14.5"), it converts the string to a float (e.g., 14.5).
-* *Scientific notation* is supported. For example, `1.45E-6` will be correctly interpreted as `1.45e-06`.
+* *Scientific notation* is supported. For example, "1.45E-6" will be correctly interpreted as "1.45e-06".
 
   
 ===  Return type

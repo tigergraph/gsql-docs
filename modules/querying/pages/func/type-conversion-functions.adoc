@@ -184,3 +184,13 @@ Converts a number to a string.
 | The number to turn into a string
 | Number
 |===
+
+=== Example
+
+----
+to_string(1000.1) -> "1000.1"  
+to_string(0.0000000001) -> "1E-10"  
+to_string(12300000000) -> "12300000000"  // Using an `INT` or `UINT` value returns the full number as a string without scientific notation  
+to_string(12300000000.0) -> "1.23e+10"  // Using a `DOUBLE` value returns scientific notation for large numbers  
+to_string(12300000000.0) -> "1.23e+10"  // Using a `FLOAT` value also returns scientific notation for large numbers    
+----

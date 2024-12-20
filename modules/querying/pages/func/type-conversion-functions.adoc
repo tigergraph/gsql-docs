@@ -186,7 +186,9 @@ Converts a number to a string using the C++ printf function with the `g` specifi
 === Example
 
 ----
-to_string(1000.1) -> "1000.1"
-to_string(0.0000000001) -> "1E-10"
-to_string(12300000000) -> "1.23E7"
+to_string(1000.1) -> "1000.1"  
+to_string(0.0000000001) -> "1E-10"  
+to_string(12300000000) -> "12300000000"  // Using an `INT` or `UINT` value returns the full number as a string without scientific notation  
+to_string(12300000000.0) -> "1.23e+10"  // Using a `DOUBLE` value returns scientific notation for large numbers  
+to_string(12300000000.0) -> "1.23e+10"  // Using a `FLOAT` value also returns scientific notation for large numbers    
 ----

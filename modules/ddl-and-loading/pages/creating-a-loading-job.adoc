@@ -223,7 +223,8 @@ Assuming a column has a name, either method may be used, and both methods may be
 *By Position*: The columns (tokens) are numbered from left to right, starting with $0. The next column is $1, and so on.
 
 *By Name*: Columns can be named, either through a header line in the input file, or through a `DEFINE HEADER` statement.
-If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value. Names are enclosed in double quotes, e.g. `$"age"`.
+If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value.
+Names are enclosed in double quotes, e.g. `$"age"`.
 
 *Data file name:* $sys.file_name refers to the current input data file.
 

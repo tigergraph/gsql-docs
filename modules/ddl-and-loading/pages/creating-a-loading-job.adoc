@@ -223,11 +223,12 @@ Assuming a column has a name, either method may be used, and both methods may be
 *By Position*: The columns (tokens) are numbered from left to right, starting with $0. The next column is $1, and so on.
 
 *By Name*: Columns can be named, either through a header line in the input file, or through a `DEFINE HEADER` statement.
-If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value.Names are enclosed in double quotes, e.g. `$"age"`.
+If a header line is used, then the first line of the input file should be structured like a data line, using the same separator characters, except that each column contains a column name string instead of a data value.
+Names are enclosed in double quotes, e.g. `$"age"`.
 
 *Data file name:* $sys.file_name refers to the current input data file.
 
-In a simple case, a token value is copied directly to an attribute.For example, in the following `LOAD` statement,
+In a simple case, a token value is copied directly to an attribute. For example, in the following `LOAD` statement,
 
 .Example: using $sys.file_name in an attribute expression
 
@@ -250,7 +251,7 @@ Users do not need to explicitly define a primary ID. Given the attributes, one w
 
 A basic principle in the GSQL Loader is cumulative loading. Cumulative loading means that a particular data object might be written to (i.e., loaded) multiple times, and the result of the multiple loads may depend on the full sequence of writes. This usually means that If a data line provides a valid data object, and the `WHERE` clause and `OPTION` clause are satisfied, then the data object is loaded.
 
-* *Valid input*: For each input data line, each destination clause constructs one or more new data objects. To be a *valid data object,* it must have an ID value of the correct type, have correctly typed attribute values, and satisfy the optional `WHERE` clause. If the data object is not valid, the object is rejected (skipped) and counted as an error in the log file. The rules for invalid attributes values are summarized below:
+* *Valid input*: For each input data line, each destination clause constructs one or more new data objects. To be a *valid data object,* it must have an ID value of the correct type, have correctly typed attribute values, and satisfy the optional `WHERE` clause. If the data object is not valid, the object is rejected (skipped) and counted as an error in the log file. The rules for invalid attribute values are summarized below:
 
 . `UINT`: Any non-digit character. (Out-of-range values cause overflow instead of rejection)
 . `INT`: Any non-digit or non-sign character. (Out-of-range values cause overflow instead of rejection)
@@ -431,7 +432,9 @@ xref:attachment$list_set_vertex.csv[Download list_set_vertex.csv]
 ====
 
 
-The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file.Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`.Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`.Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
+The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file. Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`.
+Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`.
+Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
 
 [WARNING]
 ====
@@ -449,7 +452,7 @@ include::appendix:example$test-schema/c_loadingjob_set_list_multicolumn.gsql[]
 
 The third method is to use the `SPLIT()` function to read a compound token and split it into a collection of elements, to form a `LIST` or `SET` collection.
 The `SPLIT()` function takes two arguments: the column index and the element separator.
-The element separator should be distinct from the separator throughout the whole file.Below shows an example:
+The element separator should be distinct from the separator throughout the whole file. Below shows an example:
 
 [tabs]
 ====
@@ -506,7 +509,7 @@ If a data file contains multiple lines with the same ID and same key but differe
 
 To load rows of key-value pairs by ID, use the arrowhead `\->` to indicate the key-value pair relationship between the columns, and enclose them in parentheses.
 
-For example, key-value pairs with tokens in column 2 as keys and tokens in column 3 as values is denoted by the following: `($1 \-> $2)`. 
+For example, key-value pairs with tokens in column 2 as keys and tokens in column 3 as values are denoted by the following: `($1 \-> $2)`. 
 
 .Loading a MAP by method 1: \-> separator
 [source,gsql]

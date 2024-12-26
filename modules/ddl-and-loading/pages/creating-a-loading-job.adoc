@@ -432,7 +432,9 @@ xref:attachment$list_set_vertex.csv[Download list_set_vertex.csv]
 ====
 
 
-The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file. Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`.Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`.Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
+The job `load_set_list`  will load two `test_vertex` vertices because there are two unique id values in the data file. Vertex 1 has attribute values with `iset = [10,20]` and `ilist = [10,20,20]`.
+Vertex 3 has values `iset = [30,40]` and `ilist = [30, 30, 40]`.
+Note that a set doesn't contain duplicate values, while a list can contain duplicate values.
 
 [WARNING]
 ====

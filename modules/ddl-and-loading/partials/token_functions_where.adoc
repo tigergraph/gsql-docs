@@ -14,7 +14,7 @@
 | Returns a string which is the concatenation of _string1_ and _string2_ .
 
 | xref:functions/token_where/token_len.adoc[token_len( _main_string_ )]
-| INT
+| `INT`
 | Returns the length of _main_string._
 
 | xref:functions/token_where/gsql_is_not_empty.adoc[gsql_is_not_empty_string( _main_string_ )]

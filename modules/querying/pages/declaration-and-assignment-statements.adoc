@@ -76,7 +76,8 @@ Different types of variable declarations use different scoping rules. There are 
 [#_block_scoping]
 === Block scoping
 
-In GSQL, curly brackets, as well as `IF .. THEN`, `ELSE`, `+WHILE ... DO+`, `+FOREACH ... DO+` statements create a block.A `SELECT` statement also creates a block.A block-scoped variable declared inside a block scope is only accessible inside that scope.
+In GSQL, curly brackets, as well as `IF .. THEN`, `ELSE`, `+WHILE ... DO+`, `+FOREACH ... DO+` statements create a block.
+A `SELECT` statement also creates a block.A block-scoped variable declared inside a block scope is only accessible inside that scope.
 
 Additionally, variables declared in a lower scope can use the same name as a variable already declared in a higher scope.The lower-scope declaration will take precedence over the higher-scope declaration until the end of the lower scope.
 
@@ -91,7 +92,8 @@ The following types of variables use block scoping:
 [#_global_scoping]
 === Global scoping
 
-A global-scoped variable is always accessible anywhere in the query once it has been declared regardless of where it is declared.One also cannot declare another variable with the same name as a global-scoped variable that has already been declared.
+A global-scoped variable is always accessible anywhere in the query once it has been declared regardless of where it is declared.
+One also cannot declare another variable with the same name as a global-scoped variable that has already been declared.
 
 The following types of variables use global scoping:
 
@@ -117,7 +119,8 @@ Accumulator declaration is discussed in xref:querying:accumulators.adoc#_declara
 [#_base_type_variables]
 === Base type variables
 
-In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables.The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
+In a GSQL query body, variables holding values of types `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, `DATETIME`, `VERTEX`, `EDGE`, `JSONOBJECT` and `JSONARRAY` are called base type variables.
+The scope of a base type variable is from the point of declaration until the end of the block where its declaration took place.
 
 .EBNF for base type variable declaration
 [source,ebnf]
@@ -149,7 +152,7 @@ include::appendix:example$social_net/declaration_base_type_variables_value_assig
 [#_local_base_type_variables]
 === Local base type variables
 
-Base type variables declared in a DML-sub statement, such as in a statement inside a `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
+Base type variables declared in a DML-sub statement, such as in a statement inside an `ACCUM`, `POST-ACCUM`, or `UPDATE SET` clause, are called _local_ _base type variables_.
 
 Local base type variables are block-scoped and are accessible in the block where they are declared only.
 Within a local base type variable's scope, you cannot declare another local base type variable, local container variable, or local tuple variable with the same name at the same level.
@@ -202,17 +205,17 @@ The following types are allowed:
 |Container type |Element type
 
 |`SET`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSONOBJECT`, `JSONARRAY`,`BOOL` `EDGE`, `DATETIME`, tuple
 
 |`BAG`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSONOBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
 
 |`LIST`
-|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
+|`INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSONOBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, `ListAccum` (Up to 3 levels of nesting), tuple
 
 |`MAP`
-a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
-* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSON OBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
+a|* Key types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSONOBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple
+* Value types: `INT`, `UINT`, `DOUBLE`, `FLOAT`, `STRING`, `JSONOBJECT`, `JSONARRAY`,`BOOL`, `VERTEX` `EDGE`, `DATETIME`, tuple, any accumulator type except for `HeapAccum`
 |===
 
 
@@ -386,7 +389,7 @@ include::appendix:example$social_net/declaration_vertex_set_variable_type.gsql[]
 ----
 
 In the above example, the query returns the set of vertices after a 5-step traversal from the input `person` vertex.
-If we declare the vertex set variable `S` without explicitly giving a type, because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign S to be `person` type.
+Because the type of vertex parameter `m1` is `person`, the GSQL engine will implicitly assign `S` to be `person` type, making it unnecessary to explicitly define the vertex type of `S`.
 However, if `S` is assigned to `person` type, the `SELECT` statement inside the `WHILE` loop causes a type-checking error, because the `SELECT` block will generate all connected vertices, including non-person vertices.
 Therefore, `S` must be declared as an ANY-type vertex set variable.
 

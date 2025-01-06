@@ -286,7 +286,7 @@ Certain openCypher syntax is also *not* supported.
 
 . 0 vertex variables as group key
 [source,gsql]
-MATCH (u:User {name: "John") // find all users with the same friend count as John
+MATCH (u:User {name: "John"}) // find all users with the same friend count as John
 WITH     u.friendCount AS fc   // note, u not included in group key list
 MATCH  (o:User {friendCount: fc})
 …

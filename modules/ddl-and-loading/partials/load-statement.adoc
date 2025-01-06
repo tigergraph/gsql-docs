@@ -6,7 +6,7 @@ One `LOAD` statement can be used to generate multiple vertices or edges, each ve
 Additionally, two or more LOAD statements may refer to the same input data file.
 In this case, the GSQL loader will merge their operations so that both of their operations are executed in a single pass through the data file.
 
-The `LOAD` statement has many options. This reference guide provides examples of key features and options. Tutorials such as xref:tutorials:gsql-101/[GSQL 101] provide additional solution- and application-oriented examples.
+The `LOAD` statement has many options. This reference guide provides examples of key features and options. Tutorials such as the https://github.com/tigergraph/ecosys/blob/master/demos/guru_scripts/docker/tutorial/4.x/README.md#load-data[GSQL Tutorial] provide solution- and application-oriented examples.
 
 Different `LOAD` statement types have different rules for the xref:creating-a-loading-job.adoc#_using_clause[`USING` clause]; see the `USING` clause section below for specifics.
 

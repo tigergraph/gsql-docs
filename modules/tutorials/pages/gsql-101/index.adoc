@@ -2,6 +2,9 @@
 :description: A beginner tutorial to get started with GSQL.
 :page-aliases: tutorials:gsql-101/readme.adoc, tutorials:gsql-101/README.adoc, tutorials:gsql-101/get-set.adoc
 
+TIP: Please see our newer GSQL tutorial at https://github.com/tigergraph/ecosys/blob/master/demos/guru_scripts/docker/tutorial/4.x/README.md
+
+
 In this tutorial, we will introduce core concepts in creating and querying graph databases.
 We will show you how to create a graph schema, load data, write simple parameterized queries, and run your queries.
 
@@ -10,7 +13,6 @@ We will show you how to create a graph schema, load data, write simple parameter
 * A running TigerGraph installation or Docker container.
 
 NOTE: If you want to use a xref:cloud:solutions:README.adoc[TigerGraph Cloud solution] for this tutorial, it needs to be a paid solution so that you have xref:cloud:solutions:access-solution/gsql-web-shell.adoc[GSQL access].
-Every free TigerGraph Cloud account has $25 in free credits you can use to provision a paid solution.
 
 This tutorial includes commands that are designed to run in the Linux shell and in the GSQL command-line interface.
 Some sequences of commands are lengthy and have been included as downloadable scripts, either bundled with the Docker container or as standalone files.

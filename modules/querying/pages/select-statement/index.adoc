@@ -783,7 +783,7 @@ Example of incorrect usage::
 ----
 include::appendix:example$ldbc_snb/select_statement_accum.gsql[]
 ----
-<1> This statement does not necessarily occur ofter the previous line.
+<1> This is the un-updated value of @active_flag. The read value of an accumulator does not change until the ACCUM phase ends.
 --
 Correct example::
 +

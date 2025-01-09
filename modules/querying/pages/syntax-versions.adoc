@@ -1,9 +1,73 @@
 = Query Language Syntax Versions
 :description: Summary of the differences between GSQL syntax V1 and V2.
 
-GSQL has two syntax versions: V2 and V1 (legacy version).
+GSQL has three syntax versions: V3, V2, and V1 (legacy version).
 In TigerGraph 3.5, the default syntax version was changed to V2.
-This page provides a summary of the differences between V1 and V2, as well as guidance on how to change your V1 query into a V2 query.
+Currently, V2 remains the default syntax version. In a future release, V3 will become the default syntax version.
+This page provides a summary of the differences between V2 and V3, as well as V1 and V2. It also includes guidance on how to change your V1 query into a V2 query.
+
+== Differences between V2 and V3
+
+The table below highlights the differences between V2 and V3, focusing on the `FROM` clause.
+
+|===
+|Feature|V2 |V3
+
+|Vertex-Edge-Vertex Markers
+|Use `source_vset -(edge_set)- target_vset` notation.
+|Use `(source_vset) -[edge_set]- (target_vset)` notation, improving clarity and aligning with GQL style.
+
+|Alias Order
+|Object sets and aliases follow `source_vset:S -(edge_set:E)- target_set:T`.
+|Object sets and aliases follow `(S:source_vset) -[E:edge_set]- (T:target_set)`, making alias assignment explicit and intuitive.
+
+|Symbols for Edge Direction
+|Arrowheads `<` or `>` are placed inside parentheses after the edge type to indicate direction (e.g., `-(EdgeType:e)-`).
+|Same as V2, but notation uses square brackets for edges, such as `[edge_set]` for improved clarity.
+
+|Embedded Edge Filtering
+|Filtering conditions for edges are applied outside the `FROM` clause using `WHERE`.
+|Filtering conditions for edges can now be embedded directly in the `FROM` clause for concise filtering. For example: `(Person) -[Friend WHERE Friend.length > 2]-> (Colleague)`.
+
+|Path Patterns and Multi-Hops
+|Multi-hop path patterns are supported with `-(edge_set)-`.
+|Supports multi-hop path patterns using `(source_vset) -[edge_set]- (target_vset)`. Updated notation provides better readability and clarity.
+
+|===
+
+=== V2 vs. V3 Syntax: Examples and Explanations
+
+1. *Vertex-Edge-Vertex Markers:*
+
+* *V2 Syntax:* `Person -(FRIENDS)- Colleague`
+* *V3 Syntax:* `(Person) -[FRIENDS]- (Colleague)`
+* In V3, parentheses around vertices and square brackets around edges provide a clearer and more intuitive structure for path patterns.
+
+2. *Alias Ordering:*
+
+* *V2 Syntax:* `Person:p -(FRIENDS:f)- Colleague:c`
+* *V3 Syntax:* `(p:Person) -[f:FRIENDS]- (c:Colleague)`
+* The `alias:object_set` format in V3 improves readability, particularly in queries with complex relationships.
+
+3. *Edge Direction Notation:*
+
+* *V2 Syntax:* `Person -(FRIENDS>:f)- Colleague`
+* *V3 Syntax:* `(Person) -[FRIENDS>]- (Colleague)`
+* While directionality remains the same, the use of square brackets in V3 aligns with modern graph query conventions.
+
+4. *Filtering within Edge Paths:*
+
+* *V2 Syntax:* Filtering is applied outside the `FROM` clause using a `WHERE` condition:
+[source,gsql]
+----
+SELECT Person FROM Person -(FRIENDS)- Colleague
+WHERE FRIENDS.length > 2
+----
+* *V3 Syntax:* Filtering is integrated directly within the `FROM` clause:
+[source,gsql]
+----
+SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]- (Colleague)
+----
 
 == Differences between V1 and V2
 

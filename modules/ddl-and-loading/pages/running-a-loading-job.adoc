@@ -34,6 +34,10 @@ Running a loading job executes a previously installed loading job.  The job read
 
 The input sources could be defined in the loading job or could be provided when running the job. Additionally, loading jobs can also be run by submitting an HTTP request to the REST{pp} server.
 
+If the loader cannot process a line in the input data, it logs the error type and continues on to the next line.
+When the loading job ends, it returns a non-zero error code if there were any line errors.
+There are options to end the job when it reaches a specified level of errors.
+
 [NOTE]
 User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
 A user can create and run loading jobs even without the privileges to modify vertex and edge data.
@@ -45,7 +49,8 @@ For more information, see xref:tigergraph-server:user-access:access-control-mode
 .`RUN LOADING JOB` syntax for concurrent loading
 [source.wrap,ebnf]
 ----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] [-max_percent_error mbe ]
+RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j]
+    [-max_percent_error mpe ] [-max_error me ]
 job_name [
     USING file_var [="file_path_string"]
         [, file_var [="file_path_string"]]*
@@ -53,7 +58,7 @@ job_name [
 ]
 ----
 
-When a concurrent loading job is submitted, it is assigned a job ID number, which is displayed on the GSQL console.
+When a loading job is submitted, it is assigned a job ID number, which is displayed on the GSQL console.
 The user can use this job ID to refer to the job, for a status update, to abort the job, or to restart the job.
 These operations are described later in this section.
 
@@ -62,7 +67,7 @@ These operations are described later in this section.
 ==== `-noprint`
 
 By default, the command will print several lines of status information while the loading is running. +
-If the -noprint option is included, the output will omit the progress and summary details, but it will still display the job id and the location of the log file.
+If the `-noprint` option is included, the output will omit the progress and summary details, but it will still display the job id and the location of the log file.
 
 .Example of minimal output when `-noprint` option is used
 
@@ -75,7 +80,7 @@ Kick off the following job:
 
 ==== `-dryrun`
 
-If -dryrun is used, the system will read the data files and process the data as instructed by the job, but will NOT load any data into the graph. This option can be a useful diagnostic tool.
+If `-dryrun` is used, the system will read the data files and process the data as instructed by the job, but will NOT load any data into the graph. This option can be a useful diagnostic tool.
 
 ==== `-n [i], j`
 
@@ -87,10 +92,10 @@ The special symbol `$` is interpreted as "last line", so `-n 10,$` means reads f
 
 ==== `-max_percent_error mpe`
 
-The `-max_percent_error` option instructs the loader process to abort the loading job, if the percentage (range between 0 and 100) of data lines in the input batch that are rejected, exceeds `mpe`.
+The `-max_percent_error` option instructs the loader process to abort the loading job if the percentage of data lines in the input batch that are rejected exceeds `mpe`, where `mpe` is an integer between 0 and 100.
 By default, loading will continue until complete, which is equivalent to `mbe` being set to 100.
 
-Otherwise, for example, if the input source has 1000 data lines and `mpe` = 25 (or 25%),
+For example, if the input source has 1000 data lines and `mpe` = 25 (or 25%),
 then the loading job will abort if it rejects 251 lines.
 
 If mpe = 0, then the load job aborts if any input line are rejected.
@@ -101,6 +106,10 @@ There are two possible cases where an input line may be rejected:
 * Filtering error: the input line can be parsed properly, but it does not pass certain filtering rules defined in the loading job itself.
 
 The percentage number following `-max_percent_error` **is required** if the option is provided. Otherwise, a parsing error will appear.
+
+==== `-max_error me`
+
+The `-max_error` option instructs the loader process to abort the loading job if the number of data lines in the input batch that are rejected exceeds `me`, where `me` is an integer between 0 and 2147483647. This option is analogous to the `-max_percent_error` option.
 
 === Parameters
 

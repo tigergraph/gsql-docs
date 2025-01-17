@@ -560,7 +560,7 @@ There are two GSQL syntax options for Interpreted GSQL:
 .Syntax for interpreting an anonymous query
 [source,ebnf]
 ----
-interpretQuery := INTERPRET QUERY "(" ")"
+interpretQuery := INTERPRET QUERY [runOptions] "(" ")"
                [FOR GRAPH graph_name]
                [SYNTAX syntax_name]
                "{" queryBody "}"
@@ -570,6 +570,8 @@ Required privilege: No specific query privilege required.
 
 This syntax is similar in concept to SQL queries.
 Queries are not named, do not accept parameters, and are not saved after being run.
+
+For [runOptions], refer to the syntax in the section xref:gsql-docs:querying:query-operations.adoc#_run_query[RUN QUERY].
 
 Compare the example below to the example in the `Create Query` section:
 
@@ -705,7 +707,7 @@ You can also run an installed query through REST requests - see xref:tigergraph-
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
     "(" parameterValueList | parameterValueJSON ")"
 
-runOptions := ( "-av" | "-d" )*
+runOptions := ( "-async"| "-av" | "-queue" <Workload Queue Name>)*
 parameterValueList := parameterValue ["," parameterValue]*
 parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
 ----
@@ -925,6 +927,14 @@ $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:14240/restpp/query/<graphNa
 
 To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
 
+=== -queue option
+
+When running a query, you can specify the workload queue to run the query on.
+If the queue is not specified, the query will be routed to the default queue.
+To specify the queue in the GSQL shell, you can use the `-queue` option, e.g.
+----
+RUN QUERY -queue AdHoc q1()
+----
 
 == GSQL Query output format
 

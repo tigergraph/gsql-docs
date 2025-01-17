@@ -24,39 +24,21 @@ Note that V3 still supports V2 style syntax, for backward compatibility.
 
 |Symbols for Edge Direction
 |Directionality is applied at the edge-set level. Supports `<` (left), `>` (right), and `_` (undirected).
-|Directionality applies to the entire edge pattern. 
-[source,gsql]
-----
-Symbols include `<-` (left), `->` (right), `~` (undirected).
-----
+|Directionality applies to the entire edge pattern. Symbols include `\<-` (left), `\->` (right), `~` (undirected).
 
 |Edge Direction Syntax
 |Supports granular directionality at the individual edge set level, allowing multiple edge sets in a pattern to have distinct directions.
 |Directionality is applied globally at the edge pattern level, ensuring consistency across the entire edge pattern.
 
 |Quantified Multi-Hop Patterns
-|V2 supports explicit repetition for multi-hop patterns. For example:
-[source,gsql]
-----
--(FRIENDS*1..3)->
-----
-|V3 simplifies multi-hop patterns by using `{m,n}` GQL-style quantifiers. For example:
-[source,gsql]
-----
--[FRIENDS]->{1,3}
-----
+|V2 supports explicit repetition for multi-hop patterns. For example: `\-(FRIENDS*1..3)->`
+|V3 simplifies multi-hop patterns by using `{m,n}` GQL-style quantifiers. For example: `\[FRIENDS]->{1,3}`
 
 |Filters in Edge Patterns
 |Filters are applied outside the `FROM` clause, e.g.,
-[source,gsql]
-----
-SELECT Person FROM Person -(FRIENDS)- Colleague WHERE FRIENDS.length > 2
-----
+`SELECT Person FROM Person -(FRIENDS)- Colleague WHERE FRIENDS.length > 2`
 |Filters can also be placed within an edge pattern for more local scope , e.g.,
-[source,gsql]
-----
-SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)
-----
+`\SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)`
 
 |===
 
@@ -77,12 +59,12 @@ SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)
 3. *Symbols for Edge Direction:*
 
 * *V2 Syntax:* 
-[source,gsql]
+[source]
 ----
 -(FRIENDS>:f)-
 ----
 * *V3 Syntax:* 
-[source,gsql]
+[source]
 ----
 <-[f:FRIENDS]->
 ----
@@ -91,24 +73,25 @@ SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)
 4. *Filters in Edge Patterns:*
 
 * *V2 Syntax:* Filtering is applied outside the `FROM` clause using a `WHERE` condition:
-[source,gsql]
+[source]
 ----
 SELECT Person FROM Person -(FRIENDS)- Colleague WHERE FRIENDS.length > 2
 ----
 * *V3 Syntax:* Filters can also be placed within an edge pattern for more local scope:
-[source,gsql]
+[source]
 ----
 SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)
 ----
 
 5. *Quantified Multi-Hop Patterns:*
+
 * *V2 Syntax:* 
-[source,gsql]
+[source]
 ----
 -(FRIENDS*1..3)->
 ----
 * *V3 Syntax:* 
-[source,gsql]
+[source]
 ----
 -[FRIENDS]->{1,3}
 ----
@@ -136,24 +119,15 @@ In the following table,
 
 |Pointing Left
 |-(<E1:A)-
-|[source,gsql]
-----
-<-[A:E1]-
-----
+|<-[A:E1]-
 
 |Pointing Right
 |-(E1>:A)-
-|[source,gsql]
-----
--[A:E1]->
-----
+|-[A:E1]->
 
 |Undirected
 |-(U1:A)-
-|[source,gsql]
-----
-~[A:U1]~
-----
+|~[A:U1]~
 
 |Left or Undirected
 |`-((<E1
@@ -178,18 +152,22 @@ In the following table,
 2. *Undirected:*
 
 * In V2, edges like `-(U1:A)-` are undirected.
-* [source,gsql]
+* In V3, the
+[source,gsql]
 ----
-In V3, the `~[A:U1]~` syntax is used for the same purpose, aligning with modern GQL standards.
+~[A:U1]~ 
 ---- 
+syntax is used for the same purpose, aligning with modern GQL standards.
 
 3. *Combination (Left or Undirected, Right or Undirected):*
 
 * V2 uses combinations like `-((<E1|U1):A)-` to capture multiple edge types and directions.
-* [source,gsql]
+* * V3 introduces syntax like
+[source,gsql]
 ----
-V3 introduces syntax like `<~[A:E1|U1]~` to simplify and unify these patterns.
+<~[A:E1|U1]~
 ---- 
+to simplify and unify these patterns.
 
 4. *Any Direction:*
 

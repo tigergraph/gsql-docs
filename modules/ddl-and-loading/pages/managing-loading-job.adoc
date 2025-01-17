@@ -269,7 +269,6 @@ Up to 100 sample lines showing errors appear in the log.
 * Connector Failures: Kafka loaders remain idle until the connector resumes. Graph data remains unchanged until the connector issue is resolved.
 
 === Atomicity and Transactional Behavior
-* Neither streaming nor batch loading jobs support job-level transactional atomicity.
+* Loading jobs treat each data line as a transactional unit with implicit commit.
 * If a job fails and cannot resume, already loaded data remains in the graph and cannot be reverted.
-* Unlike databases that use temporary tables for atomicity, TigerGraph does not currently support this functionality.
 

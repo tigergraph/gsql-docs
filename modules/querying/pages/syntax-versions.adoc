@@ -31,14 +31,14 @@ Note that V3 still supports V2 style syntax, for backward compatibility.
 |Directionality is applied globally at the edge pattern level, ensuring consistency across the entire edge pattern.
 
 |Quantified Multi-Hop Patterns
-|V2 supports explicit repetition for multi-hop patterns. For example: `\-(FRIENDS*1..3)->`
-|V3 simplifies multi-hop patterns by using `{m,n}` GQL-style quantifiers. For example: `\[FRIENDS]->{1,3}`
+|V2 supports explicit repetition for multi-hop patterns. For example: `-(FRIENDS*1..3)\->`
+|V3 simplifies multi-hop patterns by using `{m,n}` GQL-style quantifiers. For example: `[FRIENDS]\->{1,3}`
 
 |Filters in Edge Patterns
 |Filters are applied outside the `FROM` clause, e.g.,
 `SELECT Person FROM Person -(FRIENDS)- Colleague WHERE FRIENDS.length > 2`
 |Filters can also be placed within an edge pattern for more local scope , e.g.,
-`\SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]-> (Colleague)`
+`SELECT Person FROM (Person) -[FRIENDS WHERE FRIENDS.length > 2]\-> (Colleague)`
 
 |===
 
@@ -118,28 +118,28 @@ In the following table,
 |Orientation |V2 Syntax |V3 Syntax
 
 |Pointing Left
-|-(<E1:A)-
-|<-[A:E1]-
+|`-(<E1:A)-`
+|`\<-[A:E1]-`
 
 |Pointing Right
 |-(E1>:A)-
-|-[A:E1]->
+|`-[A:E1]\->`
 
 |Undirected
-|-(U1:A)-
-|~[A:U1]~
+|`-(U1:A)-`
+|`\~[A:U1]\~`
 
 |Left or Undirected
-|`-((<E1
-|U1):A)-
+|`-((<E1`
+|`U1):A)-`
 
 |Right or Undirected
-|-((E1>
-|U1):A)-
+|`-((E1>`
+|`U1):A)-`
 
 |Left, Undirected, or Right
-|-((<E1
-|U1
+|`-((<E1`
+|`U1`
 
 |===
 
@@ -152,22 +152,12 @@ In the following table,
 2. *Undirected:*
 
 * In V2, edges like `-(U1:A)-` are undirected.
-* In V3, the
-[source,gsql]
-----
-~[A:U1]~ 
----- 
-syntax is used for the same purpose, aligning with modern GQL standards.
+* In V3, `\~[A:U1]\~` the syntax is used for the same purpose, aligning with modern GQL standards.
 
 3. *Combination (Left or Undirected, Right or Undirected):*
 
 * V2 uses combinations like `-((<E1|U1):A)-` to capture multiple edge types and directions.
-* * V3 introduces syntax like
-[source,gsql]
-----
-<~[A:E1|U1]~
----- 
-to simplify and unify these patterns.
+* V3 introduces syntax like \<~[A:E1|U1]\~ to simplify and unify these patterns.
 
 4. *Any Direction:*
 

@@ -259,7 +259,7 @@ Of the 6 valid lines,
 The errors that appear are the first line with an error in each batch in the loading job.
 Up to 100 sample lines showing errors appear in the log.
 
-== Failure Outcomes for Streaming and Batch (Bulk) Loading Jobs
+== Handling Failures in Streaming and Batch Loading Jobs
 === Batch (File) Loading Jobs
 * Auto-resume Mechanism: Starting from version 3.10, the auto-resume mechanism ensures that the job resumes from where it left off.
 * Graph Data Integrity: Already loaded graph data remains intact. Rerunning the job might reload some parts, but this does not affect the overall graph health.

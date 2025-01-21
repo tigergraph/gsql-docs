@@ -141,8 +141,8 @@ or
 
 3. *Combination (Left or Undirected, Right or Undirected):*
 
-* V2 uses combinations like `-((<E1|U1):A)-` to capture multiple edge types and directions.
-* V3 introduces syntax like <\~[A:E1|U1]~ to simplify and unify these patterns.
+* In V2, the absence of a named edge set or a direction marker means any edge with any direction.
+* In V3, `-` indicates any direction (left, right, or undirected) if is used as the directed brackets: `-[ ]-`
 
 4. *Any Direction:*
 

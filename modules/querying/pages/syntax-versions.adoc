@@ -114,9 +114,17 @@ In the following table,
 |`-((E1>`
 |`U1):A)-`
 
-|Left, Undirected, or Right
-|`-((<E1`
-|`U1`
+|Any direction or undirected
+|`-(<_|_|_>):A)-`
+
+or
+
+`-(:A)-`
+|`-[A:U1|E1|..]-`
+
+or
+
+`-[A:]-`
 
 |===
 

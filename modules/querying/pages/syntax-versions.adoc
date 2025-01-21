@@ -107,8 +107,8 @@ In the following table,
 |`\~[A:U1]~`
 
 |Left or Undirected
-|`-((<E1`
-|`U1):A)-`
+|`-((<E1\|U1):A)-`
+|`<\~[A:E1|U1|..]~`
 
 |Right or Undirected
 |`-((E1>`

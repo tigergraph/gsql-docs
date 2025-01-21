@@ -20,7 +20,7 @@ Note that V3 still supports V2 style syntax, for backward compatibility.
 
 |Alias Ordering
 |Object sets precede aliases: `source_vset:Alias -(edge_set:EdgeAlias)- target_set:Alias`.
-|Object sets and aliases follow `(Alias:source_vset) -[EdgeAlias:edge_set]- (Alias:target_set)`, reversing the order of alias vs. object set.
+|Aliases precede object sets: `(Alias:source_vset) -[EdgeAlias:edge_set]- (Alias:target_set)`, reversing the order of V2.
 
 |Symbols for Edge Direction
 |Directionality is applied at the edge-set level. Supports `<` (left), `>` (right), and `_` (undirected).

@@ -19,7 +19,7 @@ Note that V3 still supports V2 style syntax, for backward compatibility.
 |Use `(source_vset) -[edge_set]- (target_vset)` notation, where vertices are enclosed in parentheses () and edges are enclosed in square brackets [] . For example: `(Person) -[FRIENDS]- (Colleague)`.
 
 |Alias Ordering
-|Object sets and aliases follow `source_vset:Alias -(edge_set:EdgeAlias)- target_set:Alias`.
+|Object sets precede aliases: `source_vset:Alias -(edge_set:EdgeAlias)- target_set:Alias`.
 |Object sets and aliases follow `(Alias:source_vset) -[EdgeAlias:edge_set]- (Alias:target_set)`, reversing the order of alias vs. object set.
 
 |Symbols for Edge Direction

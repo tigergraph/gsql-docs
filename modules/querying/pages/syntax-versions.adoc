@@ -73,7 +73,6 @@ Note that V3 still supports V2 style syntax, for backward compatibility.
 
 * *V2 Syntax:* `-(FRIENDS*1..3)\->`
 * *V3 Syntax:* `[FRIENDS]\->{1,3}`
-* In V3, quantification is expressed using {m,n} syntax for variable-length edge patterns, which simplifies the syntax and provides a more consistent approach.
 
 == Comparing V2 and V3 Edge Directions
 

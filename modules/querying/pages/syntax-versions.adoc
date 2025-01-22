@@ -90,41 +90,41 @@ In the following table,
 * *Undirected (`~`):* Represents edges with no directionality.
 * *Combination (`<~`, `~>`, etc.):* Represents edges with a combination of directionality (e.g., left or undirected, right or undirected).
 
+[separator=¦]
 |===
-|Orientation |V2 Syntax |V3 Syntax
+¦Orientation ¦V2 Syntax ¦V3 Syntax
 
-|Pointing Left
-|`-(<E1:A)-`
-|`\<-[A:E1]-`
+¦Pointing Left
+¦`-(<E1:A)-`
+¦`\<-[A:E1]-`
 
-|Pointing Right
-|-(E1>:A)-
-|`-[A:E1]\->`
+¦Pointing Right
+¦-(E1>:A)-
+¦`-[A:E1]\->`
 
-|Undirected
-|`-(U1:A)-`
-|`\~[A:U1]~`
+¦Undirected
+¦`-(U1:A)-`
+¦`\~[A:U1]~`
 
-|Left or Undirected
-|`-((<E1\|U1):A)-`
-|`<\~[A:E1|U1|..]~`
+¦Left or Undirected
+¦`-((<E1|U1):A)-`
+¦`<\~[A:E1|U1|..]~`
 
-|Right or Undirected
-|`-((E1>|U1):A)-`
-|`\~[A:E1|U1|..]~>`
+¦Right or Undirected
+¦`-((E1>|U1):A)-`
+¦`\~[A:E1|U1|..]~>`
 
-|Any direction or undirected
-|`-(<_|_|_>):A)-`
+¦Any direction or undirected
+¦`-(<_|_|_>):A)-`
 
 or
 
 `-(:A)-`
-|`-[A:U1|E1|..]-`
+¦`-[A:U1|E1|..]-`
 
 or
 
 `-[A:]-`
-
 |===
 
 

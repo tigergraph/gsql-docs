@@ -28,6 +28,71 @@ Load or query operations which begin before the schema change will be completed 
 Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
 It is considered good practice to perform schema changes during times of low graph activity.
 
+== Schema Change Operations Best Practices
+
+Schema changes are essential for maintaining and improving your graph's structure. However, they must be done carefully to avoid impacting ongoing operations. 
+Following best practices minimizes the risk of failures and ensures smooth execution.
+
+=== Dos and Don'ts During Schema Changes
+
+*Do's:*
+
+* *Do ensure no active queries or loading jobs.* Run schema changes only after aborting ongoing jobs that might reference schema components being modified.
+* *Do perform schema changes during low-traffic periods.* This reduces the chances of failure and conflicts during schema modification.
+
+*Don'ts:*
+
+* *Don’t run queries or loading jobs during schema changes.* These jobs may fail if they interact with modified parts of the schema.
+* *Don’t change the schema during high-traffic periods.* Schema changes during heavy operations may cause system conflicts and errors.
+
+=== Low Traffic and High Traffic Periods
+
+It is crucial to define and identify periods of low and high traffic in order to optimize schema changes and reduce the risk of failure.
+
+*Low Traffic:*
+
+* Schema changes should be scheduled when there are minimal active operations (queries or data loads) to avoid conflicts.
+
+*High Traffic:*
+
+* Avoid schema changes during periods of high query or data load activity. Doing so could cause failure or inconsistent behavior.
+
+=== Risks of Running Jobs During Schema Changes
+
+Running queries or loading jobs while modifying the schema can lead to data inconsistency or errors. For instance, if a schema change modifies a vertex type and a query or loading job is still active, it will likely fail.
+
+*Best Practice:* Always abort active queries and loading jobs before performing a schema change.
+
+=== Verifying Schema Integrity After Changes
+
+Once the schema change is complete, verify data and schema consistency:
+
+*Verifying Data Consistency:*
+
+* Run the `gstatusgraph` command to check that the data size remains consistent with what was recorded before the schema change. This will ensure that no data loss or corruption has occurred during the schema update.
+
+*Verifying Schema Consistency:*
+
+* Use the `gsql` commands to check the schema version after the schema change. This will confirm that the schema updates have been applied correctly, and that no unintended changes have occurred.
+
+=== Impact on Queries and Loading Jobs
+
+Schema changes will invalidate queries and loading jobs that are dependent on the schema components being modified. 
+This can cause errors or failures in queries that are still trying to reference a vertex, edge, or attribute that has been altered or removed.
+
+*What to Do:*
+
+* After schema changes, reinstall and redefine queries and loading jobs based on the new schema.
+* Make sure that the updated queries and jobs are aligned with the modified schema and are properly tested to ensure they work as expected after the changes.
+
+[IMPORTANT]
+====
+Schema changes should be performed only when there are no active queries or loading jobs to avoid issues with data consistency and application errors. 
+It is essential to abort all ongoing jobs before performing the schema change to prevent conflicts.
+
+In addition, schema changes should be done during low traffic periods. High traffic periods increase the likelihood of schema change failures due to conflicts with running operations.
+====
+
 [#_global_vs_Local_schema_changes]
 == Global vs. local schema changes
 

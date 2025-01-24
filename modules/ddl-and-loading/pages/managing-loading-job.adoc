@@ -258,3 +258,17 @@ Of the 6 valid lines,
 
 The errors that appear are the first line with an error in each batch in the loading job.
 Up to 100 sample lines showing errors appear in the log.
+
+== Handling Failures in Streaming and Batch Loading Jobs
+=== Batch (File) Loading Jobs
+* Auto-resume Mechanism: Starting from version 3.10, the auto-resume mechanism ensures that the job resumes from where it left off.
+* Graph Data Integrity: Already loaded graph data remains intact. Rerunning the job might reload some parts, but this does not affect the overall graph health.
+
+=== Streaming Loading Jobs
+* Kafka Loader Failures: The auto-resume mechanism works similarly to file loading.
+* Connector Failures: Kafka loaders remain idle until the connector resumes. Graph data remains unchanged until the connector issue is resolved.
+
+=== Atomicity and Transactional Behavior
+* Loading jobs treat each data line as a transactional unit with implicit commit.
+* If a job fails and cannot resume, already loaded data remains in the graph and cannot be reverted.
+

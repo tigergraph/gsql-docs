@@ -1144,7 +1144,7 @@ If a user has set their scope to be global, then `DROP ALL` removes all queries 
 
 == Query Descriptions
 
-Query descriptions explains the procedures for updating, showing, and dropping descriptions of queries and query parameters.
+Query descriptions explain the procedures for updating, showing, and dropping descriptions of queries and query parameters.
 
 === Update description
 After creating a query, you can add a description for the query.
@@ -1162,10 +1162,10 @@ To update a description, run the `UPDATE DESCRIPTION` command as shown below. Yo
 
 [source, gsql]
 ----
-GSQL > USE GRAPH POC_GRAPH
-GSQL > UPDATE DESCRIPTION OF QUERY query1 "xxx"
-GSQL > UPDATE DESCRIPTION OF QUERY query2 ON GRAPH graph1 "xxx"
-GSQL > UPDATE DESCRIPTION OF QUERY_PARAM query1.param1 "xxx"
+GSQL > USE GRAPH poc_graph
+GSQL > UPDATE DESCRIPTION OF QUERY query1 "List of all employees in the company"
+GSQL > UPDATE DESCRIPTION OF QUERY query2 ON GRAPH graph1 "Details of employees in a specific department"
+GSQL > UPDATE DESCRIPTION OF QUERY_PARAM query1.param1 "Department where the employee works"
 ----
 
 [NOTE]
@@ -1177,8 +1177,8 @@ If the target already has a description, it will be replaced with the new one.
 
 [CAUTION]
 ====
-Using create or replace is preferable for updating a query to ensure that the description is retained.
-Otherwise, there is a risk of losing the description.
+* When updating a query, use `CREATE OR REPLACE QUERY` instead of `CREATE QUERY` to retain the query description.
+* `CREATE QUERY` may unintentionally drop both the query and its description if it already exists, whereas `CREATE OR REPLACE QUERY` ensures the description is retained by replacing the query without dropping it.
 ====
 
 === Show description
@@ -1186,8 +1186,10 @@ Otherwise, there is a risk of losing the description.
 *Syntax*
 [source]
 ----
-SHOW DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
+SHOW DESCRIPTION OF <objectType> <objectName(s)> [ON GRAPH <graphName>]
 ----
+
+`<objectName(s)>` can include a comma-separated list of names.
 
 Required privilege
 `READ_QUERY`
@@ -1197,7 +1199,7 @@ To display a description, use the `SHOW DESCRIPTION` command as shown below. Sim
 
 [source, gsql]
 ----
-GSQL > USE GRAPH POC_GRAPH
+GSQL > USE GRAPH poc_graph
 GSQL > SHOW DESCRIPTION OF QUERY query1
 GSQL > SHOW DESCRIPTION OF QUERY query1,query2
 GSQL > SHOW DESCRIPTION OF QUERY * ON GRAPH graph1
@@ -1219,21 +1221,17 @@ DROP DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
 Required privilege
 `WRITE_QUERY`
 
-To drop a description, run the `DROP DESCRIPTION` command like below.
-Similar to the update command, you can drop the description of a global type object or a local type object.
-
-To remove a description, use the DROP DESCRIPTION command as shown below.
-Similar to the update command, you can remove the description of a query or a query parameter.
+To remove a description, run the `DROP DESCRIPTION` command as shown below. This command can be used to remove the description of both global and local type objects, as well as queries and query parameters.
 
 [source, gsql]
 ----
-GSQL > USE GRAPH POC_GRAPH
+GSQL > USE GRAPH poc_graph
 GSQL > DROP DESCRIPTION OF QUERY query1
 GSQL > DROP DESCRIPTION OF QUERY query1*,query2*
 GSQL > DROP DESCRIPTION OF QUERY * ON GRAPH poc_graph
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
-GSQL > DROP DESCRIPTION OF QUERY_PARAM query1*
+GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.*
 ----
 
 Support is provided for dropping descriptions of multiple targets simultaneously.

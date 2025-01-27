@@ -561,7 +561,7 @@ There are two GSQL syntax options for Interpreted GSQL:
 [source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
-	       "-queue" <Workload Queue Name>
+	       [-queue workload_query_name]
                [FOR GRAPH graph_name]
                [SYNTAX syntax_name]
                "{" queryBody "}"
@@ -590,7 +590,15 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 .Syntax for interpreting a created query
 [source,ebnf]
 ----
-runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               [RETURNS "("  baseType | accumType ")"]
+               [API ( v2 )]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+
+runQuery := INTERPRET QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
 
 Required privilege:

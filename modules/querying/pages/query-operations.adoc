@@ -18,7 +18,9 @@ createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
                [SYNTAX syntaxName]
                "{" queryBody "}"
 
-interpretQuery := INTERPRET QUERY "(" ")"
+interpretAnonymousQuery := INTERPRET QUERY
+               [-QUEUE workload_query_name]
+               "(" ")"	       
                [FOR GRAPH graphName]
                [SYNTAX syntaxName]
                "{" queryBody "}"
@@ -41,7 +43,8 @@ declExceptStmts := (declExceptStmt ";")+
 queryBodyStmts := (queryBodyStmt ";")+
 
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
-runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
+    "(" parameterValueList | parameterValueJSON ")"
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
@@ -560,7 +563,7 @@ There are two GSQL syntax options for Interpreted GSQL:
 .Syntax for interpreting an anonymous query
 [source,ebnf]
 ----
-interpretQuery := INTERPRET QUERY
+interpretAnonymousQuery := INTERPRET QUERY
 	       [-QUEUE workload_query_name]
 	       "(" ")"
                [FOR GRAPH graph_name]
@@ -591,7 +594,7 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 .Syntax for interpreting a created query
 [source,ebnf]
 ----
-runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 ----
 
 Required privilege:
@@ -704,7 +707,7 @@ You can also run an installed query through REST requests - see xref:tigergraph-
 
 [source,ebnf]
 ----
-runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
     "(" parameterValueList | parameterValueJSON ")"
 
 runOptions := ( "-async"| "-av" | "-queue" <Workload Queue Name>)*

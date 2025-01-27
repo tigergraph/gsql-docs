@@ -41,7 +41,7 @@ declExceptStmts := (declExceptStmt ";")+
 queryBodyStmts := (queryBodyStmt ";")+
 
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
-runQuery := RUN QUERY [runOptions] queryName "(" parameterValueList ")"
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )

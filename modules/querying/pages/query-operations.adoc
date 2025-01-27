@@ -560,8 +560,9 @@ There are two GSQL syntax options for Interpreted GSQL:
 .Syntax for interpreting an anonymous query
 [source,ebnf]
 ----
-interpretQuery := INTERPRET QUERY "(" ")"
-	       [-queue workload_query_name]
+interpretQuery := INTERPRET QUERY
+	       [-QUEUE workload_query_name]
+	       "(" ")"
                [FOR GRAPH graph_name]
                [SYNTAX syntax_name]
                "{" queryBody "}"

@@ -714,13 +714,15 @@ You can also run an installed query through REST requests - see xref:tigergraph-
 runQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
     "(" parameterValueList | parameterValueJSON ")"
 
-runOptions := ( "-av" | "-d" )*
+runOptions := ( "-async"| "-av" | "-queue" <Workload Queue Name>)*
 parameterValueList := parameterValue ["," parameterValue]*
 parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":' parameterValue)* '}'
 ----
 
 Required privilege:
 EXECUTE_QUERY
+
+To learn more about the -queue option, please refer xref:tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
 
 === Query parameters
 

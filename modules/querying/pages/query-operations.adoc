@@ -561,6 +561,7 @@ There are two GSQL syntax options for Interpreted GSQL:
 [source,ebnf]
 ----
 interpretQuery := INTERPRET QUERY "(" ")"
+	       "-queue" <Workload Queue Name>)
                [FOR GRAPH graph_name]
                [SYNTAX syntax_name]
                "{" queryBody "}"

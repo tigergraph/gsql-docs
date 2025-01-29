@@ -86,7 +86,7 @@ gsql -t <token>
 
 *Token login workflow*
 
-* *Login Process:8 To log in using the `-t` option, simply provide a valid token with the `gsql -t <token>` command. If the token is valid, you will be authenticated and logged into the GSQL shell.
+* *Login Process:* To log in using the `-t` option, simply provide a valid token with the `gsql -t <token>` command. If the token is valid, you will be authenticated and logged into the GSQL shell.
 * *Error Handling:* If the token is expired or invalid, the login will fail. You will be prompted with an error message stating that the token is no longer valid.
 
 *Consistency with `--secret` command*

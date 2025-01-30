@@ -39,9 +39,8 @@ A username, password, and a graph name may also be provided on the command line.
 .GSQL command syntax for entering interactive mode
 [source,gsql]
 ----
-gsql [-u username] [-p password] [-g gname]
+gsql [ -u <username> [-p <password>] ] [ (-t | --token) <token>] [-g <graphName>]
 ----
-
 
 If a username is provided but not a password, the GSQL system will then ask for the user's password:
 

@@ -87,19 +87,19 @@ gsql -t <token>
 
 * *Login Process:* To log in using the `-t` option, simply provide a valid token with the `gsql -t <token>` command. If the token is valid, you will be authenticated and logged into the GSQL shell.
 
-1. To log in using the token, type the following command in the terminal:
+a. To log in using the token, type the following command in the terminal:
 [source,gsql]
 ----
 gsql -t <valid_token>
 ----
 
-2. Once you’re logged in, run any GSQL command. For example, to list all vertices of type `user`, run:
+b. Once you’re logged in, run any GSQL command. For example, to list all vertices of type `user`, run:
 [source,gsql]
 ----
 GSQL > SELECT * FROM user;
 ----
 
-3. After you're done, exit the GSQL shell by typing:
+c. After you're done, exit the GSQL shell by typing:
 [source,gsql]
 ----
 GSQL > EXIT

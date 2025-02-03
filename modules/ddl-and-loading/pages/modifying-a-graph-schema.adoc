@@ -14,8 +14,8 @@ To safely update the graph schema, the user should follow this procedure:
 ====
 A schema change will invalidate any loading jobs or query which relate to an altered part of the schema. Specifically:
 
-* A loading job becomes invalid if it refers to a vertex or and an edge which has been *dropped* (deleted) or *altered* .
-* A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been *dropped* .
+* A loading job becomes invalid if it refers to a vertex or and an edge which has been *dropped* (deleted) or *altered*.
+* A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been *dropped*.
 
 Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
 ====
@@ -47,7 +47,7 @@ Following best practices minimizes the risk of failures and ensures smooth execu
 
 === Low Traffic and High Traffic Periods
 
-It is crucial to define and identify periods of low and high traffic in order to optimize schema changes and reduce the risk of failure.
+Defining periods of low and high traffic is crucial to optimizing schema changes and reducing failure risks.
 
 *Low Traffic:*
 
@@ -55,7 +55,7 @@ It is crucial to define and identify periods of low and high traffic in order to
 
 *High Traffic:*
 
-* Avoid schema changes during periods of high query or data load activity. Doing so could cause failure or inconsistent behavior.
+* Avoid schema changes during periods of high query or data load activity to prevent failure or inconsistent behavior.
 
 === Risks of Running Jobs During Schema Changes
 
@@ -77,20 +77,20 @@ Once the schema change is complete, verify data and schema consistency:
 
 === Impact on Queries and Loading Jobs
 
-Schema changes will invalidate queries and loading jobs that are dependent on the schema components being modified. 
-This can cause errors or failures in queries that are still trying to reference a vertex, edge, or attribute that has been altered or removed.
+Schema changes will invalidate queries and loading jobs dependent on modified schema components.
+This may cause errors or failures in queries trying to reference altered or removed schema elements.
 
 *What to Do:*
 
 * After schema changes, reinstall and redefine queries and loading jobs based on the new schema.
-* Make sure that the updated queries and jobs are aligned with the modified schema and are properly tested to ensure they work as expected after the changes.
+* Ensure that the updated queries and jobs align with the modified schema and are properly tested to ensure they work as expected.
 
 [IMPORTANT]
 ====
-Schema changes should be performed only when there are no active queries or loading jobs to avoid issues with data consistency and application errors. 
-It is essential to abort all ongoing jobs before performing the schema change to prevent conflicts.
+Perform schema changes only when no active queries or loading jobs are running to avoid data consistency and application errors.
+Always abort ongoing jobs before initiating the schema change. 
 
-In addition, schema changes should be done during low traffic periods. High traffic periods increase the likelihood of schema change failures due to conflicts with running operations.
+Additionally, perform schema changes during low traffic periods to minimize failure risks.
 ====
 
 [#_global_vs_Local_schema_changes]

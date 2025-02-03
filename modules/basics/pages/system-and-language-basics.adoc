@@ -2,7 +2,9 @@
 :pp: {plus}{plus}
 :page-aliases: ddl-and-loading:system-and-language-basics.adoc
 
-This page describes the basic elements that make up the GSQL Data Definition and Loading as well as the GSQL Query Language, as well as how to run GSQL commands through the GSQL shell.
+This page describes the basic elements that make up the GSQL Data Definition and Loading as well as the GSQL Query Language. 
+It also provides instructions on how to run GSQL commands through the GSQL shell, including the new token-based authentication functionality added in version 4.1.
+Tokens can be either plain-text or JWT, offering a more secure authentication method than passwords.
 
 == Language basics
 
@@ -37,9 +39,8 @@ A username, password, and a graph name may also be provided on the command line.
 .GSQL command syntax for entering interactive mode
 [source,gsql]
 ----
-gsql [-u username] [-p password] [-g gname]
+gsql [ -u <username> [-p <password>] ] [ (-t | --token) <token>] [-g <graphName>]
 ----
-
 
 If a username is provided but not a password, the GSQL system will then ask for the user's password:
 
@@ -64,6 +65,64 @@ GSQL >
 To exit the GSQL shell, type either `exit` or  `quit` at the GSQL prompt:
 
 `GSQL> EXIT`  or `GSQL> QUIT`
+
+=== Token-based authentication method
+
+Starting with version *4.1*, GSQL now supports token-based authentication, allowing users to log into the GSQL shell using a token instead of a traditional username and password.
+
+*How to login using a token*
+
+To log into the GSQL shell using a token, use the `-t` or `--token` option, followed by the token value. The token can either be a plain-text token or a JWT token.
+[source,gsql]
+----
+gsql -t <token>
+----
+
+*Types of tokens*
+
+* *Plain-text Token:* A randomly generated string used for authentication. This is the older token format, still supported if not expired, but will eventually be deprecated.
+* **xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Token]**: A more secure and modern format for authentication. It consists of three parts: header, payload, and signature. JWT tokens are the default format for authentication starting from version 4.1.
+
+*Token login workflow*
+
+* *Login Process:* To log in using the `-t` option, simply provide a valid token with the `gsql -t <token>` command. If the token is valid, you will be authenticated and logged into the GSQL shell.
+
+To log in using the token, type the following command in the terminal:
+[source,gsql]
+----
+gsql -t <valid_token>
+----
+
+Once you’re logged in, run any GSQL command. For example, to list all vertices of type `user`, run:
+[source,gsql]
+----
+GSQL > SELECT * FROM user;
+----
+
+After you're done, exit the GSQL shell by typing:
+[source,gsql]
+----
+GSQL > EXIT
+----
+
+OR
+
+[source,gsql]
+----
+GSQL > QUIT
+----
+
+* *Error Handling:* If the token is expired or invalid, the login will fail. You will be prompted with an error message stating that the token is no longer valid. You will receive an error message like:
+
+[source,gsql]
+----
+Error: Invalid or expired token.
+----
+
+[NOTE]
+====
+While plain-text tokens are still supported in the short term, they will be deprecated in favor of JWT tokens. It is recommended to use JWT tokens for better security and future-proofing.
+====
 
 === GSQL client session timeout
 

@@ -323,3 +323,39 @@ WHERE x.friendCount = y.friendCount
 …
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
+
+== Key Differences: GSQL vs. Neo4j in OpenCypher
+
+GSQL is strongly typed and **schema-first**, while Neo4j is **schema-optional**. This fundamental difference impacts how OpenCypher queries behave in each system.
+
+=== Example: OpenCypher Query Behavior
+
+Consider the following OpenCypher query:
+
+[source,gsql]
+MATCH (p)
+RETURN p.firstName, p.year
+
+==== How GSQL Interprets This Query
+
+Since GSQL enforces a predefined schema, the query:
+
+* Only considers vertex types that contain both `firstName` and `year` attributes
+* Returns values only if both attributes exist in a given vertex type
+
+If a vertex type does not have both attributes, it is ignored entirely.
+
+==== How Neo4j Interprets This Query
+
+Neo4j does not enforce a schema, so the query:
+
+* Processes all vertex types, regardless of their attributes
+* Returns values for existing attributes but returns `NULL` for attributes that do not exist
+
+==== Why This Matters
+This difference is crucial for OpenCypher users migrating from Neo4j to GSQL. In GSQL, queries must align with the schema, meaning attributes must be explicitly defined in the vertex type. In contrast, Neo4j allows queries to access attributes flexibly, even if some results contain NULL values.
+
+By understanding this distinction, users can write more effective OpenCypher queries tailored to GSQL’s schema-first approach.
+
+
+

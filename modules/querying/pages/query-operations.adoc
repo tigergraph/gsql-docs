@@ -2,9 +2,10 @@
 :pp: {plus}{plus}
 :description: Commands in the GSQL query language associated with query operations.
 
-A GSQL query is a sequence of data retrieval-and-computation statements executed as a single operation.
-Users can write queries to explore a data graph however they like, to read and make computations on the graph data along the way, to update the graph, and to deliver resulting data.
-A query is analogous to a user-defined procedure or function: it can have one or more input parameters, and it can produce output in two ways: by returning a value or by printing.
+A GSQL query is a sequence of data retrieval and computation statements executed as a single operation.
+Users can write queries to explore and manipulate data in the graph, perform computations, update the graph, and retrieve results. 
+A query functions similarly to a user-defined procedure or function, accepting one or more input parameters and producing output by either returning values or printing results.
+In addition to querying the graph, you can also manage descriptions for your queries and query parameters. This includes updating, viewing, and removing descriptions, which can help document and clarify the purpose of your queries.
 
 
 .EBNF for `CREATE QUERY`
@@ -48,6 +49,28 @@ runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
+----
+
+.EBNF for `DESCRIPTION OF QUERY`
+[source,ebnf]
+----
+objectDescString := stringLiteral
+
+updateDescription := UPDATE DESCRIPTION OF 
+  (QUERY queryName | QUERY_PARAM queryName"."paramName)
+  [ON GRAPH graphName] objectDescString
+
+showDescription := SHOW DESCRIPTION OF
+  ( QUERY ("*" | queryName["," queryName]*)
+  | QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
+  )
+  [ON GRAPH graphName]
+
+dropDescription := DROP DESCRIPTION OF
+  ( QUERY ("*" | queryName["," queryName]*)
+  | QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
+  )
+  [ON GRAPH graphName]
 ----
 
 A query can be run in one of three ways:

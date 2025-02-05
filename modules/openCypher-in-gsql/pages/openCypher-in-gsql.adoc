@@ -188,6 +188,15 @@ See below for restrictions.
 |e() |Logarithmic Returns the base of the natural logarithm, e.
 
 |timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
+
+|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
+
+|toBoolean() |Scalar Converts a string value to a boolean value.
+
+|toFloat() |Scalar Converts an integer or string value to a floating point number.
+
+|toInteger() |Scalar Converts a floating point or string value to an integer value.
+
 |===
 
 === Expressions
@@ -263,19 +272,12 @@ N/A
 
 |reverse() |List Returns a list in which the order of all elements in the original list have been reversed.
 
-|stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
-
 |stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population → coming soon
 
 |percentileCont() |Aggregating Returns the percentile of the given value over a group using linear interpolation.
 
 |percentileDisc() |Aggregating Returns the nearest value to the given percentile over a group using a rounding method.
 
-|toBoolean() |Scalar Converts a string value to a boolean value.
-
-|toFloat() |Scalar Converts an integer or string value to a floating point number.
-
-|toInteger() |Scalar Converts a floating point or string value to an integer value.
 |===
 
 === Syntax

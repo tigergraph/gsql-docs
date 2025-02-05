@@ -1144,7 +1144,8 @@ If a user has set their scope to be global, then `DROP ALL` removes all queries 
 
 == Query Descriptions
 
-Query descriptions explain the procedures for updating, showing, and dropping descriptions of queries and query parameters.
+A query description provides additional information about a query or its parameters. 
+Here, you will find how to update, show, and drop descriptions of queries and query parameters.
 
 === Update description
 After creating a query, you can add a description for the query.
@@ -1183,58 +1184,65 @@ If the target already has a description, it will be replaced with the new one.
 
 === Show description
 
+The `SHOW DESCRIPTION` command displays the description of a query or a query parameter.
+
 *Syntax*
 [source]
 ----
-SHOW DESCRIPTION OF <objectType> <objectName(s)> [ON GRAPH <graphName>]
+SHOW DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
 ----
-
-`<objectName(s)>` can include a comma-separated list of names.
 
 Required privilege
 `READ_QUERY`
 
 To display a description, use the `SHOW DESCRIPTION` command as shown below. Similar to the update command, you can display the description of a query or a query parameter.
 
-
 [source, gsql]
 ----
-GSQL > USE GRAPH poc_graph
+GSQL > USE GRAPH POC_GRAPH
 GSQL > SHOW DESCRIPTION OF QUERY query1
-GSQL > SHOW DESCRIPTION OF QUERY query1,query2
+GSQL > SHOW DESCRIPTION OF QUERY query1*
 GSQL > SHOW DESCRIPTION OF QUERY * ON GRAPH graph1
 GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1
-GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
+GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param2
 GSQL > SHOW DESCRIPTION OF QUERY_PARAM query2.*
 ----
 
-Support is provided for displaying descriptions of multiple targets simultaneously. You can separate the targets using commas, or use the wildcard `*` to display all descriptions.
+* You cannot combine parameters from different queries in one command. Each query or parameter must be specified individually.
+* The wildcard `*` can be used to show descriptions of all queries or all parameters for a specific query. 
 
 === Drop description
+
+The `DROP DESCRIPTION` command is used to remove descriptions of queries or query parameters. 
 
 *Syntax*
 [source]
 ----
-DROP DESCRIPTION OF <objectType> <objectName> [ON GRAPH <graphName>]
+DROP DESCRIPTION OF <objectType> <objectName(s)> [ON GRAPH <graphName>]
 ----
+
+* `<objectName(s)>` can include a comma-separated list of names.
+* For the `DROP DESCRIPTION` command, you can specify multiple queries or parameters in a single command using a comma-separated list. However, the `SHOW DESCRIPTION` command does not support this feature.
 
 Required privilege
 `WRITE_QUERY`
 
-To remove a description, run the `DROP DESCRIPTION` command as shown below. This command can be used to remove the description of both global and local type objects, as well as queries and query parameters.
+To remove a description, run the `DROP DESCRIPTION` command as shown below. 
 
 [source, gsql]
 ----
-GSQL > USE GRAPH poc_graph
+GSQL > USE GRAPH POC_GRAPH
 GSQL > DROP DESCRIPTION OF QUERY query1
-GSQL > DROP DESCRIPTION OF QUERY query1*,query2*
 GSQL > DROP DESCRIPTION OF QUERY * ON GRAPH poc_graph
+GSQL > DROP DESCRIPTION OF QUERY ALL ON GRAPH poc_graph
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.*
+GSQL > DROP DESCRIPTION OF QUERY_PARAM * ON GRAPH poc_graph
+GSQL > DROP DESCRIPTION OF QUERY_PARAM ALL ON GRAPH poc_graph
 ----
 
 Support is provided for dropping descriptions of multiple targets simultaneously.
-You can separate the targets using commas, or use the wildcard `*` to drop all descriptions.
+You can use the wildcard `*` to remove descriptions of all queries or all parameters of a specific query.
 The query parameter's description is independent of the query's description.
 Therefore, after dropping the query description, the query parameter's description remains unaffected.

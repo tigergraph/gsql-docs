@@ -205,6 +205,12 @@ See below for restrictions.
 
 |trim() |String Returns the original string with leading and trailing whitespace removed.
 
+|toBoolean() |Scalar Converts a string value to a boolean value.
+
+|toFloat() |Scalar Converts an integer or string value to a floating point number.
+
+|toInteger() |Scalar Converts a floating point or string value to an integer value.
+
 |===
 
 === Expressions
@@ -274,12 +280,6 @@ pattern expression)
 |size() |Scalar Returns the size of a string. (When applied to string)
 
 |startNode() |Scalar Returns the start node of a relationship.
-
-|toBoolean() |Scalar Converts a string value to a boolean value.
-
-|toFloat() |Scalar Converts an integer or string value to a floating point number.
-
-|toInteger() |Scalar Converts a floating point or string value to an integer value.
 
 |type() |Scalar Returns the string representation of the relationship type.
 

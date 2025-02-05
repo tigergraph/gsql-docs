@@ -352,7 +352,7 @@ Neo4j does not enforce a schema, so the query:
 * Processes all vertex types, regardless of their attributes
 * Returns values for existing attributes but returns `NULL` for attributes that do not exist
 
-==== Importance
+=== Importance
 
 For users migrating from Neo4j to GSQL, it is important to understand that:
 

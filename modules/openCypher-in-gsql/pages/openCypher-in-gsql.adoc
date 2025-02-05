@@ -354,7 +354,11 @@ Neo4j does not enforce a schema, so the query:
 
 ==== Importance
 
-This difference is crucial for OpenCypher users migrating from Neo4j to GSQL. In GSQL, queries must align with the schema, meaning attributes must be explicitly defined in the vertex type. In contrast, Neo4j allows queries to access attributes flexibly, even if some results contain NULL values.
+For users migrating from Neo4j to GSQL, it is important to understand that:
+
+* In GSQL, queries must align with the predefined schema.
+* Unlike Neo4j, GSQL does not return NULL for missing attributes—if a vertex does not contain all required attributes, it is not included in the result.
+* A query attempting to access a non-existent attribute in GSQL may either return no results or be rejected if no matching vertex type exists.
 
 By understanding this distinction, users can write more effective OpenCypher queries tailored to GSQL’s schema-first approach.
 

@@ -1144,7 +1144,7 @@ If a user has set their scope to be global, then `DROP ALL` removes all queries 
 
 == Query Descriptions
 
-A query description provides additional information about a query or its parameters. 
+A query description provides a human-readable explanation of a query or its parameters, offering more detailed information to help users understand the query's purpose and functionality.
 Here, you will find how to update, show, and drop descriptions of queries and query parameters.
 
 === Update description
@@ -1199,17 +1199,17 @@ To display a description, use the `SHOW DESCRIPTION` command as shown below. Sim
 
 [source, gsql]
 ----
-GSQL > USE GRAPH POC_GRAPH
+GSQL > USE GRAPH poc_graph
 GSQL > SHOW DESCRIPTION OF QUERY query1
 GSQL > SHOW DESCRIPTION OF QUERY query1*
-GSQL > SHOW DESCRIPTION OF QUERY * ON GRAPH graph1
+GSQL > SHOW DESCRIPTION OF QUERY * ON GRAPH poc_graph
 GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1
-GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param2
 GSQL > SHOW DESCRIPTION OF QUERY_PARAM query2.*
 ----
 
-* You cannot combine parameters from different queries in one command. Each query or parameter must be specified individually.
+* For the `SHOW DESCRIPTION` command, you can display the descriptions of individual queries or query parameters. Each query or parameter must be specified separately, and you cannot combine them in a single request.
 * The wildcard `*` can be used to show descriptions of all queries or all parameters for a specific query. 
+* `SHOW DESCRIPTION` also supports a wider range of regular expressions, allowing for more advanced querying when searching for descriptions.
 
 === Drop description
 
@@ -1231,15 +1231,12 @@ To remove a description, run the `DROP DESCRIPTION` command as shown below.
 
 [source, gsql]
 ----
-GSQL > USE GRAPH POC_GRAPH
+GSQL > USE GRAPH poc_graph
 GSQL > DROP DESCRIPTION OF QUERY query1
 GSQL > DROP DESCRIPTION OF QUERY * ON GRAPH poc_graph
-GSQL > DROP DESCRIPTION OF QUERY ALL ON GRAPH poc_graph
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.param1,query1.param2
 GSQL > DROP DESCRIPTION OF QUERY_PARAM query1.*
-GSQL > DROP DESCRIPTION OF QUERY_PARAM * ON GRAPH poc_graph
-GSQL > DROP DESCRIPTION OF QUERY_PARAM ALL ON GRAPH poc_graph
 ----
 
 Support is provided for dropping descriptions of multiple targets simultaneously.

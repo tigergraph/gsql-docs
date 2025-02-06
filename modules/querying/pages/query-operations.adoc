@@ -61,7 +61,7 @@ updateDescription := UPDATE DESCRIPTION OF
 	[ON GRAPH graphName] objectDescString
 
 showDescription := SHOW DESCRIPTION OF
-	(QUERY ("*" | queryName)
+	(QUERY ("*" | queryNamePrefix)
 	| QUERY_PARAM queryName"."("*" | paramName)
 	)
 	[ON GRAPH graphName]
@@ -71,6 +71,8 @@ dropDescription := DROP DESCRIPTION OF
 	| QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
 	)
 	[ON GRAPH graphName]
+
+queryNamePrefix := name"*"
 ----
 
 A query can be run in one of three ways:

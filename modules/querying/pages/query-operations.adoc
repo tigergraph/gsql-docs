@@ -1184,7 +1184,7 @@ If the target already has a description, it will be replaced with the new one.
 
 === Show description
 
-The `SHOW DESCRIPTION` command displays the description of a query or a query parameter.
+The `SHOW DESCRIPTION` command displays the descriptions of the queries or query parameters that match the given `objectName`.
 
 *Syntax*
 [source]
@@ -1207,13 +1207,14 @@ GSQL > SHOW DESCRIPTION OF QUERY_PARAM query1.param1
 GSQL > SHOW DESCRIPTION OF QUERY_PARAM query2.*
 ----
 
-* For the `SHOW DESCRIPTION` command, you can display the descriptions of individual queries or query parameters. Each query or parameter must be specified separately, and you cannot combine them in a single request.
-* The wildcard `*` can be used to show descriptions of all queries or all parameters for a specific query. 
-* `SHOW DESCRIPTION` also supports a wider range of regular expressions, allowing for more advanced querying when searching for descriptions.
+* The wildcard `*` can be used to match multiple queries or parameters.
+** `*` by itself means all queries in this graph.
+** `prefix*` means all queries whose name starts with `prefix`.
+** `queryName.*` means all parameters of `queryName`.
 
 === Drop description
 
-The `DROP DESCRIPTION` command is used to remove descriptions of queries or query parameters. 
+The `DROP DESCRIPTION` removes descriptions of queries or query parameters. 
 
 *Syntax*
 [source]
@@ -1222,7 +1223,7 @@ DROP DESCRIPTION OF <objectType> <objectName(s)> [ON GRAPH <graphName>]
 ----
 
 * `<objectName(s)>` can include a comma-separated list of names.
-* For the `DROP DESCRIPTION` command, you can specify multiple queries or parameters in a single command using a comma-separated list. However, the `SHOW DESCRIPTION` command does not support this feature.
+* For the `DROP DESCRIPTION` command, you can specify multiple queries or parameters in a single command using a comma-separated list. 
 
 Required privilege
 `WRITE_QUERY`
@@ -1243,3 +1244,9 @@ Support is provided for dropping descriptions of multiple targets simultaneously
 You can use the wildcard `*` to remove descriptions of all queries or all parameters of a specific query.
 The query parameter's description is independent of the query's description.
 Therefore, after dropping the query description, the query parameter's description remains unaffected.
+
+[NOTE]
+====
+* `SHOW DESCRIPTION` allows you to display descriptions of multiple queries or query parameters using wildcards like `*` (to show all queries) or `prefix*` (to show queries starting with a specific prefix). You can also use `queryName.*` to show all parameters of a specific query.
+* `DROP DESCRIPTION` supports specifying multiple queries or query parameters in a single command using a comma-separated list. However, it only supports the wildcard `*` for selecting all queries or query parameters and does not support wildcards based on prefixes or individual query names.
+====

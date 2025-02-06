@@ -56,21 +56,21 @@ dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
 objectDescString := stringLiteral
 
-updateDescription := UPDATE DESCRIPTION OF 
-  (QUERY queryName | QUERY_PARAM queryName"."paramName)
-  [ON GRAPH graphName] objectDescString
+updateDescription := UPDATE DESCRIPTION OF 
+	(QUERY queryName | QUERY_PARAM queryName"."paramName)
+	[ON GRAPH graphName] objectDescString
 
 showDescription := SHOW DESCRIPTION OF
-  ( QUERY ("*" | queryName["," queryName]*)
-  | QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
-  )
-  [ON GRAPH graphName]
+	(QUERY ("*" | queryName)
+	| QUERY_PARAM queryName"."("*" | paramName)
+	)
+	[ON GRAPH graphName]
 
 dropDescription := DROP DESCRIPTION OF
-  ( QUERY ("*" | queryName["," queryName]*)
-  | QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
-  )
-  [ON GRAPH graphName]
+	(QUERY ("*" | queryName["," queryName]*)
+	| QUERY_PARAM queryName"."("*" | paramName)["," queryName"."("*" | paramName)]*
+	)
+	[ON GRAPH graphName]
 ----
 
 A query can be run in one of three ways:

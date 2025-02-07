@@ -1279,6 +1279,9 @@ Therefore, after dropping the query description, the query parameter's descripti
 
 [NOTE]
 ====
-* *Wildcards:* SHOW supports wildcards like '*', 'prefix*', and 'queryName.*', but DROP only supports '*' for all queries or parameters.
-* *List of Objects:* SHOW cannot specify multiple objects in a comma-separated list, whereas DROP can.
+* *Wildcards:* 
+SHOW supports wildcards like `*`, `prefix*`, and `queryName.*`, but DROP only supports `*` for all queries or parameters.
+
+* *List of Objects:* 
+SHOW cannot specify multiple objects in a comma-separated list, whereas DROP can.
 ====

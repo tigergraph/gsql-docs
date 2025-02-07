@@ -1279,6 +1279,6 @@ Therefore, after dropping the query description, the query parameter's descripti
 
 [NOTE]
 ====
-* `SHOW DESCRIPTION` allows you to display descriptions of multiple queries or query parameters using wildcards like `*` (to show all queries) or `prefix*` (to show queries starting with a specific prefix). You can also use `queryName.*` to show all parameters of a specific query.
-* `DROP DESCRIPTION` supports specifying multiple queries or query parameters in a single command using a comma-separated list. However, it only supports the wildcard `*` for selecting all queries or query parameters and does not support wildcards based on prefixes or individual query names.
+* Wildcards: SHOW supports wildcards like `*`, `prefix*`, and `queryName.*`, but DROP only supports `*` for all queries or parameters.
+* List of Objects: SHOW cannot specify multiple objects in a comma-separated list, whereas DROP can.
 ====

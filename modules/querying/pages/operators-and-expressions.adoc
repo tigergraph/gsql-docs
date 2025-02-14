@@ -452,7 +452,7 @@ CREATE QUERY print_posts(STRING search_string) FOR GRAPH Social_Net {
 Query with Complex Expressions::
 +
 --
-.Example query using the LIKE operator with complex expressions:
+.Example query using the LIKE operator with complex expressions
 [source,gsql]
 ----
 CREATE OR REPLACE QUERY like_with_func(string str2="%lliH nomaD htiw%"){

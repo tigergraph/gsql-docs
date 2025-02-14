@@ -324,9 +324,9 @@ WHERE x.friendCount = y.friendCount
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
 
-== Key Differences: GSQL vs. OpenCypher
+== Key Differences: GSQL OpenCypher vs. OpenCypher
 
-GSQL is strongly typed and **schema-first**, while OpenCypher is **schema-optional**. This fundamental difference impacts how OpenCypher queries behave in each system.
+GSQL OpenCypher is strongly typed and **schema-first**, while OpenCypher is **schema-optional**. This fundamental difference impacts how OpenCypher queries behave in each system.
 
 === Example: OpenCypher Query Behavior
 
@@ -336,9 +336,9 @@ Consider the following OpenCypher query:
 MATCH (p)
 RETURN p.firstName, p.year
 
-==== How GSQL Interprets This Query
+==== How GSQL OpenCypher Interprets This Query
 
-Since GSQL enforces a predefined schema, the query:
+Since GSQL OpenCypher enforces a predefined schema, the query:
 
 * Only considers vertex types that contain both `firstName` and `year` attributes
 * Returns values only if both attributes exist in a given vertex type
@@ -354,12 +354,12 @@ OpenCypher does not enforce a schema, so the query:
 
 ==== Importance
 
-For users migrating from OpenCypher to GSQL, it is important to understand that:
+For users migrating from OpenCypher to GSQL OpenCypher, it is important to understand that:
 
-* In GSQL, queries must align with the predefined schema.
-* Unlike OpenCypher, GSQL does not return NULL for missing attributes—if a vertex does not contain all required attributes, it is not included in the result.
-* A query attempting to access a non-existent attribute in GSQL may either return no results or be rejected if no matching vertex type exists.
+* In GSQL OpenCypher, queries must align with the predefined schema.
+* Unlike OpenCypher, GSQL OpenCypher does not return NULL for missing attributes—if a vertex does not contain all required attributes, it is not included in the result.
+* A query attempting to access a non-existent attribute in GSQL OpenCypher may either return no results or be rejected if no matching vertex type exists.
 
-By understanding this distinction, users can write more effective OpenCypher queries tailored to GSQL’s schema-first approach.
+By understanding this distinction, users can write more effective OpenCypher queries tailored to GSQL OpenCypher’s schema-first approach.
 
 

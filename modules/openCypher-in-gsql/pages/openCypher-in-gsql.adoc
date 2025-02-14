@@ -324,7 +324,7 @@ WHERE x.friendCount = y.friendCount
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
 
-== Key Differences: GSQL OpenCypher vs. OpenCypher
+== Key Differences: GSQL OpenCypher mode vs. OpenCypher
 
 GSQL OpenCypher is strongly typed and **schema-first**, while OpenCypher is **schema-optional**. This fundamental difference impacts how OpenCypher queries behave in each system.
 

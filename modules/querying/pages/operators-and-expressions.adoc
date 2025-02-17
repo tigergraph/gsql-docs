@@ -325,9 +325,29 @@ Every attribute value stored in GSQL is a valid value, so IS NULL and IS NOT NUL
 expr [NOT] LIKE expr [ESCAPE escape_char]
 ----
 
-The `LIKE` operator is used for string pattern matching and can only be used in `WHERE` clauses. The expression `string1 LIKE string_pattern` evaluates to boolean true if `string1` matches the pattern in `string_pattern`; otherwise, it is false.
+The `LIKE` operator is used for string pattern matching in GSQL and can be used just like any other condition in the query. The expression `string1 LIKE string_pattern` evaluates to `true` if `string1` matches the pattern specified in `string_pattern`; otherwise, it evaluates to `false`.
 
-Both operands must be strings. Additionally, while `string1` can be a function call (e.g. `lower(string_variable)`, `string_pattern` must be a string literal or a parameter. `string_pattern` cannot be the result of concatenating other strings, nor can it be a function call.
+In 4.2, the operand `string_pattern` can now be any expression. This includes string concatenation, function calls, or other valid expressions, which can be used directly in the `LIKE` operator.
+
+For example, the following is now valid in GSQL:
+
+[source,gsql]
+----
+CREATE OR REPLACE QUERY like_with_func(string str2="%lliH nomaD htiw%"){
+   STRING str1 = "%Benjamin% Franklin%";
+   
+   Message = SELECT t FROM Person:s -(LIKES>:e1)- :mid -(REPLY_OF>:e2) - :t
+      WHERE t.content LIKE lpad(str1, 10)
+         OR t.content LIKE replace("Et Salvador", "t", "l")
+         OR t.content LIKE reverse(str2)
+      ORDER BY t.id DESC
+      LIMIT 20;
+      
+  PRINT Message;
+}
+----
+
+The restriction that `string_pattern` must be a string literal or parameter has been lifted in 4.2. Now, function calls like `lpad()` or `replace()` and expressions like `reverse(str2)` can be used to define the pattern.
 
 A `string_pattern` can contain characters as well as the following wildcard and other special symbols, in order to express a pattern (`<char_list>` indicates a placeholder):
 
@@ -396,13 +416,19 @@ The first `"%"` has its usual pattern-matching meaning "zero or more characters"
 
 [tabs]
 ====
-Query Without Parameters::
+Query with Constant Strings::
 +
 --
 .Example query using LIKE operator
 [source,gsql]
 ----
-include::appendix:example$social_net/operators_expressions_query_without_parameters.gsql[]
+CREATE QUERY print_a_posts() FOR GRAPH Social_Net {
+    posts = {Post.*};
+    a_posts = SELECT v FROM posts:v
+        // Returns all posts with the character "a" in the subject
+        WHERE v.subject LIKE "%a%";
+	PRINT a_posts;
+}
 ----
 --
 Query With Parameters::
@@ -411,8 +437,36 @@ Query With Parameters::
 .Example parameterized query
 [source,gsql]
 ----
-include::appendix:example$social_net/operators_expressions_query_with_parameters.gsql[]
+CREATE QUERY print_posts(STRING search_string) FOR GRAPH Social_Net {
+    STRING search_param;
+    search_param = "%" + search_string + "%";
+    posts = {Post.*};
+    a_posts = SELECT v FROM posts:v
+        // Returns all posts with the search_string in the subject
+        WHERE v.subject LIKE search_param;
+    PRINT a_posts;
+}
 
+----
+--
+Query with Complex Expressions::
++
+--
+.Example query using the LIKE operator with complex expressions
+[source,gsql]
+----
+CREATE OR REPLACE QUERY like_with_func(string str2="%lliH nomaD htiw%"){
+   STRING str1 = "%Benjamin% Franklin%";
+   
+   Message = SELECT t FROM Person:s -(LIKES>:e1)- :mid -(REPLY_OF>:e2) - :t
+      WHERE t.content LIKE lpad(str1, 10)
+         OR t.content LIKE replace("Et Salvador", "t", "l")
+         OR t.content LIKE reverse(str2)
+      ORDER BY t.id DESC
+      LIMIT 20;
+      
+  PRINT Message;
+}
 ----
 --
 Results::

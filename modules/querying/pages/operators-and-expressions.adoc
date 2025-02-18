@@ -545,7 +545,7 @@ include::appendix:example$social_net/operators_expressions_set_membership_result
 Available in version 4.1.2+
 
 A CASE expression provides a set of possible resulting values, each one associated with a different conditional test.
-The conditions are presented in a sequence of `WHEN... THEN` clauses, so that the `CASE` expression as a whole is assigned the value of the first condition that is true.
+The conditions are presented in a sequence of `WHEN... THEN` clauses, so that the `CASE` expression as a whole is assigned the value associated with the first condition that is true.
 Any conditions that come after the first true condition are skipped.
 If none of the conditions are true, then the `ELSE` clause sets the value.
 
@@ -575,7 +575,7 @@ numDays =
 ----
 
 A second version of the `CASE` expression presents a single test expression at the outset.
-Each `WHEN... THEN` clause presents its own expression (value).
+Each `WHEN... THEN` clause presents its own expression.
 The `CASE` expression selects the clause whose `WHEN` expression value is equal to the test expression's value.
 Again, an `ELSE` clause is available.
 

@@ -242,12 +242,12 @@ Therefore, we recommend that if multiple destination clauses share the same sour
 (columns) in the data file.
 
 a|
-Any single ASCII character.
+Any ASCII characters, maximum length is 24.
 
 Default: comma `,`
 
-* `\t for tab`
-* `\xy` for ASCII decimal code `xy`
+* `|#|` for pipe-hash-pipe
+* `\t\xy` for the combination of `tab` and ASCII decimal code `xy`
 
 |`EOL`
 |Specifies the end-of-line character.

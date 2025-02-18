@@ -30,13 +30,14 @@ It is considered good practice to perform schema changes during times of low gra
 
 == Schema Change Operations Best Practices
 
-Schema changes are crucial for maintaining and improving your graph's structure. However, they must be handled carefully to avoid disrupting ongoing operations.
+Schema changes are essential for maintaining and improving the structure of your graph. However, they must be handled carefully to avoid disrupting ongoing operations.
 By following best practices, you can minimize the risk of failures and ensure smooth execution.
 
 === Dos and Don'ts During Schema Changes
 
 *Do's:*
 
+* *Do backup your data before performing a schema change* to protect against potential data loss or corruption.
 * *Do ensure no active queries or loading jobs.* Only perform schema changes after aborting any ongoing jobs that interact with the components being modified.
 * *Do perform schema changes during periods of minimal graph activity.* A "low-traffic" period refers to a time when there are no active queries or data loading jobs running. This reduces the risk of conflicts and failures during schema changes.
 
@@ -45,17 +46,12 @@ By following best practices, you can minimize the risk of failures and ensure sm
 * *Don’t run queries or loading jobs during schema changes.* These jobs may fail if they interact with modified parts of the schema.
 * *Don’t change the schema during high-traffic periods.* Schema changes during heavy operations may cause system conflicts and errors.
 
-=== Low Traffic and High Traffic Periods
+=== Managing Loading Jobs During Schema Changes
 
-Defining periods of low and high traffic is crucial to optimizing schema changes and reducing failure risks.
+Currently, loading jobs during schema change jobs should be managed by *Dynamic Schema Change (DSC)*.
 
-*Low Traffic:*
-
-* Schema changes should be scheduled when there are minimal active operations (queries or data loads) to avoid conflicts.
-
-*High Traffic:*
-
-* Avoid schema changes during periods of high query or data load activity to prevent failure or inconsistent behavior.
+* If loading jobs are not affected by the schema change job, they will be managed automatically by DSC.
+* If loading jobs are affected by the schema change job, the schema change job will be blocked first.
 
 === Risks of Running Jobs During Schema Changes
 
@@ -63,25 +59,14 @@ Running queries or loading jobs while modifying the schema can lead to data inco
 
 *Best Practice:* Always abort active queries and loading jobs before performing a schema change.
 
-=== Verifying Schema Integrity After Changes
-
-Once the schema change is complete, verify data and schema consistency:
-
-*Verifying Data Consistency:*
-
-* *Backup your data* before performing a schema change to protect against potential data loss or corruption.
-* Run the `gstatusgraph` command to check that the data size remains consistent with what was recorded before the schema change. This helps ensure that no data loss or corruption has occurred during the schema update.
-* While schema changes are generally safe, unexpected issues may arise. Taking a backup ensures you can recover from any unforeseen problems that could result in data inconsistencies.
-
-*Verifying Schema Consistency:*
-
-* To ensure that the schema change has been applied correctly and that no unintended changes have occurred, run the following script:
-
 === Impact on Queries and Loading Jobs
 
 Schema changes will invalidate queries and loading jobs that depend on modified schema components.
-Specifically, a loading job becomes invalid if it references a vertex or edge that has been DROPPED or ALTERED. Similarly, a query becomes invalid if it refers to a DROPPED vertex, edge, or attribute. Invalid loading jobs are DROPPED, and invalid queries are uninstalled.
-After the schema update, users must create and install new loading and query jobs based on the updated schema.
+Specifically: 
+* A loading job becomes invalid if it references a vertex or edge that has been DROPPED or ALTERED. 
+* A query becomes invalid if it refers to a DROPPED vertex, edge, or attribute.
+
+Invalid loading jobs are *DROPPED*, and invalid queries are *uninstalled*. After the schema update, users must create and install new loading and query jobs based on the updated schema.
 
 *What to Do:*
 

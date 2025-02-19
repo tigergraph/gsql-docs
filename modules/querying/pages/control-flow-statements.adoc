@@ -2,7 +2,9 @@
 :description: Reference for control flow statements in the GSQL query language.
 :stem: latexmath
 
-The GSQL Query Language includes a comprehensive set of control flow statements to empower sophisticated graph traversal and data computation: `IF/ELSE`, `CASE`, `WHILE`, and `FOREACH`.
+The GSQL Query Language includes a comprehensive set of control flow statements to empower sophisticated graph traversal and data computation with _conditional_ (`IF/ELSE`, `CASE`) and _iterative_ (`WHILE`, and `FOREACH`) execution.
+
+You may also be interested in xref:operators-and-expressions.adoc#_case_expressions[CASE expressions].
 
 [#_differences_in_block_syntax]
 == Differences in Block Syntax

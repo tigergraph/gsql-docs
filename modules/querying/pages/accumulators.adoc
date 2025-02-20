@@ -1503,6 +1503,12 @@ GroupByAccum<type [, type]* , accumType [, accumType]* >
 In the EBNF above, the *type* terms form the key set, and the *accumType* terms form the map's value. Since they are accumulators, they perform a grouping. Like a MapAccum, if we try to store a (key->value) whose key has already been used, then the new value will accumulate to the data which is already stored.
 In this case, each field of the multiple-field value has its own accumulation function. One way to think about GroupByAccum is that each unique key is a group ID.
 
+[WARNING]
+====
+Currently, operations between different GroupByAccums with the same data types but different field names are not supported. These queries may pass semantic checks but will fail during query compilation with a Type Check Error.
+
+====
+
 In GroupByAccum, the key types can be base type or tuple. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
 
 [source,gsql]

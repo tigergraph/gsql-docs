@@ -238,7 +238,7 @@ Therefore, we recommend that if multiple destination clauses share the same sour
 |===
 |Parameter | Description |Allowed values
 |`SEPARATOR`
-|Specifies the special character or character sequence that separates tokens (columns) in the data file. Examples of character sequences:
+a|Specifies the special character or character sequence that separates tokens (columns) in the data file. Examples of character sequences,
 
 * \|#\|
 * `\t\xy` for the combination of `tab` and ASCII decimal code `xy`

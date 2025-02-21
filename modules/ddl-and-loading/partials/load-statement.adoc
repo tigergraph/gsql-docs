@@ -238,16 +238,15 @@ Therefore, we recommend that if multiple destination clauses share the same sour
 |===
 |Parameter | Description |Allowed values
 |`SEPARATOR`
-|Specifies the special character that separates tokens
-(columns) in the data file.
+|Specifies the special character or character sequence that separates tokens (columns) in the data file. Examples of character sequences:
+
+* \|#\|
+* `\t\xy` for the combination of `tab` and ASCII decimal code `xy`
 
 a|
 Any ASCII characters, maximum length is 24.
 
 Default: comma `,`
-
-* \|#\| for pipe-hash-pipe
-* `\t\xy` for the combination of `tab` and ASCII decimal code `xy`
 
 |`EOL`
 |Specifies the end-of-line character.

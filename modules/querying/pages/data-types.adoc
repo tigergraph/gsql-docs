@@ -597,14 +597,14 @@ When the query where the `FILE` was declared finishes running, the `FILE` conten
 The path should start with `s3://`, followed by the bucket name and the S3 path, e.g., `s3://bucket-name/queryoutput/output.csv`. During the execution of the query, content will be uploaded to the S3 bucket. Note that the S3 object cannot be modified or appended, if an S3 object with the same path already exists, it will be overwritten.
 
 ==== Set S3 connection credentials
-To use an S3 path, ensure that the necessary permissions and configurations are properly set up to allow read/write access to the specified S3 bucket. Configure the S3 connection credentials using `gadmin config`:
-[source,bash]
+The S3 credentials can be set as GSQL session parameters, so they persist for a user for a full session.
+[source,gsql]
 ----
-gadmin config set GPE.QueryOutputS3AWSAccessKeyID YOUR_AWS_ACCESS_KEY_ID
-gadmin config set GPE.QueryOutputS3AWSSecretAccessKey YOUR_AWS_SECRET_ACCESS_KEY
-gadmin config apply -y
-gadmin restart gpe -y
+set s3_aws_access_key_id = <AWS_KEY_ID>;
+set s3_aws_secret_access_key = <AWS_ACCESS_KEY>;
 ----
+
+These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace <AWS_KEY_ID> and <AWS_ACCESS_KEY> with your actual AWS credentials.
 
 ==== Output
 Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket. To handle potential conflicts and ensure unique output files, the S3 path can include a suffix based on the instance name, such as `\_GPE_{PartitionId}_{ReplicaId}`. For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE. Specifically, suffixes like `_coordinator` and `_worker` will be added, where `_coordinator` refers to the worker manager and `_worker` refers to the worker node.

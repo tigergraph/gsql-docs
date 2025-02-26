@@ -7,6 +7,11 @@ TigerGraph's GSQL query language supports many openCypher features. This page li
 
 To see how to run openCypher on the TigerGraph platform, see xref:openCypher-in-gsql.adoc[].
 
+[NOTE]
+====
+From version *4.1.2*, certain openCypher syntaxes are now fully supported, eliminating previous restrictions.
+====
+
 == openCypher Features in GSQL
 === Clauses
 
@@ -26,6 +31,8 @@ All associated relationships will automatically be deleted.
 
 |MATCH |Reading Specify the patterns to search for in the database.
 
+See below for restrictions before version *4.1.2*.
+
 |MANDATORY MATCH |Reading Specify the patterns to search for in the database, and fail if no match is found.
 
 |ORDER BY [ASC[ENDING] DESC[ENDING]] |Reading sub-clause A sub-clause following
@@ -38,7 +45,7 @@ All associated relationships will automatically be deleted.
 
 |WITH … [AS] |Projecting Allows query parts to be chained together, piping the results from one to be used as starting points or criteria in the next.
 
-See below for restrictions.
+See below for restrictions before version *4.1.2*.
 
 |WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
 |===
@@ -219,45 +226,6 @@ See below for restrictions.
 |CASE Expression |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
-=== Syntax
-
-Certain openCypher syntax is also supported.
-
-* Queries with a *WITH* clause that *does not* implicitly group by exactly one vertex variable.
-
-. 0 vertex variables as group key
-[source,gsql]
-MATCH (u:User {name: "John"}) // find all users with the same friend count as John
-WITH     u.friendCount AS fc   // note, u not included in group key list
-MATCH  (o:User {friendCount: fc})
-…
-
-. More than 1 vertex variables as group key
-[source,gsql]
-MATCH (u1) -[:communication]- (x) -[:communication]- (u2)
-WITH     u1, u2, COUNT(x) // we support only u1 or only u2 in list
-…
-
-* Queries introducing path variables
-[source,gsql]
-MATCH p = (u1) -[e1:communication]- (x) -[e2:communication]- (u2)	// p is path var
-…
-
-* Queries whose *MATCH* pattern *does not* include at least one vertex variable from immediately preceding *WITH* clause.
-[source,gsql]
-MATCH (u:user) -[:communication]- (o)
-WITH     u, …
-MATCH (x) -[:communication]-(y)		// this pattern must refer to u
-…
-
-* Queries with disconnected *MATCH* pattern fragments
-[source,gsql]
-MATCH (x:user), (y:user)
-WHERE x.friendCount = y.friendCount
-…
-
-* Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
-
 == openCypher Features Not Yet Supported
 === Clauses
 [cols="1,1]
@@ -323,6 +291,45 @@ pattern expression)
 |type() |Scalar Returns the string representation of the relationship type.
 
 |===
+
+=== Syntax
+
+Certain openCypher syntax is also *not* supported.
+
+* Queries with a *WITH* clause that *does not* implicitly group by exactly one vertex variable.
+
+. 0 vertex variables as group key
+[source,gsql]
+MATCH (u:User {name: "John"}) // find all users with the same friend count as John
+WITH     u.friendCount AS fc   // note, u not included in group key list
+MATCH  (o:User {friendCount: fc})
+…
+
+. More than 1 vertex variables as group key
+[source,gsql]
+MATCH (u1) -[:communication]- (x) -[:communication]- (u2)
+WITH     u1, u2, COUNT(x) // we support only u1 or only u2 in list
+…
+
+* Queries introducing path variables
+[source,gsql]
+MATCH p = (u1) -[e1:communication]- (x) -[e2:communication]- (u2)	// p is path var
+…
+
+* Queries whose *MATCH* pattern *does not* include at least one vertex variable from immediately preceding *WITH* clause.
+[source,gsql]
+MATCH (u:user) -[:communication]- (o)
+WITH     u, …
+MATCH (x) -[:communication]-(y)		// this pattern must refer to u
+…
+
+* Queries with disconnected *MATCH* pattern fragments
+[source,gsql]
+MATCH (x:user), (y:user)
+WHERE x.friendCount = y.friendCount
+…
+
+* Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
 
 == Key Differences: GSQL vs. OpenCypher
 

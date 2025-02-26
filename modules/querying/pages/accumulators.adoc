@@ -1527,6 +1527,9 @@ include::appendix:example$social_net/accum_groupbyaccum_results.json[]
 --
 ====
 
+==== Known Issues 
+
+Starting from version 3.10.3, operations between different GroupByAccums with the same data types but different field names will result in a Type Check Error during query compilation. In earlier versions, such queries may pass semantic checks but will fail with a general compilation error.
 
 == Nested Accumulators
 

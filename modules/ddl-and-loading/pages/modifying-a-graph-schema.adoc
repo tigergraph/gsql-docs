@@ -28,41 +28,24 @@ Load or query operations which begin before the schema change will be completed 
 Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
 It is considered good practice to perform schema changes during times of low graph activity.
 
-== Schema Change Operations Best Practices
+== Dynamic Schema Change - Abilities and Limitations
 
-Schema changes are essential for maintaining and improving the structure of your graph. However, they must be handled carefully to avoid disrupting ongoing operations.
-By following best practices, you can minimize the risk of failures and ensure smooth execution.
+Dynamic Schema Change (DSC) acts as a traffic manager for schema change jobs.  First, if there are any active loading jobs in progress when a schema change is requested, and the schema change affects a graph element included in the loading job, DSC should pause the schema change until the loading job completes.
 
-=== Dos and Don'ts During Schema Changes
+Once the schema change begins, DSC enables a modest amount of database activity (queries and loading) during a schema change, but ONLY if those operations do not involve graph elements affected by the schema change. If the activity level is too high, there is a risk of either the schema change job not succeeding, the concurrent database activity not succeeding, or both.
 
-*Do's:*
-
-* *Do backup your data before performing a schema change* to protect against potential data loss or corruption.
-* *Do ensure no active queries or loading jobs.* Only perform schema changes after aborting any ongoing jobs that interact with the components being modified.
-* *Do perform schema changes during periods of minimal graph activity.* A "low-traffic" period refers to a time when there are no active queries or data loading jobs running. This reduces the risk of conflicts and failures during schema changes.
-
-*Don'ts:*
-
-* *Don’t run queries or loading jobs during schema changes.* These jobs may fail if they interact with modified parts of the schema.
-* *Don’t change the schema during high-traffic periods.* Schema changes during heavy operations may cause system conflicts and errors.
-
-=== Managing Loading Jobs During Schema Changes
-
-Currently, loading jobs during schema change jobs should be managed by *Dynamic Schema Change (DSC)*.
-
-* If loading jobs are not affected by the schema change job, they will be managed automatically by DSC.
-* If loading jobs are affected by the schema change job, the schema change job will be blocked first.
-
-=== Risks of Running Jobs During Schema Changes
-
-Running queries or loading jobs while modifying the schema can lead to data inconsistency or errors. For instance, if a schema change modifies a vertex type and a query or loading job is still active, it will likely fail.
-
-*Best Practice:* Always abort active queries and loading jobs before performing a schema change.
+[WARNING]
+====
+For maximum safety, is it best to halt all graph activity before and during a schema change. If a schema change job fails, it can leave the graph in an inconsistent state.
+====
 
 === Impact on Queries and Loading Jobs
 
-Schema changes will invalidate queries and loading jobs that depend on modified schema components.
-Specifically: 
+[IMPORTANT]
+====
+A schema change will invalidate any loading jobs or query which relate to an altered part of the schema. 
+====
+ 
 * A loading job becomes invalid if it references a vertex or edge that has been DROPPED or ALTERED. 
 * A query becomes invalid if it refers to a DROPPED vertex, edge, or attribute.
 
@@ -77,9 +60,25 @@ Invalid loading jobs are *DROPPED*, and invalid queries are *uninstalled*. After
 ====
 Perform schema changes only when no active queries or loading jobs are running to avoid data consistency and application errors.
 Always abort ongoing jobs before initiating the schema change. 
-
-Additionally, perform schema changes during low traffic periods to minimize failure risks.
 ====
+
+=== Do's and Don'ts for Schema Change
+
+Because the demands of each graph activity vary, there is no universal way to state what level of concurrent graph activity can be handled by dynamic schema change. 
+
+*Do's:*
+
+* *Do backup your data before performing a schema change* as a precaution.
+* *Do perform schema changes only during no- or low-traffic periods.*
+
+*Don'ts:*
+
+* *Don’t change the schema during high-traffic periods.* Schema changes during heavy operations may cause system conflicts and errors.
+* *Don't run queries and loading jobs which you know are affected by the schema* as they will be invalidated.
+
+*For maximum safety:*
+
+* *Don’t run any queries or loading jobs during schema changes.*
 
 [#_global_vs_Local_schema_changes]
 == Global vs. local schema changes

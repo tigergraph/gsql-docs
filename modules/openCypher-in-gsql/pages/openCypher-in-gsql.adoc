@@ -294,7 +294,7 @@ pattern expression)
 
 === Syntax
 
-Certain openCypher syntax is also *not* supported.
+These were limitations before *4.1.2* – certain openCypher syntaxes were not supported:
 
 * Queries with a *WITH* clause that *does not* implicitly group by exactly one vertex variable.
 

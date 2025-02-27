@@ -133,7 +133,14 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
 | `GSQL.GithubBranch`  | The branch to access | `main`
 | `GSQL.GithubPath` | Path to the directory in the repository that has ExprFunctions.hpp and ExprUtil.hpp | `src/`
 | `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
+| `GSQL.GithubEnabled` | To Enable the retrieval of UDFs (such as ExprFunctions.hpp, ExprUtils.hpp, etc.) from GitHub (default `false`). | `false`
 |===
+ 
+[NOTE]
+====
+If the configuration `GSQL.GithubUserAcessToken` is non-empty, the `GSQL.GithubEnabled` configuration will be set to `true` during upgrading
+====
+ 
 
 Use the xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 

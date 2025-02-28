@@ -9,7 +9,7 @@ To see how to run openCypher on the TigerGraph platform, see xref:openCypher-in-
 
 [NOTE]
 ====
-From version *4.1.2*, certain openCypher syntaxes are now fully supported, eliminating previous restrictions.
+From version 4.1.2, certain restrictions on the `MATCH` and `WITH` clauses have been eliminated.
 ====
 
 == openCypher Features in GSQL
@@ -294,7 +294,7 @@ pattern expression)
 
 === Syntax
 
-These were limitations before *4.1.2* – certain openCypher syntaxes were not supported:
+These were limitations before *4.1.2* – certain openCypher syntax were not supported:
 
 * Queries with a *WITH* clause that *does not* implicitly group by exactly one vertex variable.
 

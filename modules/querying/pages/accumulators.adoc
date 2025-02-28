@@ -672,6 +672,9 @@ Overflow on the left is ignored.
 * When a bitwise accumulator length is longer than 64 bit, it's assigned using an array of two integers.
 Each integer is converted to a 64-bit sequence of 1s and 0s.
 The integer in the second position will take up the first 64 bits from the right of the sequence, and the integer on the left will take up the remaining bits.
+* The previous documentation incorrectly suggested a maximum length of 2 x 64 bits (128 bits) for bitwise accumulators. There is no length limit in the latest version, though bugs affecting functions longer than 64 bits have been fixed in version 4.2.0.
+* Long bitwise accumulators can be initialized using a list of 64-bit integer values:[value1, value2, value3, etc.]
+
 Any overflowing bits will be ignored.
 
 For example, if you are declaring an 80-bit BitwiseAndAccum:
@@ -772,6 +775,28 @@ Returns a bitwise accumulator whose every bit is the `AND` result between the tw
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
+
+|`& ( accum )`
+|
+|
+|Returns a new bitwise accumulator whose every bit is the `AND` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
+
+| ` \|\| (accum)`
+|
+|
+|Returns a new bitwise accumulator whose every bit is the `OR` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
+
+| ` ^ (accum)`
+|
+|
+|Returns a new bitwise accumulator whose every bit is the Exclusive `OR` result between the current bitwise accumulator and the given one, without modifying the current accumulator.
+
+| ` ~ (accum)`
+|
+|
+|Returns a new bitwise accumulator in which every bit is the flipped (bitwise NOT) result of the corresponding bit in the current bitwise accumulator, without modifying the current accumulator.
+
+
 |===
 
 
@@ -1423,6 +1448,17 @@ Comparison (and assignment with the `+=` operator) is only possible if two HeapA
 
 HeapAccum capacity does not affect comparison.
 Only the actual contents of are evaluated during comparison.
+
+**Comparator Support:**Bitwise accumulators now support comparators including <, >, ==, !=, < =, and >=.
+
+**Example:** WHERE (@@BitwiseAccum1 > 32) AND (@@BitwiseAccum2 < 1024)
+
+**Implementation Differences**
+
+**Standard Bitwise Accum:** Implicitly convert it to an integer for comparison.
+
+**User-defined Bitwise Accum:** Comparators are overridden for bitwise accumulators longer than 64 bits.
+
 
 ==== Functions
 HeapAccum also supports the following class functions.

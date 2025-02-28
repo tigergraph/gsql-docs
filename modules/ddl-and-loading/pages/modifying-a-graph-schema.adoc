@@ -39,23 +39,6 @@ Once the schema change begins, DSC enables a modest amount of database activity 
 For maximum safety, is it best to halt all graph activity before and during a schema change. If a schema change job fails, it can leave the graph in an inconsistent state.
 ====
 
-=== Impact on Queries and Loading Jobs
-
-[IMPORTANT]
-====
-A schema change will invalidate any loading jobs or query which relate to an altered part of the schema. 
-====
- 
-* A loading job becomes invalid if it references a vertex or edge that has been DROPPED or ALTERED. 
-* A query becomes invalid if it refers to a DROPPED vertex, edge, or attribute.
-
-Invalid loading jobs are *DROPPED*, and invalid queries are *uninstalled*. After the schema update, users must create and install new loading and query jobs based on the updated schema.
-
-*What to Do:*
-
-* After schema changes, reinstall and redefine queries and loading jobs based on the new schema.
-* Ensure that the updated queries and jobs align with the modified schema and are properly tested to ensure they work as expected.
-
 [IMPORTANT]
 ====
 Perform schema changes only when no active queries or loading jobs are running to avoid data consistency and application errors.

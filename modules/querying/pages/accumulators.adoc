@@ -776,25 +776,25 @@ Returns a bitwise accumulator whose every bit is the `AND` result between the tw
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
 
-|`& ( accum )`
+| `.& ( accum )`
 |
 |
-|Returns a new bitwise accumulator whose every bit is the `AND` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
+|Compares two bitwise accumulators of the same length and returns a new bitwise accumulator whose every bit is the `AND` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
 
-| ` \|\| (accum)`
+| `.\|\| (accum)`
 |
 |
-|Returns a new bitwise accumulator whose every bit is the `OR` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
+|Compares two bitwise accumulators of the same length and returns a new bitwise accumulator whose every bit is the `OR` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
 
-| ` ^ (accum)`
+| `.^ (accum)`
 |
 |
-|Returns a new bitwise accumulator whose every bit is the Exclusive `OR` result between the current bitwise accumulator and the given one, without modifying the current accumulator.
+|Compares two bitwise accumulators of the same length and returns a new bitwise accumulator whose every bit is the `XOR` result of the corresponding bits in the current bitwise accumulator and the given one, without modifying the current accumulator.
 
-| ` ~ (accum)`
+| `.~ (accum)`
 |
 |
-|Returns a new bitwise accumulator in which every bit is the flipped (bitwise NOT) result of the corresponding bit in the current bitwise accumulator, without modifying the current accumulator.
+|Returns a new bitwise accumulator in which every bit is flipped (bitwise NOT) from the corresponding bit in the current bitwise accumulator, without modifying the current accumulator.
 
 
 |===

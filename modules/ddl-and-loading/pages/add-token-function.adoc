@@ -155,7 +155,7 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
 | `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
 |===
 
-Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
+Use the xref:manage:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 
 Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters.
 If GSQL is already running, you will need to run `gadmin restart all` to restart GSQL before the token functions become available.
@@ -174,7 +174,7 @@ After the parameters are successfully configured, you can access your user-defin
 == Store token functions locally
 
 All UDF files are scanned by the system to ensure that they comply with the UDF file policy as set by configuration commands in TigerGraph Server.
-For more details, see xref:tigergraph-server:security:index.adoc[TigerGraph Server - Security].
+For more details, see xref:tigergraph-server:manage:security/index.adoc[TigerGraph Server - Security].
 
 
 === Step 1: Enable adding a TokenBank with PUT

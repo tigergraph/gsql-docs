@@ -3,7 +3,7 @@
 
 This page describes the GSQL `SELECT` statement in GSQL Syntax V1.
 The default syntax is syntax v2.
-To use syntax v1, you need to declare the syntax at the query level or in a xref:tigergraph-server:gsql-shell:gsql-sessions.adoc#_session_parameters[session parameter].
+To use syntax v1, you need to declare the syntax at the query level or in a xref:tigergraph-server:get-started:gsql-shell/gsql-sessions.adoc#_session_parameters[session parameter].
 
 The `SELECT` block uses a _step_ _pattern_ to select some of the graph's vertices and edges. There are a number of optional clauses that define and/or refine the selection by constraining the vertex or edge set or the result set. The final output of a query is either a vertex set known as the _result set_ or a table.
 

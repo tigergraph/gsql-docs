@@ -14,7 +14,7 @@ Follow these two simple rules:
 . Replace the body of the query procedure with OpenCypher instead of GSQL.
 End with a `RETURN` clause.
 
-For more details on the current openCypher support, see xref:openCypher-in-gsql.adoc[].
+For more details on the current openCypher support, see xref:index.adoc[].
 
 == Example: Interpreted Query
 

@@ -1,10 +1,10 @@
-* xref:attribute-data-types.adoc[]
-* xref:index.adoc[Schema Definition]
 
+* xref:index.adoc[Defining a Schema]
+** xref:attribute-data-types.adoc[Data Types]
 ** xref:defining-a-graph-schema.adoc[Define a Graph Schema]
 ** xref:modifying-a-graph-schema.adoc[Modify a Graph Schema]
 
-* xref:loading-jobs.adoc[Loading Jobs]
+* xref:loading-jobs.adoc[Loading Data]
 ** xref:creating-a-loading-job.adoc[Create a Loading Job]
 *** xref:functions/index.adoc[]
 **** xref:functions/token/index.adoc[]

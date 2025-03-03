@@ -177,7 +177,7 @@ It also supports calling functions, assigning variables, printing, and modifying
 The query body may include calls to other queries. That is, the other queries are treated as subquery functions.
 See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
 +
-Additionally, GSQL supports openCypher syntax in the query body. See pages xref:openCypher-in-gsql:openCypher-in-gsql.adoc[], xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[], and xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[] to learn more about openCypher and for examples.
+Additionally, GSQL supports openCypher syntax in the query body. See pages xref:openCypher-in-gsql:index.adoc[], xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[], and xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[] to learn more about openCypher and for examples.
 
 === Examples
 
@@ -693,7 +693,7 @@ drop and then recreate the query. If this option is not used, the GSQL
 shell will refuse to re-install a query that is already installed.
 
 a|`-SINGLE`
-|Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters page.]
+|Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:running-gsql.adoc#_session_parameters[Session Parameters page.]
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 
@@ -743,7 +743,7 @@ parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":
 Required privilege:
 EXECUTE_QUERY
 
-To learn more about the -queue option, please refer xref:tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
+To learn more about the -queue option, please refer xref:manage:workload-management.adoc#_running_a_query[Workload Management]
 
 === Query parameters
 

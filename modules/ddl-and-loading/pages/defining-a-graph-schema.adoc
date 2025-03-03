@@ -53,7 +53,7 @@ Once the graph designer has chosen a graph schema, the schema is ready to be for
 ====
 You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 
-To learn more about permission and privileges, see xref:tigergraph-server:user-access:access-control-model.adoc[].
+To learn more about permission and privileges, see xref:tigergraph-server:manage:access/access-control-model.adoc[].
 ====
 
 == `CREATE VERTEX`
@@ -561,7 +561,7 @@ New requirement for MultiGraph support. Applies even if only one graph exists.
 
 Before a user can use a graph, the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The `USE GRAPH` command sets or changes the user's working graph, for the current session.
 
-For more about roles and privileges, see the document xref:tigergraph-server:user-access:index.adoc[Managing User Privileges and Authentication].
+For more about roles and privileges, see the document xref:tigergraph-server:manage:access/index.adoc[Managing User Privileges and Authentication].
 
 .USE GRAPH syntax
 [source,gsql]
@@ -592,7 +592,7 @@ The `DROP GRAPH` command deletes the logical definition of the named graph. It w
 
 The `DROP ALL` command clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
-Unlike xref:tigergraph-server:getting-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
+Unlike xref:get-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
 
 [CAUTION]
 ====

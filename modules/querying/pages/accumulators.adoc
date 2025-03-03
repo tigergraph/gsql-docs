@@ -671,7 +671,7 @@ The integer is converted to a 64-bit sequence of 1s and 0s.
 Overflow on the left is ignored.
 * When a bitwise accumulator length is longer than 64 bits, it's assigned using an array of integers, one integer for each group of 64 bits, e.g., [int3, int2, int1].
 Each integer is converted to a 64-bit sequence of 1s and 0s.
-The integer in the second position will take up the first 64 bits from the right of the sequence, and the integer on the left will take up the remaining bits.
+The rightmost (last) element in the array is for the 64 least significant bits. If the total number of bits is not a multiple of 64, then the leftmost (first) element in the array will be for fewer than 64 bits.
 * The previous documentation incorrectly suggested a maximum length of 2 x 64 bits (128 bits) for bitwise accumulators. There is no length limit in the latest version, though bugs affecting functions longer than 64 bits have been fixed in version 4.2.0.
 * Long bitwise accumulators can be initialized using a list of 64-bit integer values:[value1, value2, value3, etc.]
 

@@ -167,7 +167,7 @@ baseType := INT
 The default value of each base type is shown in the table below.
 The default value is the initial value of a base type variable (see Section "Variable Types" for more details), or the default return value for some functions.
 
-The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Attribute Data Types]" section of xref:ddl-and-loading:running-gsql.adoc[GSQL Language Reference, Part 1].
+The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Attribute Data Types] of the GSQL Reference.
 
 |===
 | Type | Default value | Literal

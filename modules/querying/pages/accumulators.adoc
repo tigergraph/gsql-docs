@@ -772,6 +772,27 @@ Returns a bitwise accumulator whose every bit is the `AND` result between the tw
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
+
+|`& ( accum )`
+|
+|
+|Compares the bitwise accumulator with the given accumulator `arg_accum` and returns a new bitwise accumulator whose every bit is the `AND` result of the corresponding bits in the original accumulator and `arg_accum`, without modifying the original accumulator.
+
+|`\|\|( accum )`
+|
+|
+|Compares the bitwise accumulator with the given accumulator `arg_accum` and returns a new bitwise accumulator whose every bit is the `OR` result of the corresponding bits in the original accumulator and `arg_accum`, without modifying the original accumulator.
+
+|`^ ( accum )`
+|
+|
+|Compares the bitwise accumulator with the given accumulator `arg_accum` and returns a new bitwise accumulator whose every bit is the `XOR` result of the corresponding bits in the original accumulator and `arg_accum`, without modifying the original accumulator.
+
+|`~ (accum)`
+|
+|
+|Returns a new bitwise accumulator with every bit flipped (bitwise NOT) from the original accumulator, without modifying the original accumulator.
+
 |===
 
 

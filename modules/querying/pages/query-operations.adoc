@@ -693,7 +693,7 @@ drop and then recreate the query. If this option is not used, the GSQL
 shell will refuse to re-install a query that is already installed.
 
 a|`-SINGLE`
-|Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:ddl-and-loading:running-gsql.adoc#_session_parameters[Session Parameters page.]
+|Enables a new internal framework for compiling non-distributed queries. Equivalent to the `single_gpr` session parameter described on the xref:basics:running-gsql.adoc#_session_parameters[Session Parameters page.]
 
 The loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] with this option enabled is treated as a copy, while normally, changes to the loop variable will change the value in the set or bag expression.
 
@@ -743,7 +743,7 @@ parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":
 Required privilege:
 EXECUTE_QUERY
 
-To learn more about the -queue option, please refer xref:manage:workload-management.adoc#_running_a_query[Workload Management]
+To learn more about the -queue option, please refer xref:{page-component-version}@tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
 
 === Query parameters
 
@@ -833,7 +833,7 @@ More details about all parameter types are described in xref:data-types.adoc#_qu
 
 [NOTE]
 ====
-If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_composite_keys[composite key], use a comma to separate the different attributes to denote their ID.
+If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_composite_key_using_primary_key[composite key], use a comma to separate the different attributes to denote their ID.
 
 For example, if you have the following vertex definition:
 

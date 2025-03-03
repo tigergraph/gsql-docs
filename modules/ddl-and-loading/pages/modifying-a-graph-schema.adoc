@@ -28,7 +28,7 @@ Load or query operations which begin before the schema change will be completed 
 Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
 It is considered good practice to perform schema changes during times of low graph activity.
 
-[#_global_vs_Local_schema_changes]
+[#_global_vs_local_schema_changes]
 == Global vs. local schema changes
 
 [IMPORTANT]

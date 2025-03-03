@@ -53,7 +53,7 @@ Once the graph designer has chosen a graph schema, the schema is ready to be for
 ====
 You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run commands that alter the graph schema.
 
-To learn more about permission and privileges, see xref:tigergraph-server:manage:access/access-control-model.adoc[].
+To learn more about permission and privileges, see xref:{page-component-version}@tigergraph-server:user-access:access-control-model.adoc[].
 ====
 
 == `CREATE VERTEX`
@@ -243,7 +243,7 @@ WITH [STATS="none"|"outdegree_by_edgetype"]
 [primary_id_as_attribute="false"]
 ----
 
-The xref:#_primary_id_and_with_primary_id_as_attribute[primary_id_as_attribute] option was described with PRIMARY ID.
+The xref:#_with_primary_id_as_attribute[primary_id_as_attribute] option was described with PRIMARY ID.
 
 
 ==== `WITH STATS`
@@ -561,7 +561,7 @@ New requirement for MultiGraph support. Applies even if only one graph exists.
 
 Before a user can use a graph, the user must be granted a role on that graph by an admin user of that graph or by a superuser. (Superusers are automatically granted the admin role on every graph). Second, for each GSQL session, the user must set a working graph. The `USE GRAPH` command sets or changes the user's working graph, for the current session.
 
-For more about roles and privileges, see the document xref:tigergraph-server:manage:access/index.adoc[Managing User Privileges and Authentication].
+For more about roles and privileges, see xref:{page-component-version}@tigergraph-server:user-access:access-control-model.adoc[].
 
 .USE GRAPH syntax
 [source,gsql]
@@ -592,7 +592,7 @@ The `DROP GRAPH` command deletes the logical definition of the named graph. It w
 
 The `DROP ALL` command clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
 
-Unlike xref:get-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
+Unlike xref:{page-component-version}@tigergraph-server:getting-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
 
 [CAUTION]
 ====
@@ -610,7 +610,7 @@ SHOW <VERTEX> | <EDGE> | <JOB> | <QUERY> | <GRAPH> | <PACKAGE> [ <name> | <glob>
 
 `SHOW GRAPH` lists vertices and edges without giving their properties, and is also a way to check the JSON API and syntax versions of the graph, as well as any loading jobs.
 `SHOW VERTEX` and `SHOW EDGE` list the properties of the desired vertex or edge respectively.
-`SHOW PACKAGE` lists the packages that are available, such as the packaged template queries. See xref:graph-ml:using-an-algorithm:index.adoc#packaged-template-queries[Using an Algorithm - Packaged template queries] for more information.
+`SHOW PACKAGE` lists the packages that are available, such as the packaged template queries. See xref:graph-ml:using-an-algorithm:index.adoc#_installrun_as_packaged_template_queries[Using an Algorithm - Packaged template queries] for more information.
 
 This feature supports the `?` and `*` from linux globbing operations, and also regular expression matching.
 Usage of the feature is limited to the scope of the graph the user is currently in - if you are using a global graph, you will not be able to see vertices that are not included in your current graph.

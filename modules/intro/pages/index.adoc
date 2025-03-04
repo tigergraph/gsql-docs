@@ -1,10 +1,7 @@
 = Query Language Reference
 :page-aliases: intro.adoc
 
-The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.
-
-TigerGraph now also supports OpenCypher and the pattern matching portion of GQL, within the same execution engine.
-This document presents the syntax and features for all of TigerGraph's query language support.
+The *GSQL™* software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis. TigerGraph now also supports *OpenCypher* and the pattern matching portion of *GQL*, within the same execution engine.
 
 == Graph and Vector Querying
 [.home-card,cols="2,2",grid=none,frame=none, separator=¦]

@@ -1,0 +1,180 @@
+= Vector Database Operations
+:description: TigerGraph's vector database functionality: schema, write, read, index, and similarity search, and hybrid graph+vector search
+
+The TigerGraph database stores and indexes vectors efficiently, effectively serving as a multi-modal graph + vector database for AI applications.
+The storage and indexing are distributed, so vector operations are fast and scalable.
+
+Each vector is associated with a vertex, serving as a specialty attribute.
+The vertex holds the vector's ID and another properties or labels that to be associated with the vector.
+
+The vector search operations are implemented as functions which can be invoked from within GSQL graph queries.
+This enables an extremely rich set of possibilities for hybrid graph+vector queries.
+
+[NOTE]
+====
+This document is intended to be a quick reference to the  available functionality.
+For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
+====
+
+== Vector data and search specifications
+
+[cols="2,3"]
+|===
+
+| Element data type
+| FLOAT (32-bit floating point)
+
+| Similarity metrics
+| cosine, L2 (Euclidean) IP (inner product)
+
+| Approximate search algorithms
+| HNSW
+
+| Indexing
+| Automatic, incremental
+
+| Vector operations
+| Load, Read, Exact Similarity Search, Approximate Similarity Search, Top-K Search, Hybrid Graph+Vector Search
+|===
+
+To make use of TigerGraph's vector capabilities:
+
+. Add vectors to the graph schema.
+. Load vector data
+
+
+== Creating a Vector Schema
+
+A vector attribute is always added to an existing vertex type, using the `ALTER VERTEX` statement with a `SCHEMA_CHANGE` job.
+The `ADD VECTOR ATTRIBUTE` clause adds a vector, and `DROP VECTOR ATTRIBUTE` removed the attribute.
+
+[source,sql]
+.Vector schema syntax
+----
+ALTER VERTEX vertex_name ADD VECTOR ATTRIBUTE vec_name(vertex_params);
+
+where vertex_params = DIMENSION=dim, METRIC=metr [, IndexType=i_type]
+
+ALTER VERTEX vertex_name DROP VECTOR ATTRIBUTE vec_name;
+----
+
+The `metr` metric can be `"COSINE"`, `"L2"`, or `"IP"`.
+Currently, the only valid value for `i_type` is `"HNSW"`
+
+Example:
+[source,gsql]
+----
+CREATE GLOBAL SCHEMA_CHANGE JOB add_emb2 {
+  ALTER VERTEX Account ADD VECTOR ATTRIBUTE emb2(DIMENSION=3, METRIC="L2");
+}
+RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
+----
+
+== Loading Vectors
+
+Vectors are loaded using GSQL xref:ddl-and-loading:creating-a-loading-job.adoc[loading jobs].
+The can either be loaded to existing vertices or included when new vertices are being created.
+
+The vector data is presumed to be in some format such as CSV where one separator `field_sep` is used between fields like the vector ID and the vector itself. Another separator `elem_sep` separates the vector's elements from one another.
+
+[source,GSQL]
+.Vector load clause syntax
+----
+LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name \
+VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
+
+----
+
+Example:
+[source,gsql]
+----
+CREATE LOADING JOB load_s3_file  {
+
+ DEFINE FILENAME account;
+ DEFINE FILENAME accountEmb;
+;
+
+ LOAD account TO VERTEX Account VALUES ($"name", gsql_to_bool(gsql_trim($"isBlocked"))) USING header="true", separator=",";
+ LOAD accountEmb TO VECTOR ATTRIBUTE em1 ON VERTEX Account VALUES ($0, SPLIT($1, ",")) USING SEPARATOR="|";
+}
+----
+`$0` is the first column, holding the vector IDs.
+`$1` is the vector, with `"|"` separating them.
+The vector itself is subdivided into elements, with `","` as the element separator.
+Note the use of the split() to parse the vector.
+
+TigerGraph automatically builds an (HNSW) similarity index for the vectors as they are loaded, using the similarity metric that was specified when the vector schema was defined.
+The vectors can be queried before the index is complete, but the search performance will be slower.
+
+== vectorSearch Function
+
+Once vectors are inserted, the database can be searched for vertices or vectors.
+`vectorSearch` is a built-in function for vector similarity search.
+
+[source,GSQL]
+.vectorSearch function syntax
+----
+result = vectorSearch(vectorAttributes, queryVector, k, optionalParam)
+----
+where `result` is a vertex set variable, storing the top-k most similar vertices.
+
+[cols="1,10"]
+|===
+
+| Parameter | Description
+
+| vectorAttributes
+| A set of vector attributes to search. Each attribute should be in format `VertexType.VectorName`, e.g., `{Account.eb1, Phone.eb1}`
+
+| queryVector
+| The query (input) vector from which similarity is measured.
+
+| k
+| The number of vectors to return. E.g., if k = 10, `vectorSearch` finds the 10 vectors closest to `queryVector`.
+
+| optionalParam
+a| A map of optional params:
+
+* vertex candidate set
+* EF: the exploration factor in HNSW algorithm
+* a global MapAccum storing top-k (vertex, distance score) pairs.
+
+E.g., `{candidate_set: vset1, ef: 20, distance_map: @@distmap}`.
+|===
+
+The meaning of the optional parameters is best explained by example.  See the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
+
+== Other Vector Functions
+
+The Vector Search tutorial has list of link:https://github.com/tigergraph/ecosys/blob/master/demos/guru_scripts/docker/tutorial/4.x/VectorSearch.md#vector-built-in-functions[built-in vector functions].
+
+== Printing Vectors
+
+Note that the `vectorSearch` function returns a set of vertices.
+That is, even if the search criteria is vector-based, the function returns the set of vertices associated with the chosen set of vectors.
+This is logical since the vertices possess the IDs of the vectors.
+
+If a `PRINT` statement is printing a set of vertices, including the `WITH VECTOR` causes GSQL to also print the vector values.
+Due to the large size of vectors, this option is usually used when writing the output directly to a file or object store.
+
+Here is a simple example of a query with a `WITH VECTOR` clause
+
+[source,gsql]
+----
+CREATE OR REPLACE QUERY q1 (LIST<float> query_vector) SYNTAX v3 {
+  MapAccum<Vertex, Float> @@distances;
+
+  // Find top-5 similar vectors from Account's vector attribute emb1
+  // Store the distance in @@distance
+  v = vectorSearch({Account.emb1}, query_vector, 5, { distance_map: @@distances});
+
+  print v WITH VECTOR; //show the embeddings
+  print @@distances; //show the distance map
+}
+----
+
+For more examples, please see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
+
+
+
+

@@ -136,7 +136,7 @@ The default value for this parameter is `+"%Y-%m-%d %H:%M:%S"+`
 
 [source,text]
 ----
-datetime_format(to_datetime("2020-01-02 05:30:12"), "hi, it's %Y-%m-%d")
+(datetime_format("2020-01-02 05:30:12"), "hi, it's %Y-%m-%d")
     -> "hi, it's 2020-01-02"
 ----
 

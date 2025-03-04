@@ -773,7 +773,7 @@ Returns a bitwise accumulator whose every bit is the `AND` result between the tw
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
 
-|`& ( accum )`
+|`& ( arg_accum )`
 |
 |
 |Compares the bitwise accumulator with the given accumulator `arg_accum` and returns a new bitwise accumulator whose every bit is the `AND` result of the corresponding bits in the original accumulator and `arg_accum`, without modifying the original accumulator.

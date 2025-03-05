@@ -18,11 +18,17 @@ For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/b
 
 == Vector data and search specifications
 
-[cols="2,3"]
+[%header, cols="2,3"]
 |===
+
+| Characteristic
+| Description
 
 | Element data type
 | FLOAT (32-bit floating point)
+
+| Max. dimensions (vector length)
+| 4096
 
 | Similarity metrics
 | cosine, L2 (Euclidean) IP (inner product)

@@ -1001,6 +1001,27 @@ The behavior is identical.
 
 The two MapAccums must have identical data types.
 
+The `=` operator in MapAccum is used to *overwrite* the value of an existing key in the collection. 
+When you use the `=` operator, the value for the specified key is replaced with the new value, discarding any previous accumulated values for that key.
+
+* The `=` operator is particularly useful when you need to ensure that only the latest value for a key is stored, regardless of the previous values.
+* It is important to note that using the `=` operator does not accumulate the values. Instead, it completely overwrites the existing value for the key.
+
+For example, consider the following case where the `=` operator is used:
+
+[source,gsql]
+----
+@@int_map_accum = ("baz" -> 1);  
+----
+
+In this case, even if the `baz` key existed previously in the MapAccum, its value is now set to `1`, and any previous value (e.g., `3`) is replaced.
+
+[NOTE]
+====
+* The `=` operator replaces the current value for a key with the new value, overriding any previous value.
+* Unlike the `+=` operator, which accumulates values, the `=` operator discards the previous value and sets the key to the new value.
+====
+
 MapAccum also supports the following class functions.
 
 [WARNING]

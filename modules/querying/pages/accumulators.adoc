@@ -1001,11 +1001,11 @@ The behavior is identical.
 
 The two MapAccums must have identical data types.
 
-The `=` operator in MapAccum is used to *overwrite* the value of an existing key in the collection. 
-When you use the `=` operator, the value for the specified key is replaced with the new value, discarding any previous accumulated values for that key.
+The `=` operator in MapAccum is used to *overwrite* the entire MapAccum, not just the value of a specific key.
+When you use the `=` operator, the entire MapAccum is cleared, and all existing key-value pairs are erased. The MapAccum is then restarted with the key-value pair provided on the right side of the = operator.
 
-* The `=` operator is particularly useful when you need to ensure that only the latest value for a key is stored, regardless of the previous values.
-* It is important to note that using the `=` operator does not accumulate the values. Instead, it completely overwrites the existing value for the key.
+* The `=` operator completely replaces the current MapAccum, erasing all the existing key-value pairs.
+* This operator is useful when you want to reset the MapAccum to only contain the new key-value pair and remove any prior data.
 
 For example, consider the following case where the `=` operator is used:
 
@@ -1014,12 +1014,12 @@ For example, consider the following case where the `=` operator is used:
 @@int_map_accum = ("baz" -> 1);  
 ----
 
-In this case, even if the `baz` key existed previously in the MapAccum, its value is now set to `1`, and any previous value (e.g., `3`) is replaced.
+In this case, the entire MapAccum is cleared, and only the `"baz" -> 1` key-value pair remains. Any previous data, such as other keys like `"foo"` or `"bar"`, will be erased.
 
 [NOTE]
 ====
-* The `=` operator replaces the current value for a key with the new value, overriding any previous value.
-* Unlike the `+=` operator, which accumulates values, the `=` operator discards the previous value and sets the key to the new value.
+* The = operator completely erases all existing key-value pairs in the MapAccum.
+* Unlike the `+=` operator, which accumulates values, the `=` operator resets the MapAccum with the new key-value pair, discarding all prior data.
 ====
 
 MapAccum also supports the following class functions.

@@ -1168,6 +1168,27 @@ The behavior is identical.
 
 The two MapAccums must have identical data types.
 
+The `=` operator in MapAccum is used to *overwrite* the entire MapAccum, not just the value of a specific key.
+When you use the `=` operator, the entire MapAccum is cleared, and all existing key-value pairs are erased. The MapAccum is then restarted with the key-value pair provided on the right side of the `=` operator.
+
+* The `=` operator completely replaces the current MapAccum, erasing all the existing key-value pairs.
+* This operator is useful when you want to reset the MapAccum to only contain the new key-value pair and remove any prior data.
+
+For example, consider the following case where the `=` operator is used:
+
+[source,gsql]
+----
+@@int_map_accum = ("baz" -> 1);  
+----
+
+In this case, the entire MapAccum is cleared, and only the `"baz" -> 1` key-value pair remains. Any previous data, such as other keys like `"foo"` or `"bar"`, will be erased.
+
+[NOTE]
+====
+* The = operator completely erases all existing key-value pairs in the MapAccum.
+* Unlike the `+=` operator, which accumulates values, the `=` operator resets the MapAccum with the new key-value pair, discarding all prior data.
+====
+
 MapAccum also supports the following class functions.
 
 [WARNING]

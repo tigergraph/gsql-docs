@@ -208,7 +208,7 @@ Strings are compared based on standard lexicographical ordering: +
 (space) < (digit) < (uppercase_letter) < (lowercase_letter).
 
 === Comparator Support
-Bitwise accumulators support the standard comparisonOperator := "<" | "< =" | ">" | ">=" | "==" | "!=".
+Bitwise accumulators support the standard xref:querying:operators-and-expressions.adoc#_comparison_operators_and_conditions[comparison operators] := "<" | "< =" | ">" | ">=" | "==" | "!=".
 
 === Example
 

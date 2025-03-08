@@ -2,10 +2,10 @@ name: gsql-ref
 title: GSQL Language Reference
 version: "4.2"
 display_version: "4.2 Pre"
+latest: true
 start_page: intro:index.adoc
 
 nav:
-- modules/intro/nav.adoc
 - modules/tutorials/nav.adoc
 - modules/basics/nav.adoc
 - modules/ddl-and-loading/nav.adoc

@@ -207,6 +207,12 @@ condition := expr
 Strings are compared based on standard lexicographical ordering: +
 (space) < (digit) < (uppercase_letter) < (lowercase_letter).
 
+=== Bitwise Operations accum operations
+When comparator operators are used with bitwise accumulators, the accumulator values are interpreted as binary numbers.
+
+00010000   // interpreted as a binary number this is 16.
+
+IF (@@bitwise8 > 32)   // this is false, because @@bitwise8 is interpreted as 16.
 
 === BETWEEN ... AND ...
 

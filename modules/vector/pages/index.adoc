@@ -45,10 +45,16 @@ For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/b
 
 To make use of TigerGraph's vector capabilities:
 
-. Add vectors to the graph schema.
-. Load vector data
+. xref:#create_vector_schema[Add vectors to the graph schema].
+. xref:#loading_vectors[Load vector data].
+. xref:#vectorSearch[Search for similar vertices].
+. xref:#print_vectors[Output selected vectors].
+. You may also xref:#update_vectors[add or update vector data].
+
+There are several xref:#other_vector_functions[other functions] available for working with vector data.
 
 
+[#create_vector_schema]
 == Creating a Vector Schema
 
 A vector attribute is always added to an existing vertex type, using the `ALTER VERTEX` statement with a `SCHEMA_CHANGE` job.
@@ -59,13 +65,42 @@ The `ADD VECTOR ATTRIBUTE` clause adds a vector, and `DROP VECTOR ATTRIBUTE` rem
 ----
 ALTER VERTEX vertex_name ADD VECTOR ATTRIBUTE vec_name(vertex_params);
 
-where vertex_params = DIMENSION=dim, METRIC=metr [, IndexType=i_type]
+where vertex_params =
+    DIMENSION=dim,
+    METRIC=metr
+    [, INDEXTYPE=i_type]
+    [, DATATYPE=d_type]
 
 ALTER VERTEX vertex_name DROP VECTOR ATTRIBUTE vec_name;
 ----
 
-The `metr` metric can be `"COSINE"`, `"L2"`, or `"IP"`.
-Currently, the only valid value for `i_type` is `"HNSW"`
+[%header, cols="1,2,2"]
+|===
+
+| Vector parameter | Decription | Values
+
+| DIMENSION
+| dimensions (length) of vector
+| `INT` from 1 to 4096
+
+| METRIC
+| metric used for measuring similarity.
+a| `STRING`:  `"COSINE"`,
+
+`"L2"` (Manhattan),
+
+`"IP"` (inner product)
+
+| INDEXTYPE
+| Similarity indexing scheme
+| `STRING`: `"HNSW"` (default)
+
+| DATATYPE
+| element data type
+| `STRING`: `"FLOAT"` (default)
+
+|===
+
 
 Example:
 [source,gsql]
@@ -76,9 +111,11 @@ CREATE GLOBAL SCHEMA_CHANGE JOB add_emb2 {
 RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
 ----
 
+
+[#loading_vectors]
 == Loading Vectors
 
-Vectors are loaded using GSQL xref:ddl-and-loading:creating-a-loading-job.adoc[loading jobs].
+Vectors can be loaded in bulk using GSQL xref:ddl-and-loading:creating-a-loading-job.adoc[loading jobs].
 The can either be loaded to existing vertices or included when new vertices are being created.
 
 The vector data is presumed to be in some format such as CSV where one separator `field_sep` is used between fields like the vector ID and the vector itself. Another separator `elem_sep` separates the vector's elements from one another.
@@ -109,13 +146,21 @@ CREATE LOADING JOB load_s3_file  {
 The vector itself is subdivided into elements, with `","` as the element separator.
 Note the use of the split() to parse the vector.
 
-TigerGraph automatically builds an (HNSW) similarity index for the vectors as they are loaded, using the similarity metric that was specified when the vector schema was defined.
-The vectors can be queried before the index is complete, but the search performance will be slower.
 
+== Search Indexing
+
+TigerGraph automatically builds an (HNSW) similarity index for the vectors as they are loaded, using the similarity metric that was specified when the vector schema was defined.
+The search index is used when the `vectorSearch` function is invoked.
+
+The index is automatically updated in respond to changes in the vector database.
+Because similar calculations take some time, the index can lag behind the data updates.
+
+
+[#vectorSearch]
 == vectorSearch Function
 
 Once vectors are inserted, the database can be searched for vertices or vectors.
-`vectorSearch` is a built-in function for vector similarity search.
+`vectorSearch` is a built-in function for vector (approximate) similarity search.
 
 [source,GSQL]
 .vectorSearch function syntax
@@ -124,7 +169,7 @@ result = vectorSearch(vectorAttributes, queryVector, k, optionalParam)
 ----
 where `result` is a vertex set variable, storing the top-k most similar vertices.
 
-[cols="1,10"]
+[%header, cols="1,10"]
 |===
 
 | Parameter | Description
@@ -150,17 +195,13 @@ E.g., `{candidate_set: vset1, ef: 20, distance_map: @@distmap}`.
 
 The meaning of the optional parameters is best explained by example.  See the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 
-== Other Vector Functions
 
-The Vector Search tutorial has a list of link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md#vector-built-in-functions[built-in vector functions].
-
+[#print_vectors]
 == Printing Vectors
 
-Note that the `vectorSearch` function returns a set of vertices.
-That is, even if the search criteria is vector-based, the function returns the set of vertices associated with the chosen set of vectors.
-This is logical since the vertices possess the IDs of the vectors.
+Note that the `vectorSearch` function returns the set of vertices that are associated with the selected vectors, rather than the vectors themselves.
 
-If a `PRINT` statement is printing a set of vertices, including the `WITH VECTOR` causes GSQL to also print the vector values.
+To output the vector values, `PRINT` the vertices and include the `WITH VECTOR` clause.
 Due to the large size of vectors, this option is usually used when writing the output directly to a file or object store.
 
 Here is a simple example of a query with a `WITH VECTOR` clause
@@ -182,5 +223,53 @@ CREATE OR REPLACE QUERY q1 (LIST<float> query_vector) SYNTAX v3 {
 For more examples, please see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 
 
+[#update_vectors]
+== Add and Update Vectors
+
+=== Upsert API
+
+The existing xref:{page-component-version}@tigergraph-server:API:upsert-rest.adoc[REST API for updating data] can be used for vectors
+The vector attribute is treated like standard vector attributes.
+The upsert data for a vertex can include zero or more standard attributes and zero or more standard vector attributes, in the same JSON structure.
+
+For example:
+
+[console]
+----
+curl -X POST "http://localhost:14240/restpp/graph/financialGraph" -d '
+{
+  "vertices": {
+    "Account": {
+      "9350352": {
+        "name": {
+          "value": "Paul Gray"
+        },
+        "emb1": {
+          "value": [-0.017733968794345856, -0.01019224338233471, -0.016571875661611557]
+} } } } }
+----
+
+=== Assignment statement in GSQL
+
+A vertex attribute can be updated like other attributes in the ACCUM or POST-ACCUM clause of a GSQL query.
+
+This example assigns new vector values in the last clause:
+
+[source,gsql]
+----
+CREATE OR REPLACE QUERY similarToSame (LIST<float> query_vector) SYNTAX v3 {
+
+  // Find top-5 similar vectors from Account's vector attribute emb1
+  // Then update those vectors to be exactly the same as the query vector
+  sim = vectorSearch({Account.emb1}, query_vector, 5);
+
+  same = SELECT s FROM sim:s
+      POST-ACCUM s.emb1 = query_vector;
+}
+----
 
 
+[#other_vector_functions]
+== Other Vector Functions
+
+The Vector Search tutorial has a list of link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md#vector-built-in-functions[built-in vector functions].

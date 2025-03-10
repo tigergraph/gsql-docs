@@ -62,16 +62,14 @@ a| In schema change job:
 
 | xref:#loading_vectors[Load vectors]
 a| Clause in loading job:
-
-`LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
-
-VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;`
+```
+LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
+VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
+```
 
 | xref:#vectorSearch[Search for similar vertices]
-a| Function call in ACCUM clause:
-
-`result = vectorSearch(vectorAttributes, queryVector, k, optionalParam)`
-
+a| Function call in ACCUM clause returns a vertex set:
+`vectorSearch(vectorAttributes, queryVector, k, optionalParam)`
 
 | xref:#print_vectors[Output vectors]
 a| In GSQL query: `PRINT v WITH VECTOR;`

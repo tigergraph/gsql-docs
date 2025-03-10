@@ -16,7 +16,7 @@ This document is intended to be a quick reference to the  available functionalit
 For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 ====
 
-== Vector data and search specifications
+== Vector Data and Search Specifications
 
 [%header, cols="2,3"]
 |===
@@ -43,13 +43,45 @@ For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/b
 | Load, Read, Exact Similarity Search, Approximate Similarity Search, Top-K Search, Hybrid Graph+Vector Search
 |===
 
-To make use of TigerGraph's vector capabilities:
 
-. xref:#create_vector_schema[Add vectors to the graph schema].
-. xref:#loading_vectors[Load vector data].
-. xref:#vectorSearch[Search for similar vertices].
-. xref:#print_vectors[Output selected vectors].
-. You may also xref:#update_vectors[add or update vector data].
+== Vector Operations Cheatsheet
+
+For more details, click on the task links.
+
+[%header, cols="1,3"]
+|===
+
+| Task
+| Command Cheatsheet
+
+| xref:#create_vector_schema[Add vectors to schema]
+a| In schema change job:
+
+`ALTER VERTEX vertex_name ADD VECTOR ATTRIBUTE vec_name(vertex_params);`
+
+
+| xref:#loading_vectors[Load vectors]
+a| Clause in loading job:
+
+`LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
+
+VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;`
+
+| xref:#vectorSearch[Search for similar vertices]
+a| Function call in ACCUM clause:
+
+`result = vectorSearch(vectorAttributes, queryVector, k, optionalParam)`
+
+
+| xref:#print_vectors[Output vectors]
+a| In GSQL query: `PRINT v WITH VECTOR;`
+
+| xref:#update_vectors[Update vectors]
+a| REST: Upsert API
+
+GSQL: assignment in ACCUM clause
+
+|===
 
 There are several xref:#other_vector_functions[other functions] available for working with vector data.
 
@@ -215,8 +247,8 @@ CREATE OR REPLACE QUERY q1 (LIST<float> query_vector) SYNTAX v3 {
   // Store the distance in @@distance
   v = vectorSearch({Account.emb1}, query_vector, 5, { distance_map: @@distances});
 
-  print v WITH VECTOR; //show the embeddings
-  print @@distances; //show the distance map
+  PRINT v WITH VECTOR; //show the embeddings
+  PRINT @@distances; //show the distance map
 }
 ----
 
@@ -249,7 +281,7 @@ curl -X POST "http://localhost:14240/restpp/graph/financialGraph" -d '
 } } } } }
 ----
 
-=== Assignment statement in GSQL
+=== Assignment in GSQL
 
 A vertex attribute can be updated like other attributes in the ACCUM or POST-ACCUM clause of a GSQL query.
 

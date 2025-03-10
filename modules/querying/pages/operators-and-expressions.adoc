@@ -218,12 +218,9 @@ WHERE (@@BitwiseAccum1 > 32) AND (@@BitwiseAccum2 < 1024)
 
 The above condition filters results where @@BitwiseAccum1 is greater than 32 and @@BitwiseAccum2 is less than 1024.
 
-**Implementation Details**
+[NOTE]
 
-**Default-Length Bitwise Accumulators:** Automatically converted to integers for comparison.
-
-**Extended-Length Bitwise Accumulators (greater than 64 bits)**: Comparators are overridden, which may result in slower performance compared to default-length accumulators.
-
+Extended-Length bitwise accumulators (greater than 64 bits) may perform comparisons slower than default length accumulators
 
 === BETWEEN ... AND ...
 

@@ -107,7 +107,7 @@ ALTER VERTEX vertex_name DROP VECTOR ATTRIBUTE vec_name;
 [%header, cols="1,2,2"]
 |===
 
-| Vector parameter | Decription | Values
+| Vector parameter* | Decription | Values
 
 | DIMENSION
 | dimensions (length) of vector
@@ -131,6 +131,7 @@ a| `STRING`:  `"COSINE"`,
 
 |===
 
+NOTE: Vector parameter names are case-insensitive.
 
 Example:
 [source,gsql]

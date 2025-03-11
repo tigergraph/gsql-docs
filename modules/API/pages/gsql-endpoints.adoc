@@ -3076,6 +3076,152 @@ Sample Response::
 
 '''
 
+## Query Parameter Types ##
+
+This section provides an overview of different parameter types used in GSQL queries, including their usage, sample queries, request formats, and responses.
+
+=== Primitive type Parameter
+
+
+==== Example
+
+[,tabs]
+====
+
+Sample Query::
++
+--
+[source,bash]
+----
+CREATE QUERY q1(int p1){print p1;}
+----
+--
+Sample Request::
++
+--
+[source,bash]
+----
+curl -s -u tigergraph:tigergraph -X POST "localhost:8123/gsql/v1/queries/q1?graph=ldbc_snb" -H 'Content-Type: application/json' -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{p1:1}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":2,"edition":"enterprise","api":"v2"},"results":[{"p1":1}]}}
+----
+--
+====
+
+'''
+
+=== Vertex Type Parameter
+
+==== Example
+
+[,tabs]
+====
+
+Sample Query::
++
+--
+[source,bash]
+----
+CREATE QUERY q2(vertex p2){print p2;}
+----
+--
+Sample Request::
++
+--
+[source,bash]
+----
+curl -s -u tigergraph:tigergraph -X POST "localhost:8123/gsql/v1/queries/q2?graph=ldbc_snb" -H 'Content-Type: application/json' -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"p2":"30786325584978","p2.type": "Person"}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":2,"edition":"enterprise","api":"v2"},"results":[{"p2":"30786325584978"}]}}
+----
+--
+====
+
+'''
+
+=== Vertex with Specific Type
+
+==== Example
+
+[,tabs]
+====
+
+Sample Query::
++
+--
+[source,bash]
+----
+CREATE QUERY q3(vertex<Person> p3){print p3;}
+----
+--
+Sample Request::
++
+--
+[source,bash]
+----
+curl -s -u tigergraph:tigergraph -X POST "localhost:8123/gsql/v1/queries/q3?graph=ldbc_snb" -H 'Content-Type: application/json' -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"p3":"30786325584978"}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":2,"edition":"enterprise","api":"v2"},"results":[{"p3":"30786325584978"}]}}
+----
+--
+====
+
+'''
+
+=== Set of Vertices
+
+==== Example
+
+[,tabs]
+====
+
+Sample Query::
++
+--
+[source,bash]
+----
+CREATE QUERY q4(set<vertex> p4){print p4;}
+----
+--
+Sample Request::
++
+--
+[source,bash]
+----
+curl -s -u tigergraph:tigergraph -X POST "localhost:8123/gsql/v1/queries/q4?graph=ldbc_snb" -H 'Content-Type: application/json' -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"p4":[["30786325584978", "Person"]]}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":2,"edition":"enterprise","api":"v2"},"results":[{"p4":["30786325584978"]}]}}
+----
+--
+====
+
+'''
+
+
 === drop one query
 
 `DELETE /gsql/v1/queries/{queryName}`

@@ -158,6 +158,8 @@ See below for restrictions before version *4.1.2*.
 
 |lTrim() |String Returns the original string with leading whitespace removed.
 
+|labels() |List Returns a list containing the string representations for all the labels of a node.
+
 |max() |Aggregating Returns the maximum value in a set of values.
 
 |min() |Aggregating Returns the minimum value in a set of values.
@@ -204,13 +206,15 @@ See below for restrictions before version *4.1.2*.
 
 |timestamp() |Scalar Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
 
+|trim() |String Returns the original string with leading and trailing whitespace removed.
+
+|type() |Scalar Returns the string representation of the relationship type.
+
 |toLower() |String Returns the original string in lowercase.
 
 |toString() |String Converts an integer, float or boolean value to a string.
 
 |toUpper() |String Returns the original string in uppercase.
-
-|trim() |String Returns the original string with leading and trailing whitespace removed.
 
 |toBoolean() |Scalar Converts a string value to a boolean value.
 
@@ -265,8 +269,6 @@ N/A
 
 |keys() |List Returns a list containing the string representations for all the property names of a node, relationship, or map.
 
-|labels() |List Returns a list containing the string representations for all the labels of a node.
-
 |length() |Scalar Returns the length of a path.
 
 |nodes() |List Returns a list containing all the nodes in a path.
@@ -287,8 +289,6 @@ pattern expression)
 |size() |Scalar Returns the size of a string. (When applied to string)
 
 |startNode() |Scalar Returns the start node of a relationship.
-
-|type() |Scalar Returns the string representation of the relationship type.
 
 |===
 

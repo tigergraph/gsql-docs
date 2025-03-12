@@ -3101,7 +3101,8 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -s -u tigergraph:tigergraph -X POST "localhost:14240/gsql/v1/queries/q1?graph=ldbc_snb" -H 'Content-Type: application/json' -d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{p1:1}}'
+curl -H 'Content-Type: application/json' -d '{"parameters":{p1:1}}' -X POST "localhost:14240/gsql/v1/queries/q1?graph=ldbc_snb" 
+
 ----
 --
 Sample Response::

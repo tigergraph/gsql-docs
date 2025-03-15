@@ -49,7 +49,9 @@ In classic (Syntax v1) GSQL, the FROM clause describes one step or hop pattern.
 .FROM clause
 [source,ebnf]
 ----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
+fromClauseV1 := FROM step
+fromClauseV2 := FROM stepV2 | pathPattern ["," pathPattern]*)
+fromClause := fromClauseV1 | fromClauseV2
 ----
 
 A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.

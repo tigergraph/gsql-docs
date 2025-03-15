@@ -895,14 +895,14 @@ To run a query in Detached Mode from the command line, use the``-async``option f
 GSQL > RUN QUERY -async <queryName>
 ----
 
-You will receive a JSON response immediately containing a query ID (`request_id`):
+You will receive a JSON response immediately containing a query ID (`requestid`):
 
 [source.wrap,json]
 ----
 {
   "error": false,
   "message": "The query is successfully submitted. Please check query status using the request id.",
-  "request_id": "<RequestID>"
+  "requestid": "<RequestID>"
 }
 ----
 

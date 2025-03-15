@@ -590,9 +590,9 @@ The `DROP GRAPH` command deletes the logical definition of the named graph. It w
 === Required privilege
 `Drop_ALL`
 
-The `DROP ALL` command clears the graph store (i.e. deletes all data) and removes all definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.
+The `DROP ALL` command clears the entire graph store (i.e. deletes all data) and removes all data-related definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.  It will also erase graph-specific roles.
 
-Unlike xref:{page-component-version}@tigergraph-server:getting-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information.
+Unlike xref:{page-component-version}@tigergraph-server:getting-started:database-definition.adoc#_reset_all[the `gsql --reset` command], `DROP ALL` does not erase user and role information nor system settings.
 
 [CAUTION]
 ====

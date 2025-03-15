@@ -91,6 +91,12 @@ There are two ways of specifying the primary ID/key:
 . `PRIMARY KEY` syntax.
 This syntax is modeled after SQL.
 
+[IMPORTANT]
+====
+When loading or inserting vertices, take care not to accidentally leave the primary ID field empty.
+An empty string in the primary ID field is accepted as a valid input.
+====
+
 
 ==== `PRIMARY_ID`  and `WITH primary_id_as_attribute`
 

@@ -64,6 +64,12 @@ If the vertex data is loaded later, it will be automatically merged with the aut
 The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST` option to `true`.
 ====
 
+[IMPORTANT]
+====
+Take care that your data sources do not have unintentional empty fields.
+An empty string in the primary ID field is accepted as a valid input.
+====
+
 === Examples
 
 Suppose we have the following vertex and edge types:

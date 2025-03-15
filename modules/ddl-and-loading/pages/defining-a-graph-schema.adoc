@@ -87,6 +87,12 @@ If you have a single attribute which serves as your primary key, use the `PRIMAR
 This gives you the flexibility of option 2 with the GraphStudio compatibility of option 1.
 ====
 
+[IMPORTANT]
+====
+When loading or inserting vertices, take care not to accidentally leave the primary ID field empty.
+An empty string in the primary ID field is accepted as a valid input.
+====
+
 Regardless of which option is selected, GSQL automatically creates a hash index of the key for fast O(1) searches.
 
 The syntax for the three options are summarized below.

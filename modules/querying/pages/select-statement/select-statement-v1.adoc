@@ -51,7 +51,9 @@ NOTE: As of 3.9.3, GSQL supports openCypher patterns as an alternative to writin
 .FROM clause
 [source,ebnf]
 ----
-fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
+fromClauseV1 := FROM step
+fromClauseV2 := FROM stepV2 | pathPattern ["," pathPattern]*)
+fromClause := fromClauseV1 | fromClauseV2
 ----
 
 A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices.

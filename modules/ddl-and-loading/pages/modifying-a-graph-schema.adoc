@@ -547,6 +547,7 @@ DROP JOB alter_friendship_make_library
 
 == `DROP ALL`
 
-The DROP ALL command clears all graph data, all graph schemas, all loading jobs, and all queries. It should only be used when the intent is to erase an entire database design and to start over.
+The `DROP ALL` command clears the entire graph store (i.e. deletes all data) and removes all data-related definitions from the catalog: vertex types, edge types, graph types, jobs, and queries.  It will also erase graph-specific roles.
 
-This command is only available to superusers and only when they are in global mode.
+See xref:defining-a-graph-schema.adoc#_drop_all[DROP ALL] for more details.
+

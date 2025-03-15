@@ -64,6 +64,13 @@ If the vertex data is loaded later, it will be automatically merged with the aut
 The user can disable this feature and perform regular referential integrity checking by setting the `VERTEX_MUST_EXIST` option to `true`.
 ====
 
+[IMPORTANT]
+====
+When loading or inserting vertices, take care not to accidentally leave the primary ID field empty.
+
+* Prior to version 3.6.3, an empty primary ID field is accepted as valid. From 3.6.3+, it will be rejected.
+====
+
 === Examples
 
 Suppose we have the following vertex and edge types:

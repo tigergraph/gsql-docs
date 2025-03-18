@@ -29,7 +29,7 @@ Some punctuation may be needed to separate the statements within a block.
 Single-line comments begin with either `#` or `//`.
 A comment may be on the same line as interpreted code.
 Text to the left of the comment marker is interpreted, and text to the right of the marker is ignored.
-Multi-line comment blocks begin with `/*` and end with `*/`.
+Multi-line comment blocks begin with `/\*` and end with `*/`.
 
 == Running GSQL
 

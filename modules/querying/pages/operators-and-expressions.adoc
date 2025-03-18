@@ -190,7 +190,7 @@ A condition is an expression that evaluates to a boolean value of either true or
 
 [source,ebnf]
 ----
-comparisonOperator := "<" | "<=" | ">" | ">=" | "==" | "!="
+comparisonOperator := "<" | "<=" | ">" | ">=" | "==" | "!=" | "=" | "<>"
 
 condition := expr
            | expr comparisonOperator expr
@@ -203,6 +203,8 @@ condition := expr
            | (TRUE | FALSE)
            | expr [NOT] LIKE expr [ESCAPE escape_char]
 ----
+
+In GSQL V3, we now support the use of the equality operator `=` and the inequality operator `<>` in addition to the existing `==` and `!=` operators.
 
 Strings are compared based on standard lexicographical ordering: +
 (space) < (digit) < (uppercase_letter) < (lowercase_letter).

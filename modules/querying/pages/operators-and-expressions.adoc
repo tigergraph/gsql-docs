@@ -224,7 +224,7 @@ include::appendix:example$minimal_net/operators_expressions_between_and.gsql[]
 
 === IS NULL, IS NOT NULL
 
-`IS NULL` and `IS NOT NULL` can be used for checking whether an optional parameter is given any value.
+`IS NULL` and `IS NOT NULL` can be used for checking whether an optional expression is given any value.
 
 
 ==== Example

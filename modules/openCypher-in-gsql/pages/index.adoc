@@ -128,6 +128,8 @@ See below for restrictions before version *4.1.2*.
 
 |ceil() |Numeric Returns the smallest floating point number that is greater than or equal to a number and equal to a mathematical integer.
 
+|coalesce() |Scalar Returns the first non-null value in a list of expressions.
+
 |cos() |Trigonometric Returns the cosine of a number.
 
 |cot() |Trigonometric Returns the cotangent of a number.
@@ -259,7 +261,6 @@ N/A
 === Functions
 [cols="1,1"]
 |===
-|coalesce() |Scalar Returns the first non-null value in a list of expressions.
 
 |collect() |Aggregating Returns a list containing the values returned by an expression.
 

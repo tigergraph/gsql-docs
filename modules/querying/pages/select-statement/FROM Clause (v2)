@@ -1,4 +1,6 @@
-= FROM Clause (v2)
+= FROM Clause (Syntax V2)
+:navtitle: From Clause (V2)
+
 The FROM clause in GSQL Syntax V2 is used to define path patterns for traversing the graph structure. 
 A path pattern specifies how vertices and edges are connected and provides the basis for the query to traverse the graph.
 In V2, the FROM clause supports both traditional vertex-edge patterns and more advanced multi-hop patterns.

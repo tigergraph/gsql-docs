@@ -1506,7 +1506,7 @@ In this case, each field of the multiple-field value has its own accumulation fu
 
 ==== Known Issue
 
-* Currently, operations between different GroupByAccums with the same data types but different field names are not supported. These queries may pass semantic checks but will fail during query compilation with a Type Check Error.
+Starting from version 4.2.0, operations between different GroupByAccums with the same data types but different field names will result in a Type Check Error during query compilation. In earlier versions, such queries may pass semantic checks but will fail with a compilation error.
 
 
 In GroupByAccum, the key types can be base type or tuple. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.

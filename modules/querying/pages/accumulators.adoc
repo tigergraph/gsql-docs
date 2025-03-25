@@ -1547,7 +1547,9 @@ include::appendix:example$social_net/accum_groupbyaccum_results.json[]
 ----
 --
 ====
+==== Known Issues
 
+Currently, operations between different GroupByAccums with the same data types but different field names are not supported. These queries may pass semantic checks but will fail during query compilation
 
 == Nested Accumulators
 

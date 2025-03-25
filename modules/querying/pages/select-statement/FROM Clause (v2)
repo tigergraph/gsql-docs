@@ -1,0 +1,374 @@
+= FROM Clause (Syntax V2)
+:navtitle: From Clause (V2)
+
+The FROM clause in GSQL Syntax V2 is used to define path patterns for traversing the graph structure. 
+A path pattern specifies how vertices and edges are connected and provides the basis for the query to traverse the graph.
+In V2, the FROM clause supports both traditional vertex-edge patterns and more advanced multi-hop patterns.
+
+This page will focus on V2 syntax, which is an evolution of the V1 syntax, with improved flexibility and support for more complex graph traversals.
+While GSQL still supports the V1 syntax, we will describe the V2 style here, including examples of how to use path patterns and multiple path patterns for more complex graph queries.
+
+
+[#_from_clause]
+== `FROM`
+
+.`FROM` clause
+[source,ebnf]
+----
+fromClauseV1 := FROM step
+fromClauseV2 := FROM stepV2 | pathPattern ["," pathPattern]*)
+fromClause := fromClauseV1 | fromClauseV2
+----
+
+A hop or step consists of going from a starting set of vertices, crossing over a set of their edges, to an ending set of vertices. 
+We typically use the names Source and Target for the starting and ending vertex sets: `Source -(Edges)-> Target`
+
+[#_path_pattern]
+== Path pattern
+
+A path pattern specifies sets of vertex types and how they are connected by edge types.
+
+A path pattern starts with a source vertex set, traverses through specified path edge patterns to another step vertex set.
+This is called a _hop_.
+From the other step vertex set, it can perform multiple hops and traverse to other step vertex sets.
+
+Notice that a path pattern can be just a single source vertex set; the subsequent path edge pattern and step vertex sets are optional.
+
+.EBNF for path pattern
+[source,ebnf]
+----
+pathPattern :=  sourceVertexSet ["-" "(" pathEdgePattern ")" "-" stepVertexSet]*
+----
+
+[#_source_vertex_set]
+=== Source vertex set
+The source vertex set is the vertex set from which a path pattern starts.
+A source vertex set can be denoted by one of the following:
+
+* `_` or `ANY`, or omitted.
+If the source vertex type is omitted, you must give the source vertex set an <<_vertex_and_edge_aliases,alias>>.
+* Vertex type
+* A vertex set variable
+
+Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
+Although declaring an alias is optional, it is strongly recommended that you declare them.
+In the later clauses of the `SELECT` block , you can only refer to vertex sets in the `FROM` clause by their aliases.
+
+.EBNF for source vertex set
+[,ebnf]
+----
+sourceVertexSet := [sourceVertexTypes] [":" vertexAlias]
+sourceVertexTypes := "_" | ANY | "(" sourceVertexSetType ["|" sourceVertexSetType]* ")"
+sourceVertexSetType := vertexType | vertexSetVariableName
+----
+
+Belows are a few examples of valid source vertex sets in `SELECT` statements:
+
+[tabs]
+====
+Vertex type::
++
+--
+[.wrap,gsql]
+----
+Result = SELECT src
+    FROM Person:src -(<Likes_REVERSE)- (Comment|Post):tgt <1>
+    WHERE src.first_name == "Viktor" AND src.last_name == "Akhiezer"
+    ACCUM CASE
+        WHEN tgt.type == "Comment" THEN
+            src.@comment_cnt += 1
+        WHEN tgt.type == "Post" THEN
+            src.@post_cnt += 1
+        END;
+----
+<1> `Person` is a vertex type.
+`(Comment | POST)` combines two vertex types.
+--
+Any type::
++
+--
+You can use `_` or `ANY` to represent any vertex types.
+You can also choose to omit the step vertex type altogether to represent any vertex type.
+If you choose to omit the type, you must give the step vertex set an alias.
+
+[.wrap,gsql]
+----
+Result = SELECT tgt
+    FROM :s -(<Likes)- Person:tgt
+    WHERE tgt.first_name == "Viktor" AND tgt.last_name == "Akhiezer"
+----
+--
+Vertex set::
++
+--
+A source vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+include::appendix:example$friend_net/select_statement_index_vertex_set.gsql[]
+----
+--
+====
+
+=== Step vertex set
+A vertex set that represents a step in a path pattern.
+Compared with <<_source_vertex_set,source vertex set>>, step vertex sets have more flexibility in how they are denoted.
+A step vertex set can be denoted by one of the following:
+
+* `_` or `ANY`, or omitted.
+If the step vertex type is omitted, you must give the step vertex set an alias.
+* Vertex type
+* A vertex set variable
+* A global accumulator
+
+Optionally, you can give a source vertex set an alias by appending the alias after a colon``:``.
+Although declaring an alias is optional, TigerGraph strongly suggests that you declare them.
+In the later clauses of the `SELECT` block , you can only refer to vertex sets in the `FROM` clause by their aliases.
+
+
+.EBNF for step vertex set
+[.wrap,ebnf]
+----
+stepVertexSet := [stepVertexTypes] [":" vertexAlias]
+stepVertexTypes := atomicVertexType | "(" vertexSetType ["|" vertexSetType]* ")"
+atomicVertexType := "_" | ANY | vertexSetType
+vertexSetType := vertexType | vertexSetVariableName | globalAccumName
+----
+
+Belows are a few examples of valid step vertex sets in `SELECT` statements:
+
+[tabs]
+====
+Vertex type::
++
+--
+[.wrap,gsql]
+----
+Result = SELECT tgt
+    FROM Person:tgt -(<Likes_REVERSE)- (Comment|Post):src <1>
+    WHERE tgt.firstName == "Viktor" AND tgt.lastName == "Akhiezer"
+    ACCUM CASE
+        WHEN src.type == "Comment" THEN
+            tgt.@commentCnt += 1
+        WHEN src.type == "Post" THEN
+            tgt.@postCnt += 1
+        END;
+----
+<1> `Person` is a vertex type.
+`(Comment | POST)` combines two vertex types.
+--
+Any type::
++
+--
+You can use `_` or `ANY` to represent any vertex types.
+You can also choose to omit the step vertex type altogether to represent any vertex type.
+If you choose to omit the type, you must give the step vertex set an alias.
+
+[.wrap,gsql]
+----
+Result = SELECT s
+    FROM Person:s -(Likes>)- :tgt
+    WHERE s.first_name == "Viktor" AND s.last_name == "Akhiezer"
+----
+--
+Vertex set::
++
+--
+A step vertex set can also be represented by a vertex set variable.
+[.wrap,gsql]
+----
+include::appendix:example$friend_net/select_statement_index_step_vertex_set.gsql[]
+----
+--
+Global accumulator::
++
+--
+A step vertex set can be represented by a global accumulator of strings (the strings are vertex types).
+The accumulator must be of type `SetAccum`, `BagAccum` or `ListAccum`.
+
+[.wrap,gsql]
+----
+include::appendix:example$friend_net/select_statement_index_step_vertex_global_accumulator.gsql[]
+----
+--
+====
+
+=== Path edge pattern
+The path edge pattern represents the relationship between a source vertex set to a step vertex set or from a step vertex set to the next step vertex set.
+
+.EBNF for path edge pattern
+----
+pathEdgePattern := atomicEdgePattern
+                 | "(" pathEdgePattern ")"
+                 | pathEdgePattern "." pathEdgePattern
+                 | disjPattern
+                 | starPattern
+
+atomicEdgePattern  := atomicEdgeType
+        	        | atomicEdgeType ">"
+        	        | "<" atomicEdgeType
+
+atomicEdgeType := "_" | ANY | edgeSetType
+
+disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
+
+starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
+
+starBounds := CONST_INT ".." CONST_INT
+            | CONST_INT ".."
+            | ".." CONST_INT
+            | CONST_INT
+----
+
+A path edge pattern can represent one hop or repeated hops.
+A path edge pattern is denoted by `-()-`, where the relationship between vertex sets is specified between the parentheses.
+
+[discrete]
+=== Atomic edge pattern
+
+The most basic form for a path edge pattern is an atomic edge pattern.
+An atomic edge pattern can be one of the following:
+
+* `_` or `ANY`.
+* An edge type.
+* A string parameter.
+The value of the parameter must be an edge type and can be provided at runtime.
+You do not need to specify a direction when using a string parameter to specify the edge type.
+* A global `SetAccum` accumulator of strings.
+Each string is the name of an edge type.
+
+If the edge is directed, an atomic edge pattern has either a left pointer `<` on the left or a right pointer `>` on the right to indicate edge direction.
+If the edge is undirected, the atomic edge pattern does not have a pointer.
+Suppose we have 3 edge types or parameters called A, B, C.
+
+* `A>` is a rightward facing A edge
+* `<B` is a leftward facing B edge
+* C is an undirected C edge.
+If C is actually a directed edge type, then there is no match.
+
+For example:
+
+* `-(STUDY_AT>)-` refers to forward traversal of the directed edge type `STUDY_AT`.
+* `-(<STUDY_AT)-` refers to backward traversal of the directed edge type `STUDY_AT`.
+** This means that the right side of `-(<STUDY_AT)-` is expected to have the same type as the left side of `-(STUDY_AT>)-`.
+* `-(KNOWS)-` refers to forward traversal of the undirected `KNOWS`.
+* `-(_>)-` refers to forward traversal of any directed edge types.
+* `-(_)-` refers to forward traversal of any undirected edge types.
+* `-(<_)-` refers to backward traversal of any directed edge types.
+
+[discrete]
+=== Disjunction pattern
+Pattern disjunction allows a path edge pattern to indicate an `OR` relationship between two or more atomic patterns.
+If an edge matches any of the atomic patterns, the edge matches the path edge pattern.
+
+.EBNF for disjunction pattern
+[,ebnf]
+----
+disjPattern := atomicEdgePattern ("|" atomicEdgePattern)*
+----
+
+For example:
+
+* `-(KNOWS|STUDY_AT>)-` refers to traversing an undirected `KNOWS` edge or a directed `STUDY_AT` edge.
+* `-(KNOWS|_>)-` refers to traversing an undirected `KNOWS` edge or any directed edge from left to right.
+
+
+=== Pattern repetition
+The Kleene star``*`` and `min..max` range specifiers repeat an edge pattern for a specified number of times.
+The range specifiers must be integers and must be constants.
+See xref:tutorials:pattern-matching/repeating-a-pattern.adoc[] for a tutorial on how to use pattern repetition in a path edge pattern.
+
+.EBNF for star pattern
+[,ebnf]
+----
+starPattern := ([atomicEdgePattern] | "(" disjPattern ")") "*" [starBounds]
+
+starBounds := CONST_INT ".." CONST_INT
+            | CONST_INT ".."
+            | ".." CONST_INT
+            | CONST_INT
+----
+
+* Add `*` to the end of a pattern to have the star pattern match all paths where the edge pattern occurs one or more times.
+** For example, `Person:s - (Friendship*) - Person` matches all paths between two `Person` vertices connected by any number of `Friendship` edges.
+** The vertices in the middle do not need to be `Person` vertices.
+For example, a path like `person1 -(Friendship)- dog1 - (Friendship) - person2` matches the star pattern.
+* Add `*` to the end of a pattern, and then a number after the star to have the star pattern match paths where the edge pattern occurs for the specified number of times.
+** For example, `Person:s - (Friendship*2) - Person` matches all paths between two `Person` vertices connected by exactly two `Friendship` edges.
+The vertices in the middle do not need to be `Person` vertices.
+* Add `*` to the end of a pattern, and then a range after the star (`*x..y`) to have the star pattern match all paths where the edge pattern occurs as many times as within the specified range.
+** For example, `Employee:s - (Works_For>*2..4) - Employee` matches all paths between two `Employee` vertices with 2 - 4 right-directed `Works_For` edges.
+The vertices in the middle do not need to be `Person` vertices.
+
+=== Pattern concatenation
+The dot operator``.`` means concatenate the two edge patterns into one.
+The vertex joining the two edges is omitted from the syntax.
+The dot operator is a shorthand, when you don’t care about the type of that intermediate vertex.
+`(A>.<B.C)` means a series of 3 edges, having the specified types and directions.
+
+For example, the following `FROM` clauses produce the same source and target vertex sets.
+While the second `FROM` clause is more concise, it does not give you access to the intermediate vertex and edge sets.
+
+[.wrap,gsql]
+----
+SELECT x
+FROM X:x -(E2>:e2)- Y:y -(<E3:e3)- Z:z -(E4:e4)- U:u; <1>
+
+
+SELECT u
+FROM X:x -(E2>.<E3.E4)- U:u; <2>
+----
+<1> This `FROM` clauses uses a longer pattern, but gives you access to `y`, `e2`, `z` and `e4`.
+<2> This `FROM` clauses is more concise than the first `FROM` clause, but does not give you access to the intermediate vertex and edge sets.
+
+=== Conjunctive Pattern Matching
+
+The optional repeating phrase `["," pathPattern]*` allows you to have multiple path patterns.
+They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
+See xref:tutorials:pattern-matching/adv/conjunctive-pattern-matching.adoc[] for more details.
+
+[source,ebnf]
+----
+fromClause := FROM (step | stepV2 | pathPattern ["," pathPattern]*)
+----
+
+Each step pattern or path pattern forms a match table, one row per matching path in the graph.
+Each vertex alias or edge alias is one column in the table.
+When we have a conjunctive path, each path must share at least one vertex alias with another path.
+This enables the two path sets (and match tables) to be joined.
+Formally, we make the natural join of the two tables.
+
+
+[#_vertex_and_edge_aliases]
+== Vertex and Edge Aliases
+
+Vertex and edge _aliases_ are declared within the `FROM` clause of a `SELECT` block, by using the colon `:`, followed by the alias name.
+Aliases can be accessed anywhere within the same `SELECT` block.
+They are used to reference a single selected vertex or edge of a set.
+It is through the vertex or edge aliases that the attributes of these vertices or edges can be accessed.
+
+For example, the following code snippets show two different `SELECT` statements.
+The first `SELECT` statement starts from a vertex set called `allVertices`, and the vertex alias name `v` can access each individual vertex from `allVertices`.
+The second `SELECT` statement selects a set of edges.It can use the vertex alias `s` to reference the source vertices, or the alias `t` to reference the target vertices.
+
+.Vertex variables
+[source,gsql]
+----
+results = SELECT v FROM all_vertices:v;
+results = SELECT t FROM all_vertices:s -()- :t;
+----
+
+The following example shows an edge-based `SELECT` statement, declaring aliases for all three parts of the edge.
+In the `ACCUM` clause, the `e` and `t` aliases are assigned to local vertex and edge variables.
+
+.Edge variables
+[source,gsql]
+----
+results = SELECT v
+    FROM all_vertices:s -(:e)- :t
+    ACCUM VERTEX v = t, EDGE eg = e;
+----
+
+[WARNING]
+====
+We strongly suggest that an alias should be declared with every vertex and edge in the FROM clause, as there are several functions and features only available to vertex and edge aliases.
+====

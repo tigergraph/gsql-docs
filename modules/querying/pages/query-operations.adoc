@@ -686,9 +686,6 @@ Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUE
 
 |Option|Effect
 
-|`-ASYNC`
-a|Run the install operation in the background and return a requestId to the user. The requestId can be used to xref:{page-component-version}@tigergraph-server:api:built-in-endpoints.adoc#_check_query_installation_status[check the installation status].
-
 |`-COST`
 a|Install and optimize the query using xref:query-optimizer/index.adoc[cost-based optimization].
 The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.

@@ -1504,10 +1504,12 @@ In the EBNF above, the *type* terms form the key set, and the *accumType* terms 
 In this case, each field of the multiple-field value has its own accumulation function. One way to think about GroupByAccum is that each unique key is a group ID.
 
 
-==== Known Issue
-
-Starting from version 4.2.0, operations between different GroupByAccums with the same data types but different field names will result in a Type Check Error during query compilation. In earlier versions, such queries may pass semantic checks but will fail with a compilation error.
-
+[NOTE]
+====
+Operations between different GroupByAccums with the same data types but different field names are not supported.
+They will result in a Type Check Error during `CREATE QUERY`.
+In earlier versions, such queries would fail with a compilation error during query installation.
+====
 
 In GroupByAccum, the key types can be base type or tuple. The accumulators are used for aggregating group values.  Each accumulator type can be any type including HeapAccum. Each base type and each accumulator type must be followed an alias. Below is an example declaration.
 

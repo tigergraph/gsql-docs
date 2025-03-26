@@ -803,8 +803,6 @@ CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name
 A vertex ID would be `"Tom,456"`, consisting of the `name` attribute and the `id` attribute.
 ====
 
-==== Parameter list
-
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Syntax |Example

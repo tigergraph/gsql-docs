@@ -4,11 +4,11 @@ CREATE QUERY print_member_activity() FOR GRAPH Social_Net
     start = {Person.*};
 
     /* --- equivalent statements -----
-    result = SELECT v FROM start:v -(:e)- Post:tgt
+    result = SELECT v FROM (v:start) -[e]- (tgt:Post)
         ACCUM v.@activity_amount +=1
         HAVING true; */
 
-    result = SELECT v FROM start:v -(:e)- Post:tgt
+    result = SELECT v FROM (v:start) -[e]- (tgt:Post)
         ACCUM v.@activity_amount +=1;
 
     PRINT result;

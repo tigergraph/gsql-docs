@@ -5,7 +5,7 @@ CREATE QUERY person_gender(STRING gender) FOR GRAPH Social_Net {
     start = {ANY};
 
     // Select all person vertices and check the gender attribute
-    friends = SELECT v FROM start:v
+    friends = SELECT v FROM (v:start)
         WHERE v.type == "Person"
         POST-ACCUM (v) CASE
             WHEN (v.gender == gender) THEN

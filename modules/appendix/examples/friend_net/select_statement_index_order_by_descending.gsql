@@ -3,7 +3,7 @@ CREATE QUERY top_popular() FOR GRAPH Friend_Net {
 	SumAccum<INT> @num_coworkers;
 	start = {Person.*};
 
-	result = SELECT v FROM start -((Friend|Coworker):e)- Person:v
+	result = SELECT v FROM (start) -[e:Friend|Coworker]- (v:Person)
       ACCUM CASE
           WHEN e.type == "Friend" THEN v.@num_friends += 1
           WHEN e.type == "Coworker" THEN v.@num_coworkers += 1

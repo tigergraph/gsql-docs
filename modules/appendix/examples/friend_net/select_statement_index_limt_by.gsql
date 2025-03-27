@@ -1,7 +1,7 @@
 CREATE QUERY limit_ex_1 (INT k) FOR GRAPH Friend_Net {
     start = {Person.*};
 
-    result1 = SELECT v FROM start:v
+    result1 = SELECT v FROM (v:start)
       ORDER BY v.id
       LIMIT k;
 

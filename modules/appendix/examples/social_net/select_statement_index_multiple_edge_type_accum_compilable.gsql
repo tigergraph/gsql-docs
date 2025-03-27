@@ -2,7 +2,7 @@ CREATE QUERY multiple_edge_type_check_ex_2(VERTEX<Person> m1) FOR GRAPH Social_N
     ListAccum<STRING> @@test_list1;
     all_user = {m1};
     all_user = SELECT s
-        FROM all_user:s - ((Posted|Liked|Friend):e) - (Post|Person):t
+        FROM (all_user:s) -[e:Posted|Liked|Friend]- (t:Post|Person)
         ACCUM CASE
             WHEN e.type == "Liked" THEN    // for Liked edges
                 @@test_list1 += to_string(datetime_to_epoch(e.action_time))

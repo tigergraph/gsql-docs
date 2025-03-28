@@ -652,10 +652,8 @@ include::appendix:example$minimal_net/accum_oraccum_results.json[]
 [#_bitwiseandaccum_bitwiseoraccum]
 === BitwiseAndAccum / BitwiseOrAccum
 
-The BitwiseAndAccum and BitwiseOrAccum types calculate and store the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.
-The default length for both BitwiseAndAccum and BitwiseOrAccum is 64 bit.
-You can specify the length of both types by appending the desired length in angle brackets``<>``.
-
+The BitwiseAndAccum and BitwiseOrAccum types store fixed-length bit sequences and calculate the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.
+The default length for both BitwiseAndAccum and BitwiseOrAccum is 64 bits.
 
 Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
 "Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.
@@ -664,14 +662,18 @@ Computing the Bitwise `AND` of two numbers A and B means computing the bit seque
 
 ==== Declaration
 
-A bitwise accumulator has different declaration syntax depending on its length:
+The default length for a bitwise accumulator is 64 bits.
+You can specify a different length by appending the desired length in angle brackets``<>`` in the declaration statement:
 
-* When a bitwise accumulator length is less than or equal to 64 bit, it's assigned using one integer.
-The integer is converted to a 64-bit sequence of 1s and 0s.
+[,gsql]
+----
+@@BitwiseOrAccum<100> @visited;
+----
+
+* When a bitwise accumulator length is less than or equal to 64, it's stored using one 64-bit integer.
 Overflow on the left is ignored.
-* When a bitwise accumulator length is longer than 64 bit, it's assigned using an array of two integers.
-Each integer is converted to a 64-bit sequence of 1s and 0s.
-The integer in the second position will take up the first 64 bits from the right of the sequence, and the integer on the left will take up the remaining bits.
+* When a bitwise accumulator length is longer than 64, it's stored using an array of multiple integers.
+The rightmost (last) integer in the array is for the 64 least significant bits.
 Any overflowing bits will be ignored.
 
 For example, if you are declaring an 80-bit BitwiseAndAccum:
@@ -683,16 +685,55 @@ For example, if you are declaring an 80-bit BitwiseAndAccum:
 When the two integers are joined together, the 64-bit sequence on the right (456) takes up the 64 bits from the right.
 The 64-bit sequence on the left (123) takes up the remaining 16 bits and the overflow on the left is ignored.
 
-The resulting BitwiseAndAccum prints as below:
+The resulting BitwiseAndAccum is the concatenation of the two bit sequences:
 
-    0000000001111011 (16bits in total) 0000000...000111001000 (64bits in total)
-
+    0000000001111011, followed by 0000000...000111001000
 
 
 ==== Accumulation behavior
 
 For BitwiseAndAccum, `+= arg` updates the accumulator's state to be the Bitwise `AND` of the current state and `arg`.
 BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise `OR`.
+
+==== Bitwise Comparison and Operators
+
+Because bitwise accumulators have values that are akin to binary integers, they support both comparison operators:
+
+`<`, `>`, `>=`, `\<=`, `==`,`!=`
+
+Examples: Assume AccumA and AccumB are 8-bit accumulators with the following values:
+
+[source]
+----
+AccumA = 00010001; // decimal 17
+AccumB = 00010000; // decimal 16
+
+AccumA == 17       // true
+AccumA > AccumB    // true
+AccumA < AccumB    // false
+----
+
+They also support bitwise Boolean logic operators.
+If an operator acts on two accumuators, the accumulators must have the same type and length.
+The operation produces a new accumulator with the same type and length.
+
+.Bitwise logic operators
+[cols="1,2"]
+|===
+|Operator |Description
+
+|`<accum1> & <accum2>`
+|Returns a new bitwise accumulator where each bit is the Boolean `AND` of the corresponding bits in `accum1` and `accum2`.
+
+|`<accum1> \|\| <accum2>`
+|Returns a new bitwise accumulator where each bit is the Boolean `OR` of the corresponding bits in `accum1` and `accum2`.
+
+|`<accum1> ^ <accum2>`
+|Returns a new bitwise accumulator where each bit is the Boolean `XOR` (exclusive OR) of the corresponding bits in `accum1` and `accum2`.
+
+|`~ <accum>`
+|Returns a new bitwise accumulator where each bit is the Boolean `NOT` of the corresponding bit in `accum`.
+|===
 
 [CAUTION]
 ====
@@ -701,9 +742,11 @@ Bitwise Operations and Negative Integers
 Most computer systems represent negative integers using "2's complement" format, where the uppermost bit has special significance. Operations that affect the uppermost bit are crossing the boundary between positive and negative numbers, and vice versa.
 ====
 
+
+
 ==== Functions
-This is a list of methods of BitwiseAndAccum and BitwiseOrAccum.
-If a method returns an `BitwiseAndAccum` or `BitwiseOrAccum`, it returns the same type as the instance that calls the method.
+This is a list of object functions of BitwiseAndAccum and BitwiseOrAccum.
+If a function returns an `BitwiseAndAccum` or `BitwiseOrAccum`, it returns the same type as the instance that calls the object function.
 
 .Bitwise accumulator functions
 |===

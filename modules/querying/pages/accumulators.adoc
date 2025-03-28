@@ -666,7 +666,7 @@ You can specify a different length by appending the desired length in angle brac
 
 [,gsql]
 ----
-@@BitwiseOrAccum<100> @visited;
+BitwiseOrAccum<100> @@visited;
 ----
 
 * When a bitwise accumulator length is less than or equal to 64, it's stored using one 64-bit integer.

@@ -694,7 +694,7 @@ The resulting BitwiseAndAccum is the concatenation of the two bit sequences:
 For BitwiseAndAccum, `+= arg` updates the accumulator's state to be the Bitwise `AND` of the current state and `arg`.
 BitwiseOrAccum behaves the same, with the exception that it computes a Bitwise `OR`.
 
-==== Bitwise Comparison and Operators
+==== Bitwise Comparison and Logic Operators
 
 Because bitwise accumulators have values that are akin to binary integers, they support both comparison operators:
 

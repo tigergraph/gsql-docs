@@ -1,7 +1,7 @@
 CREATE QUERY active_members (INT activity_threshold) FOR GRAPH Social_Net {
     SumAccum<INT> @activity_amount;
     start = {Person.*};
-    result = SELECT v FROM (v:start) -[e:]- (tgt:Post)
+    result = SELECT v FROM (v:start) -[e]- (tgt:Post)
         ACCUM v.@activity_amount +=1
         HAVING v.@activity_amount >= activity_threshold;
     PRINT result;

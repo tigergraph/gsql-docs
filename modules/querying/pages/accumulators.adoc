@@ -652,8 +652,7 @@ include::appendix:example$minimal_net/accum_oraccum_results.json[]
 [#_bitwiseandaccum_bitwiseoraccum]
 === BitwiseAndAccum / BitwiseOrAccum
 
-The BitwiseAndAccum and BitwiseOrAccum types store fixed-length bit sequences and calculate the cumulative result of a series of bitwise boolean operations and store the resulting bit sequences.
-The default length for both BitwiseAndAccum and BitwiseOrAccum is 64 bits.
+The BitwiseAndAccum and BitwiseOrAccum types represent fixed-length bit sequences and calculate the cumulative result of a series of bitwise boolean operations and store the resulting sequences.
 
 Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
 "Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.

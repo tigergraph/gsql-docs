@@ -2764,13 +2764,17 @@ Sample Response::
 ====
 
 '''
-=== get metadata from a Snowflake data source
+=== get schema information from a Snowflake data source
+
 
 `GET /gsql/v1/metadata/data-sources/{dsName}`
 
-This endpoint is used to get metadata from a Snowflake data source.
+This endpoint is used to get schema information from a Snowflake data source.
+`{dsPath}` is the name of a previously created Snowflake data source object.
 
-==== Parameters:
+
+==== Query Parameters:
+
 
 None
 

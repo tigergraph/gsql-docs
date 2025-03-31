@@ -6,7 +6,7 @@ CREATE QUERY v_update_indirect_accum() FOR GRAPH Social_Net {
     persons = {Person.*};
     // To each post, attach a list of persons who liked the post
     liked_posts = SELECT p
-        FROM (src:persons) -[e:Liked]-> (p:Post)
+        FROM (src:persons) -[e:Liked]\-> (p:Post)
         ACCUM
         p.@posters += src;
 

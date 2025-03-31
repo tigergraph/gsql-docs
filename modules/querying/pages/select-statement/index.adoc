@@ -194,7 +194,7 @@ In the following example, the selection conditions are completely specified in t
 .`WHERE` used as a filter
 [source,gsql]
 ----
-result_set1 = SELECT v FROM (v:S) -[e:(E1|E2|E3)]- (t:V1|V2);
+result_set1 = SELECT v FROM (v:S) -[e:E1|E2|E3]- (t:V1|V2);
 result_set2 = SELECT v FROM (v:S) -[e:]- (t)
     WHERE t.type IN ("V1", "V2") AND t IN v.neighbors("E1|E2|E3");
 ----
@@ -437,7 +437,7 @@ For example, consider the following clauses:
 
 [source,gsql]
 ----
-FROM (A:Person) -[Knows.Knows:Knows]- (C:Person)
+FROM (A:Person) -[:Knows*2]- (C:Person)
 WHERE C.email = "Andy@www.com"
 ACCUM C.@pattern_count += 1
 ----
@@ -1006,9 +1006,9 @@ There are three forms:
 .`LIMIT` scenarios
 [source.wrap,gsql]
 ----
-result = SELECT v FROM (S) -[e]- (v) LIMIT k; <1>
-result = SELECT v FROM (S) -[e]- (v) LIMIT j, k; <2>
-result = SELECT v FROM (S) -[e]- (v) LIMIT k OFFSET j; <3>
+result = SELECT v FROM (:S) -[e]- (v) LIMIT k; // <1>
+result = SELECT v FROM (:S) -[e]- (v) LIMIT j, k; // <2>
+result = SELECT v FROM (:S) -[e]- (v) LIMIT k OFFSET j; // <3>
 ----
 <1> Case 1: k = Count
 <2> Case 2: j = Offset from the start of the list, k = Count

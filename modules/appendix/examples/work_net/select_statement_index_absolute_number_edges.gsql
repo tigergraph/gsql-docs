@@ -6,7 +6,7 @@ CREATE QUERY sample_ex_1() FOR GRAPH Work_Net {
 	// the 'before_sample' result set encapsulates the normal functionality of
 	// a SELECT statement, where 'times_traversed_no_sample' vertex accumulator is increased for
 	// each edge incident to the vertex.
-	before_sample = SELECT v FROM workers:t -(:e)- :v
+	before_sample = SELECT v FROM (t:workers) -[e]- (v)
         ACCUM v.@times_traversed_no_sample += 1;
 
 	// The 'after_sample' result set is formed by those vertices which can be
@@ -14,7 +14,7 @@ CREATE QUERY sample_ex_1() FOR GRAPH Work_Net {
 	// This is demonstrated by the values of 'times_traversed_with_sample' vertex accumulator, which
 	// is increased for each edge incident to the vertex which is used in the
 	// sample.
-	after_sample = SELECT v FROM workers:t -(:e)- :v
+	after_sample = SELECT v FROM (t:workers) -[e]- (v)
 		      SAMPLE 1 EDGE WHEN t.outdegree() >= 1		// only use 1 edge from the source vertex
 		      ACCUM v.@times_traversed_with_sample += 1;
 

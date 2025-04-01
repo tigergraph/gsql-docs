@@ -6,7 +6,7 @@ CREATE QUERY resident_employees() FOR GRAPH Work_Net {
 
     start = {Person.*};
 
-    employees = SELECT s FROM start:s -(Works_For)- :c
+    employees = SELECT s FROM (s:start) -[:Works_For]- (c)
     // If a person works for a company in the same country where they live, add the company to the list
         ACCUM CASE
             WHEN (s.location_id == c.country) THEN

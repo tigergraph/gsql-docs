@@ -1,9 +1,9 @@
-CREATE QUERY accum_example() SYNTAX v2 {
+CREATE QUERY accum_example() SYNTAX v3 {
     SumAccum<INT> @@count_total;
     SumAccum<INT> @active_flag = 0;
 
     result = SELECT p
-             FROM Person: p - (KNOWS) - Person: w
+             FROM (p:Person) -[:KNOWS]- (w:Person)
              WHERE w.lastName == "Wang" AND p.firstName == "Peter"
              ACCUM p.@active_flag += 1
              POST-ACCUM @@count_total += p.@active_flag;

@@ -9,7 +9,7 @@ CREATE QUERY sample_ex_3() FOR GRAPH Computer_Net {
     start = {Computer.*};
 
     // Sample one outgoing edge per source vertex = Random Walk
-    abs_sample = SELECT v FROM start:s -(:e)- :v
+    abs_sample = SELECT v FROM (s:start) -[e]- (v)
         SAMPLE 1 EDGE WHEN s.outdegree() >= 1    // sample 1 target vertex from each source vertex
         ACCUM
             @@abs_edges += (s.id -> v.id),

@@ -4,7 +4,7 @@ CREATE QUERY user_posts() FOR GRAPH Social_Net {
     start = {Person.*};
 
     // Find all user post topics and append them to the vertex list accum
-    user_postings = SELECT s FROM start:s -(Posted)- :g
+    user_postings = SELECT s FROM (s:start) -[:Posted]- (g)
         ACCUM s.@person_posts += g.subject;
 
   PRINT user_postings;

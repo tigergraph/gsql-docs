@@ -1,11 +1,7 @@
 * xref:query-modes.adoc[]
-
-*  xref:query-optimizer/index.adoc[]
-** xref:query-optimizer/enable-cost-optimizer.adoc[Enable Query Optimizer]
-** xref:query-optimizer/stats-api.adoc[]
 * xref:query-operations.adoc[Create and Run Queries]
 ** xref:distributed-query-mode.adoc[]
-* xref:index.adoc[GSQL Queries]
+* xref:index.adoc[GSQL Language]
 ** xref:syntax-versions.adoc[]
 
 ** xref:data-types.adoc[]
@@ -39,4 +35,6 @@
 ** xref:exception-statements.adoc[]
 ** xref:comments.adoc[]
 
-
+*  xref:query-optimizer/index.adoc[]
+** xref:query-optimizer/enable-cost-optimizer.adoc[Enable Query Optimizer]
+** xref:query-optimizer/stats-api.adoc[]

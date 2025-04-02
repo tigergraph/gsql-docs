@@ -1,9 +1,9 @@
-= Query Optimizer (Preview Feature)
+= Query Optimizer (Preview)
 :description: Overview of the query optimizer.
 
 The query optimizer optimizes the execution plan of a query.
 
-When writing a GSQL query with multi-hop `SELECT` statements, the xref:querying:select-statement/index.adoc#_path_pattern[path pattern (Syntax V2)] specified in the `FROM` clause is declarative.
+When writing a GSQL query with multi-hop `SELECT` statements, the xref:querying:select-statement/from-clause-v2.adoc#_path_pattern[path pattern (Syntax V2)] specified in the `FROM` clause is declarative.
 In other words, it specifies the structure of paths to be matched, without specifying the particulars of how the graph is traversed to find these paths.
 It is the query optimizer's job to determine the best graph traversal plan to satisfy the query.
 

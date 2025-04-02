@@ -1,0 +1,524 @@
+= Create and Install Queries
+:navtitle: CREATE/INSTALL QUERY
+:description: the CREATE QUERY and INSTALL QUERY commands in GSQL, key stages for developing optimized TigerGraph queries.
+:toc:
+
+This page describes the <<#_create_query>> and <<#_install_query>> commands, the steps that precede running an installed (compiled) procedural query.
+See
+
+[#_create_query]
+== CREATE QUERY
+
+Define and store a procedural query in the catalog for future use.
+The syntax of the query is checked but it is not compiled.
+
+=== Required privilege
+
+`CREATE_QUERY` or `UPDATE_QUERY`
+
+* To create a new query, `CREATE_QUERY` privilege is needed.
+* To replace (update) a query, `UPDATE_QUERY` privilege is needed.
+
+=== Basic Syntax and Example
+
+[source,ebnf]
+.Basic Syntax, with only the most common options
+----
+createQuery := CREATE [OR REPLACE] [DISTRIBUTED] [OPENCYPHER] queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               "{" queryBody "}"
+
+queryBody := [declStmts] queryBodyStmts
+----
+
+[,gsql]
+.Example
+----
+CREATE OR REPLACE DISTRIBUTE QUERY listTopBooks <1>
+    (INT k = 10) <2>
+{
+    AvgAccum<INT> @avg_rating; <3>
+
+    books = SELECT b <4>
+        FROM (u:User) -[r:User_Book_Rating]- (b:Book)
+        ACCUM b.@avg_rating := r.rating
+        ORDER BY b.@avg_rating DESC
+        LIMIT k;
+    PRINT books;
+}
+----
+
+<1> The  `queryName` is `listTopBooks`.
+<2> The `[parameterList]` is a single parameter with a default value of 10.
+<3> There is one `declStmt` : a local accumulator AvgAccum to compute average ratings of books.
+<4> The `queryBodyStmts` has one `SELECT` and one `PRINT` statement.
+
+
+=== Full Syntax and Options
+[source,ebnf]
+.Full syntax for CREATE QUERY
+----
+createQuery := CREATE [OR REPLACE] [TEMPLATE | DISTRIBUTED] QUERY
+                [packageName["."packageName].]queryName
+               "(" [parameterList] ")"
+               [FOR GRAPH graphName]
+               [RETURNS "("  baseType | accumType ")"]
+               [API "(" apiName ")"]
+               [SYNTAX syntaxName]
+               "{" queryBody "}"
+
+queryBody := [typedefs] [declExceptStmts] queryBodyStmts
+----
+
+
+
+=== Key Parts of CREATE QUERY
+
+`OR REPLACE`::
+
+If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, replaces a previous definition with the same query name.
+If the original query was installed, you'll need to reinstall the new query.
++
+However, if there are any errors in this query definition, then the previous query definition is maintained.
+If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
+`DISTRIBUTED`::
+The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
+If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.
+For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
+
+`queryName`:: Name of the query.
+
+`parameterList`:: A list of parameters for  the query.
+The parameter list for a query follows the following form:
++
+[source,ebnf]
+----
+parameterType paramName ["=" constant] ["," parameterType paramName  ["=" constant]]*
+----
+For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
+
+`FOR GRAPH graphName`:: Specifies the graph that the query is created on.
+This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
+
+`RETURNS` clause::
+The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETURN` statement of the subquery.
+For more information, see xref:operators-and-expressions.adoc#_subqueries[Subqueries].
+
+`API v2`:: Specifies the JSON output format.
+The only option is v2.
+
+`SYNTAX syntaxName`:: Specifies the GSQL syntax version to be used by the query.
+See the
+xref:querying:syntax-versions.adoc[] for an outline of the differences.
+See
+xref:tutorials:pattern-matching/index.adoc[Pattern Matching tutorial] for
+details on v2.
+
+`queryBody`::
+The query body contains a sequence of data retrieval-and-computation statements.
++
+Typedefs allow the definition of custom types for use within the body.
+The declarations support the definition of _accumulators_ (see Chapter "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.
+All accumulators and global variables must be declared before any statements.There are various types of statements that can be used within the body.
++
+Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements.
+The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`.
+It also supports calling functions, assigning variables, printing, and modifying the graph data.
++
+The query body may include calls to other queries. That is, the other queries are treated as subquery functions.
+See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
++
+Additionally, GSQL supports openCypher syntax in the query body. See pages xref:openCypher-in-gsql:openCypher-in-gsql.adoc[], xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[], and xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[] to learn more about openCypher and for examples.
+
+=== Examples
+
+.Example of a `CREATE QUERY` statement
+[source.wrap,gsql]
+----
+include::appendix:example$social_net/query_operations_example_create_query.gsql[]
+----
+
+=== Default query parameter values
+
+You can specify default values for parameters of primitive types when creating a query. Primitive types include:
+
+* `INT`
+* `UINT`
+* `FLOAT`
+* `DOUBLE`
+* `STRING`
+* `BOOL`
+* `DATETIME`
+
+To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
+
+.Example of a `CREATE QUERY` command with a default parameter value
+[source.wrap,gsql]
+----
+include::appendix:example$social_net/query_operations_example_create_query_defaults.gsql[]
+----
+
+To specify the default value of a `DATETIME` type parameter, use the `to_datetime()` function.
+You cannot use other functions that return a `DATETIME` value to specify the default value.
+For example, the following query definition sets the default value of `d1` to `2023-01-01 00:00:00`.
+
+[.wrap,gsql]
+----
+CREATE QUERY print_default(DATETIME d1 = to_datetime("2023-01-01 00:00:00")) {
+    PRINT d1;
+}
+----
+
+
+
+[#_dynamic_querying]
+=== Dynamic querying
+
+TigerGraph 3.0+ supports Dynamic Querying.
+This means the query can be written and installed as a saved procedure without referencing a particular graph.
+Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
+
+Here are the ingredients for a dynamic query:
+
+* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already.
+The graph name can be specified either when entering GSQL: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
+* *Vertex type and edge type in `SELECT` statements*.
+Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
+String or string set parameters can be used for edge and target types instead.
+* *Attribute names*.
+The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
+* `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
+
+The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library.
+The query is written with schema information embedded statically in it:
+
+* graph name = social
+* vertex type = Page
+* edge type  = Link
+* vertex attribute = Score
+
+[tabs]
+====
+Embedded schema::
++
+--
+[source,gsql]
+----
+include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
+----
+--
+Dynamic querying::
++
+--
+[source,gsql]
+----
+include::appendix:example$test-schema/query_operations_dynamic_querying.gsql[]
+----
+--
+====
+
+
+
+=== Draft queries
+
+GSQL internally has two statuses for queries, `DRAFT` and `VALID`.
+
+If your query passes the semantic checks upon running the `CREATE QUERY` command, it is saved automatically in `VALID` status.
+If not, along with the error statement, a message appears to indicate the draft status.
+
+In this example, the first query gets saved upon running `CREATE QUERY`, while the second one remains a draft.
+
+[source, gsql]
+----
+GSQL > CREATE QUERY valid_query(){   print 1; }
+Successfully created queries: [valid_query].
+
+
+GSQL > BEGIN
+GSQL > CREATE QUERY draft_query(){
+GSQL >   PRINT;
+GSQL >   PRINT "I am a draft"
+GSQL > }
+GSQL > END
+line 2:7 mismatched input ';' expecting {ABORT, AND, ANY, AVG, BY, COALESCE, COMMIT, COUNT, DATETIME_ADD, DATETIME_SUB, DISTINCT, FALSE, FILE, GROUP, INSERT, ISEMPTY, LASTHOP, LIST, LOG, MAP, MATCH, MAX, MIN, NOT, NOW, OR, PATH, PER, RANGE, REPLACE, SELECT_VERTEX, SET, SRC, SUM, TGT, TO_DATETIME, TRIM, TRUE, UPDATE, GSQL_INT_MAX, GSQL_INT_MIN, GSQL_UINT_MAX, '__ENGINE__E_ATTR', '__ENGINE__SRC_ATTR', '__ENGINE__TGT_ATTR', '__ENGINE__V_ATTR', '__ENGINE__SRC_VAL', '__ENGINE__TGT_VAL', '__ENGINE__V_VAL', '__ENGINE__MESSAGE', '__ENGINE__CONTEXT', '__ENGINE__REQUEST', '__ENGINE__SERVICEAPI', '(', '[', '-', '.', '_', CONST_INT, CONST_STR, NAME, GACCNAME}
+line 4:0 mismatched input '}' expecting {TO_CSV, WHERE, ',', ';'}
+Parsing encountered 2 syntax error(s)
+
+Saved as draft query with type/semantic error: [draft_query].
+----
+
+Because the query status is determined and saved internally, there are no commands for users to choose to save valid queries as `DRAFT` status.
+
+Queries are not saved as drafts in the following situations:
+
+* The user does not have the correct permissions to create a query.
+* An existing valid query has the same name, and there is no `REPLACE` command used while creating the new query.
+* An existing valid query is called by another query.
+** The new query will change its signature (parameters or return type).
+* A circular call is detected, where `queryA` calls `queryB and `queryB` calls `queryA`.
+** However, a recursive call (A calls A) is allowed.
+
+If a query is saved as a draft before it reaches valid status, any queries that call it are also set to draft status.
+
+[NOTE]
+====
+If a user creates a query, this user becomes the owner of this query automatically.
+
+For a detailed description, please refer to xref:xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc
+====
+
+[#_statement_types]
+== Statement types
+
+A _statement_ is a standalone instruction that expresses an action to be carried out.
+The most common statements are _data manipulation language (DML) statements_.
+DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
+
+A GSQL query has two levels of statements.
+The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.
+This statement type is part of either the top-level block or a query-body control flow block.
+For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
+If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.
+Each query-body statement ends with a semicolon.
+
+The lower-level statement type is called _DML-sub-level statement_ or _DML-sub statement_ for short.
+This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.
+There is no comma or semicolon after the last DML-sub-statement in a block.
+For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.
+If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
+
+There is some overlap in the types.
+For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
+
+[source,ebnf]
+----
+queryBodyStmts := (queryBodyStmt ";")+
+
+queryBodyStmt := assignStmt           // Assignment
+               | vSetVarDeclStmt      // Declaration
+               | gAccumAssignStmt     // Assignment
+               | gAccumAccumStmt      // Assignment
+               | lAccumAccumStmt      // Assignment
+               | funcCallStmt         // Function Call
+               | selectStmt           // Select
+               | queryBodyCaseStmt    // Control Flow
+               | queryBodyIfStmt      // Control Flow
+               | queryBodyWhileStmt   // Control Flow
+               | queryBodyForEachStmt // Control Flow
+               | BREAK                // Control Flow
+               | CONTINUE             // Control Flow
+               | updateStmt           // Data Modification
+               | insertStmt           // Data Modification
+               | queryBodyDeleteStmt  // Data Modification
+               | printStmt            // Output
+               | printlnStmt          // Output
+               | logStmt              // Output
+               | returnStmt           // Output
+               | raiseStmt            // Exception
+               | tryStmt              // Exception
+
+DMLSubStmtList := DMLSubStmt ["," DMLSubStmt]*
+
+DMLSubStmt := assignStmt           // Assignment
+            | funcCallStmt         // Function Call
+            | gAccumAccumStmt      // Assignment
+            | lAccumAccumStmt      // Assignment
+            | attrAccumStmt        // Assignment
+            | vAccumFuncCall       // Function Call
+            | localVarDeclStmt     // Declaration
+            | DMLSubCaseStmt       // Control Flow
+            | DMLSubIfStmt         // Control Flow
+            | DMLSubWhileStmt      // Control Flow
+            | DMLSubForEachStmt    // Control Flow
+            | BREAK                // Control Flow
+            | CONTINUE             // Control Flow
+            | insertStmt           // Data Modification
+            | DMLSubDeleteStmt     // Data Modification
+            | printlnStmt          // Output
+            | logStmt              // Output
+----
+
+Guidelines for understanding statement type hierarchy:
+
+* Top-level statements are Query-Body type (each statement ending with a semicolon).
+* The statements within a DML statement are DML-sub statements (comma-separated list).
+* The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
+
+// Each statement's operation type is either ControlFlow, DML, or other.
+// Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
+
+.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
+[source,gsql]
+----
+CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
+	other queryBodyStmt1;
+	ControlFlow queryBodyStmt2   // ControlFlow inside top level.
+		other queryBodyStmt2.1;      // subStmts in ControlFlow are queryBody unless inside DML.
+		ControlFlow queryBodyStmt2.2 // ControlFlow inside ControlFlow inside top level
+			other queryBodyStmt2.2.1;
+			other queryBodyStmt2.2.2;
+		END;
+		DML queryBodyStmt2.3     // DML inside ControlFlow inside top-level
+			other DMLSubStmt2.3.1,   // switch to DMLSubStmt
+			other DMLSubStmt2.3.2
+		;
+	END;
+	DML queryBodyStmt3           // DML inside top level.
+		other DMLSubStmt3.1,      // All subStmts in DML must be DMLSubStmt type
+		ControlFlow DMLSubStmt3.2 // ControlFlow inside DML inside top level
+			other DMLSubStmt3.2.1,
+			other DMLSubStmt3.2.2
+		,
+		DML DMLsubStmt3.3
+			other DMLSubStmt3.3.1,
+			other DMLSubStmt3.3.2
+	;
+	other queryBodyStmt4;
+----
+
+Here is a descriptive list of query-body statements:
+
+|===
+| EBNF term | Common Name | Description
+
+| assignStmt
+| Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| vSetVarDeclStmt
+| Vertex Set Variable Declaration Statement
+| See "Declaration and Assignment Statements"
+
+| gAccumAssignStmt
+| Global Accumulator Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| gAccumAccumStmt
+| Global Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| lAccumAccumStmt
+| Local Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| funcCallStmt
+| Functional Call or Query Call Statement
+| See "Declaration and Assignment Statements"
+
+| selectStmt
+| SELECT Statement
+| See "SELECT Statement"
+
+| queryBodyCaseStmt
+| query-body CASE statement
+| See "Control Flow Statements"
+
+| queryBodyIfStmt
+| query-body IF statement
+| See "Control Flow Statements"
+
+| queryBodyWhileStmt
+| query-body WHILE statement
+| See "Control Flow Statements"
+
+| queryBodyForEachStmt
+| query-body FOREACH statement
+| See "Control Flow Statements"
+
+| updateStmt
+| UPDATE Statement
+| See "Data Modification Statements"
+
+| insertStmt
+| INSERT INTO statement
+| See "Data Modification Statements"
+
+| queryBodyDeleteStmt
+| Query-body DELETE Statement
+| See "Data Modification Statements"
+
+| printStmt
+| PRINT Statement
+| See "Output Statements"
+
+| logStmt
+| LOG Statement
+| See Output Statements"
+
+| returnStmt
+| RETURN Statement
+| See  "Output Statements"
+
+| raiseStmt
+| PRINT Statement
+| See  "Exception Statements"
+
+| tryStmt
+| TRY Statement
+| See "Exception Statements"
+|===
+
+Here is a descriptive list of DML-sub-statements:
+
+|===
+| EBNF term | Common Name | Description
+
+| assignStmt
+| Assignment Statement
+| See "Declaration and Assignment Statements"
+
+| funcCallStmt
+| Functional Call Statement
+| See  "Declaration and Assignment Statements"
+
+| gAccumAccumStmt
+| Global Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| lAccumAccumStmt
+| Local Accumulator Accumulation Statement
+| See "Declaration and Assignment Statements"/
+
+| attrAccumStmt
+| Attribute Accumulation Statement
+| See "Declaration and Assignment Statements"
+
+| vAccumFuncCall
+| Vertex-attached Accumulator Function Call Statement
+| See "Declaration and Assignment Statements"
+
+| localVarDeclStmt
+| Local Variable Declaration Statement
+| See "SELECT Statement"
+
+| insertStmt
+| INSERT INTO Statement
+| See "Control Flow Statements"
+
+| DMLSubDeleteStmt
+| DML-sub DELETE Statement
+| See "Data Modification Statements"
+
+| DMLSubcaseStmt
+| DML-sub CASE statement
+| See "Data Modification Statements"
+
+| DMLSubIfStmt
+| DML-sub IF statement
+| See "Data Modification Statements"
+
+| DMLSubForEachStmt
+| DML-sub FOREACH statement
+| See "Data Modification Statements"
+
+| DMLSubWhileStmt
+| DML-sub WHILE statement
+| See "Data Modification Statements"
+
+| logStmt
+| LOG Statement
+| See "Output Statements"
+|===
+
+## INSTALL QUERY

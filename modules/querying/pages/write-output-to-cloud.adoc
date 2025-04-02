@@ -1,4 +1,6 @@
-= Write Query Output to Cloud
+= Writing Output to Cloud Storage
+:description: How to set up the ability to write query output to cloud storage
+:page-aliases: write-query-data-to-cloud.adoc
 
 Before you can write query results to an S3 bucket, you need to set up the connection to the S3 service. This requires credentials like an AWS Access Key ID and Secret Access Key. Make sure the necessary read/write permissions are granted for the S3 bucket.
 There are two methods to configure these credentials:

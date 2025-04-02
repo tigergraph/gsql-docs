@@ -1,9 +1,10 @@
-= Queries
+= Create and Run Queries
 :pp: {plus}{plus}
 :description: Commands in the GSQL query language associated with query operations.
 
+
 A GSQL query is a sequence of data retrieval and computation statements executed as a single operation.
-Users can write queries to explore and manipulate data in the graph, perform computations, update the graph, and retrieve results. 
+Users can write queries to explore and manipulate data in the graph, perform computations, update the graph, and retrieve results.
 A query functions similarly to a user-defined procedure or function, accepting one or more input parameters and producing output by either returning values or printing results.
 In addition to querying the graph, you can also manage descriptions for your queries and query parameters. This includes updating, viewing, and removing descriptions, which can help document and clarify the purpose of your queries.
 
@@ -78,18 +79,18 @@ queryNamePrefix := name"*"
 A query can be run in one of three ways:
 
 . Define and run an unnamed query immediately:
- .. `INTERPRET QUERY`: execute the query's statements
+.. `INTERPRET QUERY`: execute the query's statements
 +
 Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
 `POST /gsqlserver/interpreted_query` +
 See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details.
 . Define a named query and then run it.
- .. `CREATE QUERY`: define the functionality of the query
- .. `INTERPRET QUERY`: execute the query with input values
+.. `CREATE QUERY`: define the functionality of the query
+.. `INTERPRET QUERY`: execute the query with input values
 . Define a named query, compile it to optimize performance, and then run it.
- .. `CREATE QUERY`: define the functionality of the query
- .. `INSTALL QUERY`: compile the query
- .. `RUN QUERY`: execute the query with input values
+.. `CREATE QUERY`: define the functionality of the query
+.. `INSTALL QUERY`: compile the query
+.. `RUN QUERY`: execute the query with input values
 
 There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
@@ -238,7 +239,7 @@ String or string set parameters can be used for edge and target types instead.
 The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
 * `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
 
-The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library. 
+The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library.
 The query is written with schema information embedded statically in it:
 
 * graph name = social
@@ -747,7 +748,7 @@ parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":
 Required privilege:
 EXECUTE_QUERY
 
-To learn more about the -queue option, please refer xref:tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
+To learn more about the -queue option, please refer xref:{page-component-version}@tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
 
 === Query parameters
 
@@ -837,7 +838,7 @@ More details about all parameter types are described in xref:data-types.adoc#_qu
 
 [NOTE]
 ====
-If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_composite_keys[composite key], use a comma to separate the different attributes to denote their ID.
+If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_composite_key_using_primary_key[composite key], use a comma to separate the different attributes to denote their ID.
 
 For example, if you have the following vertex definition:
 
@@ -1248,7 +1249,7 @@ GSQL > SHOW DESCRIPTION OF QUERY_PARAM query2.*
 
 === Drop description
 
-The `DROP DESCRIPTION` removes descriptions of queries or query parameters. 
+The `DROP DESCRIPTION` removes descriptions of queries or query parameters.
 
 *Syntax*
 [source]
@@ -1257,12 +1258,12 @@ DROP DESCRIPTION OF <objectType> <objectName(s)> [ON GRAPH <graphName>]
 ----
 
 * `<objectName(s)>` can include a comma-separated list of names.
-* For the `DROP DESCRIPTION` command, you can specify multiple queries or parameters in a single command using a comma-separated list. 
+* For the `DROP DESCRIPTION` command, you can specify multiple queries or parameters in a single command using a comma-separated list.
 
 Required privilege
 `WRITE_QUERY`
 
-To remove a description, run the `DROP DESCRIPTION` command as shown below. 
+To remove a description, run the `DROP DESCRIPTION` command as shown below.
 
 [source, gsql]
 ----
@@ -1281,9 +1282,9 @@ Therefore, after dropping the query description, the query parameter's descripti
 
 [NOTE]
 ====
-* *Wildcards:* 
+* *Wildcards:*
 SHOW supports `\*` to both queries and parameters, while DROP only supports `*` to remove descriptions of all queries or parameters.
 
-* *List of Objects:* 
+* *List of Objects:*
 SHOW cannot specify multiple objects in a comma-separated list, whereas DROP can.
 ====

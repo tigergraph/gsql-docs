@@ -32,8 +32,8 @@ parameterValue := parameterConstant
                 | "[" parameterValue ["," parameterValue]* "]"  // BAG or SET
                 | "(" stringLiteral "," stringLiteral ")"        // generic VERTEX value
 parameterConstant := numeric | stringLiteral | TRUE | FALSE
-parameterList := parameterType paramName ["=" constant]
-                 ["," parameterType paramName ["=" constant]]*
+parameterDeclaration := parameterType paramName ["=" constant]
+parameterList := parameterDeclaration ["," parameterDeclaration]*
 
 syntaxName := name
 
@@ -144,7 +144,7 @@ Each parameter declaration gives the parameter type, the parameter name, and opt
 [source,ebnf]
 ----
 parameterDeclaration := parameterType paramName ["=" constant]
-parameterDeclaration ["," parameterDeclaration]*
+parameterList := parameterDeclaration ["," parameterDeclaration]*
 ----
 For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
 

@@ -1,4 +1,4 @@
-= Query Language Choices
+= Querying Choices
 :description: Explains the options that TigerGraph users have for querying - language choice, execution mode, and API choice
 
 The TigerGraph database provides users with a wide range of choices for how to write and run queries, letting you choose what is the best fit for your needs and preferences.
@@ -10,7 +10,7 @@ The following sections will summarize the options in four areas:
 * xref:#_query_languages[]
 * xref:#_query_structure[]
 * xref:#_query_apis[]
-* xref:#_execution_modes[]
+* xref:#_query_execution_modes[]
 
 == Query Languages
 

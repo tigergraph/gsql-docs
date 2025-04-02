@@ -1,0 +1,54 @@
+= Query Plan Cache
+
+This page covers how TigerGraph handles query execution and optimization through query plan caching. 
+When a query is executed, the system parses, transforms, and optimizes it before generating a query plan in JSON format to guide its execution. 
+While these steps are essential for processing the query, they can introduce significant overhead, especially when the same query is executed multiple times. 
+To mitigate this, TigerGraph caches the generated query plan in memory, ensuring faster execution on subsequent queries.
+
+== Query Normalization
+
+In many cases, users may frequently change constants in their queries. These changes can invalidate the cached query plan, making it necessary to re-interpret the query. 
+To handle this issue, TigerGraph employs a process known as *query normalization*.
+
+Query normalization helps maintain the validity of the cached query plan even when constants in the query change. Here's how it works:
+
+. *Extract Constants*: TigerGraph identifies and extracts constants from the query. For example, values like specific numbers or strings in the WHERE clause are identified as constants.
+
+. *Bind Variables*: The extracted constants are replaced with query parameters. This ensures that even if the constant values change, the query text itself remains unchanged.
+
+. *Cache the Normalized Query Plan*: The normalized query plan is cached, and since the text of the query doesn't change (only the constants are replaced with parameters), the plan remains valid even when the constants change.
+
+== Example of Query Normalization
+
+[source.wrap,gsql]
+----
+INTERPRET QUERY () {
+ L = SELECT s
+   FROM Person:s
+   WHERE s.id >= 100 AND s.lastName == "Wang"
+   ;
+ R = SELECT t
+   FROM L:s -(LIKES>:e)- Comment:t
+   WHERE e.creationDate >= "1982-02-06 00:00:00" AND t.id >= 1200;
+ PRINT R.size() AS result_size;
+}
+----
+
+In the example above, the query has constants like `100` and `"Wang"`, which are likely to change over time. 
+After normalization, the query would look like this:
+
+[source.wrap,gsql]
+----
+INTERPRET QUERY (INT GSQL_p1, STRING GSQL_p2, STRING GSQL_p3, INT GSQL_p4) {
+  L = SELECT s
+    FROM Person:s
+    WHERE s.id >= GSQL_p1 AND s.lastName == GSQL_p2;
+  R = SELECT t
+    FROM L:s -(LIKES>:e)- Comment:t
+    WHERE e.creationDate >= GSQL_p3 AND t.id >= GSQL_p4;
+  PRINT R.size() AS result_size;
+}
+----
+
+Here, the constants `100`, `"Wang"`, `"1982-02-06 00:00:00"`, and `1200` have been replaced with query parameters (`GSQL_p1`, `GSQL_p2`, `GSQL_p3`, `GSQL_p4`). 
+This allows the query plan to remain valid even if the values of these constants change in future executions.

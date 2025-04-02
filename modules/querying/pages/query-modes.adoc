@@ -1,0 +1,251 @@
+= Querying Choices
+:description: Explains the options that TigerGraph users have for querying - language choice, execution mode, and API choice
+
+The TigerGraph database provides users with a wide range of choices for how to write and run queries, letting you choose what is the best fit for your needs and preferences.
+
+This page presents the options in a simple outline, pointing out the advantages and typical use cases for each mode or option.  It then directs you to where you can learn in more detail about each option.
+
+The following sections will summarize the options in four areas:
+
+* xref:#_query_languages[]
+* xref:#_query_structure[]
+* xref:#_query_apis[]
+* xref:#_query_execution_modes[]
+
+== Query Languages
+
+Query Language Options:
+
+* xref:#_gsql[] | xref:#_opencypher[] | xref:#_gsql[]
+
+=== GSQL
+
+GSQL is xref:index.adoc[TigerGraph's original native language].
+it offers graph traversal and pattern matching queries using declarative syntax similar to SQL, extends it for procedural programming to enable more complex algorithmic querying, adds _xref:querying:accumulators.adoc[accumulators]_ for efficient analytics, and installs (pre-compiles) queries to optimize the execution performance.
+
+GSQL is more than just for xref:querying:query-operations.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition].
+It also includes a xref:ddl-and-loading:index.adoc[data loading language] to define stored procedures (jobs) that map and transform data from tabular sources to a graph.
+
+=== OpenCypher
+
+openCypher is a popular open-source declarative query language for property graphs. It is well suited for basic graph traversal queries and pattern matching queries. More about openCypher can be found at http://opencypher.org[openCypher.org].
+
+GSQL V3 Syatax xref:openCypher-in-gsql:index.adoc[supports the majority of openCypher features], embedded within its native GSQL framework.
+To learn to how to run OpenCypher on TigerGraph, see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md[OpenCypher in GSQL tutorial].
+
+=== GQL
+
+GQL is a new ISO standard for a property graph query language.
+Its initial version was published in 2024, focusing on pattern matching queries.
+TigerGraph was and is a contributing member of the ISO GQL committee.
+
+GQL borrows from and extends both OpenCypher and GSQL, enabling a graceful transition for users.
+link:https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md[GSQL's V3 Syntax for path patterns] aligns with GQL's syntax.
+GQL can work with both schema-first and schema-optional graph databases.
+
+TigerGraph currently supports the path pattern matching syntax (the `MATCH` or `FROM` clause) of GQL.
+
+[TIP]
+====
+* Use GSQL for analytical and algorithmic queries.
+* Use OpenCypher for graph traversal queries if you are already familar with it.
+* Become familiar with V3 syntax to learn GQL.
+====
+
+== Query Structure
+
+Query Structure Options:
+
+* Stored Procedure (Procedural and Saved)
+* Anonymous (Procedural and Ad Hoc)
+* Non-Procedural (Ad Hoc)
+
+=== Stored Procedure Queries
+
+Originally, all GSQL queries were *stored procedures*.
+A stored procedure is a named sequence of executable statements that is *saved*, and then executing by calling it by name.
+Key characteristics:
+
+* Looping and conditional flow, to implement algorithms and analytics
+* Input parameters
+* A header and body. The body is bounded by curly braces.
+* Output must be explicitly requested with PRINT statements.
+
+NOTE: Since this was the only query structure format for some time, we will often simply refer to this choice as a *GSQL query*.
+
+.Example of a Stored Procedure Query
+[console]
+----
+CREATE QUERY topMovies(INT year, INT k) {
+
+topK = SELECT m FROM (m:Movie) WHERE m.year == year
+       ORDER BY m.boxoffice DESC
+       LIMIT k;
+PRINT topK;
+}
+----
+
+=== Anonymous Queries
+
+There are times when you will run a only query one or a few times.
+You may not want to bother to first save it by name and then call it; you just want to run it. You may be exploring the data as you go, without a full plan in advance. You are building an application that will construct and run custom queries based on the interests of the end user's real time behavior and requests.
+Similar to a stored procedura query, except
+
+* no name
+* no parameters
+* Still has a header, delimited body, and explicit output.
+
+.Example of an Anonymous Query
+[console]
+----
+CREATE QUERY () {
+
+topK = SELECT m FROM (m:Movie) WHERE m.year == 1939
+       ORDER BY m.boxoffice DESC
+       LIMIT 10;
+PRINT topK;
+}
+----
+
+
+=== Non-Procedural Queries
+
+Starting with version 4.2, TigerGraph can run non-procedural queries.
+This is very much like how the composition of SQL queries:
+
+* No header.
+* Output selection is implicit.
+* Queries consisting of a single query statement/block do not need to define the body's start and end.
+* Optionally, can use `BEGIN` and `END` to delimit a multi-line query.
+
+.Example of an Non-Procedural Query
+[console]
+----
+SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
+----
+
+[IMPORTANT]
+====
+Stored procedural queries with are installed (see Execution Modes) before running will always run faster and more effiiently, sometimes much faster.
+====
+
+== Query APIs
+
+There are four major APIs for running queries and performing other database operations:
+
+* xref:basics:running-gsql.adoc[GSQL command line interface] (aka GSQL Shell)
+* xref:{page-component-version}@tigergraph-server:API:index.adoc[REST endpoints]
+* Graphical user interface, in xref:gui:graphstudio:overview.adoc[GraphStudio] or xref:main@savanna:graph-development:gsql-editor/index.adoc[Savanna]
+* xref:pytigergraph:core-functions:[pyTigerGraph] Python language driver
+
+.Query APIs
+[cols="1,2,2"]
+|===
+| API (link to documentation) | Description | Use Cases
+
+| xref:basics:running-gsql.adoc[GSQL CLI]
+| Classic SQL-like commands
+| text-based, interactive user
+
+| xref:{page-component-version}@tigergraph-server:API:index.adoc[REST endpoints]
+| HTTP requests, JSON responses
+| General application development
+
+| xref:gui:graphstudio:overview.adoc[GraphStudio],
+  xref:main@savanna:graph-development:gsql-editor/index.adoc[Savanna]
+| Browser GUI-based interaces for building graphs, developing queries, and running queries
+| Cloud users, those who prefer a graphical interface
+
+| xref:pytigergraph:core-functions:[pyTigerGraph]
+| Open-source Python library
+| Data science applications based on Python
+
+|===
+
+== Query Execution Modes
+
+Excecution Mode Options:
+
+* Install and run a stored procedure query
+* Interpret a stored procedure query
+* interpret an ad hoc anonymous query
+* Interpret a non procedural query
+* BONUS: Distributed Mode
+
+=== Install and run a stored procedure query
+
+The classic--and still most performant--way to run a GSQL query is to create, install it, and run it.  The `INSTALL` step provides a level of optimization that is not available when running in interpreted mode.
+
+[console]
+----
+CREATE QUERY topMovies(INT year, INT k) {
+
+topK = SELECT m FROM (m:Movie) WHERE m.year == year
+       ORDER BY m.boxoffice DESC
+       LIMIT k;
+PRINT topK;
+}
+INSTALL QUERY topMovies
+RUN QUERY topMovies(1939, 10)
+----
+
+=== Interpret a stored procedure query
+
+When a developer is writing and refining a stored procedure query, they may be rapidly iterating through different versions of the query.
+In this case, they may not want to take the time to install the query.
+And if they are experimenting with a small database, they may not be concerned with the slower run time.
+
+In this case, they can simply skip the `INSTALL` step, and use `INTERPRET` instead of `RUN`:
+
+[console]
+----
+CREATE QUERY topMovies(INT year, INT k) {
+
+topK = SELECT m FROM (m:Movie) WHERE m.year == year
+       ORDER BY m.boxoffice DESC
+       LIMIT k;
+PRINT topK;
+}
+INTERPRET QUERY topMovies(1939, 10)
+----
+
+=== Interpret an ad hoc anonymous query
+
+If we plan to run a query just once, we can skip the step of saving the query.
+The query is not named, and there is no need to have parameters.
+
+[console]
+----
+INTERPRET QUERY () {
+topK = SELECT m FROM (m:Movie) WHERE m.year == 1939
+ORDER BY m.boxoffice DESC
+LIMIT 10;
+PRINT topK;
+}
+----
+
+[NOTE]
+====
+When this approach is used by an application that is building the query, users often find the REST API or pyTigerGraph library to be the best fit.
+====
+
+=== Interpret a non procedural query
+
+This method, introduced in 4.2, is well-suited both for applications and for interactive users, due to its simplicity.
+If you are running the GSQL shell, you simply type in the query with minimal overhead.
+There is no `RUN` or `INTERPRET` command; you just submit the query itself.
+
+[console]
+----
+SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
+----
+
+For more examples, see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md#1-block-query-examples[1-Block Query Examples] in the GSQL V3 Tutorial.
+
+=== Distributed Mode
+
+We cannot end without mentioning Distributed Mode.
+Any procedural query can be run in distributed mode.
+It is the more performant mode when the query will traverse a large percentage of your graph, especially if it begins the query not at a single vertex but at a large set of vertices.
+
+For more information, see the xref:querying:distributed-query-mode.adoc[] page.

@@ -1,12 +1,14 @@
 = openCypher in GSQL
+:description: Summary of TigerGraph's level of support for the openCypher query language.
 :page-aliases: openCypher-in-gsql.adoc, openCypher-in-gsql/openCypher-in-gsql.adoc
 
 
 openCypher is a popular open-source declarative query language for property graphs. More about openCypher can be found at http://opencypher.org[openCypher.org].
 
-TigerGraph's GSQL query language supports many openCypher features. This page lists the features currently xref:_opencypher_features_in_gsql[supported] and features xref:_opencypher_features_not_yet_supported[not yet supported ].
+TigerGraph supports the majority of openCypher features, embedded within its native GSQL language. This page lists the features currently xref:_opencypher_features_in_gsql[supported] and features xref:_opencypher_features_not_yet_supported[not yet supported ].
 
-To see how to run openCypher on the TigerGraph platform, see xref:index.adoc[].
+It also describes how the different xref:#_key_differences_gsql_vs_opencypher[schema models in OpenCypher vs. GSQL] affect some queries.
+
 
 == openCypher Features in GSQL
 === Clauses
@@ -325,11 +327,23 @@ WHERE x.friendCount = y.friendCount
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
 
-== Key Differences: GSQL vs. OpenCypher
+[#_key_differences_gsql_vs_opencypher]
+== OpenCypher vs. GSQL Schema Models
 
-GSQL is strongly typed and **schema-first**, while OpenCypher is **schema-optional**. This fundamental difference impacts how OpenCypher queries behave in each system.
+GSQL, the language and storage engine, is strongly typed and *schema-first*:
 
-=== Example: OpenCypher Query Behavior
+* Every vertex and edge belongs to a previously defined _type_.
+* Each type had a characteristics set of properties (attributes); there are no optional properties.
+
+OpenCypher is *schema-optional*:
+
+* A vertex or edge _may_ have a _label_.
+* A label _may_ be associated with characteristic set of properties.
+* An individual vertex or edge could have additional properties.
+
+This fundamental difference impacts how OpenCypher queries behave in each system.
+
+=== Example
 
 Consider the following OpenCypher query:
 
@@ -353,14 +367,14 @@ OpenCypher does not enforce a schema, so the query:
 * Processes all vertex types, regardless of their attributes
 * Returns values for existing attributes but returns `NULL` for attributes that do not exist
 
-==== Importance
+[#_importance]
+==== Expected Outcomes
 
 For users migrating from OpenCypher to GSQL, it is important to understand that:
 
 * In GSQL, queries must align with the predefined schema.
-* Unlike OpenCypher, GSQL does not return NULL for missing attributes—if a vertex does not contain all required attributes, it is not included in the result.
+* Unlike OpenCypher, GSQL does not return NULL for missing attributes: if a vertex does not contain all required attributes, it is not included in the result.
 * A query attempting to access a non-existent attribute in GSQL may either return no results or be rejected if no matching vertex type exists.
 
 By understanding this distinction, users can write more effective OpenCypher queries tailored to GSQL’s schema-first approach.
-
 

@@ -3,12 +3,12 @@
 This page covers how TigerGraph handles query execution and optimization through query plan caching. 
 When a query is executed, the system parses, transforms, and optimizes it before generating a query plan in JSON format to guide its execution. 
 While these steps are essential for processing the query, they can introduce significant overhead, especially when the same query is executed multiple times. 
-To mitigate this, TigerGraph caches the generated query plan in memory, ensuring faster execution on subsequent queries.
+To mitigate this, TigerGraph caches the generated query plan in memory, ensuring faster execution on subsequent executions of a query.
 
 == Query Normalization
 
-In many cases, users may frequently change constants in their queries. These changes can invalidate the cached query plan, making it necessary to re-interpret the query. 
-To handle this issue, TigerGraph employs a process known as *query normalization*.
+In many cases, users may frequently change constants in their queries. These changes would invalidate the cached query plan, making it necessary to re-interpret the query. 
+To avoid the reinterpretation, TigerGraph employs a process known as *query normalization*.
 
 Query normalization helps maintain the validity of the cached query plan even when constants in the query change. Here's how it works:
 
@@ -52,3 +52,8 @@ INTERPRET QUERY (INT GSQL_p1, STRING GSQL_p2, STRING GSQL_p3, INT GSQL_p4) {
 
 Here, the constants `100`, `"Wang"`, `"1982-02-06 00:00:00"`, and `1200` have been replaced with query parameters (`GSQL_p1`, `GSQL_p2`, `GSQL_p3`, `GSQL_p4`). 
 This allows the query plan to remain valid even if the values of these constants change in future executions.
+
+There are two key xref:tigergraph-server:reference:configuration-parameters.adoc#gsql[configuration parameters] available to customize the query plan cache. 
+The `GSQL.QueryPlanCache.Enable` parameter enables the query plan cache, with the default value set to `true`. This ensures that query plans are cached to improve performance. 
+Additionally, the `GSQL.QueryPlanCache.Capacity` parameter defines the maximum number of queries that can be stored in the cache, with a default value of `10,000`. 
+This capacity can be adjusted within the range of 1 to 100,000, depending on your system’s requirements.

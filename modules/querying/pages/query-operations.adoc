@@ -862,6 +862,8 @@ CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name
 A vertex ID would be `"Tom,456"`, consisting of the `name` attribute and the `id` attribute.
 ====
 
+==== Values in a parameter List
+
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Syntax |Example
@@ -899,7 +901,7 @@ a tuple of strings with both the id and type: `("vertex_id", "vertex_type")`
 Queries that could take any vertex type as input should be written using generic `VERTEX` parameters.
 Users who call these queries will provide `("id", "type")` tuple arguments for these parameters.
 
-==== Parameter JSON object
+==== Values in parameter by name
 
 Each parameter has the form `"<name>":<value>`.
 The table below focuses on the <value> part.

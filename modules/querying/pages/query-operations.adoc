@@ -138,12 +138,13 @@ For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
 
 `queryName`:: Name of the query.
 
-`parameterList`:: A list of parameters for  the query.
-The parameter list for a query follows the following form:
+`parameterList`:: A comma-separated list of parameters for the query.
+Each parameter declaration gives the parameter type, the parameter name, and optionally, the default value of the parameter.
 +
 [source,ebnf]
 ----
-parameterType paramName ["=" constant] ["," parameterType paramName  ["=" constant]]*
+parameterDeclaration := parameterType paramName ["=" constant]
+parameterDeclaration ["," parameterDeclaration]*
 ----
 For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
 
@@ -757,7 +758,15 @@ There are two ways of passing parameters to a query in a `RUN QUERY` command:
 * link:#_parameter_list[Pass parameters as an ordered list separated by commas]
 * link:#_parameter_json_object[Pass parameters by name in JSON]
 
-==== Parameter list
+[NOTE]
+====
+These rules are for running a query in the GSQL CLI.
+Slightly different rules apply when running the query either with the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[RESTPP endpoint] or with the newer xref:{page-component-version}@tigergraph-server:API:gsql-endpoints.adoc#_run_query[GSQL endpoint].
+
+====
+
+[#_parameter_list]
+==== Ordered list of Parameters
 
 To pass parameters to a query with a list, the parameters must be put in the same order as they were in the query definition. Each value passed in will correspond to the parameter at the same index when the query was created.
 
@@ -812,9 +821,11 @@ GSQL > RUN QUERY greet_person(21)
 }
 ----
 
-==== Parameter JSON object
+[#_parameter_json_object]
+==== Parameters by name
 
-To pass query parameters by name with a JSON object, map the parameter names to their values in a JSON object enclosed in parentheses. Parameters that are not named in the JSON object will keep their default values for the execution of the query.
+Passing parameters as a JSON object has two advantages: they can be in any order, and you simply omit ones if you accept the default.
+To pass query parameters by name, map the parameter names to their values in a JSON object enclosed in parentheses. Parameters that are not named in the JSON object will keep their default values for the execution of the query.
 
 For example, if we have the following query:
 
@@ -830,7 +841,8 @@ Supplying the parameters with a JSON object will look like the following. The pa
 RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 ----
 
-=== Complex type parameter passing
+[#_complex_type_parameter_passing]
+=== Parameter format for complex types
 
 This subsection describes how to format the complex type parameter values when executing a query by `RUN QUERY`.
 
@@ -842,7 +854,7 @@ If a vertex type has a xref:ddl-and-loading:defining-a-graph-schema.adoc#_compos
 
 For example, if you have the following vertex definition:
 
-[.wrap,gsql]
+[cols="2,3,3",.wrap,gsql]
 ----
 CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
 ----
@@ -853,27 +865,34 @@ A vertex ID would be `"Tom,456"`, consisting of the `name` attribute and the `id
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Syntax |Example
-|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|`DATETIME` |A string formatted as `"YYYY-MM-DD HH-MM-SS"`
 |`"2019-02-19 19:19:19"`
 
-|Set or bag of primitives |Use square brackets to enclose the collection
-of values. |A set of integers: `[1,5,10]`
+|List/set/bag |Square brackets enclose a comma-separated list
+of values. |A collection of integers: `[1,5,10]`
 
-|Typed vertex parameter: `VERTEX<type>` |If the vertex type is specified in the query
-definition, then the vertex argument is `**vertex_id**` |The vertex type
+|Map
+|Divide the map in an ordered list of keys and a correspondingly ordered list
+of values: JSON object containing a `"valuelist"` object and a `"keylist"` object
+a| An <INT, STRING> map:
+
+`{"keylist":[49,50], "valuelist":["Alaska","Hawaii"]}}`
+
+|Typed vertex parameter: `VERTEX<type>`
+|If the vertex type is specified in the query definition,
+then the vertex argument is `**vertex_id**`
+|The vertex type
 is `Person` and the desired ID is `person2`. `"person2"`
 
-|Generic vertex parameter: `VERTEX` |If the type is not defined in the
-query definition, then the argument must be a tuple of strings with both the id and type: `("vertex_id", "vertex_type")` |A vertex with ID `person1` and
-type `Person`: `("person1","Person")`
+|Generic vertex parameter: `VERTEX`
+|If the type is not defined in the query definition, then the argument must be
+a tuple of strings with both the id and type: `("vertex_id", "vertex_type")`
+|A vertex with ID `person1` and type `Person`: `("person1","Person")`
 
-|Set or bag of typed vertex parameters `VERTEX<type>` |Same as a set or bag of primitives, where
-the primitive type is the vertex ID. |`[ "person3", "person4" ]`
-
-|Set or bag of generic `VERTEX` parameters |Same as a set or bag of
-vertices, with vertex type not pre-specified. Square brackets enclose a
-comma-separated list of vertex (id, type) tuples. Mixed types are
-permitted. |`[ ("person1","Person"),("11","Post") ]`
+|List/set/bag of generic `VERTEX` parameters
+|Square brackets enclose a comma-separated list of vertex
+(id, type) tuples. Mixed types are permitted.
+|`[ ("person1","Person"),("11","Post") ]`
 |===
 
 
@@ -882,17 +901,32 @@ Users who call these queries will provide `("id", "type")` tuple arguments for t
 
 ==== Parameter JSON object
 
-[width="99%",cols="28%,36%,36%",options="header",]
+Each parameter has the form `"<name>":<value>`.
+The table below focuses on the <value> part.
+
+[cols="2,3,3",options="header",]
 |===
-|Parameter type |Syntax |Example
-|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|Parameter type |Syntax for Value |Example
+
+|`DATETIME`
+|A string formatted as `"YYYY-MM-DD HH-MM-SS"`
 |`"2023-01-01 00:00:00"`
 
-|Set or bag of primitives |Use a JSON array containing the primitive
-values |`["a", "list", "of", "args"]`
+|List/set/bag of primitives
+|A JSON array containing the primitive values
+|`["a", "list", "of", "args"]`
 
-|`VERTEX<type>` (typed vertex parameter) |Since the type is already specified in the query, you only need to use a JSON object containing the field
-`"id"` for the vertex ID |`{"id": "person1"}`
+|Map
+|Divide the map in an ordered list of keys and a correspondingly ordered list
+of values: JSON object containing a `"valuelist"` object and a `"keylist"` object
+a| An <INT, STRING> map:
+
+`{"keylist":[49,50], "valuelist":["Alaska","Hawaii"]}}`
+
+|`VERTEX<type>` (typed vertex parameter)
+|Since the type is already specified in the query, you only need
+to use a JSON object containing the field `"id"` for the vertex ID
+|`{"id": "person1"}`
 
 |`VERTEX` (generic vertex parameter)
 
@@ -900,7 +934,7 @@ values |`["a", "list", "of", "args"]`
 vertex ID and a field `"type"` for the type of the vertex.
 |`{"id": "person1","type": "Person"}`
 
-|Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
+|List/set/bag of `VERTEX<type>` |Use a JSON array containing a list of
 JSON `VERTEX<type>` objects |`[{"id": "person1"}, {"id": "person2"}]`
 |===
 

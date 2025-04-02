@@ -622,11 +622,19 @@ When you write to an S3 path, any existing object will be overwritten.
 
 == Query parameter types
 
-Input parameters to a query can be base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
-A parameter can also be a `SET` or `BAG` which uses base type (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`) as the element type. A `FILE` object can also be a parameter.
-Within the query, `SET` and `BAG` are converted to xref:accumulators.adoc#_setaccum[`SetAccum`] and xref:accumulators.adoc#_bagaccum[`BagAccum`], respectively.
+A query can have one or more input parameters having any of the following types:
 
-[WARNING]
+* xref:#_base_types[Base types] (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
+* xref:#_file_object[FILE object]
+* A `SET` or `BAG` of base type elements (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
+* As of 4.2, `LIST` and `MAP` of base type elements are also supported.
+
+Within the query, `SET`, `BAG`, `LIST`, and `MAP` parameters are converted to xref:accumulators.adoc#_setaccum[`SetAccum`],
+xref:accumulators.adoc#_bagaccum[`BagAccum`],
+xref:accumulators.adoc#_listaccum[`ListAccum`], and
+xref:accumulators.adoc#_mapaccum_[`MapAccum`], respectively.
+
+[NOTE]
 ====
 A query parameter is immutable. It cannot be assigned a new value within the query.
 
@@ -646,16 +654,21 @@ parameterType := INT
                | BOOL
                | VERTEX ["<" vertexType ">"]
                | DATETIME
-               | [ SET | BAG ] "<" baseType ">"
+               | [ SET | BAG | LIST | MAP] "<" baseType ">"
                | FILE
 ----
 
 
 
-.Examples of collection type parameters
+.Examples of base type and collection type parameter declarations
 [source,gsql]
 ----
-(SET<VERTEX<person> p1, BAG<INT> ids, FILE f1)
+(STRING name, BAG<INT> ids, SET<VERTEX<person>> friends, FILE f1)
 ----
 
+For how to declare the parameters in a query, see xref:querying:query-operations.adoc#_parameters[CREATE QUERY: parameterList].
 
+For how to run a query, see
+
+* xref:querying:query-operations.adoc#_query_parameters[Parameters went running a query in the GSQL CLI].
+* xref:tigergraph-server:API:gsql-endpoints.adoc#_format_for_parameters_of_query_being_run[Parameters when running a query as a REST endpoint].

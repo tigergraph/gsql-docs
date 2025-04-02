@@ -36,8 +36,8 @@
 ** xref:comments.adoc[]
 
 * Profile and Optimize
-** xref:profile-and-optimize/query-plan-cache.adoc[]
-** xref:profile-and-optimize/query-profiling.adoc[]
-** xref:profile-and-optimize/index.adoc[]
-*** xref:profile-and-optimize/enable-cost-optimizer.adoc[Enable Query Optimizer]
-*** xref:profile-and-optimize/stats-api.adoc[]
+** xref:query-optimizer/query-plan-cache.adoc[]
+** xref:query-optimizer/query-profilng.adoc[]
+** xref:query-optimizer/index.adoc[]
+*** xref:query-optimizer/enable-cost-optimizer.adoc[Enable Query Optimizer]
+*** xref:query-optimizer/stats-api.adoc[]

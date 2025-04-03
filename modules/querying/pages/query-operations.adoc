@@ -994,8 +994,30 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:14240/restpp/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
-To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
+To check the status and results of the queries executed in Detached Mode, use the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
 
+==== Query Profiling -profile Option
+
+The `-PROFILE` option allows you to activate query profiling when running a query in GSQL. Currently, the only supported value for profiling is `BASIC`, which enables basic query profiling to view and analyze execution details. 
+By default, this option is empty, and profiling is not activated.
+
+*Example 1: Run query with profiling activated*
+
+[source,gsql]
+----
+RUN QUERY -PROFILE BASIC <queryName>
+----
+
+*Example 2: Run query in async mode with profiling activated*
+
+[source,gsql]
+----
+RUN QUERY -ASYNC -PROFILE BASIC <queryName>
+----
+
+You can also use the `-PROFILE` option with the `-async` option to run the query asynchronously and retrieve real-time profiling data. 
+This is useful for long-running queries where you need to monitor the execution while the query is still running. 
+Once the query is submitted, you can use the `/query_status` API to get profiling data for that query.
 
 == GSQL Query output format
 

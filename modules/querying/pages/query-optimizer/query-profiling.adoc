@@ -1,2 +1,426 @@
 = Query Profiling
+:toclevels: 1
 :description: Query Profiling provides data to analyze the details of a query execution.
+
+This page provides an overview of query profiling in TigerGraph, a feature introduced in version 4.2.0. 
+Query profiling allows users to view detailed metrics and data about a query's execution, whether it is running or completed. 
+By analyzing query profiling data, users can identify performance bottlenecks, troubleshoot issues, and optimize queries for better performance.
+
+== Introduction
+
+Query profiling is designed to provide insights into query execution, allowing users to examine the performance of a query in real-time or after completion. This data helps identify potential areas for optimization and diagnose performance issues. 
+You can use query profiling to gain visibility into execution times, memory usage, and the number of vertices and edges accessed during query processing.
+
+== Scope
+
+=== Query Syntax
+
+This feature applies only to GSQL syntax and is not supported for OpenCypher syntax at this time.
+
+=== Query Mode
+
+Query profiling is supported for the following types of queries:
+
+* Installed *DISTRIBUTED* user-defined queries
+* Installed *NON-DISTRIBUTED* user-defined queries, if installed with the `-SINGLE` flag (e.g., `INSTALL QUERY -SINGLE q1`)
+* Three built-in endpoints:
+** `/kstep_expansion`
+** `/allpaths`
+** `/searchvertex`
+
+For these queries, profiling data will include more detailed information about memory usage and the overall query execution, as explained in the xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc[Profiling Data Explanation] section below.
+
+== Prerequisite
+
+To enable query profiling, users must have the READ QUERY or OWNERSHIP privileges for the query being executed. 
+If RESTPP authentication is enabled, users will need to ensure they have the appropriate privileges. 
+Otherwise, they may encounter an error message like this:
+
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 1
+  },
+  "error": true,
+  "message": "Insufficient permissions to enable profiling on this request.",
+  "required_privileges": {
+    "Query Privileges": {
+      "GRAPHS": {
+        "SocialNet": {
+          "QUERIES": {
+            "qTest": {
+              "QUERY-LEVEL Privileges": [
+                "READ [MISSING]"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "code": "REST-15001"
+}
+----
+
+== How to Activate Profiling
+
+In TigerGraph version 4.2.0, profiling can be activated using the *PROFILE* flag. Currently, only one profiling mode, `BASIC`, is available.
+
+=== RESTPP Request
+
+Add the header -H "PROFILE: BASIC" to the request to activate profiling via RESTPP. Here’s an example:
+
+[source.wrap,bash]
+----
+curl -H "PROFILE: BASIC" -X POST 'http://localhost:14240/restpp/query/testGraph/qtest'
+----
+
+If you want to fetch real-time profiling data for an asynchronous request, you can use the `/query_status` endpoint:
+
+[source.wrap,bash]
+----
+// Send async request with profiling activated
+curl -H "GSQL-ASYNC: true" -H "PROFILE: BASIC" -X GET 'http://localhost:14240/restpp/query/testGraph/qtest'
+
+// Get real-time profiling data
+curl -X GET "http://localhost:14240/restpp/query_status?requestid=$reqid"
+----
+
+=== GSQL
+
+In GSQL Shell, you can activate profiling in two ways:
+
+==== RUN QUERY Option
+
+[source, gsql]
+----
+GSQL > RUN QUERY -PROFILE BASIC qtest()
+----
+
+==== GSQL Session Parameter
+
+[source, gsql]
+----
+GSQL > SET PROFILE = "BASIC"
+GSQL > RUN QUERY qtest()
+----
+
+== Profiling Data Explanation
+
+When profiling is activated, the query result JSON and the `/query_status` output for real-time profiling will include a field called `profile`, which contains the profiling data.
+
+=== Profile Query Stages Breakdown
+
+To understand the query profiling stages, consider the following simple example:
+
+[source, gsql]
+----
+CREATE DISTRIBUTED QUERY qTest(INT temp) {
+	INT threshold = 90;                     // statementKey 1 (1 action)
+	IF temp > threshold THEN                // statementKey 2 (2 child statements)
+	  STRING new_state = "sweat";           // statementKey 2.1 (1 action)
+	  vSet = SELECT s from person:s         // statementKey 2.2 (3 actions: create_vset, vertex, reduce)
+	         POST-ACCUM s.state = new_state;
+	END;
+}
+----
+
+The execution of this query `qTest` can be broken down into the following stages:
+
+* *Scheduling*: The stage between when TigerGraph receives the request and assigns a thread to process it.
+* *Execution*: This stage includes several sub-stages:
+** *Initialization*: Initializes global variables and starts workers on all nodes for distributed queries.
+** *Processing*: The main logic of the query, including control flow, graph traversal, and data processing.
+** *Finalization*: Constructs and sends the query result.
+
+Within the *Processing* stage, there are two types of fine-grained stages:
+
+* *Statement*: Represents a complete statement in the original query (e.g., graph traversal, control-flow).
+* *Action*: Represents the smallest unit of execution in the final query plan. A statement without child statements will have child actions, while a statement with child statements will not have child actions.
+
+=== General Metrics
+
+Query profiling includes several general metrics at different levels (Query, Statement, and Action). Some of the key metrics are:
+
+==== ExecutionCount
+
+This metric indicates how many times a particular stage has been executed and completed. It does not count stages that are currently in progress.
+
+==== Time
+
+The time metric provides the following data:
+
+* *startTime*: The start time of the stage.
+* *endTime*: The end time of the stage.
+
+[NOTE]
+====
+If the execution count is greater than 1, the *startTime* and *endTime* fields will not be provided.
+====
+
+==== Memory
+
+The memory metric tracks memory usage across different GPE nodes. 
+It includes data for `vertexAccumulator` memory, which represents memory used by vertex-attached accumulators.
+
+Notice the vertexAccumulator include internal variables not explicitly declared in original query, so it can be non-zero even there’s no VERTEX-attached accumulators declared.
+
+Key memory fields:
+
+* *totalPeakMB*: Peak memory usage during the stage execution.
+* *totalFinalMB*: Memory usage at the end of the stage.
+
+==== Topology
+
+Data for this metric is separated to different GPE nodes, with name in format `GPE_<partId>_<replicaId>`.
+
+For each GPE node, this metric contains non-zeros values for following fields:
+
+* `vertex`
+** `readCount`: The number of accesses to vertices.
+
+* `edge`
+** `readCount`: The number of accesses to edges.
+
+* `table`
+** `rowCount`: The number of accesses to table rows.
+
+* `join`
+** `totalCount`: The total number of join operations.
+
+=== Profiling Data Hierarchy
+
+Profiling data is organized in three hierarchical levels: Query, Statement, and Action. 
+Each level provides additional details about the query execution.
+
+==== Query Level
+
+This is for field `profile.overall`. It may contain the following extra fields.
+
+* `runningActionKey`: current on-going action. It only appears before query completes.
+* `time`
+** `scheduling`
+*** `schedulingTimeMs`: time spent on “Scheduling”
+*** `schedulingTimePercentage`: percentage of `schedulingTimeMs` to the `totalTimeMs`.
+** `execution`
+*** `initialization`
+**** `initializationTimeMs`: time spent on “Initialization”
+**** `initializationTimePercentage`: percentage of `initializationTimeMs` to the `totalTimeMs`.
+*** `processing`
+**** `processingTimeMs`: time spent on “Processing”
+**** `processingTimePercentage`: percentage of `processingTimeMs` to the `totalTimeMs`.
+*** `finalization`
+**** `finalizationTimeMs`: time spent on “Finalization”
+**** `finalizationTimePercentage`: percentage of `finalizationTimeMs` to the `totalTimeMs`.
+** `totalTimeMs`: total time of query run, including “Scheduling” and “Execution”.
+
+==== Statement Level
+
+Element in `profile.statements` are statement-level entries. 
+A statement-level entry can also contain child statements. Each statement-level entry represents a statement in the original query.
+It may contain the following extra fields:
+
+* `statementKey`: this is unique key for this statement in the original query.
+* `statementType`: type of this statement in the original query.
+* `statementText`: text of this statement in the original query.
+* `statementOverall`
+** `time`
+*** `processingTimeMs`: time spent on this statement, including all executions.
+*** `processingTimePercentage`: percentage of `processingTimeMs` to query-level `totalTimeMs`.
+*** `averageProcessingTimeMs`: average process time of each execution. It only appears when `executionCount > 1`.
+* `statements`: child statement entries of this statement.
+* `actions`: child action entries of this statement.
+
+==== Action Level
+
+Elements in `actions` of statement-level entry are action-level entries. 
+Each action-level entry represents a minimum execution unit in execution plan, from final transformed and optimized query.
+It may contain the following extra fields:
+
+* `actionKey`: this is unique key for this action.
+* `actionType`: type of this action in the final transformed query.
+* `actionText`: text of this action in the final transformed query.
+* `actionOverall`
+** `time` 
+*** `processingTimeMs`: time spent on this action, including all executions.
+*** `processingTimePercentage`: percentage of `processingTimeMs` to query-level `totalTimeMs`.
+*** `averageProcessingTimeMs`: average process time of each execution. It only appears when `executionCount > 1`.
+
+== Disable Query Profiling Feature
+
+If the Query Profiling feature is causing issues, it can be disabled for all installed queries by adding `DISABLE_PROFILE=true;` to `GSQL.BasicConfig.Env`, then re-install all queries.
+
+== Limitation
+
+While query profiling is a powerful tool for diagnosing and optimizing query performance, there are some limitations:
+
+* It does not support OpenCypher syntax.
+* It does not support `INTERPRET` queries.
+* It is not available for non-distributed queries unless installed with the `-SINGLE` flag.
+* Profiling does not include data for subqueries.
+* Memory metrics do not account for edge and global accumulators.
+* Topology metrics do not include attribute data.
+* Profiling does not track create/update/delete operations in the topology metric.
+
+== Profiling Data Example
+
+=== Example of Profiling Data for Finished Request
+
+Below is an example final result for a request of query `qTest`, with profiling enabled. It’s running on a 2x1 cluster.
+
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [],
+  "profile": {
+    "queryName": "qTest",
+    "requestId": "16973826.RESTPP_1_1.1742242555505.N",
+    "serverId": "GPE_1_1",
+    "overall": {
+      "executionCount": 1,
+      "time": {
+        "startTime": "2025-03-17 20:15:55.505 UTC",
+        "endTime": "2025-03-17 20:16:02.420 UTC",
+        "totalTimeMs": 6915,
+        "scheduling": {
+          "schedulingTimeMs": 1,
+          "schedulingTimePercentage": 0.0145
+        },
+        "execution": {
+          "executionTimeMs": 6914,
+          "executionTimePercentage": 100,
+          "initialization": {
+            "initializationTimeMs": 4,
+            "initializationTimePercentage": 0.0578
+          },
+          "processing": {
+            "processingTimeMs": 6910,
+            "processingTimePercentage": 99.9
+          },
+          "finalization": {
+            "finalizationTimeMs": 0,
+            "finalizationTimePercentage": 0
+          }
+        }
+      },
+      "memory": {
+        "GPE_2_1": {
+          "vertexAccumulator": {
+            "totalPeakMB": 23,
+            "totalFinalMB": 21
+          }
+        },
+        "GPE_1_1": {
+          "vertexAccumulator": {
+            "totalPeakMB": 23,
+            "totalFinalMB": 21
+          }
+        }
+      },
+      "topology": {
+        "GPE_2_1": {
+          "vertex": {
+            "readCount": 12360296
+          }
+        },
+        "GPE_1_1": {
+          "vertex": {
+            "readCount": 12368774
+          }
+        }
+      }
+    },
+    "statements": [....] // Nested statement, details not showm
+      }
+    ]
+  }
+}
+----
+
+=== Example of Realtime Profiling Data for Running Request
+
+Below is an example output of `/query_status` for an async request of query `qTest`, with profiling enabled, running on a 2x1 cluster. 
+You can notice this field `"runningActionKey": "2.2.3"`, which indicates the current running action. And there’s not much profiling data in `"actionOverall"` for `"actionKey": "2.2.3"`, except for the `"startTime"`.
+
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "requestid": "16973827.RESTPP_1_1.1742242692587.N",
+      "startTime": "2025-03-17 20:18:12.587",
+      "expirationTime": "2025-03-17 20:18:28.587",
+      "url": "/query/SocialNet/qTest?temp=93",
+      "elapsedTime": 1137,
+      "status": "running",
+      "user": "",
+      "profile": {
+        "queryName": "qTest",
+        "requestId": "16973827.RESTPP_1_1.1742242692587.N",
+        "serverId": "GPE_2_1",
+        "overall": {
+          "executionCount": 0,
+          "runningActionKey": "2.2.3",
+          "time": {
+            "startTime": "2025-03-17 20:18:12.583 UTC",
+            "scheduling": {
+              "schedulingTimeMs": 0
+            },
+            "execution": {
+              "initialization": {
+                "initializationTimeMs": 4
+              },
+              "processing": {}
+            }
+          },
+          "memory": {
+            "GPE_1_1": {
+              "vertexAccumulator": {
+                "totalPeakMB": 24,
+                "totalFinalMB": 21
+              }
+            },
+            "GPE_2_1": {
+              "vertexAccumulator": {
+                "totalPeakMB": 23,
+                "totalFinalMB": 21
+              }
+            }
+          },
+          "topology": {
+            "GPE_1_1": {
+              "vertex": {
+                "readCount": 6184387
+              }
+            },
+            "GPE_2_1": {
+              "vertex": {
+                "readCount": 6180148
+              }
+            }
+          }
+        },
+        "statements": [....] // Nested statement, details not showm
+      }
+    }
+  ],
+  "code": "REST-0000"
+}
+----

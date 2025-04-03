@@ -1,0 +1,203 @@
+= FROM Clause (Syntax V3 - GQL Compatible)
+:navtitle: From Clause (V2)
+:toc:
+
+[#_from_clause]
+The FROM clause in GSQL is used to define path patterns for traversing the graph structure.
+It is analogous to the MATCH clause in OpenCypher.
+
+It has the form
+
+ FROM path_pattern
+
+A _path_ is a chain of vertices, linked by edges.
+A _path pattern_ is a template expression for a path.
+Formally, it is a chain of _vertex patterns_, linked by _edge patterns_.
+The `FROM` clause searches for all paths that satisfy the path pattern.
+
+Here is an example of a FROM clause:
+
+ FROM (s:Student) -[e:visited]-> (c:Country)
+
+`(s:Student)` and `(c:Country)` are vertex patterns.
+`-[e:visited]\->` is an edge pattern.
+
+[NOTE]
+====
+GSQL V3 supports the path pattern syntax of GQL as well as the GSQL V2 syntax.
+The language parser automatically detects which syntax you are using.
+====
+
+[#_vertex_and_edge_aliases]
+== Pattern Matching and Aliases
+
+The path pattern in preceding section means find the students who visited at least one country.
+When a query is executed, a FROM clause generates a _binding table_. In this example, the columns of the table are `s`, `e`, and `c`, the three _aliases_. Each row of the table is a full set of aliases values that satisfies the pattern.
+
+For example, if
+
+[console]
+----
+ Maria visited Germany
+ Ahmed visited Japan
+----
+
+Aliases enable the subsequent parts of the query to refer to the pattern matches.  For example `s` is the set (Maria, Ahmed). Likewise `c` is (Germany, Japan)
+
+However, if a clause refers to multiple aliases, it will maintain the row-wise integrity of the table.
+For example, if an expression refers to both `s` and `c`, it will yield (Maria, Germany) and (Ahmed, Japan).
+It will not yield (Maria, Japan) pr (Ahmed, Germany).
+
+
+== Vertex Patterns
+
+A vertex pattern expresses a set of candidate vertices.
+The fundamental notation is a pair of parentheses `( )`.
+Within the parentheses is an _alias_, following by a colon, following by one or more vertex sets or vertex types, separated by vertical bars.  This is optionally followed by a _pattern filter_.
+
+`(c:company)`
+
+Strictly speaking, the alias and vertex sets are optional, as shown in the table below.
+
+.Vertex Pattern Examples
+[cols="2,3", separator="!"]
+|===
+! Example ! Explanation
+
+!`(v:Account)`
+!All Account vertices, aliased with `v`
+
+!`(:Account)`
+!All Account vertices. No alias, so the matching vertices cannot be referred to later in the query.
+
+!`(v:)`
+!All vertices, aliased with `v`
+
+!`(v:Account|Post)`
+!All Account and Post vertices, aliased with `v`
+
+!`(v:Post {owner: "Lee"})`
+!All Post vertices which satisfy the filter of attribute `owner` be equal to `Lee`, aliased with `v`
+|===
+
+== Edge Patterns
+
+An edge pattern expresses a set of candidate edges.
+Edge patterns are more complicated than vertex patterns because edges have directionality.
+The fundamental notation is a pair of square brackets [ ], which are themselves bracketed by _directionality markers_.
+
+Within the square brackets, the syntax is analogous to that of vertex patterns: an alias, a set of edge types or edge sets, and an optional filter.
+
+The table below lists the directionality markers.
+
+.Edge Directionality
+[cols="1,^1", separator="!", none]
+|===
+! Orientation ! Example
+
+! Directed Left
+! `\<-[e]-`
+
+! Directed Right
+! `-[e]\->`
+
+! Directed Left or Right
+! `\<-[e]\->`
+
+! Undirected
+! `\~[e]~`
+
+! Undirected or Directed Left
+! `<\~[e]~`
+
+! Undirected or Directed Right
+! `\~[e]~>`
+
+! Undirect, Directed Left, or Directed Right
+! `-[e]-`
+|===
+
+=== Pattern Quantifiers
+
+GSQL has a special syntax for a repeated sequence of a pattern (usually repeated edges).
+This shorthand is useful when the pattern is focusing only on the relationships (e.g., number of hops) and does not need to refer to the vertices amidst the repeated edges. For example,
+
+ (s:Person{name:"Paul Erdos"}) -[:coauthor]-{1:3} (t:Person)
+
+means find all the Persons (alias `t`) who are within 3 degrees of coauthor connection with Paul Erdos.
+
+GSQL V3 supports two notations for edge quantifiers, GQL style and the GSQL style originating in GSQL V2.
+
+.GQL Style Pattern Quantifiers
+[cols="1,2, 2", separator="!", none]
+|===
+! Orientation ! Description ! Example
+
+! `{m,n}`
+! from m to n repetitions
+! `-[:paid]\->{2,4}`
+
+! `{m,}`
+! m or more repetitions
+! `-[:paid]\->{2,}`
+
+! `{,n}`
+! from 0 to n repetitions
+! `-[:paid]\->{,4}`
+
+! `*`
+! 0 or more repetitions
+! `-[:paid]\->*`
+
+! `+`
+! 1 or more repetitions
+! `-[:paid]\->+`
+|===
+
+.GSQL Style Pattern Quantifiers
+[cols="1,2, 2", separator="!", none]
+|===
+! Orientation ! Description ! Example
+
+! `*m..n*`
+! from m to n repetitions
+! `-[:paid*2..4]\->`
+
+! `*m..`
+! m or more repetitions
+! `-[:paid*m..]\->`
+
+! `*..n`
+! 0 to n repetitions
+! `-[:paid*..n]\->`
+
+! `*n`
+! exactly n repetitions
+! `-[:paid*n]\->*`
+
+! `*`
+! 1 or more times
+! `-[:paid*]\->*`
+|===
+
+=== Conjunctive Pattern Matching
+
+The pattern we have described so far are all linear path patterns.
+You can combine two or more linear path patterns, simply by forming them as a comma-separated list.
+They form a conjunction, meaning all of them must be satisfied in order to have a valid match result.
+
+The aliases used among them are shared.
+So, if you use `s` in one pattern and `s` in another pattern, the are the same `s`.
+This enables you to combine the linear patterns to for a "V"-shaped or "X"-shaped pattern
+
+For example:
+
+[console]
+----
+(p:Person{name:"Paul Erdos"}) -[:coauthor]-{1:3} (t:Person),
+(k:Person{name:"Kevin Bacon"}) -[:worked_with]-{1:3} (t:Person)
+----
+
+Find Persons (alias `t`) who both are within 3 coauthorship hops of Paul Erdos and within 3 coworker hops of Kevin Bacon.
+
+

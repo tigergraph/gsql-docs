@@ -56,7 +56,55 @@ You need the `WRITE_SCHEMA` privilege in the scope you are operating on to run c
 To learn more about permission and privileges, see xref:tigergraph-server:user-access:access-control-model.adoc[].
 ====
 
-== `CREATE VERTEX`
+== Global and Local Schemas
+
+In GSQL schema terminology, a *_graph_* is a subset of the database's vertex types and related edge types. That is, it is a subschema of the graph's total (global) schema.
+(See xref:{page-component-version}@tigergraph-server:intro:multigraph-overview.adoc[]).
+
+Each graph is an access domain; users are granted the privilege to work on a particular graph(s).
+We use *_local_* to mean graph-level as opposed to global level.
+
+Each vertex type or edge type is created as either global or local.
+
+A global type:
+
+* Can only be created or modified by a user with global schema prilivege, using xref:_create_vertex[] and xref:_create_edge[].
++
+NOTE: Run xref:modifying-a-graph-schema.adoc#_use_global[] first to enter global mode.
+
+* Is put to use by assigning it to one or more local graph schemas, with xref:_create_graph[] or xref:modifying-a-graph-schema.adoc#_create_global_schema_change_job[GLOBAL SCHEMA CHANGE]. This means it is shared: any change to a global vertex is seen by all graphs that have that vertex.
+* Queries run only on (local) graphs, not on the global schema.
+
+A local type:
+
+* Can only be created or modified by a user with schema privilege for that particular graph, using a xref:modifying-a-graph-schema.adoc[(local) SCHEMA CHANGE JOB] (not with CREATE VERTEX/EDGE).
+* Is visible only to users with read privilege on that graph.
+
+Hence, a local graph can be a combination of global (shared) and local element types.
+
+Suppose we have Book and User vertex types which are both global.  The friend_of and user_book_rating edges are local, belonging to the Rating_graph and Social_graph, respectively.
+The bracketed numbers refer on one possible sequence for how the database got to this state.
+
+[cols="<,^,^,^"]
+|===
+|  type                | scope  |Rating_graph <3>| Social_graph <5>
+
+| Book <1>             | global |   x  <3>       |    x <7>
+| User <2>             | global |   x  <3>       |    x <5>
+| user_book_rating <4> | local  |   x  <4>       |
+| friend_of <6>        | local  |                |    x <6>
+|===
+
+1. Book was created with CREATE VERTEX.
+2. User was created with CREATE VERTEX.
+3. Rating_graph was created with CREATE GRAPH, containing Book and User vertices.
+4. user_book_rating was created with a SCHEMA CHANGE JOB on Rating_graph.
+5. Social_graph was created with CREATE GRAPH, containing only User vertices.
+6. friend_of was created with a SCHEMA CHANGE JOB on Social_graph.
+7. Book was added to Social_graph using a GLOBAL SCHEMA CHANGE JOB.
+
+
+== CREATE VERTEX
 
 *Required privilege*: `WRITE_SCHEMA`
 
@@ -274,7 +322,7 @@ image::comms-graph-outdegree.png["Diagram of a graph with five person vertices. 
 | 1
 |===
 
-== `CREATE EDGE`
+== CREATE EDGE
 
 `CREATE EDGE` defines a new global edge type. Data loaded to a global edge type in one graph will be shared across all graphs that use that edge type.
 See xref:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global vs. local schema changes] for instructions on creating local edges.
@@ -463,7 +511,7 @@ Example:
 
 `ALTER VERTEX User ADD INDEX user_country_index ON (country);`
 
-== `CREATE GRAPH`
+== CREATE GRAPH
 
 `CREATE GRAPH` defines a graph schema, which contains the given vertex types and edge types, and prepares the graph store to accept data.
 The vertex types and edge types may be listed in any order.

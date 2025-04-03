@@ -1,24 +1,45 @@
 = Modifying a Graph Schema
+:description: How to create and run schema changes; the side effects of schema change; global vs. local schema changes.
 
-After a graph schema has been created , it can be modified. Data already stored in the graph and which is not logically part of the change will be retained. For example, if you had 100 Book vertices and then added an attribute to the Book schema, you would still have 100 Books, with default values for the new attribute. If you dropped a Book attribute, you still would have all your books, but one attribute would be gone.
+GSQL lets you modify a graph schema -- add or remove vertex types, edge types, or attributes.  Data already stored in the graph and which is not logically part of the change is unaffected.
+For example, if you had 100 Book vertices and then added an attribute to the Book schema, you would still have 100 Books, with default values for the new attribute. If you dropped a Book attribute, you still would have all your books, but one attribute would be gone.
 
-To safely update the graph schema, the user should follow this procedure:
+The schema change workflow is as follows:
 
-* Create a schema change job, which defines a sequence of `ADD`, `ALTER` and/or `DROP` statements.
-* Run the schema change job (using *`RUN SCHEMA_CHANGE JOB <job name>`*), which will do the following:
-** Attempt the schema change.
-** If the change is successful, invalidate any loading job or query definitions which are incompatible with the new schema.
-** if the change is unsuccessful, report the failure and return to the state before the attempt.
+. xref:#_create_global_schema_change_job[Create a schema change job], which defines a sequence of `ADD`, `ALTER` and/or `DROP` statements.
+
+. [Recommended] If your schema change will drop any elements, prescreen your xref:#_side_effects_of_schema_change[queries and loading jobs for expected side effects].
+
+. Either stop all database activity or read carefully the section on xref:#_dynamic_schema_change__abilities_and_limitations[dynamic schema change] to see what concurrent activity is reasonable.
+
+. xref:#_run_global_schema_change_job[Run the schema change job], which will do the following:
+** It attempts the schema change.
+** It aborts in-progress loading jobs or queries, depending on the options selected by the user.
+** When the schema change is complete, xref:#_side_effects_of_schema_change[it invalidates any loading job or query definitions which are incompatible] with the new schema.
+** If the change was unsuccessful, it reports the failure and return to the state before the attempt.
+
+. Review loading jobs and queries which we invalidated.
+If they are still wanted, revise them and reinstall them to be consistent with the new schema.
+
+
+== Side Effects of Schema Change
+
+When a schema changes, this has side effects on loading jobs and queries, both ones in the catalog and especially ones which may be actively running during the schema change.
 
 [WARNING]
 ====
 A schema change will invalidate any loading jobs or query which relate to an altered part of the schema. Specifically:
 
-* A loading job becomes invalid if it refers to a vertex or and an edge which has been *dropped* (deleted) or *altered* .
-* A query becomes invalid if it refers to a vertex, and edge, or an attribute which has been *dropped* .
+* A loading job becomes invalid if it refers to a vertex type or an edge type that has been DROPPED or ALTERED.
 
-Invalid loading jobs are dropped, and invalid queries are uninstalled. After the schema update, the user will need to create and install new load and query jobs based on the new schema.
+* A query becomes invalid if it refers to a vertex type, edge type, or an attribute of a type that has been DROPPED.
+
+Invalid loading jobs are moved to the `disabled` state, and invalid queries are uninstalled. After the schema change, a user will need to create and install new load and query jobs based on the new schema.
 ====
+
+Prior to 4.2, invalid loading jobs would be dropped (removed) from the catalog.  Beginning with 4.2, loading jobs invalidated by a schema change are retained but marked as `disabled`. They cannot be re-enabled. They are retained for reference so users can read them, as a guide to creating a new loading job that is consistent with the new schema.
+
+Even queries which are not invalidated by a schema change may behave differently, if they traverse _all_ vertices or _all_ edges.
 
 [WARNING]
 ====
@@ -28,6 +49,42 @@ Load or query operations which begin before the schema change will be completed 
 Schema changes that are performed during times with high query or data loading volume may have a chance of failure.
 It is considered good practice to perform schema changes during times of low graph activity.
 
+== Dynamic Schema Change - Abilities and Limitations
+
+Dynamic Schema Change (DSC) acts as a traffic manager for schema change jobs.  First, if there are any active loading jobs in progress when a schema change is requested, and the schema change affects a graph element included in the loading job, DSC should pause the schema change until the loading job completes.
+
+Once the schema change begins, DSC enables a modest amount of database activity (queries and loading) during a schema change, but ONLY if those operations do not involve graph elements affected by the schema change. If the activity level is too high, there is a risk of either the schema change job not succeeding, the concurrent database activity not succeeding, or both.
+
+[WARNING]
+====
+For maximum safety, is it best to halt all graph activity before and during a schema change. If a schema change job fails, it can leave the graph in an inconsistent state.
+====
+
+[IMPORTANT]
+====
+Perform schema changes only when no active queries or loading jobs are running to avoid data consistency and application errors.
+Always abort ongoing jobs before initiating the schema change.
+====
+
+=== Do's and Don'ts for Schema Change
+
+Because the demands of each graph activity vary, there is no universal way to state what level of concurrent graph activity can be handled by dynamic schema change.
+
+*Do's:*
+
+* *Do backup your data before performing a schema change* as a precaution.
+* *Do perform schema changes only during no- or low-traffic periods.*
+
+*Don'ts:*
+
+* *Don’t change the schema during high-traffic periods.* Schema changes during heavy operations may cause system conflicts and errors.
+* *Don't run queries and loading jobs which you know are affected by the schema* as they will be invalidated.
+
+*For maximum safety:*
+
+* *Don’t run any queries or loading jobs during schema changes.*
+
+
 [#_global_vs_Local_schema_changes]
 == Global vs. local schema changes
 
@@ -36,7 +93,8 @@ It is considered good practice to perform schema changes during times of low gra
 Users must have the global scope to interact with global schema change jobs (create, delete, run). See xref:_use_global[].
 ====
 
-=== `USE GLOBAL`
+
+=== USE GLOBAL
 
 The `USE GLOBAL` command changes a superuser's mode to Global mode.
 In global mode, a superuser can define or modify global vertex and edge types, as well as specifying which graphs use those global types.
@@ -261,10 +319,93 @@ CREATE SCHEMA_CHANGE JOB add_reviews FOR GRAPH Book_Rating {
 RUN SCHEMA_CHANGE JOB add_reviews
 ----
 
-=== -N Option (Local and Global)
+=== Run Schema Change Options
 
-Additionally, an option `-N` is currently supported for both local and global schema change jobs.
-See xref:_n_option[] for more details.
+==== `-warn`
+
+Before beginning the schema change, check to see if any loading jobs in progress have a schema conflict with the planned changes.
+If so, ask the user if they want to abort the loading jobs.
+
+Example:
+
+[console]
+----
+GSQL > RUN GLOBAL SCHEMA_CHANGE JOB change_vt_comment -warn
+
+[Warning] This schema change job will disrupt the following loading jobs:
+  - Graph test_graph:
+    load_ldbc_snb
+Do you want to abort these loading jobs to proceed the schema change? (Y/n):yes
+
+WARNING: When modifying the graph schema, reinstalling all affected queries is required, and the duration of this process may vary based on the number and complexity of the queries. To skip query reinstallation, you can run with the '-N' option, but manual reinstallation of queries will be necessary afterwards.
+[Warning] Following loading jobs will be aborted:
+
+  - Graph test_graph:
+    load_ldbc_snb
+
+Kick off global schema change job change_vt_comment
+Doing schema change on graph 'test_graph' (current version: 0)
+
+Doing schema change on the global schema (current version: 0)
+Trying to drop attribute 'content' from global vertex 'Comment'.
+Loading job 'load_ldbc_snb' from graph 'test_graph' will be disabled after schema change.
+
+Graph test_graph updated to new version 1
+Global schema change succeeded.
+----
+
+==== `-force`
+
+Before beginning the schema change, check to see if any loading jobs in progress have a schema conflict with the planned changes. If so, abort the loading jobs.
+
+Example:
+----
+GSQL > RUN GLOBAL SCHEMA_CHANGE JOB change_vt_comment -force
+
+WARNING: When modifying the graph schema, reinstalling all affected queries is required, and the duration of this process may vary based on the number and complexity of the queries. To skip query reinstallation, you can run with the '-N' option, but manual reinstallation of queries will be necessary afterwards.
+[Warning] Following loading jobs will be aborted:
+
+  - Graph test_graph:
+    load_ldbc_snb
+
+Kick off global schema change job change_vt_comment
+Doing schema change on graph 'test_graph' (current version: 0)
+
+Doing schema change on the global schema (current version: 0)
+Trying to drop attribute 'content' from global vertex 'Comment'.
+Loading job 'load_ldbc_snb' from graph 'test_graph' will be disabled after schema change.
+
+Graph test_graph updated to new version 1
+Global schema change succeeded.
+----
+
+
+
+
+
+
+==== `-N`
+
+
+
+Option `-N`, for both global and local scopes, marks all queries as invalid and the user will need to manually re-install the invalid queries.
+
+Local jobs with the `-N` option will skip recompile and reinstall queries created for the local graph.
+
+.Example
+[source,gsql]
+----
+RUN SCHEMA_CHANGE JOB test_job -N
+----
+
+Global jobs with the `-N` option will skip recompile and re-install queries.
+
+.Example
+[source,gsql]
+----
+RUN GLOBAL SCHEMA_CHANGE JOB test_job -N
+----
+
 
 
 == `DROP JOB SCHEMA_CHANGE`
@@ -454,30 +595,10 @@ CREATE GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library {
 RUN GLOBAL SCHEMA_CHANGE JOB alter_friendship_make_library
 ----
 
-=== `-N` Option
+=== Run Global Schema Change Options
 
-Additionally, an option `-N`  is currently supported for both local and global schema change jobs.
+RUN GLOBAL SCHEMA CHANGE JOB has the xref:#_run_schema_change_options[same options as RUN SCHEMA CHANGE JOB].
 
-[NOTE]
-====
-Option `-N`, for both global and local scopes,  will mark the queries as deprecated and the user will need to manually re-install the deprecated queries.
-====
-
-Local jobs with the `-N` option will skip recompile and reinstall queries created for the local graph.
-
-.Example
-[source,gsql]
-----
-RUN SCHEMA_CHANGE JOB test_job -N
-----
-
-Global jobs with the `-N` option will skip recompile and re-install queries.
-
-.Example
-[source,gsql]
-----
-RUN GLOBAL SCHEMA_CHANGE JOB test_job -N
-----
 
 === Impact Warning
 

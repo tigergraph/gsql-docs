@@ -87,15 +87,15 @@ For example, if
 
 [console]
 ----
- Maria visited Germany
- Ahmed visited Japan
+ (Maria) -[visited]-> (Germany)
+ (Ahmed) -[visited]-> (Japan)
 ----
 
 Aliases enable the subsequent parts of the query to refer to the pattern matches.  For example `s` is the set (Maria, Ahmed). Likewise `c` is (Germany, Japan)
 
 However, if a clause refers to multiple aliases, it will maintain the row-wise integrity of the table.
-For example, if an expression refers to both `s` and `c`, it will yield (Maria, Germany) and (Ahmed, Japan).
-It will not yield (Maria, Japan) pr (Ahmed, Germany).
+For example, if an expression refers to  `(s, c)`, it will yield (Maria, Germany) and (Ahmed, Japan).
+It will not yield (Maria, Japan) or (Ahmed, Germany).
 
 === Vertex Patterns
 

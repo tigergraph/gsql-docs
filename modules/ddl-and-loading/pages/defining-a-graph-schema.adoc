@@ -70,7 +70,7 @@ A global type:
 
 * Can only be created or modified by a user with global schema prilivege, using xref:_create_vertex[] and xref:_create_edge[].
 +
-NOTE: Run xref:modifying-a-graph-schema.adoc#_use_global[] first to enter global mode.
+NOTE: Run xref:modifying-a-graph-schema.adoc#_use_global[USE GLOBAL] first to enter global mode.
 
 * Is put to use by assigning it to one or more local graph schemas, with xref:_create_graph[] or xref:modifying-a-graph-schema.adoc#_create_global_schema_change_job[GLOBAL SCHEMA CHANGE]. This means it is shared: any change to a global vertex is seen by all graphs that have that vertex.
 * Queries run only on (local) graphs, not on the global schema.

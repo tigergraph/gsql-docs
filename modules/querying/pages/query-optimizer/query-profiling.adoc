@@ -2,7 +2,7 @@
 :toclevels: 1
 :description: Query Profiling provides data to analyze the details of a query execution.
 
-This page provides an overview of query profiling in TigerGraph, a feature introduced in version 4.2.0. 
+This page provides an overview of query profiling in TigerGraph, a feature introduced in version 4.2. 
 Query profiling allows users to view detailed metrics and data about a query's execution, whether it is running or completed. 
 By analyzing query profiling data, users can identify performance bottlenecks, troubleshoot issues, and optimize queries for better performance.
 
@@ -67,45 +67,62 @@ Otherwise, they may encounter an error message like this:
 
 == How to Activate Profiling
 
-In TigerGraph version 4.2.0, profiling can be activated using the *PROFILE* flag. Currently, only one profiling mode, `BASIC`, is available.
+Activate profiling by setting a profiling mode. Currently, only one profiling mode, `BASIC`, is available.
+You can choose the appropriate method from the options below based on whether you need real-time profiling or asynchronous query execution.
 
 === RESTPP Request
 
-Add the header -H "PROFILE: BASIC" to the request to activate profiling via RESTPP. Here’s an example:
+*Option 1*:
+To activate profiling for a single query and view the profile information in real-time, add the `PROFILE: BASIC` header to your RESTPP request:
 
 [source.wrap,bash]
 ----
 curl -H "PROFILE: BASIC" -X POST 'http://localhost:14240/restpp/query/testGraph/qtest'
 ----
 
-If you want to fetch real-time profiling data for an asynchronous request, you can use the `/query_status` endpoint:
+*Option 2*:
+To run a query asynchronously with profiling enabled, add both the `GSQL-ASYNC: true` and `PROFILE: BASIC` headers to your request:
 
 [source.wrap,bash]
 ----
-// Send async request with profiling activated
 curl -H "GSQL-ASYNC: true" -H "PROFILE: BASIC" -X GET 'http://localhost:14240/restpp/query/testGraph/qtest'
+----
 
-// Get real-time profiling data
+*Option 3*:
+To fetch real-time profiling data for a query running in asynchronous mode, use the `/query_status` endpoint:
+
+[source.wrap,bash]
+----
 curl -X GET "http://localhost:14240/restpp/query_status?requestid=$reqid"
 ----
 
 === GSQL
 
-In GSQL Shell, you can activate profiling in two ways:
-
-==== RUN QUERY Option
-
-[source, gsql]
-----
-GSQL > RUN QUERY -PROFILE BASIC qtest()
-----
-
-==== GSQL Session Parameter
+*Option 1*:
+In GSQL, you can activate profiling for a single query and view the profile information during execution using the following command:
 
 [source, gsql]
 ----
-GSQL > SET PROFILE = "BASIC"
-GSQL > RUN QUERY qtest()
+RUN QUERY -PROFILE BASIC qtest()
+----
+
+*Option 2*:
+To run a query asynchronously in GSQL with profiling enabled, use the `-async` flag:
+
+[source, gsql]
+----
+RUN QUERY -async <queryName>
+----
+
+Make sure to replace `<queryName>` with the name of the query you are running.
+
+*Option 3*:
+You can set the profiling mode for a session in GSQL. Use the `SET PROFILE` command to enable profiling in your session:
+
+[source, gsql]
+----
+SET PROFILE = "BASIC"
+RUN QUERY qtest()
 ----
 
 == Profiling Data Explanation

@@ -998,7 +998,7 @@ To check the status and results of the queries executed in Detached Mode, use th
 
 ==== Query Profiling -profile Option
 
-The `-PROFILE` option allows you to activate query profiling when running a query in GSQL. Currently, the only supported value for profiling is `BASIC`, which enables basic query profiling to view and analyze execution details. 
+The `-PROFILE` option allows you to activate xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc#_gsql[query profiling] when running a query in GSQL. Currently, the only supported value for profiling is `BASIC`, which enables basic query profiling to view and analyze execution details. 
 By default, this option is empty, and profiling is not activated.
 
 *Example 1: Run query with profiling activated*

@@ -1,6 +1,7 @@
 = Query Profiling
-:toclevels: 1
 :description: Query Profiling provides data to analyze the details of a query execution.
+:toc:
+:toclevels: 1
 
 This page provides an overview of query profiling in TigerGraph, a feature introduced in version 4.2. 
 Query profiling allows users to view detailed metrics and data about a query's execution, whether it is running or completed. 
@@ -11,13 +12,11 @@ By analyzing query profiling data, users can identify performance bottlenecks, t
 Query profiling is designed to provide insights into query execution, allowing users to examine the performance of a query in real-time or after completion. This data helps identify potential areas for optimization and diagnose performance issues. 
 You can use query profiling to gain visibility into execution times, memory usage, and the number of vertices and edges accessed during query processing.
 
-== Scope
-
-=== Query Syntax
+== Supported Scope and Limitations
 
 This feature applies only to GSQL syntax and is not supported for OpenCypher syntax at this time.
 
-=== Query Mode
+=== Supported Query Types
 
 Query profiling is supported for the following types of queries:
 
@@ -29,6 +28,18 @@ Query profiling is supported for the following types of queries:
 ** `/searchvertex`
 
 For these queries, profiling data will include more detailed information about memory usage and the overall query execution, as explained in the xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc[Profiling Data Explanation] section below.
+
+=== Limitations
+
+While query profiling is a powerful tool for diagnosing and optimizing query performance, there are some limitations:
+
+* It does not support OpenCypher syntax.
+* It does not support `INTERPRET` queries.
+* It is not available for non-distributed queries unless installed with the `-SINGLE` flag.
+* Profiling does not include data for subqueries.
+* Memory metrics do not account for edge and global accumulators.
+* Topology metrics do not include attribute data.
+* Profiling does not track create/update/delete operations in the topology metric.
 
 == Prerequisite
 
@@ -72,23 +83,24 @@ You can choose the appropriate method from the options below based on whether yo
 
 === RESTPP Request
 
-*Option 1*:
-To activate profiling for a single query and view the profile information in real-time, add the `PROFILE: BASIC` header to your RESTPP request:
+*Option 1: Run the query in the foreground*:
+
+To run a query and view the profile information in real-time, add the `PROFILE: BASIC` header to your RESTPP request:
 
 [source.wrap,bash]
 ----
-curl -H "PROFILE: BASIC" -X POST 'http://localhost:14240/restpp/query/testGraph/qtest'
+curl -H "PROFILE: BASIC" -X POST 'http://localhost:14240/restpp/query/testGraph/{query_name}'
 ----
 
-*Option 2*:
+*Option 2: Run the query asynchronously*:
+
 To run a query asynchronously with profiling enabled, add both the `GSQL-ASYNC: true` and `PROFILE: BASIC` headers to your request:
 
 [source.wrap,bash]
 ----
-curl -H "GSQL-ASYNC: true" -H "PROFILE: BASIC" -X GET 'http://localhost:14240/restpp/query/testGraph/qtest'
+curl -H "GSQL-ASYNC: true" -H "PROFILE: BASIC" -X GET 'http://localhost:14240/restpp/query/testGraph/{query_name}'
 ----
 
-*Option 3*:
 To fetch real-time profiling data for a query running in asynchronous mode, use the `/query_status` endpoint:
 
 [source.wrap,bash]
@@ -98,31 +110,39 @@ curl -X GET "http://localhost:14240/restpp/query_status?requestid=$reqid"
 
 === GSQL
 
-*Option 1*:
-In GSQL, you can activate profiling for a single query and view the profile information during execution using the following command:
+*Option 1: Run the query in the foreground*:
+
+To run a query and view the profile information in real-time, using the `-PROFILE` flag followed by a profiling mode (e.g. `BASIC`):
 
 [source, gsql]
 ----
-RUN QUERY -PROFILE BASIC qtest()
+RUN QUERY -PROFILE BASIC <queryName>
 ----
 
-*Option 2*:
-To run a query asynchronously in GSQL with profiling enabled, use the `-async` flag:
+*Option 2: Run the query asynchronously*:
+
+To run a query asynchronously with profiling enabled, also include the `-async` flag:
 
 [source, gsql]
 ----
-RUN QUERY -async <queryName>
+RUN QUERY -async -PROFILE BASIC <queryName>
 ----
 
-Make sure to replace `<queryName>` with the name of the query you are running.
+To fetch real-time profiling data for a query running in asynchronous mode, use the `/query_status` endpoint:
 
-*Option 3*:
+[source.wrap,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query_status?requestid=$reqid"
+----
+
+*Option 3: Set profiling for the session*:
+
 You can set the profiling mode for a session in GSQL. Use the `SET PROFILE` command to enable profiling in your session:
 
 [source, gsql]
 ----
 SET PROFILE = "BASIC"
-RUN QUERY qtest()
+RUN QUERY <query_name>
 ----
 
 == Profiling Data Explanation
@@ -266,21 +286,15 @@ It may contain the following extra fields:
 *** `processingTimePercentage`: percentage of `processingTimeMs` to query-level `totalTimeMs`.
 *** `averageProcessingTimeMs`: average process time of each execution. It only appears when `executionCount > 1`.
 
-== Disable Query Profiling Feature
+== Disable Query Profiling
 
-If the Query Profiling feature is causing issues, it can be disabled for all installed queries by adding `DISABLE_PROFILE=true;` to `GSQL.BasicConfig.Env`, then re-install all queries.
+If the Query Profiling feature is causing issues, it can be disabled for all installed queries by following this procedure:
 
-== Limitation
+1. Add `DISABLE_PROFILE=true;` to the  `GSQL.BasicConfig.Env` xref:{page-component-version}@tigergraph-server:reference:configuration-parameters.adoc[configuration parameter].
 
-While query profiling is a powerful tool for diagnosing and optimizing query performance, there are some limitations:
+2. Apply the change: `gadmin config apply`
 
-* It does not support OpenCypher syntax.
-* It does not support `INTERPRET` queries.
-* It is not available for non-distributed queries unless installed with the `-SINGLE` flag.
-* Profiling does not include data for subqueries.
-* Memory metrics do not account for edge and global accumulators.
-* Topology metrics do not include attribute data.
-* Profiling does not track create/update/delete operations in the topology metric.
+3. Re-installing all queries.
 
 == Profiling Data Example
 

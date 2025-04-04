@@ -98,7 +98,7 @@ Similar to a stored procedura query, except
 .Example of an Anonymous Query
 [console]
 ----
-CREATE QUERY () {
+INTERPRET QUERY () {
 
 topK = SELECT m FROM (m:Movie) WHERE m.year == 1939
        ORDER BY m.boxoffice DESC

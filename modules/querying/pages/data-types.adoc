@@ -627,7 +627,7 @@ A query can have one or more input parameters having any of the following types:
 * xref:#_base_types[Base types] (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
 * xref:#_file_object[FILE object]
 * A `SET` or `BAG` of base type elements (except `EDGE` , `JSONARRAY`, or `JSONOBJECT`).
-* As of 4.2, `LIST` and `MAP` of base type elements are also supported.
+* As of 4.2, `LIST` and `MAP` of base type elements are also supported.  The key and value of a `MAP` may be xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitiveType] (numerical, string, or Boolean).
 
 Within the query, `SET`, `BAG`, `LIST`, and `MAP` parameters are converted to xref:accumulators.adoc#_setaccum[`SetAccum`],
 xref:accumulators.adoc#_bagaccum[`BagAccum`],
@@ -654,7 +654,8 @@ parameterType := INT
                | BOOL
                | VERTEX ["<" vertexType ">"]
                | DATETIME
-               | [ SET | BAG | LIST | MAP] "<" baseType ">"
+               | [ SET | BAG | LIST ] "<" baseType ">"
+               | MAP "<" primitiveType "," primitiveType ">"
                | FILE
 ----
 

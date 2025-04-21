@@ -9,7 +9,7 @@ By default, duplicate values are included.
 
 Example:
 
-``sum([2,2,2]) ``returns 6.
+`sum([2,2,2])` returns 6.
 
 `sum(DISTINCT [2,2,2])` returns 2.
 ====
@@ -145,6 +145,7 @@ max([1, 1, 3, 3]) => 3
 === Description
 
 Returns the member with the minimum value in a set or bag. The function can only take set/bag expressions whose members are numeric types.
+Returns 0 if the input set is empty.
 
 [NOTE]
 ====

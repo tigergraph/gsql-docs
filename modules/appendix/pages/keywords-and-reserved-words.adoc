@@ -89,7 +89,6 @@ The compiler will reject the use of a reserved word as well as any word beginnin
 * FOR
 * FOREACH
 * FROM
-* FUNCTION
 * GLOBAL
 * GRANTS
 * GRAPH
@@ -237,6 +236,7 @@ These keywords in the language are non-reserved, so users may use them for user-
 * FILENAME
 * FLATTEN
 * FLATTEN_JSON_ARRAY
+* FUNCTION
 * GEN-DATA
 * GET
 * GRANT

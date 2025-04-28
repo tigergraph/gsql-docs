@@ -741,18 +741,24 @@ Bitwise Operations and Negative Integers
 Most computer systems represent negative integers using "2's complement" format, where the uppermost bit has special significance. Operations that affect the uppermost bit are crossing the boundary between positive and negative numbers, and vice versa.
 ====
 
+[discrete]
+==== *Functions*
 
+BitwiseAndAccum and BitwiseOrAccum also support the following class functions.
 
-==== Functions
-This is a list of object functions of BitwiseAndAccum and BitwiseOrAccum.
-If a function returns an `BitwiseAndAccum` or `BitwiseOrAccum`, it returns the same type as the instance that calls the object function.
+[WARNING]
+====
+Mutator functions (those that modify the accumulator) can be used only under the following conditions:
+
+* Mutator functions may not be used in a PRINT statement.
+====
 
 .Bitwise accumulator functions
 |===
 |Function |Return type |Accessor/Mutator |Description
 
 |`.reset()`
-|None.
+|`VOID`
 |Mutator
 |Sets all bits to 0.
 
@@ -770,12 +776,12 @@ a|Returns the 1 or 0 at the provided index.
 The position of the bit value to return.
 
 |`.set( )`
-|None.
+|`VOID`
 |Mutator
 |Sets all bits to 1.
 
 |`.set( index, value )`
-|None.
+|`VOID`
 |Mutator
 a|Sets the bit at the provided index to the desire value.
 
@@ -786,31 +792,31 @@ a|Sets the bit at the provided index to the desire value.
 The value of the bit.
 
 |`.flip( index )`
-|None.
+|`VOID`
 |Mutator
 |Flips the bit at the specified index.
 If the bit is 0, changes it to 1 and vice versa.
 
 
 |`.flip( fromIndex [, toIndex ] )`
-|None.
+|`VOID`
 |Mutator
 |Flips the bits in the specified range.
 
 |`.xor ( accum )`
-|None.
+|`VOID`
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the exclusive `OR` result between the two bitwise accumulators.
 
 |`.and ( accum )`
-|None.
+|`VOID`
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a bitwise accumulator whose every bit is the `AND` result between the two bitwise accumulators.
 
 |`.or ( accum )`
-|None.
+|`VOID`
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.

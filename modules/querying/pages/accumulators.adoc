@@ -661,6 +661,7 @@ Functions that modify the ListAccum (mutator functions) can be used only under t
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -798,6 +799,7 @@ Functions that modify the SetAccum (mutator functions) can be used only under th
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -917,6 +919,7 @@ Functions which modify the BagAccum (mutator functions) can be used only under t
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -1030,6 +1033,7 @@ Functions that modify the MapAccum (mutator functions) can be used only under th
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -1158,6 +1162,7 @@ Functions that modify the ArrayAccum (mutator functions) can be used only under 
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -1287,6 +1292,7 @@ Functions that modify the `HeapAccum` (mutator functions) can be used only under
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===
@@ -1379,6 +1385,7 @@ Functions that modify the GroupByAccum (mutator functions) can be used only unde
 
 * Mutator functions of global accumulators may only be used at the query-body level.
 * Mutator functions of vertex-attached accumulators may only be used in a `POST-ACCUM` clause.
+* Mutator functions may not be used in a PRINT statement.
 ====
 
 |===

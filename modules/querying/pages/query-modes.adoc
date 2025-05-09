@@ -111,10 +111,10 @@ PRINT topK;
 === Non-Procedural Queries
 
 Starting with version 4.2, TigerGraph can run non-procedural queries.
-This is very much like how the composition of SQL queries:
+This is very much like the composition of SQL queries:
 
 * No header.
-* Output selection is implicit.
+* Output is automatic.
 * Queries consisting of a single query statement/block do not need to define the body's start and end.
 * Optionally, can use `BEGIN` and `END` to delimit a multi-line query.
 

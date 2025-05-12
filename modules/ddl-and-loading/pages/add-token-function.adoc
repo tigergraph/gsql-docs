@@ -158,7 +158,7 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
  
 [NOTE]
 ====
-If the configuration `GSQL.GithubUserAcessToken` is non-empty, the `GSQL.GithubEnabled` configuration will be set to `true` during upgrading
+When upgrading the database from a version where the parameter `GSQL.GithubEnabled` did not exist (pre 4.1.3) to one where it does, the upgrade process will set `GSQL.GithubEnabled` to `true`.
 ====
 
 Use the xref:tigergraph-server:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.

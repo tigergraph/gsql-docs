@@ -743,6 +743,11 @@ a|Sets the bit at the provided index to the desire value.
 `BOOL`.
 The value of the bit.
 
+|`.flip()`
+|None.
+|Mutator
+|Using `.flip()` on `BitwiseAndAccum` or `BitwiseOrAccum` inside a `PRINT` block may produce different results in UDF mode versus Single/Distributed mode.
+
 |`.flip( index )`
 |None.
 |Mutator

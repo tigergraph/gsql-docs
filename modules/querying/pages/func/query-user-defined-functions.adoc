@@ -142,7 +142,6 @@ Prior to 4.1.3, if `GSQL.GithubUserAcessToken` and the GitHub location params ar
 ====
 When upgrading the database from pre-4.1.3 to 4.1.3+, if `GSQL.GithubEnabled` has been set, then `GSQL.GithubEnabled` will be set to `true` during the upgrade process.
 ====
- 
 
 Use the xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 

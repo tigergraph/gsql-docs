@@ -107,9 +107,13 @@ There are two possible cases where an input line may be rejected:
 
 The percentage number following `-max_percent_error` **is required** if the option is provided. Otherwise, a parsing error will appear.
 
+The xref:{page-component-version}@tigergraph-server:api:gsql-endpoints.adoc#_example_42[`maxPercentError`] key for running a loading job via the REST API has the same meaning as the `-max_percent_error` option in GSQL.
+
 ==== `-max_error me`
 
 The `-max_error` option instructs the loader process to abort the loading job if the number of data lines in the input batch that are rejected exceeds `me`, where `me` is an integer between 0 and 2147483647. This option is analogous to the `-max_percent_error` option.
+
+The xref:{page-component-version}@tigergraph-server:api:gsql-endpoints.adoc#_example_42[`maxNumError`] key for running a loading job via the REST API has the same meaning as the `-max_error` option in GSQL.
 
 === Parameters
 

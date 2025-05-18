@@ -747,7 +747,7 @@ parmeterValueJSON ::= '{"'parameterName'":' parameterValue(', "'parameterName'":
 Required privilege:
 EXECUTE_QUERY
 
-To learn more about the -queue option, please refer xref:tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
+To learn more about the -queue option, please refer xref:{page-component-version}@tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Management]
 
 === Query parameters
 
@@ -957,7 +957,7 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:14240/restpp/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
-To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
+To check the status and results of the queries executed in Detached Mode, use the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
 
 
 == GSQL Query output format

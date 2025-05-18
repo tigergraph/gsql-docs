@@ -27,7 +27,7 @@ Query profiling is supported for the following types of queries:
 ** `/allpaths`
 ** `/searchvertex`
 
-For these queries, profiling data will include more detailed information about memory usage and the overall query execution, as explained in the xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc#_profiling_data_explanation[Profiling Data Explanation] section below.
+For these queries, profiling data will include more detailed information about memory usage and the overall query execution, as explained in the xref:querying:query-optimizer/query-profiling.adoc#_profiling_data_explanation[Profiling Data Explanation] section below.
 
 === Limitations
 

@@ -13,10 +13,10 @@ image:getstarted-homecard.png[alt=getstarted,width=74,height=74]
 Step-by-step tutorials to help you get started creating graphs and querying.
 
 https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md[GSQL Tutorial] |
-xref:gsql-ref:tutorials:accumulators-tutorial.adoc[Accumulators] |
+xref:tutorials:accumulators-tutorial.adoc[Accumulators] |
 https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md[OpenCypher] |
 https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[VECTOR search]
-//xref:gsql-ref:tutorials:pattern-matching/index.adoc[Pattern Maching Tutorial |]
+//xref:tutorials:pattern-matching/index.adoc[Pattern Maching Tutorial |]
 
 ¦
 image:vector.png[alt=types,width=74,height=74]
@@ -40,26 +40,26 @@ xref:openCypher-in-gsql:index.adoc[]
 image:lang.png[alt=basics,width=74,height=74]
 *Language Basics*
 
-Learn  xref:gsql-ref:basics:running-gsql.adoc[How to run GSQL] and
-xref:gsql-ref:ddl-and-loading:attribute-data-types.adoc[Database Data Types].
+Learn  xref:basics:running-gsql.adoc[How to run GSQL] and
+xref:ddl-and-loading:attribute-data-types.adoc[Database Data Types].
 
 ¦
 image:schema-homecard.png[alt=types,width=74,height=74]
 *Define a Schema*
 
-Use the Database Definition Language (DDL) syntax to define the xref:gsql-ref:ddl-and-loading:index.adoc[schema] the blueprint for data elements in a database.
+Use the Database Definition Language (DDL) syntax to define the xref:ddl-and-loading:index.adoc[schema] the blueprint for data elements in a database.
 
 ¦
 image:querying-homecard.png[alt=query,width=74,height=74]
 *Graph Querying*
 
-xref:gsql-ref:querying:index.adoc[GSQL Query Language] is a language for the exploration and analysis of large scale graphs.
+xref:querying:index.adoc[GSQL Query Language] is a language for the exploration and analysis of large scale graphs.
 
 ¦
 image:DataLoading-Homecard.png[alt=loadingjobs,width=74,height=74]
 *Loading Data*
 
-xref:gsql-ref:ddl-and-loading:loading-jobs.adoc[Loading Jobs] are a unique and powerful feature used to load data into the database.
+xref:ddl-and-loading:loading-jobs.adoc[Loading Jobs] are a unique and powerful feature used to load data into the database.
 
 ¦
 image:documentation-homecard.png[alt=apendix,width=74,height=74]
@@ -67,7 +67,7 @@ image:documentation-homecard.png[alt=apendix,width=74,height=74]
 
 Checkout the other information on GSQL under the "Appendix" dropdown for more information.
 
-xref:gsql-ref:appendix:cheat-sheets.adoc[Cheat Sheets |]
-xref:gsql-ref:appendix:gsql-style-guide.adoc[GSQL Style Guide]
+xref:appendix:cheat-sheets.adoc[Cheat Sheets |]
+xref:appendix:gsql-style-guide.adoc[GSQL Style Guide]
 
 |===

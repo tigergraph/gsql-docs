@@ -502,4 +502,7 @@ parameterType := INT
 (SET<VERTEX<person> p1, BAG<INT> ids, FILE f1)
 ----
 
+For how to run a query, see
 
+* xref:querying:query-operations.adoc#_query_parameters[Parameters when running a query in the GSQL CLI].
+* xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Parameters when running a query as a REST endpoint].

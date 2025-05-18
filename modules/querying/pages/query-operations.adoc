@@ -97,7 +97,7 @@ If the original query was installed, you'll need to reinstall the new query.
 However, if there are any errors in this query definition, then the previous query definition is maintained.
 If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
 +
-Only the xref:tigergraph-server:user-access:access-control-model.adoc#_query_owner[query owner] is allowed to run `CREATE OR REPLACE` on a query.
+Only the xref:{page-component-version}@tigergraph-server:user-access:access-control-model.adoc#_query_owner[query owner] is allowed to run `CREATE OR REPLACE` on a query.
 However, if you have the `WRITE_QUERY` RBAC privilege on the corresponding graph, you can execute `DROP QUERY` to drop the query and create a new one with the same name.
 +
 [NOTE]
@@ -611,7 +611,7 @@ installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," quer
 ----
 
 <<<<<<< HEAD
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 =======
 Required privilege:
 INSTALL_QUERY
@@ -918,7 +918,7 @@ To run queries in Detached Mode via RESTPP endpoint call, use the `GSQL-ASYNC` h
 $ curl -s -H "GSQL-ASYNC:true" GET "http://localhost:9000/query/<graphName>/<queryName>?parameter1=<parameter1>
 ----
 
-To check the status and results of the queries executed in Detached Mode, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
+To check the status and results of the queries executed in Detached Mode, use the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_status_detached_mode[*`/query_status`*] and the xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_check_query_results_detached_mode[*`/query_result`*] RESTPP endpoints.
 
 
 == GSQL Query output format

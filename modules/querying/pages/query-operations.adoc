@@ -82,7 +82,7 @@ A query can be run in one of three ways:
 +
 Alternately, there is also a built-in REST{pp} endpoint to interpret a query string: +
 `POST /gsqlserver/interpreted_query` +
-See the xref:tigergraph-server:API:index.adoc[RESTPP API User Guide] for details.
+See the xref:{page-component-version}@tigergraph-server:API:index.adoc[RESTPP API User Guide] for details.
 . Define a named query and then run it.
  .. `CREATE QUERY`: define the functionality of the query
  .. `INTERPRET QUERY`: execute the query with input values
@@ -565,7 +565,7 @@ If a query is saved as a draft before it reaches valid status, any queries that 
 ====
 If a user creates a query, this user becomes the owner of this query automatically.
 
-For a detailed description, please refer to xref:xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc
+For a detailed description, please refer to xref:xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc
 ====
 
 == `INTERPRET QUERY`
@@ -649,7 +649,7 @@ installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," quer
 Required privilege:
 INSTALL_QUERY
 
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
 The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
@@ -730,7 +730,7 @@ The `RUN QUERY` command runs an installed query.
 To run a query with the `RUN QUERY` command, specify the query name, followed by the query parameters enclosed in parentheses.
 Running a query executes all statements in the query body and produces output as specified by the output statements in the query.
 
-You can also run an installed query through REST requests - see xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
+You can also run an installed query through REST requests - see xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query].
 
 === Syntax
 
@@ -930,7 +930,7 @@ Typically, the GSQL `RUN QUERY` command runs in the foreground and does not prod
 
 You can run queries in Detached Mode to enable background execution of long-running queries.
 
-Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:tigergraph-server:API:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+Queries executed in Detached mode are still subject to the system timeout limit. The default timeout limit is 16 seconds and can be set using the xref:{page-component-version}@tigergraph-server:API:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 To run a query in Detached Mode from the command line, use the``-async``option for the``RUN QUERY``command:
 

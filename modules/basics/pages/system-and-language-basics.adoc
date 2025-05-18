@@ -81,7 +81,7 @@ gsql -t <token>
 *Types of tokens*
 
 * *Plain-text Token:* A randomly generated string used for authentication. This is the older token format, still supported if not expired, but will eventually be deprecated.
-* **xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Token]**: A more secure and modern format for authentication. It consists of three parts: header, payload, and signature. JWT tokens are the default format for authentication starting from version 4.1.
+* **xref:{page-component-version}@tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Token]**: A more secure and modern format for authentication. It consists of three parts: header, payload, and signature. JWT tokens are the default format for authentication starting from version 4.1.
 
 *Token login workflow*
 

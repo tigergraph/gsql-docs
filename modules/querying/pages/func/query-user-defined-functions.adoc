@@ -35,7 +35,7 @@ All UDF files are scanned by the system to ensure that they comply with the UDF 
 * There is a file header allowlist that restricts the possible file headers to a customizable list.
 * Additional C{plus}{plus} features are disabled for security reasons.
 
-For more details, see xref:tigergraph-server:security:index.adoc#_udf_file_scanning[Security - UDF file scanning].
+For more details, see xref:{page-component-version}@tigergraph-server:security:index.adoc#_udf_file_scanning[Security - UDF file scanning].
 
 [#_define_a_query_udf_in_cpp]
 == Define a query UDF in C{pp}
@@ -143,7 +143,7 @@ Prior to 4.1.3, if `GSQL.GithubUserAcessToken` and the GitHub location params ar
 When upgrading the database from pre-4.1.3 to 4.1.3+, if `GSQL.GithubEnabled` has been set, then `GSQL.GithubEnabled` will be set to `true` during the upgrade process.
 ====
 
-Use the xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
+Use the xref:{page-component-version}@tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 
 The following is an example configuration.
 Remember to run `gadmin config apply` after changing the parameters.
@@ -162,7 +162,7 @@ After the parameters are successfully configured, you can access your UDFs in ne
 
 === Upload UDFs with GSQL `PUT` command
 TigerGraph offers the ability to upload UDFs directly from GSQL using the `PUT` command.
-This command is securely managed by xref:tigergraph-server:system-management:management-commands.adoc[ the management tool `gadmin`] and is disabled by default, requiring a Tigergraph Linux user with gadmin access to enable it.
+This command is securely managed by xref:{page-component-version}@tigergraph-server:system-management:management-commands.adoc[ the management tool `gadmin`] and is disabled by default, requiring a Tigergraph Linux user with gadmin access to enable it.
 After making modifications to your UDF files, it is recommended that you disable the ability to upload UDF files using `PUT` until you need to modify the files again
 
 ==== Enable uploading UDFs through GSQL

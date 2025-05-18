@@ -25,7 +25,7 @@ For example, Person connects to Tag by the hasInterest edge. Forum connects to P
 
 == Prerequisites
 * A running TigerGraph instance.
-See xref:tigergraph-server:getting-started:docker.adoc[] to quickly provision a container running the latest version of TigerGraph.
+See xref:{page-component-version}@tigergraph-server:getting-started:docker.adoc[] to quickly provision a container running the latest version of TigerGraph.
 * You have full privileges to create graphs, load data, and drop graphs.
 It is recommended that you go through this tutorial with the default user `tigergraph`, which has the `superuser` role with all supported privileges.
 

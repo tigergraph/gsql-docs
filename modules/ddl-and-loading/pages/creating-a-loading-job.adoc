@@ -32,7 +32,7 @@ Either pre-process your data files to remove extra spaces, or use GSQL's token p
 [NOTE]
 User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
 A user can create and run loading jobs even without the privileges to modify vertex and edge data.
-For more information, see xref:tigergraph-server:user-access:access-control-model.adoc[].
+For more information, see xref:{page-component-version}@tigergraph-server:user-access:access-control-model.adoc[].
 
 == Loading job capabilities
 
@@ -52,7 +52,7 @@ Furthermore, if the TigerGraph graph is distributed (partitioned) across multipl
 [NOTE]
 To maximize loading performance in a cluster, use at least two loaders per machine, and assign each loader approximately the same amount of data.
 
-A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
+A concurrent-capable loading job can logically be separated into parts according to each file variable.  When a concurrent-capable loading job is compiled, a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[RESTPP endpoint] is generated for the loading job, which you can call to load data into your graph as an alternative to `RUN LOADING JOB`.
 
 [NOTE]
 ====
@@ -158,7 +158,7 @@ There are four options for `filepath_string`:
 If it is a folder, then the loader will attempt to load each non-hidden file in the folder.
 If this path is not valid when `CREATE LOADING JOB` is executed, GSQL will report an error.
 +
-An absolute path may begin with the xref:tigergraph-server:gsql-shell:gsql-sessions.adoc[session parameter] `$sys.data_root`.
+An absolute path may begin with the xref:{page-component-version}@tigergraph-server:gsql-shell:gsql-sessions.adoc[session parameter] `$sys.data_root`.
 * An absolute or relative path for either a file or a folder *on all machines in the cluster*: If the path is prefixed with `all:`, then the loading job will attempt to run on every machine in the cluster which has a RESTPP component, and each machine will look locally for data at _path_. *If the path is invalid on any of the machines, the job will be aborted*.  Also, the session parameter `$sys.data_root` may not be used.
 +
 .`ALL:path` examples
@@ -200,7 +200,7 @@ DEFINE HEADER header_name = " column_name "[," column_name "]*;
 
 === `DEFINE INPUT_LINE_FILTER`
 
-NOTE: This statement is not supported in a xref:tigergraph-server:data-loading:kafka-loader/index.adoc[Kafka loading job].
+NOTE: This statement is not supported in a xref:{page-component-version}@tigergraph-server:data-loading:kafka-loader/index.adoc[Kafka loading job].
 
 The `DEFINE INPUT_LINE_FILTER` statement defines a named Boolean expression whose value depends on column attributes from a row of input data.
 When combined with a `USING reject_line_rule` clause in a `LOAD` statement, the filter determines whether an input line is ignored or not.

@@ -672,4 +672,4 @@ For how to declare the parameters in a query, see xref:querying:query-operations
 For how to run a query, see
 
 * xref:querying:query-operations.adoc#_query_parameters[Parameters when running a query in the GSQL CLI].
-* xref:tigergraph-server:API:gsql-endpoints.adoc#_format_for_parameters_of_query_being_run[Parameters when running a query as a REST endpoint].
+* xref:{page-component-version}@tigergraph-server:API:gsql-endpoints.adoc#_format_for_parameters_of_query_being_run[Parameters when running a query as a REST endpoint].

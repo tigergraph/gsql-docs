@@ -41,7 +41,7 @@ There are options to end the job when it reaches a specified level of errors.
 [NOTE]
 User privileges for running loading jobs are treated as separate from privileges regarding reading and writing data to vertices and edges.
 A user can create and run loading jobs even without the privileges to modify vertex and edge data.
-For more information, see xref:tigergraph-server:user-access:access-control-model.adoc[].
+For more information, see xref:{page-component-version}@tigergraph-server: user-access:access-control-model.adoc[].
 
 [#_run_loading_job]
 === RUN LOADING JOB

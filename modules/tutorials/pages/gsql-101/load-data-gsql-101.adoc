@@ -13,7 +13,7 @@ If they are elsewhere, then in the loading job script below replace `/home/tiger
 Enter the following set of commands in the GSQL shell.
 
 [NOTE]
-In the default Docker installation described in xref:tigergraph-server:getting-started:docker.adoc[], these files are in the folder `/home/tigergraph/tutorial/3.x/gsql101/`
+In the default Docker installation described in xref:{page-component-version}@tigergraph-server:getting-started:docker.adoc[], these files are in the folder `/home/tigergraph/tutorial/3.x/gsql101/`
 
 .GSQL commands to define a loading job
 

@@ -164,6 +164,7 @@ The default value is the initial value of a base type variable (see Section "Var
 
 The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `DATETIME`) are the same ones mentioned in the "xref:ddl-and-loading:system-and-language-basics.adoc#_attribute_data_types[Attribute Data Types]" section of xref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference, Part 1_].
 
+[cols='2,3,5']
 |===
 | Type | Default value | Literal
 
@@ -177,7 +178,9 @@ The first seven types (`INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `STRING`, and `
 
 | `FLOAT`
 | `0`
-| A decimal precise up to about 7 digits: `3.14159`
+a| A decimal precise up to about 7 digits: `3.14159`
+
+*NOTE*: For large numbers, `DOUBLE` is better.
 
 | `DOUBLE`
 | `0`
@@ -216,8 +219,9 @@ The `FLOAT` and `DOUBLE` data types have the same precision limits as in C++.
 See xref:appendix:common-errors-and-problems.adoc[] for more details.
 
 [WARNING]
+.Support for fixed and exponential notation
 ====
-`FLOAT` and `DOUBLE` input values must be in fixed point `d.dddd` __**__format, where `d` is a digit. Output values will be printed in either fixed point for exponential notation, whichever is more compact.
+`FLOAT` and `DOUBLE` input values must be in fixed point `d.dddd` format, where `d` is a digit. Output values will be printed in either fixed point or exponential notation, whichever is more compact.
 
 The GSQL Loader can read FLOAT and DOUBLE values with exponential notation (e.g., 1.25 E-7).
 ====

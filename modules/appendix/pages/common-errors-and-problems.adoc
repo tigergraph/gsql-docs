@@ -7,7 +7,7 @@ No computer can store all floating point numbers (i.e., non-integers) with perfe
 The `FLOAT` data type offers about 7 decimal digits of precision; the `DOUBLE` data type offers about 15 decimal digits of precision.
 These are the same precision limits as in C++.
 
-
+=== Exact comparison is not appropriate
 Comparing two float or double values by using operators involving exact equality (`==`, `+<=+`, `>=`, `BETWEEN ... AND ...`) might lead to unexpected behavior.
 If the GSQL language parser detects that the user is attempting an exact equivalence test with float or double data types, it will display a warning message and suggestion.
 
@@ -20,6 +20,23 @@ equality test between float/double numeric values. We suggest to do such
 comparison with an error margin, e.g. 'abs((v) - (v2)) < epsilon', where epsilon
 is a very small positive value of your choice, such as 0.0001.
 ----
+
+=== Adding floating point values at different scales
+
+Imagine you have two `FLOAT` variables:
+
+[console]
+----
+A = 1234567.
+B = 0.1234567
+----
+
+What is `A + B`?
+In pure math, the answer is `1234567.1234567`.
+But since `FLOAT` offers only about 7 digits of precision, it is impossible to adequately capture B's contribution.
+This problem can occur inadvertently when adding a large set of numbers.
+The individual numbers may be about the same scale, but the intermediate sums are of a larger sum.
+
 
 == Response to Non-existent vertex ID
 

@@ -619,7 +619,8 @@ caseExpr :=
     END
 ----
 
-==== Example
+[discrete]
+=== Example
 [source,ebnf]
 ----
 numDays =
@@ -648,7 +649,8 @@ caseExprVar :=
 testExpression := expression
 ----
 
-==== Example
+[discrete]
+=== Example
 [source,ebnf]
 ----
 points =

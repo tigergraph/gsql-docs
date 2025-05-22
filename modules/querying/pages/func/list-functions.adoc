@@ -4,21 +4,21 @@
 
 This page lists the list (ListAccum) functions that are available in the GSQL query language.
 
-=== `head()`
+== `head()`
 
-==== Syntax
+=== Syntax
 
 `head(list)`
 
-==== Description
+=== Description
 
 `head()` returns the first element in a list. It is semantically the same as `list.get(0)`
 
-==== Return type
+=== Return type
 
 `ELEMENT`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -27,27 +27,27 @@ This page lists the list (ListAccum) functions that are available in the GSQL qu
 | `ListAccum<ELEMENT>`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 head(["a", "b", "c"]) -> "a"
 ----
 
-=== `last()`
+== `last()`
 
-==== Syntax
+=== Syntax
 
 `last(list)`
 
-==== Description
+=== Description
 
 `last()` returns the last element in a list. It is semantically the same as `list.get(list.size() - 1)`
 
-==== Return type
+=== Return type
 
 `ELEMENT`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -56,27 +56,27 @@ head(["a", "b", "c"]) -> "a"
 | `ListAccum<ELEMENT>`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 last(["a", "b", "c"]) -> "c"
 ----
 
-=== `range()`
+== `range()`
 
-==== Syntax
+=== Syntax
 
 `range(start, end [, step])`
 
-==== Description
+=== Description
 
 `range()` returns a `ListAccum` of integer values within a range bounded by a start value `start` and end value `end`, and an optional step size `step`. The range is inclusive, so the arithmetic progression will always contain `start`, and it may contain `end`value, depending on the step size.
 
-==== Return type
+=== Return type
 
 `ListAccum<INT>`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -95,7 +95,7 @@ The difference between any two consecutive values in the range
 | `UINT`, `INT`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 range(0, 5) -> [0, 1, 2, 3, 4, 5]
@@ -109,21 +109,21 @@ range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
 * For large ranges, the range() function can consume significant memory, as it generates the entire list before iteration.
 ====
 
-=== `size()`
+== `size()`
 
-==== Syntax
+=== Syntax
 
 `size(list)`
 
-==== Description
+=== Description
 
 `size()` returns the number of elements in a `ListAccum`
 
-==== Return type
+=== Return type
 
 `UINT`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -132,27 +132,27 @@ range(2, 18, 3) -> [2, 5, 8, 11, 14, 17]
 | `ListAccum<ELEMENT>`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 size(["a", "b", "c"]) -> 3
 ----
 
-=== `split()`
+== `split()`
 
-==== Syntax
+=== Syntax
 
 `split(original, splitDelimiter)`
 
-==== Description
+=== Description
 
 `split()` returns a list of strings resulting from the splitting of the original string on matches of the given delimiter.
 
-==== Return type
+=== Return type
 
 `ListAccum<STRING>`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -165,28 +165,28 @@ size(["a", "b", "c"]) -> 3
 | `STRING`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 split("one,two", ",") -> ["one", "two"]
 split("aaabcaabca", "abc") -> ["aa", "a", "a"]
 ----
 
-=== `tail()`
+== `tail()`
 
-==== Syntax
+=== Syntax
 
 `tail(list)`
 
-==== Description
+=== Description
 
 `tail()` returns the copy of the list that includes all but the first element in the parameter list.
 
-==== Return type
+=== Return type
 
 `ListAccum<ELEMENT>`
 
-==== Parameters
+=== Parameters
 
 |===
 | Parameter | Description | Data type
@@ -195,7 +195,7 @@ split("aaabcaabca", "abc") -> ["aa", "a", "a"]
 | `ListAccum<ELEMENT>`
 |===
 
-==== Example
+=== Example
 [source,text]
 ----
 tail(["a", "b", "c"]) -> ["b", "c"]

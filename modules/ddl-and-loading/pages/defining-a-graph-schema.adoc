@@ -420,7 +420,7 @@ User-defined types at the catalog level can only be used for query return value 
 Once defined, all graphs in the database have access to these user-defined types, and subqueries can be defined to return the user-defined types.
 
 [discrete]
-==== Example:
+=== Example:
 
 The example below defines a tuple type `My_Tuple` and a heap accumulator type `My_Heap`, so that the subquery `Sub_Query_1` can return a value of `My_Heap` type to its outer query `Query_1`.
 

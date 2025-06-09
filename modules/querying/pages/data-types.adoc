@@ -324,7 +324,7 @@ No operator is allowed to alter its value.
 
 ==== Assign a `JSONOBJECT` value to a base type variable
 There is no `JSONOBJECT` literal in the GSQL query language.
-Therefore, to assign value to a `JSONOBJECT` base type variable in GSQL, you need to use the `parse_json_object()` function to convert a string representation of s JSON object to a `JSONOBJECT` value.
+Therefore, to assign value to a `JSONOBJECT` base type variable in GSQL, you need to use the `parse_json_object()` function to convert a string representation of a JSON object to a `JSONOBJECT` value.
 
 For example, the following line declares a variable `han` with a `JSONOBJECT` value:
 

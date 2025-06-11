@@ -17,7 +17,7 @@ For example, it does not specify whether a User may connect to multiple occupati
 .A schema for a User-Book-Rating graph
 image::user-book-rating-schema.png[A schema for a User-Book-Rating graph. The vertex User is connected to Occupation with the user_occupation edge and to Book with the user_book_rating edge. Book is connected to Genre with the book_genre edge.]
 
-An edge connects two vertices: a _source vertex_ and a _target vertex_ .
+An edge connects two vertices: a _source vertex_ and a _target vertex_.
 An edge type can be either _directed_ or _undirected_.
 A directed edge has a clear semantic direction, from the source vertex to the target vertex.
 For example, if there is an edge type that represents a plane flight segment, each segment needs to distinguish which airport is the origin (source vertex) and which airport is the destination (target vertex).
@@ -177,7 +177,7 @@ Example:
 
 [source.wrap,ebnf]
 ----
-CREATE VERTEX Movie (id UINT PRIMARY KEY, name STRING, year UINT)
+CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
 ----
 
 By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID as a regular attribute. For example, if the ID's field name is `serial_num`, neither of the following syntaxes are valid:

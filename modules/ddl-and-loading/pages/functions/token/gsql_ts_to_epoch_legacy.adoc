@@ -45,5 +45,5 @@ gsql_ts_to_epoch_seconds_legacy("1969-12-31 23:59:59", 999) -> 999
 
 [TIP]
 ====
-Use this function if you want to maintain legacy behavior (like TigerGraph 3.6.3), avoid exceptions for invalid or pre-1970 dates, and ensure unsigned integer output.
+Use this function if you want to maintain legacy behavior (prior to the availability of `gsql_ts_to_epoch_signed`), avoid exceptions for invalid or pre-1970 dates, and ensure unsigned integer output.
 ====

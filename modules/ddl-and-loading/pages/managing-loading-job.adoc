@@ -184,7 +184,7 @@ If an object level error or failed condition occurs, only the corresponding obje
 | The number of invalid objects caused by the mismatch of the length of the data to the type defined in the schema
 
 | Token Bank Exception
-| Exception thrown by functions within the token bank. This is a general error category for failures in user-defined functions and does not provide specific details about the cause.
+| The number of exceptions thrown by user-defined token functions.
 |===
 
 Note that failing a `WHERE` clause is not necessarily a bad result.

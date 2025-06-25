@@ -180,8 +180,11 @@ If an object level error or failed condition occurs, only the corresponding obje
 | Invalid primary id
 | The number of invalid objects caused by wrong data format for the PRIMARY_ID type
 
-| incorrect fixed binary length
+| Incorrect fixed binary length
 | The number of invalid objects caused by the mismatch of the length of the data to the type defined in the schema
+
+| Token Bank Exception
+| The number of exceptions thrown by user-defined token functions.
 |===
 
 Note that failing a `WHERE` clause is not necessarily a bad result.

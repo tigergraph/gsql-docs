@@ -134,7 +134,6 @@ If GitHub access is configured, GSQL will retrieve user source code files from G
 TigerGraph only allows one TokenBank file at a time. Files on GitHub take priority.
 If GitHub is connected but files are missing, TigerGraph will look for a TokenBank file added via `PUT`.
 
-New additions to the files in the GitHub repository are instantly available in GSQL.
 
 You can retrieve the TokenBank from `AppRoot/dev/gdk/gsql/src/TokenBank/TokenBank.cpp` and copy it to a Git repository of your choice.
 
@@ -180,6 +179,15 @@ gadmin config apply
 ----
 
 After the parameters are successfully configured, you can access your user-defined token functions right away.
+
+=== Updating UDFs sourced from GitHub
+
+Prior to 4.1, each time GSQL was run, it would check to see if the UDF files on GitHub had changed.
+If they had, it would download the new files and install them.
+
+Beginning in 4.1, GSQL only checks GitHub if more than one hour has elapsed since the last check.
+
+To force GSQL to install new UDF files from GitHub, run `gadmin restart all` to restart GSQL.
 
 == Store token functions locally
 

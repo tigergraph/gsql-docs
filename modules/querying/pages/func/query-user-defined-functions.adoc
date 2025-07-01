@@ -116,8 +116,6 @@ This is TigerGraph's recommended approach to managing UDFs.
 If GitHub access is configured, GSQL retrieves user source code files from GitHub before other sources, so long as the files exist on GitHub.
 If GitHub is connected but files are missing, TigerGraph looks for a UDF file added locally with the `PUT` command.
 
-New additions to the files in the GitHub repository are instantly available in GSQL.
-
 You can retrieve ExprFunctions.hpp and ExprUtil.hpp from `AppRoot/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp` and copy them to a Git repository of your choice.
 The file names must be `ExprFunctions.hpp` and `ExprUtil.hpp`.
 
@@ -159,6 +157,16 @@ gadmin config apply
 ----
 
 After the parameters are successfully configured, you can access your UDFs in new queries right away.
+
+=== Updating UDFs sourced from GitHub
+
+Prior to 4.1, each time GSQL was run, it would check to see if the UDF files on GitHub had changed.
+If they had, it would download the new files and install them.
+
+Beginning in 4.1, GSQL only checks GitHub if more than one hour has elapsed since the last check.
+
+To force GSQL to install new UDF files from GitHub, run `gadmin restart all` to restart GSQL.
+
 
 === Upload UDFs with GSQL `PUT` command
 TigerGraph offers the ability to upload UDFs directly from GSQL using the `PUT` command.

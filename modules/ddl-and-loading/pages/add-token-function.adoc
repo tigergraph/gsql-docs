@@ -176,7 +176,7 @@ gadmin config apply
 
 After the parameters are successfully configured, you can access your user-defined token functions right away.
 
-=== Updating UDFs sourced from GitHub
+=== Update UDFs sourced from GitHub
 
 Prior to 4.1, each time GSQL was run, it would check to see if the UDF files on GitHub had changed.
 If they had, it would download the new files and install them.

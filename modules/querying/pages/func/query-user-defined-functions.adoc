@@ -1,6 +1,5 @@
 = Query User-Defined Functions
 :pp: {plus}{plus}
-:sectnums:
 :description: Instructions to define UDFs in the GSQL Query language.
 
 In GSQL, users can supplement the language by defining their own query user-defined functions (query UDFs) in C{pp}.
@@ -158,7 +157,7 @@ gadmin config apply
 
 After the parameters are successfully configured, you can access your UDFs in new queries right away.
 
-=== Updating UDFs sourced from GitHub
+==== Update UDFs sourced from GitHub
 
 Prior to 4.1, each time GSQL was run, it would check to see if the UDF files on GitHub had changed.
 If they had, it would download the new files and install them.

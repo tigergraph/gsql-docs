@@ -12,8 +12,8 @@ Once defined, the new functions are added into GSQL automatically the next time 
 
 UDFs are written in C{pp} in two files, `ExprFunctions.hpp` and `ExprUtil.hpp`:
 
-* ExprFunctions is used for functions that are called directly in GSQL queries.
-* ExprUtil contains structs or helper functions that are used by the functions in ExprFunctions.
+* `ExprFunctions` is used for functions that are called directly in GSQL queries.
+* `ExprUtil` contains structs or helper functions that are used by the functions in `ExprFunctions`.
 The functions defined in `ExprUtil.hpp` cannot be used in a GSQL query.
 
 == UDF security
@@ -73,9 +73,9 @@ inline bool greater_than_three (double x) {
 | All other C{pp} data types | *No* | *No* | Yes
 |===
 
-You can write your functions in the `ExprFunctions` file provided as a sample in TigerGraph Server installations, or create your own `.hpp` files from scratch.
+You can place your functions in the `ExprFunctions.hpp` file provided as a sample in TigerGraph Server installations, or create your own file from scratch.
 
-If your function requires a user-defined struct or helper function, that struct or helper function must be defined in a separate `ExprUtil` file.
+If your function requires a user-defined struct or helper function, that struct or helper function must be defined in a separate `ExprUtil.hpp` file.
 
 [NOTE]
 C{pp} supports changing the value of a `for` loop variable within a loop.
@@ -100,12 +100,23 @@ inline string reverse(string str){
 There are two ways to modify the UDF files to add user-defined functions to GSQL.
 Both are secured by `gadmin` and require administrator-level access:
 
-* Store UDF files in a GitHub repository, and configure GSQL to read from the repository.
+* xref:_use_github_to_store_udfs[Store UDF files in a GitHub repository], and configure GSQL to read from the repository.
 ** This is the recommended approach.
 It also takes the highest precedence.
 If GSQL is configured to read from GitHub for UDFs and the configurations are valid, UDFs in other sources are ignored.
-* Use the GSQL `PUT` command to upload UDFs.
+* xref:#_upload_udfs_with_gsql_put_command[Use the GSQL `PUT` command to upload UDFs].
 ** For security reasons, this method is disabled by default, and can only be enabled by the TigerGraph Linux user with access to `gadmin`.
+
+[IMPORTANT]
+.Need to reinstall queries using UDFs
+====
+If you update the UDF files, then any existing installed queries which use any UDF, whether modified or not, will be disabled as a precaution.
+To restalling them:
+
+. Check each query to see if it needs to be modified or not.  Make necessary modifications.
+. Run `CREATE OR REPLACE QUERY` for each query.
+. Run `INSTALL QUERY`, singly or for a batch of queries.
+====
 
 === Use GitHub to store UDFs
 

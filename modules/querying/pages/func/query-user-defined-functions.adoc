@@ -114,8 +114,8 @@ If GSQL is configured to read from GitHub for UDFs and the configurations are va
 If the UDF files change, either through GitHub or `PUT`, then any existing installed queries which use any UDF, whether modified or not, will be disabled as a precaution.
 To re-enable them:
 
-. Check each query to see if the UDF change causes a need to revise the query.  Make necessary modifications.
-. Run `CREATE OR REPLACE QUERY` for each query.
+. Check each disabled query to see if the UDF change causes a need to revise the query.  Make necessary modifications.
+. Run `CREATE OR REPLACE QUERY` for each disabled query.
 . Run `INSTALL QUERY`, singly or for a batch of queries.
 ====
 

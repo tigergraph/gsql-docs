@@ -107,13 +107,14 @@ If GSQL is configured to read from GitHub for UDFs and the configurations are va
 * xref:#_upload_udfs_with_gsql_put_command[Use the GSQL `PUT` command to upload UDFs].
 ** For security reasons, this method is disabled by default, and can only be enabled by the TigerGraph Linux user with access to `gadmin`.
 
+[#udf_update_warning]
 [IMPORTANT]
-.Need to reinstall queries using UDFs
+.Query reactivation required if UDFs are modified
 ====
-If you update the UDF files, then any existing installed queries which use any UDF, whether modified or not, will be disabled as a precaution.
-To restalling them:
+If the UDF files change, either through GitHub or `PUT`, then any existing installed queries which use any UDF, whether modified or not, will be disabled as a precaution.
+To re-enable them:
 
-. Check each query to see if it needs to be modified or not.  Make necessary modifications.
+. Check each query to see if the UDF change causes a need to revise the query.  Make necessary modifications.
 . Run `CREATE OR REPLACE QUERY` for each query.
 . Run `INSTALL QUERY`, singly or for a batch of queries.
 ====
@@ -169,13 +170,13 @@ After the parameters are successfully configured, you can access your UDFs in ne
 
 ==== Update UDFs sourced from GitHub
 
-Prior to 4.1, each time GSQL was run, it would check to see if the UDF files on GitHub had changed.
-If they had, it would download the new files and install them.
+For versions prior to 4.1, each time GSQL is run, it checks to see if the UDF files on GitHub have changed.
+If they had, it downloads the new UDF files.
 
 Beginning in 4.1, GSQL only checks GitHub if more than one hour has elapsed since the last check.
-
 To force GSQL to install new UDF files from GitHub, run `gadmin restart all` to restart GSQL.
 
+See the note about xref:#udf_update_warning[some queries disabled after UDFs are updated].
 
 === Upload UDFs with GSQL `PUT` command
 TigerGraph offers the ability to upload UDFs directly from GSQL using the `PUT` command.
@@ -229,6 +230,7 @@ PUT ExprUtil successfully.
 ----
 
 The `PUT` command automatically uploads the files in all nodes in a cluster and updates all existing files.
+See the note about xref:#udf_update_warning[some queries disabled after UDFs are updated].
 
 Once the files are stored, you can call the UDFs in a query the next time GSQL is executed.
 This includes the next time you start the GSQL shell or execute GSQL scripts from a bash shell.

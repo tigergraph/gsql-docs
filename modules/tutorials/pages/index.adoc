@@ -1,13 +1,23 @@
-= GSQL Tutorials
+= Query Languages
 :description: A list of available GSQL tutorials
 
 The GSQL (R) Graph Database Language is more than just a query language. It also serves as a DDL (Database Definition Language).
 
-There tutorials will help you get starting learning and using GSQL.
+The following tutorials and guides will help you learn, write, and optimize queries, as well as adopt best practices when designing graph schemas and working with advanced features like vector search.
 
+
+* xref:intro:set-gsql-apart.adoc[]
 
 * link:https://github.com/tigergraph/ecosys/blob/master/demos/guru_scripts/docker/tutorial/4.x/README.md[GSQL Tutorial using V3 syntax (on GitHub)]
 
 * xref:accumulators-tutorial.adoc[]
+
+* xref:schema-design-guide.adoc[]
+
+* link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md[TigerGraph OpenCypher (on GitHub)]
+
+* link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Hybrid Vector Search (on GithHub)]
+
+
 
 

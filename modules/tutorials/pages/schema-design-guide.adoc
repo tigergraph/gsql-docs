@@ -29,7 +29,7 @@ CREATE VERTEX Product (PRIMARY_ID id INT, name STRING, price FLOAT)
 
 Edges, on the other hand, represent relationships between entities.
 These relationships are the links that connect one vertex to another. For instance, an edge could represent that a Person "purchased" a Product, or that a Person "works_for" a Company.
-Relationships are often model verbs connecting two nouns (vertices).
+Edges are often model verbs connecting two nouns (vertices).
 
 The following schema creates an edge to represent a *purchased* relationship:
 
@@ -55,7 +55,7 @@ image::Components-Edges.png[]
 When designing your schema, you must decide whether to use *undirected*, *directed*, or *reversed* edges.
 Each type of edge serves a specific purpose depending on how you intend to query and traverse the data.
 
-*Undirected Edges (Friendship Relationship)*
+*Undirected Edges*
 
 Use *undirected edges* for *bidirectional relationships*.
 In a *friendship relationship*, for example, if *Person A* is friends with *Person B*, then *Person B* is also friends with *Person A*.
@@ -63,14 +63,14 @@ This means the relationship works in both directions, and we don’t need to spe
 
 image::Undirected edges.png[]
 
-The following schema creates an undirected edge for friendship:
+The following GSQL DDL statement creates an xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_create_edge[undirected edge] for friendship:
 
 [source.wrap,gsql]
 ----
-CREATE EDGE Is_Friend_Of (FROM Person, TO Person)
+CREATE UNDIRECTED EDGE Is_Friend_Of (FROM Person, TO Person)
 ----
 
-*Directed Edge (Work Relationship)*
+*Directed Edge*
 
 *Directed edges* are used for *one-way relationships* where the direction of the relationship matters.
 For instance, in a *work relationship*, Person A might work for Company B, but Company B does not work for Person A.
@@ -78,27 +78,27 @@ This clearly defines that the relationship flows only from Person A to Company B
 
 image::Directed Edge.png[]
 
-The following schema creates a directed edge for *work relationship*:
+The following schema creates a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_create_edge[directed edge] for *work relationship*:
 
 [source.wrap,gsql]
 ----
-CREATE EDGE Works_For (FROM Person, TO Company)
+CREATE DIRECTED EDGE Works_For (FROM Person, TO Company)
 ----
 
-*Reversed Edge (Parent-Child Relationship)*
+*Reversed Edge*
 
-A *reversed edge* allows you to define both directions of a relationship.
+A *reversed edge* allows you to traverse a directed edge in the opposite direction of its semantic flow.
 For example, in a *parent-child relationship*, we might define the primary edge as *"parent_of"* (Parent → Child).
 However, to easily traverse the relationship in the opposite direction (from Child to Parent), we can use a *reversed edge* with a different name, like "child_of" (Child → Parent). This makes it easy to query in either direction.
 
 image::Reversed Edge.png[]
 
-The following schema creates *reversed edges* for a *parent-child* relationship:
+TigerGraph has built-in syntax to define a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_with_reverse_edge[reserved edge] that maintains the same attribute values as its primary edge. 
+The following schema creates a directed edge plus a reserved edge for a *parent-child* relationship:
 
 [source.wrap,gsql]
 ----
-CREATE EDGE Parent_Of (FROM Person, TO Person)
-CREATE EDGE Child_Of (FROM Person, TO Person)
+CREATE DIRECTED EDGE Parent_Of (FROM Person, TO Person) WITH REVERSE_EDGE = "Child_Of"
 ----
 
 ==== Multiple Relationships Between Two Vertices
@@ -123,11 +123,16 @@ Efficient querying relies on optimizing how the data is indexed. When you design
 
 ==== Vertex Indexes
 
-Use vertex indexes for attributes that are queried frequently, like user ID or product ID.
+A vertex index is a design pattern where you model frequently grouped or filtered attributes such as color, brand, or type as their own vertex types instead of simple attributes.
+This lets you easily search or filter, for example, all products that are red or from a specific brand.
+
+In the figure below, "Brand", "Color", and "Type" are vertex types connected to products, making filtering and grouping by these properties efficient and flexible.
+
+image::Vertex Indexes.png[]
 
 ==== Secondary Indexes
 
-Use secondary indexes for attributes that require range queries or non-primary attributes.
+Use xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_alter_index[secondary indexes] when the search behavior justifies having an index and either range queries are needed or a vertex index is not appropriate.
 
 == Optimizing for Your Use Case
 
@@ -147,7 +152,7 @@ When deciding how detailed your relationships should be, you have two options: *
 
 ==== Multiple Edge Types
 
-If your relationships are highly specific (e.g., "is_friend_of", "is_colleague_of"), use multiple edge types. This is memory-intensive but efficient for specific queries.
+If your relationship types are well-defined and not to numerous (e.g., "is_friend_of", "is_colleague_of"), use multiple edge types.
 
 image::Granularity - Multiple Edge Types.png[]
 
@@ -155,8 +160,8 @@ The following schema creates *multiple edge types* for relationships like friend
 
 [source.wrap,gsql]
 ----
-CREATE EDGE Is_Friend_Of (FROM Person, TO Person)
-CREATE EDGE Is_Colleague_Of (FROM Person, TO Person)
+CREATE UNDIRECTED EDGE Is_Friend_Of (FROM Person, TO Person)
+CREATE UNDIRECTED EDGE Is_Colleague_Of (FROM Person, TO Person)
 ----
 
 ==== Single Edge Type with Attributes
@@ -169,7 +174,7 @@ The following schema uses a *single edge type with an attribute* for relationshi
 
 [source.wrap,gsql]
 ----
-CREATE EDGE Is_Related_To (FROM Person, TO Person, relationship_type STRING)
+CREATE DIRECTED EDGE Is_Related_To (FROM Person, TO Person, relationship_type STRING)
 ----
 
 [TIP]
@@ -258,7 +263,7 @@ Here are some key recommendations for schema design:
 
 * *Attributes vs. Vertices:* Model frequently queried properties as vertices and use attributes for less critical data.
 
-* *Events:* For event-based analytics, model events as vertices; use edge attributes for simpler scenarios.
+* *Events:* Model events as vertices when they have properties like timestamps, types, or need to be queried individually. For simple cases, use edge attributes to add event details between two related vertices.
 
 * *Schema Design:* Choose an event-centered or user-centered schema based on the primary query focus.
 

@@ -155,6 +155,11 @@ The `gadmin` configuration parameters for setting up the connection to GitHub ar
 | `GSQL.GithubUrl` | Optional parameter used for GitHub Enterprise | `https://api.github.com`
 |===
 
+[TIP]
+====
+Run `gadmin config get <parameter name>` to find out the current setting of a parameter.
+====
+
 Use the xref:{page-component-version}@tigergraph-server:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] command to configure the aforementioned parameters to connect GSQL to the GitHub repository hosting your files.
 
 Below is an example configuration. Remember to run `gadmin config apply` after changing the parameters.

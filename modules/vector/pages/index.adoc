@@ -142,6 +142,8 @@ CREATE GLOBAL SCHEMA_CHANGE JOB add_emb2 {
 RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
 ----
 
+When modifying vector attributes with a schema change job and using the `-N` option, *all queries become invalid* and must be reinstalled, even if they are unrelated to the change.
+This is expected behavior in *4.2.1*. Avoid using `-N` unless you plan to reinstall all queries.
 
 [#loading_vectors]
 == Loading Vectors
@@ -177,6 +179,9 @@ CREATE LOADING JOB load_s3_file  {
 The vector itself is subdivided into elements, with `","` as the element separator.
 Note the use of the split() to parse the vector.
 
+* The LOAD VECTOR statement does not support nested built-in token functions. For example:
+`SPLIT(gsql_replace(gsql_replace($3,"[",""),"]",""))` will fail to compile. Apply transformations in separate steps before loading.
+* When loading vectors through the RESTPP endpoint, if the specified vector attribute does not exist, TigerGraph will not return an error. Double-check attribute names before loading.
 
 == Search Indexing
 
@@ -186,6 +191,17 @@ The search index is used when the `vectorSearch` function is invoked.
 The index is automatically updated in respond to changes in the vector database.
 Because similar calculations take some time, the index can lag behind the data updates.
 
+If you have many vertex types, index rebuild time increases proportionally, even if the number of vector records is the same.
+During export, TigerGraph does not wait for the vector index rebuild to finish. If you export before rebuild completes, some vectors may be missing.
+
+To check rebuild status:
+[source.wrap,bash]
+----
+curl -s -X GET "http://<host>:14240/restpp/vector/status"
+----
+
+* Rebuild_processing means the index is still rebuilding.
+* Ready_for_query means rebuild is complete.
 
 [#vectorSearch]
 == vectorSearch Function
@@ -226,6 +242,11 @@ E.g., `{candidate_set: vset1, ef: 20, distance_map: @@distmap}`.
 
 The meaning of the optional parameters is best explained by example.  See the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 
+In version 4.2.1, there are some limitations when using vectorSearch() in GSQL queries:
+
+* Nested `ListAccum` types inside `vectorSearch()` (e.g., `ListAccum<ListAccum<float>>`) are not supported.
+* Using the `+` operator on a `ListAccum` inside `vectorSearch()` causes compilation failure.
+* Using vector attributes directly in a `WHERE` clause (e.g., `WHERE P.embAttr1.size() == 0`) causes a Null Pointer Exception. Use `ACCUM` or `POST-ACCUM` clauses instead.
 
 [#print_vectors]
 == Printing Vectors
@@ -282,7 +303,7 @@ curl -X POST "http://localhost:14240/restpp/graph/financialGraph" -d '
 
 === Assignment in GSQL
 
-A vertex attribute can be updated like other attributes in the ACCUM or POST-ACCUM clause of a GSQL query.
+A vertex attribute can be updated like other attributes in the `ACCUM` or `POST-ACCUM` clause of a GSQL query.
 
 This example assigns new vector values in the last clause:
 

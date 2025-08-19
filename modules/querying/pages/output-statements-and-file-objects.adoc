@@ -453,9 +453,9 @@ Each execution of the `PRINT` statement appends one line to the `FILE`. If the `
 ====
 Limitations of `PRINT` > File
 
-* Printing a full Vertex set variable is not supported.
-* If a vertex is printed, only its ID value is printed.
+* In 4.2.1, printing a full vertex set is supported with `PRINT vt`; and `PRINT vt TO_CSV f`;. Only vertex IDs are printed.
 * If printing a vertex set's vertex-attached accumulator or a vertex set's variable, the result is a list of values, one for each vertex, separated by newlines.
+* Expanded forms like `PRINT A[A.*]`; or `PRINT A.* TO_CSV f`; are not supported. The system will return an error with a hint to use `PRINT A`; or `PRINT A TO_CSV f`; instead.
 * The syntax for printing a vertex set expression is different when printing to a file than when printing to standard output. Compare:
  ** `PRINT A[A.gender];` # with brackets
  ** `PRINT A.gender TO_CSV file1;` # without brackets

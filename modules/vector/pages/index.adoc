@@ -142,8 +142,11 @@ CREATE GLOBAL SCHEMA_CHANGE JOB add_emb2 {
 RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
 ----
 
-When modifying vector attributes with a schema change job and using the `-N` option, *all queries become invalid* and must be reinstalled, even if they are unrelated to the change.
-This is expected behavior in *4.2.1*. Avoid using `-N` unless you plan to reinstall all queries.
+[NOTE]
+====
+When modifying vector attributes with a schema change job, the same rules for query invalidation apply. 
+See xref:ddl-and-loading:modifying-a-graph-schema.adoc#_n[RUN SCHEMA CHANGE] for details on the `-N` option.
+====
 
 [#loading_vectors]
 == Loading Vectors
@@ -191,8 +194,13 @@ The search index is used when the `vectorSearch` function is invoked.
 The index is automatically updated in respond to changes in the vector database.
 Because similar calculations take some time, the index can lag behind the data updates.
 
-If you have many vertex types, index rebuild time increases proportionally, even if the number of vector records is the same.
-During export, TigerGraph does not wait for the vector index rebuild to finish. If you export before rebuild completes, some vectors may be missing.
+If you have many vertex types, index rebuild time increases proportionally, even if the total number of vector records is the same.
+
+[WARNING]
+====
+Vectors which have not yet been indexed will not be included in vector search results.
+A database export or backup may not include vectors which have not yet been indexed.
+====
 
 To check rebuild status:
 [source.wrap,bash]
@@ -200,8 +208,8 @@ To check rebuild status:
 curl -s -X GET "http://<host>:14240/restpp/vector/status"
 ----
 
-* Rebuild_processing means the index is still rebuilding.
-* Ready_for_query means rebuild is complete.
+* `Rebuild_processing` means the index is still rebuilding.
+* `Ready_for_query` means rebuild is complete.
 
 [#vectorSearch]
 == vectorSearch Function
@@ -242,7 +250,7 @@ E.g., `{candidate_set: vset1, ef: 20, distance_map: @@distmap}`.
 
 The meaning of the optional parameters is best explained by example.  See the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 
-In version 4.2.1, there are some limitations when using vectorSearch() in GSQL queries:
+There are some limitations when using vectorSearch() in GSQL queries:
 
 * Nested `ListAccum` types inside `vectorSearch()` (e.g., `ListAccum<ListAccum<float>>`) are not supported.
 * Using the `+` operator on a `ListAccum` inside `vectorSearch()` causes compilation failure.

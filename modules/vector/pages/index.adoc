@@ -144,8 +144,8 @@ RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
 
 [NOTE]
 ====
-When modifying vector attributes with a schema change job, the same rules for query invalidation apply. 
-See xref:ddl-and-loading:modifying-a-graph-schema.adoc#_n[RUN SCHEMA CHANGE] for details on the `-N` option.
+Use the `-N` option when you run a schema change job to modify vector attributes.
+For more details, see the xref:ddl-and-loading:modifying-a-graph-schema.adoc#_n[RUN SCHEMA CHANGE] page.
 ====
 
 [#loading_vectors]
@@ -252,8 +252,8 @@ The meaning of the optional parameters is best explained by example.  See the li
 There are some limitations when using vectorSearch() in GSQL queries:
 
 * Nested `ListAccum` types inside `vectorSearch()` (e.g., `ListAccum<ListAccum<float>>`) are not supported.
-* Using the `+` operator on a `ListAccum` inside `vectorSearch()` causes compilation failure.
-* Using vector attributes directly in a `WHERE` clause (e.g., `WHERE P.embAttr1.size() == 0`) causes a Null Pointer Exception. Use `ACCUM` or `POST-ACCUM` clauses instead.
+* Using the `+` operator on a `ListAccum` inside `vectorSearch()` is not supported.
+* Using vector attributes directly in a `WHERE` clause (e.g., `WHERE P.embAttr1.size() == 0`) is not supported. Use `ACCUM` or `POST-ACCUM` clauses instead.
 
 [#print_vectors]
 == Printing Vectors

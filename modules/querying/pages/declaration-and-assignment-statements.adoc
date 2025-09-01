@@ -8,27 +8,28 @@ This section discusses the different types of declaration and assignment stateme
 [source,ebnf]
 ----
 ## Declarations ##
-accumDeclStmt :=
-          accumType localAccumName ["=" constant]
-                    ["," localASccumName ["=" constant]]*
-        | accumType globaAccumName ["=" constant]
-                    ["," GlobalAccumName ["=" constant]]*
-localAccumName := "@"accumName;
-globalAccumName := "@@"accumName;
+accumDeclStmt := accumType localAccumName ["=" constant]
+                 ["," localAccumName ["=" constant]]*
+               | accumType globalAccumName ["=" constant]
+                 ["," globalAccumName ["=" constant]]*
 
-baseDeclStmt    := baseType name ["=" constant] ["," name ["=" constant]]*
-fileDeclStmt := FILE fileVar "(" filePath ")"
+localAccumName := "@" accumName;
+globalAccumName := "@@" accumName;
+
+baseDeclStmt := baseType name ["=" constant] ["," name ["=" constant]]*
+
+fileDeclStmt := FILE fileVar "(" filePath ["," filePermissionCode] ")"
 fileVar := name
+filePath := stringLiteral
+filePermissionCode := stringLiteral   // octal encoded permission as a string literal
 
 localVarDeclStmt := baseType varName "=" expr
 
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
-
 simpleSet := vertexSetName
            | "(" simpleSet ")"
            | simpleSet (UNION | INTERSECT | MINUS) simpleSet
-
-seedSet := "{" [seed ["," seed ]*] "}"
+seedSet := "{" [seed ["," seed]*] "}"
 seed := '_'
       | ANY
       | vertexSetName
@@ -37,10 +38,8 @@ seed := '_'
       | paramName
       | "SelectVertex" selectVertParams
       | vertexVarName
-
 selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
-          stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
-
+                   stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
 columnId := "$" (integer | stringLiteral)
 
 ## Assignment Statements ##
@@ -49,21 +48,19 @@ assignStmt := name "=" expr
 
 attrAccumStmt := name "." attrName "+=" expr
 
-lAccumAssignStmt := vertexAlias "." localAccumName ("+="| "=") expr
+lAccumAssignStmt := vertexAlias "." localAccumName ("+=" | "=") expr
 
-gAccumAssignStmt :=  globalAccumName ("+=" | "=") expr
+gAccumAssignStmt := globalAccumName ("+=" | "=") expr
 
 loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
-                                  ["," LOADACCUM loadAccumParams]* "}"
-
+                                   ["," LOADACCUM loadAccumParams]* "}"
 loadAccumParams := "(" filePath "," columnId ["," columnId]* ","
-          stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
+                   stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
 
 ## Function Call Statement ##
 funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
-              | globaAccumName ("." funcName "(" [argList] ")")+
+              | globalAccumName ("." funcName "(" [argList] ")")+
               | "reset_collection_accum" "(" accumName ")"
-
 argList := expr ["," expr]*
 ----
 
@@ -404,14 +401,15 @@ A `FILE` object is a sequential text storage object, associated with a text file
 .EBNF for FILE object declaration
 [source,ebnf]
 ----
-fileDeclStmt := FILE fileVar "(" filePath ")"
+fileDeclStmt := FILE fileVar "(" filePath ["," filePermissionCode] ")"
 fileVar := name
+filePath := stringLiteral
+filePermissionCode := stringLiteral
 ----
 
 
-When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased.
-During the execution of the query, content written to or printed to the `FILE` object will be appended to the `FILE` object.
-When the query where the `FILE` object is declared finishes running, the content of the `FILE` object is saved to the text file.
+Declaring a `FILE` object with a file path erases any existing content in the text file. An optional Linux octal-encoded file permission code (e.g., "764") can be specified to set access permissions. During query execution, content written to the `FILE` object is appended to it. When the query finishes, the content is saved to the text file.
+See xref:querying:output-statements-and-file-objects.adoc#_file_println_statement[Output Statements and FILE Objects] for examples of writing to a `FILE` object.
 
 ==== Example
 
@@ -420,8 +418,6 @@ When the query where the `FILE` object is declared finishes running, the content
 ----
 include::appendix:example$work_net/declaration_file_object_query.gsql[]
 ----
-
-
 
 == Assignment and Accumulate Statements
 

@@ -8,20 +8,17 @@ This section discusses the different types of declaration and assignment stateme
 [source,ebnf]
 ----
 ## Declarations ##
-accumDeclStmt :=
-      accumType localAccumName ["=" constant]
-        ["," localAccumName ["=" constant]]*
-    | accumType globalAccumName ["=" constant]
-        ["," globalAccumName ["=" constant]]*
+accumDeclStmt := accumType localAccumName ["=" constant]
+                 ["," localAccumName ["=" constant]]*
+               | accumType globalAccumName ["=" constant]
+                 ["," globalAccumName ["=" constant]]*
 
 localAccumName := "@" accumName;
 globalAccumName := "@@" accumName;
 
-baseDeclStmt := baseType name ["=" constant]
-    ["," name ["=" constant]]*
+baseDeclStmt := baseType name ["=" constant] ["," name ["=" constant]]*
 
 fileDeclStmt := FILE fileVar "(" filePath ["," filePermissionCode] ")"
-
 fileVar := name
 filePath := stringLiteral
 filePermissionCode := stringLiteral   // octal encoded permission as a string literal
@@ -29,57 +26,41 @@ filePermissionCode := stringLiteral   // octal encoded permission as a string li
 localVarDeclStmt := baseType varName "=" expr
 
 vSetVarDeclStmt := vertexSetName ["(" vertexType ")"] "=" (seedSet | simpleSet | selectBlock)
-
-simpleSet :=
-    vertexSetName
-  | "(" simpleSet ")"
-  | simpleSet (UNION | INTERSECT | MINUS) simpleSet
-
+simpleSet := vertexSetName
+           | "(" simpleSet ")"
+           | simpleSet (UNION | INTERSECT | MINUS) simpleSet
 seedSet := "{" [seed ["," seed]*] "}"
-
-seed :=
-    '_'
-  | ANY
-  | vertexSetName
-  | globalAccumName
-  | vertexType ".*"
-  | paramName
-  | "SelectVertex" selectVertParams
-  | vertexVarName
-
-selectVertParams :=
-  "(" filePath "," columnId "," (columnId | name) ","
-  stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
-
+seed := '_'
+      | ANY
+      | vertexSetName
+      | globalAccumName
+      | vertexType ".*"
+      | paramName
+      | "SelectVertex" selectVertParams
+      | vertexVarName
+selectVertParams := "(" filePath "," columnId "," (columnId | name) ","
+                   stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
 columnId := "$" (integer | stringLiteral)
 
 ## Assignment Statements ##
-assignStmt :=
-    name "=" expr
-  | name "." attrName "=" expr
+assignStmt := name "=" expr
+            | name "." attrName "=" expr
 
-attrAccumStmt :=
-    name "." attrName "+=" expr
+attrAccumStmt := name "." attrName "+=" expr
 
-lAccumAssignStmt :=
-    vertexAlias "." localAccumName ("+=" | "=") expr
+lAccumAssignStmt := vertexAlias "." localAccumName ("+=" | "=") expr
 
-gAccumAssignStmt :=
-    globalAccumName ("+=" | "=") expr
+gAccumAssignStmt := globalAccumName ("+=" | "=") expr
 
-loadAccumStmt :=
-    globalAccumName "=" "{" LOADACCUM loadAccumParams
-                            ["," LOADACCUM loadAccumParams]* "}"
-
-loadAccumParams :=
-    "(" filePath "," columnId ["," columnId]* ","
-    stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
+loadAccumStmt := globalAccumName "=" "{" LOADACCUM loadAccumParams
+                                   ["," LOADACCUM loadAccumParams]* "}"
+loadAccumParams := "(" filePath "," columnId ["," columnId]* ","
+                   stringLiteral "," (TRUE | FALSE) ")" ["." FILTER "(" condition ")"]
 
 ## Function Call Statement ##
 funcCallStmt := name ["<" type ["," type]* ">"] "(" [argList] ")"
-              | globaAccumName ("." funcName "(" [argList] ")")+
+              | globalAccumName ("." funcName "(" [argList] ")")+
               | "reset_collection_accum" "(" accumName ")"
-
 argList := expr ["," expr]*
 ----
 

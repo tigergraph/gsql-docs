@@ -28,7 +28,7 @@ For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/b
 | FLOAT (32-bit floating point)
 
 | Max. dimensions (vector length)
-| 4096
+| 4096 (Community Edition); 32768 (Enterprise Edition)
 
 | Similarity metrics
 | cosine, L2 (Euclidean) IP (inner product)
@@ -64,7 +64,7 @@ a| In schema change job:
 a| Clause in loading job:
 ```
 LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
-VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
+VALUES (id_col, SPLIT(vec_col, elem_sep)) USING SEPARATOR = field_sep;
 ```
 
 | xref:#vectorSearch[Search for similar vertices]
@@ -160,8 +160,7 @@ The vector data is presumed to be in some format such as CSV where one separator
 .Vector load clause syntax
 ----
 LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
-VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
-
+VALUES (id_col, SPLIT(vec_col, elem_sep)) USING SEPARATOR = field_sep;
 ----
 
 Example:
@@ -253,7 +252,7 @@ There are some limitations when using vectorSearch() in GSQL queries:
 
 * Nested `ListAccum` types inside `vectorSearch()` (e.g., `ListAccum<ListAccum<float>>`) are not supported.
 * Using the `+` operator on a `ListAccum` inside `vectorSearch()` is not supported.
-* Using vector attributes directly in a `WHERE` clause (e.g., `WHERE P.embAttr1.size() == 0`) is not supported. Use `ACCUM` or `POST-ACCUM` clauses instead.
+* Using vector attributes directly in a WHERE clause (e.g., `WHERE P.embAttr1.size() == 0`) is generally not supported. However, users can now install queries using the `-single` method to avoid Null Pointer Exceptions (NPEs) when working around this limitation. For other cases, use `ACCUM` or `POST-ACCUM` clauses.
 
 [#print_vectors]
 == Printing Vectors

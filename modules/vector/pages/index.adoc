@@ -28,7 +28,7 @@ For a tutorial and examples. see our link:https://github.com/tigergraph/ecosys/b
 | FLOAT (32-bit floating point)
 
 | Max. dimensions (vector length)
-| 4096
+| 4096 (Community Edition); 32768 (Enterprise Edition)
 
 | Similarity metrics
 | cosine, L2 (Euclidean) IP (inner product)
@@ -64,7 +64,7 @@ a| In schema change job:
 a| Clause in loading job:
 ```
 LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
-VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
+VALUES (id_col, SPLIT(vec_col, elem_sep)) USING SEPARATOR = field_sep;
 ```
 
 | xref:#vectorSearch[Search for similar vertices]
@@ -142,6 +142,11 @@ CREATE GLOBAL SCHEMA_CHANGE JOB add_emb2 {
 RUN GLOBAL SCHEMA_CHANGE JOB add_emb2
 ----
 
+[NOTE]
+====
+Use the `-N` option when you run a schema change job to modify vector attributes.
+For more details, see the xref:ddl-and-loading:modifying-a-graph-schema.adoc#_n[RUN SCHEMA CHANGE] page.
+====
 
 [#loading_vectors]
 == Loading Vectors
@@ -154,9 +159,8 @@ The vector data is presumed to be in some format such as CSV where one separator
 [source,GSQL]
 .Vector load clause syntax
 ----
-LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name \
-VALUES (id_col, SPLIT(vec_col, elem_sep) USING SEPARATOR = field_sep;
-
+LOAD file_object TO VECTOR ATTRIBUTE vec_name ON VERTEX vertex_name
+VALUES (id_col, SPLIT(vec_col, elem_sep)) USING SEPARATOR = field_sep;
 ----
 
 Example:
@@ -166,7 +170,6 @@ CREATE LOADING JOB load_s3_file  {
 
  DEFINE FILENAME account;
  DEFINE FILENAME accountEmb;
-;
 
  LOAD account TO VERTEX Account VALUES ($"name", gsql_to_bool(gsql_trim($"isBlocked"))) USING header="true", separator=",";
  LOAD accountEmb TO VECTOR ATTRIBUTE em1 ON VERTEX Account VALUES ($0, SPLIT($1, ",")) USING SEPARATOR="|";
@@ -177,6 +180,9 @@ CREATE LOADING JOB load_s3_file  {
 The vector itself is subdivided into elements, with `","` as the element separator.
 Note the use of the split() to parse the vector.
 
+* The LOAD VECTOR statement does not support nested built-in token functions. For example:
+`SPLIT(gsql_replace(gsql_replace($3,"[",""),"]",""))` will fail to compile. Apply transformations in separate steps before loading.
+* When loading vectors through the RESTPP endpoint, if the specified vector attribute does not exist, TigerGraph will not return an error. Double-check attribute names before loading.
 
 == Search Indexing
 
@@ -186,6 +192,22 @@ The search index is used when the `vectorSearch` function is invoked.
 The index is automatically updated in respond to changes in the vector database.
 Because similar calculations take some time, the index can lag behind the data updates.
 
+If you have many vertex types, index rebuild time increases proportionally, even if the total number of vector records is the same.
+
+[WARNING]
+====
+Vectors which have not yet been indexed will not be included in vector search results.
+A database export may not include vectors which have not yet been indexed.
+====
+
+To check rebuild status:
+[source.wrap,bash]
+----
+curl -s -X GET "http://<host>:14240/restpp/vector/status"
+----
+
+* `Rebuild_processing` means the index is still rebuilding.
+* `Ready_for_query` means rebuild is complete.
 
 [#vectorSearch]
 == vectorSearch Function
@@ -226,6 +248,11 @@ E.g., `{candidate_set: vset1, ef: 20, distance_map: @@distmap}`.
 
 The meaning of the optional parameters is best explained by example.  See the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/VectorSearch.md[Vector Search tutorial].
 
+There are some limitations when using vectorSearch() in GSQL queries:
+
+* Nested `ListAccum` types inside `vectorSearch()` (e.g., `ListAccum<ListAccum<float>>`) are not supported.
+* Using the `+` operator on a `ListAccum` inside `vectorSearch()` is not supported.
+* Using vector attributes directly in a WHERE clause (e.g., `WHERE P.embAttr1.size() == 0`) is generally not supported. However, users can now install queries using the `-single` method to avoid Null Pointer Exceptions (NPEs) when working around this limitation. For other cases, use `ACCUM` or `POST-ACCUM` clauses.
 
 [#print_vectors]
 == Printing Vectors
@@ -282,7 +309,7 @@ curl -X POST "http://localhost:14240/restpp/graph/financialGraph" -d '
 
 === Assignment in GSQL
 
-A vertex attribute can be updated like other attributes in the ACCUM or POST-ACCUM clause of a GSQL query.
+A vertex attribute can be updated like other attributes in the `ACCUM` or `POST-ACCUM` clause of a GSQL query.
 
 This example assigns new vector values in the last clause:
 

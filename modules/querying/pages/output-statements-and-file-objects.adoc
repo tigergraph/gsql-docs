@@ -501,7 +501,7 @@ The data from query-body level `FILE` print statements (either `TO_CSV` or `prin
 [discrete]
 === Example
 
-As of 4.2.1, users can declare a FILE object with a linux octal-encoded file permission code to specify file permissions.
+As of 4.3, users can declare a FILE object with a linux octal-encoded file permission code to specify file permissions.
 See xref:querying:declaration-and-assignment-statements.adoc#_file_objects[Declaration and Assignment Statements] page for details.
 
 .File object query example

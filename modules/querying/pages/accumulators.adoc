@@ -652,42 +652,45 @@ include::appendix:example$minimal_net/accum_oraccum_results.json[]
 [#_bitwiseandaccum_bitwiseoraccum]
 === BitwiseAndAccum / BitwiseOrAccum
 
-The BitwiseAndAccum and BitwiseOrAccum types represent fixed-length bit sequences and calculate the cumulative result of a series of bitwise boolean operations and store the resulting sequences.
+The BitwiseAndAccum and BitwiseOrAccum types represent fixed-length or dynamic-length bit sequences. They calculate the cumulative result of bitwise boolean operations and store the resulting sequences.
 
-Fundamental to understanding and using bitwise operations is the knowledge that integers are stored in base-2 representation as a 64-bit sequence of 1s and 0s.
-"Bitwise" means that each bit is treated as a separate boolean value, with 1 representing true and 0 representing false.
-Hence, an integer is equivalent to a sequence of boolean values.
+Integers are stored as sequences of 1s and 0s (bits) in base-2, with each bit acting as a boolean value (1 for true, 0 for false).
 Computing the Bitwise `AND` of two numbers A and B means computing the bit sequence C where the stem:[j_{th}] bit of C, denoted stem:[C_j], is equal to stem:[A_j] `AND` stem:[B_j].
 
 ==== Declaration
 
-The default length for a bitwise accumulator is 64 bits.
-You can specify a different length by appending the desired length in angle brackets``<>`` in the declaration statement:
+Declare bitwise accumulators as regular fixed-length (up to 64 bits), long fixed-length (over 64 bits), or dynamic-length (new in versions 4.2.1 and 4.3.0) based on your query’s needs.
 
+* *Regular Fixed-Length (Up to 64 Bits)*: Stored in a single 64-bit integer, ignoring overflow. Declare without a length (defaults to 64 bits) or with a length of 64 or less.
++
 [,gsql]
 ----
-BitwiseOrAccum<100> @@visited;
+BitwiseOrAccum @@bw1;      // Default 64 bits
+BitwiseAndAccum<64> @@bw2;
+BitwiseOrAccum<32> @@bw3;
 ----
 
-* When a bitwise accumulator length is less than or equal to 64, it's stored using one 64-bit integer.
-Overflow on the left is ignored.
-* When a bitwise accumulator length is longer than 64, it's stored using an array of multiple integers.
-The rightmost (last) integer in the array is for the 64 least significant bits.
-Any overflowing bits will be ignored.
+* *Long Fixed-Length (Over 64 Bits)*: Stored in an array of integers, with the rightmost integer holding the 64 least significant bits, ignoring overflow. Use .clear() to free memory during queries.
++
+[,gsql]
+----
+BitwiseOrAccum<65> @@bw4;
+BitwiseAndAccum<100> @@bw5;
+----
 
-For example, if you are declaring an 80-bit BitwiseAndAccum:
+* *Dynamic-Length*: Set the length at runtime using query parameters or variables (new in versions 4.2.1 and 4.3.0). Use .clear() to free memory. You cannot change the length after declaration (e.g., .resize() is not supported).
++
+[,gsql]
+----
+CREATE QUERY test(UINT len) {
+  INT length = len * 10;
+  BitwiseOrAccum<len> @@bw6;
+  BitwiseOrAccum<length> @@bw7;
+}
+----
 
-    @@bit80<80> = [123, 456]
-
-456 represents the 64-bit sequence `0000….000111001000` (zeros omitted), and 123 represents the 64-bit sequence `0000000000…00001111011` (zeros omitted).
-
-When the two integers are joined together, the 64-bit sequence on the right (456) takes up the 64 bits from the right.
-The 64-bit sequence on the left (123) takes up the remaining 16 bits and the overflow on the left is ignored.
-
-The resulting BitwiseAndAccum is the concatenation of the two bit sequences:
-
-    0000000001111011, followed by 0000000...000111001000
-
+For lengths over 64 bits, the system uses an array.
+For example, an 80-bit BitwiseAndAccum like `@@bit80<80> = [123, 456]` concatenates the bit sequences, with 456 covering the 64 least significant bits and 123 the rest, ignoring overflow.
 
 ==== Accumulation behavior
 
@@ -712,9 +715,7 @@ AccumA > AccumB    // true
 AccumA < AccumB    // false
 ----
 
-They also support bitwise Boolean logic operators.
-If an operator acts on two accumuators, the accumulators must have the same type and length.
-The operation produces a new accumulator with the same type and length.
+Bitwise boolean logic operators require accumulators of the same type and length, producing a new accumulator of the same type and length.
 
 .Bitwise logic operators
 [cols="1,2"]
@@ -724,7 +725,7 @@ The operation produces a new accumulator with the same type and length.
 |`<accum1> & <accum2>`
 |Returns a new bitwise accumulator where each bit is the Boolean `AND` of the corresponding bits in `accum1` and `accum2`.
 
-|`<accum1> \|\| <accum2>`
+|`<accum1> \| <accum2>`
 |Returns a new bitwise accumulator where each bit is the Boolean `OR` of the corresponding bits in `accum1` and `accum2`.
 
 |`<accum1> ^ <accum2>`
@@ -736,22 +737,13 @@ The operation produces a new accumulator with the same type and length.
 
 [CAUTION]
 ====
-Bitwise Operations and Negative Integers
-
-Most computer systems represent negative integers using "2's complement" format, where the uppermost bit has special significance. Operations that affect the uppermost bit are crossing the boundary between positive and negative numbers, and vice versa.
+Bitwise operations on negative integers use 2’s complement, where the uppermost bit indicates the sign, which may affect results.
 ====
 
 [discrete]
 ==== *Functions*
 
-BitwiseAndAccum and BitwiseOrAccum also support the following class functions.
-
-[WARNING]
-====
-Mutator functions (those that modify the accumulator) can be used only under the following conditions:
-
-* Mutator functions may not be used in a PRINT statement.
-====
+BitwiseAndAccum and BitwiseOrAccum support these functions. Mutator functions, which modify the accumulator, cannot be used in PRINT statements.
 
 .Bitwise accumulator functions
 |===
@@ -820,8 +812,12 @@ Returns a bitwise accumulator whose every bit is the `AND` result between the tw
 |Mutator
 |Compares two bitwise accumulators of the same length.
 Returns a Bitwise accumulator whose every bit is the `OR` result between the two bitwise accumulators.
-|===
 
+|`.clear()`
+|`VOID`
+|Mutator
+|Frees memory for long and dynamic-length accumulators.
+|===
 
 
 ==== Example

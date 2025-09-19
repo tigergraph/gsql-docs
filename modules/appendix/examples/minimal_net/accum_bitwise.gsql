@@ -10,7 +10,7 @@ CREATE QUERY bitwise_accum_ex(UINT len) FOR GRAPH Minimal_Net {
 
   // Long fixed-length
   @@bw_or_long += 170;  // 80 bits: ...000 | ...10101010 -> ...10101010
-  @@bw_or_long.clear(); // Free memory
+  @@bw_or_long.clear(); // Resets to 0 (default for BitwiseOrAccum) and frees memory
   @@bw_or_long += 85;   // ...000 | ...01010101 -> ...01010101 (decimal 85)
   PRINT @@bw_or_long;   // 85
 

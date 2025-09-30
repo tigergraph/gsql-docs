@@ -46,8 +46,8 @@ declExceptStmts := (declExceptStmt ";")+
 queryBodyStmts := (queryBodyStmt ";")+
 
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
-runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName
-    "(" parameterValueList | parameterValueJSON ")"
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName [modeOption] "(" parameterValueList | parameterValueJSON ")"
+modeOption := "-mode" ( "legacy" | "instruction" | "debug" )
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
@@ -568,7 +568,7 @@ If a query is saved as a draft before it reaches valid status, any queries that 
 ====
 If a user creates a query, this user becomes the owner of this query automatically.
 
-For a detailed description, please refer to xref:xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc
+For a detailed description, please refer to xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc[]
 ====
 
 == `INTERPRET QUERY`
@@ -622,7 +622,8 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 .Syntax for interpreting a created query
 [source,ebnf]
 ----
-runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName [modeOption] "(" parameterValueList ")"
+modeOption := "-mode" ( "legacy" | "instruction" | "debug" )
 ----
 
 Required privilege:
@@ -633,12 +634,53 @@ This syntax is like `RUN` query, except
 * The keyword `RUN` is replaced with `INTERPRET`.
 * Some options may not be supported.
 
-.Example of Interpret-Only Mode for INTERPRET QUERY
+Starting in TigerGraph 4.3.0, you can control the interpret engine with the `-mode` option:
+
+* `-mode legacy`: Forces the legacy engine (supports all GSQL features, slower)
+* `-mode instruction`: Forces the instruction engine (faster, fails if query uses unsupported features).
+* `-mode debug`: Forces instruction mode and generates debug files (`serialized_instructions.json` and `serialized_instructions.bin`) in `/tmp/gpe` under the TigerGraph installation folder. Use this for advanced troubleshooting, typically by developers.
+
+If you don’t specify a `-mode`, the system automatically picks the best mode, preferring instruction mode.
+
+.Example of Interpret with Modes
 
 [source,gsql]
 ----
-INTERPRET QUERY createQueryEx ("Jane.Doe")
+INTERPRET QUERY myQuery("Jane.Doe")              // Auto-selects mode
+INTERPRET QUERY myQuery -mode legacy("Jane.Doe") // Forces legacy mode
+INTERPRET QUERY myQuery -mode instruction("Jane.Doe") // Forces instruction mode
+INTERPRET QUERY myQuery -mode debug("Jane.Doe")  // Forces instruction mode with debug files
 ----
+
+[#checking-interpret-modes-and-logs]
+=== Checking Interpret Modes and Logs
+
+Users can confirm which mode was used by checking GSQL logs:
+
+* `Interpret query [query_name] in instruction mode`
+* `Interpret query [query_name] in old interpret engine`
+
+For more detail on why a query could not run in instruction mode, set the log level to DEBUG.
+Debug logs may include messages like:
+
+`Set instruction mode to false in function <name>`
+
+[#semantic-errors]
+=== Semantic Errors for Interpret Modes
+
+When using the `-mode` option, you may see one of the following errors:
+
+* `Query [query_name] uses instruction only features, but is run in legacy mode.`
++
+The query uses instruction-only features but was forced into legacy mode.
+
+* `Query [query_name] uses legacy only features, but is run in instruction mode.`
++
+The query requires the legacy engine but was forced into instruction mode.
+
+* `Query [query_name] cannot be executed in both instruction mode and legacy mode at the same time.`
++
+The query mixes features from both engines. To resolve this, install the query and run it with `RUN QUERY` instead of `INTERPRET QUERY`.
 
 
 [#_install_query]

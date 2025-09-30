@@ -164,12 +164,13 @@ There are four major APIs for running queries and performing other database oper
 
 == Query Execution Modes
 
-Excecution Mode Options:
+Execution Mode Options:
 
 * Install and run a stored procedure query
 * Interpret a stored procedure query
 * interpret an ad hoc anonymous query
 * Interpret a non procedural query
+* Interpret with instruction mode
 * BONUS: Distributed Mode
 
 === Install and run a stored procedure query
@@ -241,6 +242,28 @@ SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
 ----
 
 For more examples, see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md#1-block-query-examples[1-Block Query Examples] in the GSQL V3 Tutorial.
+
+=== Interpret with instruction mode
+
+Starting in TigerGraph 4.3.0, Instruction mode is a faster way to run queries with `INTERPRET QUERY`.
+It uses a new execution engine that can improve performance without requiring you to install the query first.
+
+By default, when you use `INTERPRET QUERY`, TigerGraph will try to use instruction mode.
+If the query contains features that are not yet supported, it will automatically switch back to the legacy engine.
+You can also force which engine to use with the `-mode` flag.
+
+[console]
+----
+CREATE QUERY topMovies(INT year, INT k) {
+topK = SELECT m FROM (m:Movie) WHERE m.year == year
+       ORDER BY m.boxoffice DESC
+       LIMIT k;
+PRINT topK;
+}
+INTERPRET QUERY topMovies -mode instruction(1939, 10)
+----
+
+For more information, see the xref:querying:query-operations.adoc#_interpret_query[Interpret Query] section on Create and Run Queries page.
 
 === Distributed Mode
 

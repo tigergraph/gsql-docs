@@ -10,7 +10,7 @@ The schema change workflow is as follows:
 
 . [Recommended] If your schema change will drop any elements, prescreen your xref:#_side_effects_of_schema_change[queries and loading jobs for expected side effects].
 
-. Either stop all database activity or read carefully the section on xref:#_dynamic_schema_change__abilities_and_limitations[dynamic schema change] to see what concurrent activity is reasonable.
+. Either stop all database activity or read carefully the section on xref:#_dynamic_schema_change_abilities_and_limitations[dynamic schema change] to see what concurrent activity is reasonable.
 
 . xref:#_run_global_schema_change_job[Run the schema change job], which will do the following:
 ** It attempts the schema change.

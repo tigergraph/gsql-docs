@@ -120,6 +120,11 @@ Existing schemas that are using `STRING COMPRESS` can continue to function norma
 If you need reference for `STRING COMPRESS`, please refer to GSQL Language Reference version 3.5 or older.
 ====
 
+[NOTE]
+====
+All the data types listed above, when used as attributes of a vertex or edge, can be set to `NULL`.
+====
+
 Additionally, GSQL also supports the following complex data types:
 
 == Collection types
@@ -142,6 +147,11 @@ Due to multithreaded GSQL loading, the initial order of elements loaded into a l
 ** Supported key types: `INT`, `STRING`, and `DATETIME`
 ** Supported value types: `INT`, `DOUBLE`, `STRING`, `DATETIME`, and `UDT`.
 ** To declare a map type, use `<>` to enclose the types, with a comma to separate the key and value types, e.g., `MAP<INT, DOUBLE>`.
+
+[NOTE]
+====
+`LIST`, `SET`, `MAP` can be assigned `NULL` as an attribute. For `LIST` and `SET`, a `NULL` attribute is not the same as `[NULL, NULL]` or `{NULL}`, and `NULL` elements are not allowed inside the collection. For `MAP`, neither keys nor values can be `NULL`.
+====
 
 == User-defined tuples
 

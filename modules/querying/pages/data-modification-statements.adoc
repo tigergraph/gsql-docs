@@ -340,6 +340,23 @@ VALUES (value_for_from_vertex, value_for_to_vertex, <1>
 For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type.
 The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
++
+.NULL Value Ingestion
++
+The `INSERT INTO` statement supports inserting `NULL` values for attributes defined as `NULLABLE` in the schema.
+*  `NULL` or `null` can be used in the `VALUES` clause to insert a NULL value.
+
+.Example
+[source,gsql]
+----
+CREATE VERTEX Student (
+  PRIMARY_ID id INT,
+  name STRING NULLABLE,
+  age INT NULLABLE
+);
+INSERT INTO Student VALUES (1001, "Alice", NULL);
+----
+
 === Query-Body INSERT
 
 The following query illustrates query-body level `INSERT` statements: insert new `Company` vertices and `Works_For` edges into the `Works_Net` graph.

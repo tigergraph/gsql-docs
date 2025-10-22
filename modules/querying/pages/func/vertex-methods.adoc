@@ -317,10 +317,10 @@ In this case, outdegree() can be used in a xref:querying:query-operations.adoc#_
 |===
 
 [CAUTION]
-
 ==== 
-*Note on outdegree()*: This function reads a metadata value stored with each vertex, to avoid traversing the graph and thus have a fast response. The snapshot transaction semantics means that outdegree() may sometimes read an old value if there are concurrent write transactions. To guarantee an accurate count, traverse the neighboring edges and count them with a SumAccum, or use a function like neighbors() and then use size() on the set.
-
+*Note on outdegree()*: The outdegree() function reads a stored metadata value for faster performance instead of traversing the graph.
+Because of snapshot transaction semantics, `outdegree()` might show an outdated value if there are *write transactions running or have just finished*. This delay happens because the background rebuild task may not have processed the updates yet.
+To get an exact count, traverse the edges manually using a `SumAccum`, or use the `neighbors()` function and apply `size()` on the result.
 ==== 
 
 ====  Examples

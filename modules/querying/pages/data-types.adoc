@@ -35,7 +35,7 @@ tupleType := name
 fieldName :=name
 funcName := name
 
-type := baseType | tupleType | accumType
+type := baseType | tupleType | accumType | containerType
 
 baseType := INT
           | UINT

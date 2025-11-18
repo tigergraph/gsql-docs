@@ -108,70 +108,6 @@ RUN LOADING JOB job1 USING file1="m1:/data/v1_1.csv", file2="m2:/data/e2.csv" <2
 <1> File path specified at compile time.
 <2> Run-time specification will override path specified at compile time.
 
-=== Loading NULL Values
-`NULL` values can be loaded to vertex/edge attributes using a loading job either by parsing from source file or during creation of loading job.
-
-==== Loading NULL from source file
-If an attribute is defined as *nullable* in the schema, any of the following in a CSV or JSON file are treated as `NULL`:
-
-* The value `NULL` or `null`
-* A missing value (empty field)
-
-.Example: CSV file containing NULL values
-[source,csv]
-----
-id,att
-1,null     // valid null and will be parsed to storage
-2,NULL     // valid null and will be parsed to storage
-3,         // missing value and will be parsed as null to storage
-4,Null     // invalid attribute
-----
-
-.Example: JSON file containing NULL values
-[source,json]
-----
-{"id":1,"att":null}         // valid null and will be parsed to storage
-{"id":2,"att":NULL}         // valid null and will be parsed to storage
-{"id":3,"att":Null}         // invalid like Null except for string
-{"id":4,"att":}             // invalid JSON
-----
-
-Sample Output
-[source,json]
-----
-"results": [
-  { "1,null": null },
-  { "2,NULL": null },
-  { "3,": null },
-  { "4,Null": "Null" }
-]
-----
-
-==== Loading NULL during creation of loading job
-
-`NULL` can be stored in the following situations:
-
-* When the attribute is nullable and the vertex or edge does not exist:
-** The default value for that attribute in the schema is `NULL`, or
-** No default value is defined in the schema.
-* If the attribute is nullable, NULL will be stored for this attribute for all vertices/edges loaded in this job.
-* If the attribute is not nullable, the GSQL shell shows a *semantic error*.
-
-For example:
-[source,gsql]
-----
-CREATE LOADING JOB load_nullable FOR GRAPH g {
-  DEFINE FILENAME f;
-
-  // Implicit NULL using underscore
-  LOAD f TO VERTEX v0 VALUES($0, _);
-  LOAD f TO EDGE e0 VALUES ($0, $1, _);
-
-  // Explicit NULL using NULL keyword
-  LOAD f TO VERTEX v1 VALUES ($0, NULL);
-  LOAD f TO EDGE e1 VALUES ($0, $1, NULL);
-}
-----
 
 
 == `DROP JOB` statement
@@ -328,10 +264,13 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 . Complex type: Depends on the field type or element type. Any invalid field (in `UDT`), element (in `LIST` or `SET`), key or value (in `MAP`) causes rejection.
 
 * *New data objects:* If a valid data object has a new ID value, then the data object is added to the graph store.  Any attributes which are missing are assigned the default value for that data type or for that attribute.
-* *Overwriting existing data objects*: If a valid data object has an ID value for an existing object, then the new object overwrites the existing data object, with the following clarifications and exceptions:
+* *Updating existing data objects*: If a valid data object has an ID value for an existing object, then the new object is updated depending on the attribute type, with the following clarifications and exceptions:
 
-. The attribute values of the new object overwrite the attribute values of the existing data object.
-. *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.
+* For primitive attributes :
+The attribute values for the new object  overwrite the attribute values of the existing object.
+* For collection attributes (LIST, SET, MAP):
+The attribute values or the new object are appended to attribute values of the  existing collection.
+* *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.
 
 [WARNING]
 ====

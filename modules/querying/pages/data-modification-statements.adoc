@@ -285,11 +285,16 @@ will produce the following result:
 == `INSERT INTO` Statement
 
 The `INSERT INTO` statement adds edges or vertices to the graph.
-When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, the new values will overwrite the old values.
+When the ID value(s) of the inserted vertex or edge match an existing one, the new value(s) are updated depending on the attribute type:
+
+* **Primitive attributes** — the new value will overwrite the old value.
+* **Collection attributes (`LIST`, `SET`, `MAP`)** — the new value(s)  are appended to the old value.
+
 To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query.
 The `INSERT INTO` statement can be used as a query-body-level statement or a DML-sub statement.
 
 Like any other data modification in a query, the insertion does not take effect until the entire query is completed.
+
 
 [source,ebnf]
 ----
@@ -340,22 +345,7 @@ VALUES (value_for_from_vertex, value_for_to_vertex, <1>
 For each attribute value, provide either an expression _expr_ or `_`, which means the default value for that attribute type.
 The optional _name_ which follows the first two (id) values is to specify the source vertex type and target vertex type, if the edge type had been defined with wildcard vertex types.
 
-+
-.NULL Value Ingestion
-+
-The `INSERT INTO` statement supports inserting `NULL` values for attributes defined as `NULLABLE` in the schema.
-*  `NULL` or `null` can be used in the `VALUES` clause to insert a NULL value.
 
-.Example
-[source,gsql]
-----
-CREATE VERTEX Student (
-  PRIMARY_ID id INT,
-  name STRING NULLABLE,
-  age INT NULLABLE
-);
-INSERT INTO Student VALUES (1001, "Alice", NULL);
-----
 
 === Query-Body INSERT
 

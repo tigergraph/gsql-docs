@@ -262,10 +262,15 @@ A basic principle in the GSQL Loader is cumulative loading. Cumulative loading m
 . Complex type: Depends on the field type or element type. Any invalid field (in `UDT`), element (in `LIST` or `SET`), key or value (in `MAP`) causes rejection.
 
 * *New data objects:* If a valid data object has a new ID value, then the data object is added to the graph store.  Any attributes which are missing are assigned the default value for that data type or for that attribute.
-* *Overwriting existing data objects*: If a valid data object has an ID value for an existing object, then the new object overwrites the existing data object, with the following clarifications and exceptions:
+* *Updating existing data objects*: If a valid data object has an ID value for an existing object, then the new object is updated depending on the attribute type, with the following clarifications and exceptions:
 
-. The attribute values of the new object overwrite the attribute values of the existing data object.
-. *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.
+
+* For primitive attributes :
+The attribute values for the new object  overwrite the attribute values of the existing object.
+* For collection attributes (LIST, SET, MAP):
+The attribute values or the new object are appended to attribute values of the  existing collection.
+* *Missing tokens*: If a token is missing from the input line so that the generated attribute is missing, then that attribute retains its previous value.
+
 
 [WARNING]
 ====

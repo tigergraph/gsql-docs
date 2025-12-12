@@ -152,8 +152,9 @@ attribute_list :=
   ["," attribute_name type [DEFAULT default_value] ]*
 ----
 
-`id_type` may be `STRING`, `INT`, `UINT`, or `DATETIME`.
-Once a vertex is inserted, its ID value cannot be modified. Every vertex must have a unique ID value, of course.
+`id_type` may be `STRING`, `INT`, or `UINT`.  
+`DATETIME` is *not supported* as a primary ID type.
+Once a vertex is inserted, its ID value cannot be modified. Every vertex must have a unique ID value.
 
 [IMPORTANT]
 An empty string is not a valid value for a vertex primary ID. Beginning with v3.9, GSQL will reject attempts to insert or load a vertex whose ID is an empty string.
@@ -168,8 +169,10 @@ The following sections go into detail for each of the primary id/key options, at
 === PRIMARY_ID
 
 This is GSQL's original syntax and semantics.
-Its data type may be `STRING`, `INT`, `UINT`, or `DATETIME`.
-Its syntax for the `id_and_attribute_list` term is as follows:
+Its data type may be `STRING`, `INT`, or `UINT`.
+`DATETIME` is *not supported* as a primary ID type.
+
+The syntax for the `id_and_attribute_list` term is as follows:
 
  PRIMARY_ID id_name id_type "," attribute_list
 
@@ -180,7 +183,7 @@ Example:
 CREATE VERTEX Movie (PRIMARY_ID id UINT, name STRING, year UINT)
 ----
 
-By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID as a regular attribute. For example, if the ID's field name is `serial_num`, neither of the following syntaxes are valid:
+By default, a vertex type defined with `PRIMARY_ID` cannot treat the ID as a regular attribute. For example, if the ID's field name is `serial_num`, neither of the following syntaxes are valid:
 
 [source.wrap]
 ----
@@ -188,11 +191,12 @@ By default, a vertex type which is defined with `PRIMARY_ID` cannot treat the ID
   v.id  //  error: id is not a built-in function or field name
 ----
 
-If you want to retreive a vertex having a specific ID, you can use the `to_vertex(id, type)` function.
+To retrieve a vertex by its ID, use the `to_vertex(id, type)` function.
 
-See the next section to see how to override the default behavior and treat the primary ID as attribute.
+See the next section for how to override the default behavior and treat the primary ID as an attribute.
 
 === `WITH primary_id_as_attribute`
+
 If the `WITH ... primary_id_as_attribute="true"` option is declared, then the ID can be treated as a readable attribute.
 Internally, the ID is being stored a second time, once as an ID and once as a write-once attribute.
 This is exactly the same way that PRIMARY KEY allows the ID to be treated as a vertex.

@@ -1,4 +1,4 @@
-= gsql_is_not_empty()
+= gsql_is_not_empty_string()
 
 Returns true if a string is empty after removing all white space.
 Returns false otherwise.
@@ -6,7 +6,7 @@ This function does not alter the input the token.
 
 == Syntax
 
-`gsql_is_not_empty( token )`
+`gsql_is_not_empty_string( token )`
 
 == Return value
 
@@ -16,6 +16,6 @@ True if the string is empty after removing all white space from the string.
 == Example
 
 ----
-gsql_is_not_empty("h e ll o") - true
-gsql_is_not_empty("     ") -> false
+gsql_is_not_empty_string("h e ll o") - true
+gsql_is_not_empty_string("     ") -> false
 ----

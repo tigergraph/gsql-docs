@@ -12,7 +12,7 @@ This function does not alter the input token.
 
 == Return value
 
-`BOOL`.
+`BOOL`
 
 Returns `true` if the string is not empty after removing all white space.  
 Returns `false` otherwise.

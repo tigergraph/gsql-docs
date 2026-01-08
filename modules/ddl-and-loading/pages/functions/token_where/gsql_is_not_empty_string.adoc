@@ -2,22 +2,23 @@
 
 = gsql_is_not_empty_string()
 
-Returns true if a string is empty after removing all white space.
+Returns true if a string is not empty after removing all white space.
 Returns false otherwise.
-This function does not alter the input the token.
+This function does not alter the input token.
 
 == Syntax
 
-`gsql_is_not_empty_string( token )`
+`gsql_is_not_empty_string(token)`
 
 == Return value
 
-`BOOL`.
-True if the string is empty after removing all white space from the string.
+`BOOL`  
+Returns `true` if the string is not empty after removing all white space.  
+Returns `false` otherwise.
 
 == Example
 
 ----
-gsql_is_not_empty("h e ll o") - true
-gsql_is_not_empty("     ") -> false
+gsql_is_not_empty_string("h e ll o") -> true
+gsql_is_not_empty_string("     ")   -> false
 ----

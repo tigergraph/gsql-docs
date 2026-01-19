@@ -12,9 +12,7 @@ A `PRINT` statement can appear wherever query-body statements are permitted.
 A `PRINT` statement does not trigger immediate output.
 The full set of data from all PRINT statements is delivered at one time, when the query concludes.
 
-A query can print a maximum of 2GB of data.
-
-If the output is to a `FILE` object, then the size limit does not apply.
+If the query response is larger than 2GB, it is recommended to use <<_printing_csv_to_a_file_object>>. TigerGraph currently does not support pagination; returning a large query response in a single response via the GSQL terminal or RESTPP may lead to excessive memory usage and make the response difficult to parse efficiently.
 ====
 
 .EBNF

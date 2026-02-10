@@ -338,13 +338,13 @@ The loader accepts any of the following string formats:
 * `%Y-%m-%dT%H:%M:%S.000z` (e.g., 2011-02-03T01:02:03.123z, 123 will be ignored)
 * `%Y-%m-%d` (only date, no time, e.g., 2011-02-03)
 * `%Y/%m/%d` (only date, no time, e.g., 2011/02/03)
-* Any integer value (Unix Epoch time, where Jan 1, 1970 at 00:00:00 is integer 0)
+* Unix Epoch time, represented as a string, where Jan 1, 1970 at 00:00:00 is 0
 
 Format notation:
 
 %Y is a 4-digit year. A 2-digit year is not a valid value.
 
-%m and %s are a month (1 to 12) and a day (1 to 31), respectively.  Leading zeroes are optional.
+%m and %d are a month (1 to 12) and a day (1 to 31), respectively.  Leading zeroes are optional.
 
 %H, %M, %S are hours (0 to 23), minutes (0 to 59) and seconds (0 to 59), respectively.
 Leading zeroes are optional.

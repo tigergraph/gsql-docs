@@ -46,8 +46,8 @@ declExceptStmts := (declExceptStmt ";")+
 queryBodyStmts := (queryBodyStmt ";")+
 
 installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
-runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName [modeOption] "(" parameterValueList | parameterValueJSON ")"
-modeOption := "-mode" ( "legacy" | "instruction" | "debug" )
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList | parameterValueJSON ")"
+    ["-mode" ("legacy" | "instruction" | "debug")]
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
@@ -622,14 +622,14 @@ include::appendix:example$social_net/query_operations_immediate_mode.gsql[]
 .Syntax for interpreting a created query
 [source,ebnf]
 ----
-runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName [modeOption] "(" parameterValueList ")"
-modeOption := "-mode" ( "legacy" | "instruction" | "debug" )
+runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList ")"
+["-mode" ("legacy" | "instruction" | "debug")]
 ----
 
 Required privilege:
 EXECUTE_QUERY
 
-This syntax is like `RUN` query, except
+This syntax is similar to `RUN QUERY`, except:
 
 * The keyword `RUN` is replaced with `INTERPRET`.
 * Some options may not be supported.
@@ -640,16 +640,16 @@ Starting in TigerGraph 4.3.0, you can control the interpret engine with the `-mo
 * `-mode instruction`: Forces the instruction engine (faster, fails if query uses unsupported features).
 * `-mode debug`: Forces instruction mode and generates debug files (`serialized_instructions.json` and `serialized_instructions.bin`) in `/tmp/gpe` under the TigerGraph installation folder. Use this for advanced troubleshooting, typically by developers.
 
-If you don’t specify a `-mode`, the system automatically picks the best mode, preferring instruction mode.
+If you do not specify `-mode`, the system automatically selects the best mode, preferring instruction mode when possible.
 
-.Example of Interpret with Modes
+.Example of interpreting a query with modes
 
 [source,gsql]
 ----
-INTERPRET QUERY myQuery("Jane.Doe")              // Auto-selects mode
-INTERPRET QUERY myQuery -mode legacy("Jane.Doe") // Forces legacy mode
-INTERPRET QUERY myQuery -mode instruction("Jane.Doe") // Forces instruction mode
-INTERPRET QUERY myQuery -mode debug("Jane.Doe")  // Forces instruction mode with debug files
+INTERPRET QUERY myQuery("Jane.Doe")
+INTERPRET QUERY myQuery("Jane.Doe") -mode legacy
+INTERPRET QUERY myQuery("Jane.Doe") -mode instruction
+INTERPRET QUERY myQuery("Jane.Doe") -mode debug
 ----
 
 [#checking-interpret-modes-and-logs]
@@ -670,7 +670,7 @@ Debug logs may include messages like:
 
 When using the `-mode` option, you may see one of the following errors:
 
-* `Query [query_name] uses instruction only features, but is run in legacy mode.`
+* `Query [query_name] requires features supported only in instruction mode, but was run in legacy mode.`
 +
 The query uses instruction-only features but was forced into legacy mode.
 

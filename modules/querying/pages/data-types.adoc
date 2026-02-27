@@ -615,7 +615,7 @@ The S3 credentials and region can be set as GSQL session parameters, so they per
 ----
 set s3_aws_access_key_id = <AWS_KEY_ID>;
 set s3_aws_secret_access_key = <AWS_ACCESS_KEY>;
-set s3_region = "<REGION>";
+set s3_region = <REGION>;
 ----
 
 These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace `<AWS_KEY_ID>` and `<AWS_ACCESS_KEY>` with your actual AWS credentials, and `<REGION>` with your S3 bucket's region (for example, `us-west-2`). If you don't set `s3_region`, it defaults to `us-east-1`.

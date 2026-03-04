@@ -1,16 +1,18 @@
 = Querying Choices
-:description: Explains the options that TigerGraph users have for querying - language choice, execution mode, and API choice
+:description: Explains the options that TigerGraph users have for querying - language choice, APIs, execution mode, runtime engine, and cluster execution.
 
-The TigerGraph database provides users with a wide range of choices for how to write and run queries, letting you choose what is the best fit for your needs and preferences.
+TigerGraph provides several ways to write and run queries, allowing you to choose the approach that best fits your needs and workflow.
 
-This page presents the options in a simple outline, pointing out the advantages and typical use cases for each mode or option.  It then directs you to where you can learn in more detail about each option.
+These choices represent different dimensions of querying, such as the language you use, how queries are structured, how they are executed, and how they run across a cluster.
 
-The following sections will summarize the options in four areas:
+This page summarizes these choices in six areas:
 
 * xref:#_query_languages[]
 * xref:#_query_structure[]
 * xref:#_query_apis[]
-* xref:#_query_execution_modes[]
+* xref:#_execution_mode[]
+* xref:#_runtime_engine_interpreted_queries_only[]
+* xref:#_cluster_execution_installed_queries_on_partitioned_graphs_only[]
 
 == Query Languages
 
@@ -21,10 +23,10 @@ Query Language Options:
 === GSQL
 
 GSQL is xref:index.adoc[TigerGraph's original native language].
-it offers graph traversal and pattern matching queries using declarative syntax similar to SQL, extends it for procedural programming to enable more complex algorithmic querying, adds _xref:querying:accumulators.adoc[accumulators]_ for efficient analytics, and installs (pre-compiles) queries to optimize the execution performance.
 
-GSQL is more than just for xref:querying:query-operations.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition].
-It also includes a xref:ddl-and-loading:index.adoc[data loading language] to define stored procedures (jobs) that map and transform data from tabular sources to a graph.
+It supports graph traversal and pattern-matching queries using declarative syntax similar to SQL. It also extends SQL-style queries with procedural programming capabilities, enabling more advanced algorithmic queries. GSQL includes xref:querying:accumulators.adoc[accumulators] for efficient analytics and allows queries to be installed (precompiled) to optimize execution performance.
+
+GSQL is used not only for xref:querying:query-operations.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition], but also for data loading. The xref:ddl-and-loading:index.adoc[data loading language] lets you define stored procedures (jobs) that map and transform tabular data into graph structures.
 
 === OpenCypher
 
@@ -56,20 +58,21 @@ TigerGraph currently supports the path pattern matching syntax (the `MATCH` or `
 
 Query Structure Options:
 
-* Stored Procedure (Procedural and Saved)
-* Anonymous (Procedural and Ad Hoc)
-* Non-Procedural (Ad Hoc)
+* Stored Procedure (procedural and saved)
+* Anonymous (procedural and ad hoc)
+* Non-Procedural (ad hoc)
 
 === Stored Procedure Queries
 
 Originally, all GSQL queries were *stored procedures*.
 A stored procedure is a named sequence of executable statements that is *saved*, and then executing by calling it by name.
+
 Key characteristics:
 
-* Looping and conditional flow, to implement algorithms and analytics
-* Input parameters
-* A header and body. The body is bounded by curly braces.
-* Output must be explicitly requested with PRINT statements.
+* Supports loops and conditional flow to implement algorithms and analytics
+* Accepts input parameters
+* Has a header and body (bounded by curly braces)
+* Output must be explicitly requested with PRINT statements
 
 NOTE: Since this was the only query structure format for some time, we will often simply refer to this choice as a *GSQL query*.
 
@@ -87,13 +90,14 @@ PRINT topK;
 
 === Anonymous Queries
 
-There are times when you will run a only query one or a few times.
-You may not want to bother to first save it by name and then call it; you just want to run it. You may be exploring the data as you go, without a full plan in advance. You are building an application that will construct and run custom queries based on the interests of the end user's real time behavior and requests.
-Similar to a stored procedura query, except
+Sometimes you want to run a query only once or a few times. Instead of saving it first and then calling it, you can run it immediately.
 
-* no name
-* no parameters
-* Still has a header, delimited body, and explicit output.
+Anonymous queries are similar to stored procedure queries except:
+
+* They do not have a name
+* They do not accept parameters
+* They still have a header and body
+* Output is produced using `PRINT`
 
 .Example of an Anonymous Query
 [console]
@@ -107,16 +111,14 @@ PRINT topK;
 }
 ----
 
-
 === Non-Procedural Queries
 
-Starting with version 4.2, TigerGraph can run non-procedural queries.
-This is very much like the composition of SQL queries:
+Introduced in 4.2, non-procedural queries allow you to run single-statement queries directly.
 
-* No header.
-* Output is automatic.
-* Queries consisting of a single query statement/block do not need to define the body's start and end.
-* Optionally, can use `BEGIN` and `END` to delimit a multi-line query.
+* No header
+* Output is automatic
+* Single query statements do not need body delimiters
+* You can optionally use `BEGIN` and `END` for multi-line queries
 
 .Example of an Non-Procedural Query
 [console]
@@ -126,7 +128,7 @@ SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
 
 [IMPORTANT]
 ====
-Stored procedural queries with are installed (see Execution Modes) before running will always run faster and more effiiently, sometimes much faster.
+Stored procedural queries that are installed before running generally execute faster and more effiiently.
 ====
 
 == Query APIs
@@ -141,7 +143,7 @@ There are four major APIs for running queries and performing other database oper
 .Query APIs
 [cols="1,2,2"]
 |===
-| API (link to documentation) | Description | Use Cases
+| API | Description | Use Cases
 
 | xref:basics:running-gsql.adoc[GSQL CLI]
 | Classic SQL-like commands
@@ -162,46 +164,26 @@ There are four major APIs for running queries and performing other database oper
 
 |===
 
-== Query Execution Choices
+== Execution Mode
 
-When you run a query in TigerGraph, you make several independent choices.
-Each choice affects how the query runs, how it performs, and how it uses system resources.
+Execution mode determines whether TigerGraph installs a query before running it.
 
-You can think of query execution as four simple questions:
+Execution Mode Options:
 
-1. What kind of query are you running?
-2. Do you install it or interpret it?
-3. If you interpret it, which engine runs it?
-4. If you install it, does it run across the cluster?
+* INSTALL + RUN
+* INTERPRET
 
-=== 1. What kind of query are you running?
+=== INSTALL + RUN
 
-This choice determines the structure of your query.
+TigerGraph installs (compiles and optimizes) the query before execution.
 
-* Named query (stored procedure):
-You create and save this query using `CREATE QUERY`.
+This provides the best performance and is recommended for production workloads.
 
-* Anonymous query:
-You run this query once without saving it.
+==== Install and run a stored procedure query
 
-* Declarative (non-procedural) query:
-You write this simplified query without using `CREATE`, `RUN`, or `INTERPRET`.
+The most performant way to run a GSQL query is to create it, install it, and run it.
 
-=== 2. Do you install it or interpret it?
-
-This choice determines how TigerGraph executes your query.
-
-* INSTALL + RUN:
-TigerGraph compiles and optimizes the query before running it.
-This provides the best performance.
-
-* INTERPRET:
-TigerGraph runs the query immediately without installation.
-This is useful for development and testing.
-
-=== Install and run a stored procedure query
-
-The most performant way to run a GSQL query is to create, install it, and run it.  During installation, TigerGraph performs optimizations that are not available in interpreted mode.
+During installation, TigerGraph performs optimizations that are not available in interpreted mode.
 
 [console]
 ----
@@ -216,11 +198,17 @@ INSTALL QUERY topMovies
 RUN QUERY topMovies(1939, 10)
 ----
 
-=== Interpret a stored procedure query
+=== INTERPRET
 
-When you are developing a query, you may want to test changes quickly without reinstalling it each time.
+TigerGraph runs the query immediately without installation.
 
-In that case, skip `INSTALL` and use `INTERPRET` instead:
+This mode is useful for development, testing, and exploratory queries.
+
+==== Interpret a stored procedure query
+
+When developing a query, you may want to test changes quickly without reinstalling it each time.
+
+In this case, skip `INSTALL` and use `INTERPRET`.
 
 [console]
 ----
@@ -234,10 +222,11 @@ PRINT topK;
 INTERPRET QUERY topMovies(1939, 10)
 ----
 
-=== Interpret an ad hoc anonymous query
+==== Interpret an ad hoc anonymous query
 
 If you plan to run a query only once, you can skip saving it.
-The query is not named, and it does not require parameters.
+
+The query is not named and does not require parameters.
 
 [console]
 ----
@@ -254,33 +243,29 @@ PRINT topK;
 When your application builds queries dynamically, the REST API or pyTigerGraph library is often the best fit.
 ====
 
-=== Interpret a non-procedural query
+==== Interpret a non-procedural query
 
 Introduced in 4.2, this method lets you run simple queries directly in the GSQL shell.
-There is no `RUN` or `INTERPRET` command. You submit the query directly:
+
+There is no `RUN` or `INTERPRET` command. You simply submit the query.
 
 [console]
 ----
 SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
 ----
 
-For more examples, see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md#1-block-query-examples[1-Block Query Examples] in the GSQL V3 Tutorial.
+For more examples, see the link:https://github.com/tigergraph/ecosys/blob/master/tutorials/GSQL.md#1-block-query-examples[1-Block Query Examples] in the GSQL V3 tutorial.
 
-=== 3. If you interpret it, which engine runs it?
+== Runtime Engine (Interpreted Queries Only)
 
-When you use `INTERPRET`, TigerGraph runs your query using an interpreted execution engine.
+If you choose `INTERPRET`, TigerGraph executes the query using an interpreted engine.
 
 Starting in 4.3.0, interpreted queries can run using one of two engines:
 
-* Instruction engine:
-A newer engine designed to improve performance.
+* Instruction engine
+* Standard interpret engine
 
-* Standard interpret engine:
-The original engine, which supports all GSQL features.
-
-By default, TigerGraph attempts to use the instruction engine.
-If your query uses features that the instruction engine does not yet support,
-TigerGraph automatically switches to the standard interpret engine.
+By default, TigerGraph attempts to use the instruction engine. If unsupported features are detected, it automatically switches to the standard engine.
 
 You can explicitly choose the engine using the `-mode` option:
 
@@ -291,18 +276,17 @@ INTERPRET QUERY topMovies(1939, 10) -mode instruction
 INTERPRET QUERY topMovies(1939, 10) -mode legacy
 ----
 
-For complete details, see the xref:querying:query-operations.adoc#_interpret_query[Interpret Query] section.
+For full syntax details, see xref:querying:query-operations.adoc#_interpret_query[Interpret Query].
 
-=== 4. If you install it, does it run across the cluster?
+== Cluster Execution (Installed Queries on Partitioned Graphs Only)
 
-For installed queries running on partitioned graphs, you can control how TigerGraph distributes the work across the cluster.
+If you install a query and your graph is partitioned across multiple nodes, you can control how TigerGraph distributes the computation.
 
-* Hub-based execution:
-TigerGraph coordinates execution primarily from a central node.
+Cluster Execution Options:
 
-* Distributed execution:
-TigerGraph spreads the work across cluster nodes.
-This approach improves performance when the query touches a large portion of the graph
-or starts from many vertices.
+* Hub-based execution
+* Distributed execution
+
+Distributed execution spreads work across cluster nodes and improves performance when the query touches a large portion of the graph or starts from many vertices.
 
 For more information, see the xref:querying:distributed-query-mode.adoc[] page.

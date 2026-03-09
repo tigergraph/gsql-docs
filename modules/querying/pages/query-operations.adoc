@@ -632,29 +632,51 @@ EXECUTE_QUERY
 This syntax is similar to `RUN QUERY`, except:
 
 * The keyword `RUN` is replaced with `INTERPRET`.
-* Some options may not be supported.
+* The query runs immediately without installation.
+* The optional `-mode` flag lets you control how TigerGraph executes interpreted queries internally.
 
-Starting in TigerGraph 4.3.0, you can control the interpret engine with the `-mode` option:
+==== How interpreted queries run
 
-* `-mode legacy`: Forces the legacy engine (supports all GSQL features, slower)
-* `-mode instruction`: Forces the instruction engine (faster, fails if query uses unsupported features).
-* `-mode debug`: Forces instruction mode and generates debug files (`serialized_instructions.json` and `serialized_instructions.bin`) in `/tmp/gpe` under the TigerGraph installation folder. Use this for advanced troubleshooting, typically by developers.
+When you use `INTERPRET QUERY`, TigerGraph executes the query using an interpreted engine.
 
-If you do not specify `-mode`, the system automatically selects the best mode, preferring instruction mode when possible.
+Starting in 4.3.0, interpreted queries can run using one of two engines:
 
-.Example of interpreting a query with modes
+* Instruction engine  
+  A newer engine designed to improve performance.
+
+* Standard interpret engine  
+  The original engine, which supports all GSQL features.
+
+If you do not specify `-mode`, TigerGraph automatically selects the best engine.
+It prefers the instruction engine but switches to the standard engine if the query uses unsupported features.
+
+You can explicitly choose the engine using the `-mode` option:
+
+* `-mode instruction`  
+  Use the instruction engine. The query fails if unsupported features are present.
+
+* `-mode legacy`  
+  Use the standard interpret engine. This engine supports all GSQL features.
+
+* `-mode debug`  
+  Use the instruction engine and generate debug files
+  (`serialized_instructions.json` and `serialized_instructions.bin`)
+  in `/tmp/gpe` under the TigerGraph installation directory.
+  This option is intended for advanced troubleshooting.
+
+.Example of interpreting a query with different engines
 [source,gsql]
 ----
 INTERPRET QUERY myQuery("Jane.Doe")
-INTERPRET QUERY myQuery("Jane.Doe") -mode legacy
 INTERPRET QUERY myQuery("Jane.Doe") -mode instruction
+INTERPRET QUERY myQuery("Jane.Doe") -mode legacy
 INTERPRET QUERY myQuery("Jane.Doe") -mode debug
 ----
 
 [#checking-interpret-modes-and-logs]
-=== Checking Interpret Modes and Logs
+=== Checking which engine was used
 
-Users can confirm which mode was used by checking GSQL logs:
+You can confirm how TigerGraph executed the query by checking the GSQL logs.
 
 * `Interpret query [query_name] in instruction mode`
 * `Interpret query [query_name] in old interpret engine`
@@ -665,21 +687,22 @@ Debug logs may include messages like:
 `Set instruction mode to false in function <name>`
 
 [#semantic-errors]
-=== Semantic Errors for Interpret Modes
+=== Errors related to engine selection
 
-When using the `-mode` option, you may see one of the following errors:
+When you explicitly specify the `-mode` option, you may encounter one of the following errors:
 
 * `Query [query_name] requires features supported only in instruction mode, but was run in legacy mode.`
 +
-The query uses instruction-only features but was forced into legacy mode.
+You forced the standard engine, but the query requires instruction-only features.
 
-* `Query [query_name] uses legacy only features, but is run in instruction mode.`
+* `Query [query_name] requires features supported only in legacy mode, but was run in instruction mode.`
 +
-The query requires the legacy engine but was forced into instruction mode.
+You forced the instruction engine, but the query requires features supported only by the standard engine.
 
-* `Query [query_name] cannot be executed in both instruction mode and legacy mode at the same time.`
+* `Query [query_name] contains features that require both instruction mode and legacy mode, and cannot be run in either mode.`
 +
-The query mixes features from both engines. To resolve this, install the query and run it with `RUN QUERY` instead of `INTERPRET QUERY`.
+The query mixes features that are exclusive to both engines.
+Install the query and run it with `RUN QUERY` instead of `INTERPRET QUERY`.
 
 
 [#_install_query]

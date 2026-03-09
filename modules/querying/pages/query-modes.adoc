@@ -64,7 +64,6 @@ Query Structure Options:
 
 === Stored Procedure Queries
 
-Originally, all GSQL queries were *stored procedures*.
 A stored procedure is a named sequence of executable statements that is *saved*, and then executing by calling it by name.
 
 Key characteristics:
@@ -72,9 +71,7 @@ Key characteristics:
 * Supports loops and conditional flow to implement algorithms and analytics
 * Accepts input parameters
 * Has a header and body (bounded by curly braces)
-* Output must be explicitly requested with PRINT statements
-
-NOTE: Since this was the only query structure format for some time, we will often simply refer to this choice as a *GSQL query*.
+* Output is explicitly specified with PRINT statements
 
 .Example of a Stored Procedure Query
 [console]
@@ -128,7 +125,7 @@ SELECT m FROM (m:Movie) WHERE m.year == 1939 ORDER BY m.boxoffice DESC LIMIT 10
 
 [IMPORTANT]
 ====
-Stored procedural queries that are installed before running generally execute faster and more effiiently.
+Stored procedural queries that are installed before running generally execute faster and more efficiently.
 ====
 
 == Query APIs
@@ -163,6 +160,11 @@ There are four major APIs for running queries and performing other database oper
 | Data science applications based on Python
 
 |===
+
+[NOTE]
+====
+When your application builds queries dynamically, the REST API or pyTigerGraph library is often the best fit.
+====
 
 == Execution Mode
 
@@ -238,11 +240,6 @@ PRINT topK;
 }
 ----
 
-[NOTE]
-====
-When your application builds queries dynamically, the REST API or pyTigerGraph library is often the best fit.
-====
-
 ==== Interpret a non-procedural query
 
 Introduced in 4.2, this method lets you run simple queries directly in the GSQL shell.
@@ -260,7 +257,7 @@ For more examples, see the link:https://github.com/tigergraph/ecosys/blob/master
 
 If you choose `INTERPRET`, TigerGraph executes the query using an interpreted engine.
 
-Starting in 4.3.0, interpreted queries can run using one of two engines:
+Starting in 4.3, interpreted queries can run using one of two engines:
 
 * Instruction engine
 * Standard interpret engine

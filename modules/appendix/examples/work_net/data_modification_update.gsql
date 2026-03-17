@@ -4,7 +4,9 @@ CREATE QUERY update_ex() FOR GRAPH Work_Net  {
 
     UPDATE s FROM S:s
     SET s.location_id = "USA",  // simple base type attribute
-        s.skill_list = [1,2,3]  // collection-type attribute
+        s.skill_list = [1,2,3], // list-type attribute
+        s.skill_set = (1,2,3),  // set-type attribute
+        s.skill_map = ("a"->1, "b"->2)  // map-type attribute
     WHERE s.location_id == "us";
 
     // The update cannot become effective within this query, so PRINT S still show "us".

@@ -9,6 +9,6 @@ CREATE QUERY update_ex() FOR GRAPH Work_Net  {
         s.skill_map = ("a"->1, "b"->2)  // map-type attribute
     WHERE s.location_id == "us";
 
-    // The update cannot become effective within this query, so PRINT S still show "us".
+    // The update cannot become effective within this query, so PRINT S still shows "us".
     PRINT S;
 }

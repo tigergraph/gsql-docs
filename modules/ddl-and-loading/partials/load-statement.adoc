@@ -396,6 +396,46 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 | 3
 |===
 
+==== Loading data from a nested JSON array
+
+You can extract values from arrays of objects in JSON using the same nested key syntax. When a field contains an array, the loader can iterate through each element in the array.
+
+For example, consider the following JSON object:
+
+[source,json]
+----
+{
+  "id": 1234,
+  "nested_object": {
+    "id": 2345,
+    "neighbors": [
+      { "id": 1, "name": "foo" },
+      { "id": 2, "name": "bar" },
+      { "id": 3, "name": "baz" }
+    ]
+  }
+}
+----
+
+To load each neighbor as a vertex, you can reference the array elements using the nested path:
+
+[source,gsql]
+----
+CREATE VERTEX Person (PRIMARY_ID id INT, name STRING)
+CREATE GRAPH example_graph (*)
+
+CREATE LOADING JOB load_neighbors FOR GRAPH example_graph {
+  LOAD "data.jsonl" TO VERTEX Person
+    VALUES ($"nested_object":"neighbors":"id",
+            $"nested_object":"neighbors":"name")
+    USING JSON_FILE="true";
+}
+----
+
+In this example, the loader can process each object in the `neighbors` array and creates one vertex per element.
+
+Each neighbor object is treated as an individual record during loading.
+
 === Loading Parquet data
 
 TigerGraph can load data from Parquet files using our loader.

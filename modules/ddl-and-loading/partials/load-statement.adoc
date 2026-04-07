@@ -398,7 +398,7 @@ The JSON loader ignores the order and accesses the fields by the nested key name
 
 ==== Loading data from a nested JSON array
 
-You can extract values from arrays of objects in JSON using the same nested key syntax. When a field contains an array, the loader can iterate through each element in the array.
+To extract values from arrays of JSON objects, use the `flatten_json_array()` function.
 
 For example, consider the following JSON object:
 
@@ -417,7 +417,7 @@ For example, consider the following JSON object:
 }
 ----
 
-To load each neighbor as a vertex, you can reference the array elements using the nested path:
+To load each object in the `neighbors` array as a vertex, first flatten the array into a temporary table, then load the data:
 
 [source,gsql]
 ----
@@ -425,16 +425,16 @@ CREATE VERTEX Person (PRIMARY_ID id INT, name STRING)
 CREATE GRAPH example_graph (*)
 
 CREATE LOADING JOB load_neighbors FOR GRAPH example_graph {
-  LOAD "data.jsonl" TO VERTEX Person
-    VALUES ($"nested_object":"neighbors":"id",
-            $"nested_object":"neighbors":"name")
+  LOAD "data.jsonl" TO TEMP_TABLE t(id, name)
+    VALUES (flatten_json_array($"nested_object":"neighbors", $"id", $"name"))
     USING JSON_FILE="true";
+
+  LOAD TEMP_TABLE t TO VERTEX Person
+    VALUES ($"id", $"name");
 }
 ----
 
-In this example, the loader can process each object in the `neighbors` array and creates one vertex per element.
-
-Each neighbor object is treated as an individual record during loading.
+In this example, the `flatten_json_array()` function extracts each object in the `neighbors` array and maps the fields to the temporary table. Each row in the temporary table is then loaded as a vertex.
 
 === Loading Parquet data
 

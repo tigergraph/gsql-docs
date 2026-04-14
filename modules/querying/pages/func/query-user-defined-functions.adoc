@@ -274,6 +274,14 @@ GSQL > GET ExprFunctions TO "./udf.hpp"
 
 In the downloaded file, add the function definition for the `rng()` function.
 
+[NOTE]
+====
+Use a unique prefix for your UDF names, such as `udf_`, to avoid naming
+conflicts with TigerGraph built-in functions. If a future TigerGraph upgrade
+introduces a built-in function with the same name as an existing UDF, it
+may cause conflicts during the upgrade.
+====
+
 .udf.hpp
 [source.wrap,c++]
 ----

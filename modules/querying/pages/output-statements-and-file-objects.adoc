@@ -137,6 +137,55 @@ PRINT @@vList, v;           // output will contain only vertex ids
 ----
 ====
 
+In 4.3, xref:4.3@gsql-ref:ddl-and-loading:null-value.adoc[NULL values] can be printed using the `PRINT` statement and are represented as `null` in JSON and CSV output.
+
+
+.Printing nullable attribute values
+[source,gsql]
+----
+// Company(PRIMARY_ID client_id STRING, id STRING, country STRING NULLABLE)
+// Assume NULL is loaded for 'country' on some vertices.
+
+CREATE QUERY print_null_company() FOR GRAPH Work_Net {
+    C = {Company.*};
+    companies = SELECT t FROM C:t;
+    PRINT companies[companies.country]; // print null value
+}
+----
+
+.JSON output with null value
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "companies": [
+        {
+          "v_id": "company1",
+          "v_type": "Company",
+          "attributes": {
+            "companies.country": null
+          }
+        },
+        {
+          "v_id": "company2",
+          "v_type": "Company",
+          "attributes": {
+            "companies.country": "us"
+          }
+        }
+      ]
+    }
+  ]
+}
+----
 ==== Examples of printing various data types
 ===== Vertex (when not part of a vertex set variable)
 

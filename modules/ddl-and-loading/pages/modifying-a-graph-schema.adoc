@@ -167,7 +167,7 @@ ADD VERTEX::
 --
 ----
 ADD VERTEX Vertex_Type_Name ( PRIMARY_ID id_name id_type
-    [, attribute_name type [DEFAULT default_value] ]* )
+    [, attribute_name type [NULLABLE][DEFAULT default_value] ]* )
     [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
 ----
 --
@@ -179,7 +179,7 @@ ADD UNDIRECTED EDGE Edge_Type_Name (
     FROM Vertex_Type_Name "," TO Vertex_Type_Name
     [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
     [ "," DISCRIMINATOR "(" attribute_name type ["," attribute_name type]* ")" ]
-    [ "," attribute_name type [DEFAULT default_value]]*
+    [ "," attribute_name type [NULLABLE][DEFAULT default_value]]*
 )
 ----
 --
@@ -217,8 +217,8 @@ To add attributes to a vertex type, the syntax is as follows:
 [source,gsql]
 ----
 ALTER VERTEX Vertex_Type_Name ADD
-    ATTRIBUTE (attribute_name type [DEFAULT default_value]
-    [',' attribute_name type [DEFAULT default_value]]* );
+    ATTRIBUTE (attribute_name type [NULLABLE][DEFAULT default_value]
+    [',' attribute_name type [NULLABLE][DEFAULT default_value]]* );
 ----
 
 
@@ -227,7 +227,7 @@ For example:
 [source,gsql]
 ----
 ALTER VERTEX Company ADD ATTRIBUTE (industry
-STRING, market_cap DOUBLE)
+STRING, market_cap DOUBLE,founded_year INT NULLABLE)
 ----
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:
@@ -236,8 +236,8 @@ To add to an edge's endpoint vertex types or attributes, the syntax is as follow
 [source,gsql]
 ----
 ALTER EDGE Edge_Type_Name ADD
-    [ATTRIBUTE (attribute_name type [DEFAULT default_value]
-    [',' attribute_name type [DEFAULT default_value]]* )];
+    [ATTRIBUTE (attribute_name type [NULLABLE][DEFAULT default_value]
+    [',' attribute_name type [NULLABLE][DEFAULT default_value]]* )];
 ----
 
 
@@ -491,15 +491,15 @@ Added attributes are appended to the end of the schema.  The new attributes may 
 [source,gsql]
 ----
 ALTER VERTEX Vertex_Type_Name ADD
-    ATTRIBUTE (attribute_name type [DEFAULT default_value]
-    [',' attribute_name type [DEFAULT default_value]]* );
+    ATTRIBUTE (attribute_name type [NULLABLE][DEFAULT default_value]
+    [',' attribute_name type [NULLABLE][DEFAULT default_value]]* );
 ----
 
 For example:
 [source.wrap,gsql]
 ----
 ALTER VERTEX Company ADD ATTRIBUTE (industry
-STRING, market_cap DOUBLE)
+STRING, market_cap DOUBLE, founded_year INT NULLABLE)
 ----
 
 To add to an edge's endpoint vertex types or attributes, the syntax is as follows:

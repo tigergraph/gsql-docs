@@ -167,7 +167,7 @@ ADD VERTEX::
 --
 ----
 ADD VERTEX Vertex_Type_Name ( PRIMARY_ID id_name id_type
-    [, attribute_name type [DEFAULT default_value] ]* )
+    [, attribute_name type  [NULLABLE][DEFAULT default_value] ]* )
     [WITH [STATS="none"|"outdegree_by_edgetype"][primary_id_as_attribute="true"]]
 ----
 --
@@ -179,7 +179,7 @@ ADD UNDIRECTED EDGE Edge_Type_Name (
     FROM Vertex_Type_Name "," TO Vertex_Type_Name
     [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
     [ "," DISCRIMINATOR "(" attribute_name type ["," attribute_name type]* ")" ]
-    [ "," attribute_name type [DEFAULT default_value]]*
+    [ "," attribute_name type  [NULLABLE][DEFAULT default_value]]*
 )
 ----
 --
@@ -192,7 +192,39 @@ For example, the following statement in a schema change job adds a directed edge
 ADD DIRECTED EDGE Study_At (From Person, To University,
     DISCRIMINATOR(class_year INT, class_month INT));
 ----
+Starting in 4.3, vertex/edge attributes can be defined as `NULLABLE` to accept `NULL` values.
 
+For example:
+[tabs]
+====
+ADD VERTEX::
++
+--
+----
+ADD VERTEX Student (
+PRIMARY_ID id INT,
+name STRING NULLABLE,
+age INT NULLABLE
+);
+----
+--
+ADD EDGE::
++
+--
+----
+ADD DIRECTED EDGE Enrolled_In (
+FROM Student,
+TO Course,
+grade STRING NULLABLE
+);
+----
+--
+====
+
+[NOTE]
+====
+ Attributes used for `PRIMARY_KEY` or `COMPOSITE_KEY` or `DISCRIMINATOR` cannot be declared `NULLABLE`.
+====
 
 == `ALTER VERTEX | EDGE`
 

@@ -85,13 +85,13 @@ canonical string format to Unix epoch time, which is the int number of
 seconds since Jan. 1, 1970. 
 
 |xref:functions/token/gsql_ts_to_epoch_legacy.adoc[
-pass:[gsql_ts_to_epoch_seconds_legacy(_timestamp_,<br>_defaultTimestamp = 0_)]
+pass:[gsql_ts_to_epoch_seconds_legacy(timestamp,<br>defaultTimestamp = 0)]
 ]
 |`uint64_t`
 |Converts a timestamp to Unix epoch time. Returns a default value (`0` or user-specfied) for timestamps before 1970.
 
 |xref:functions/token/gsql_ts_to_epoch_signed.adoc[
-pass:[gsql_ts_to_epoch_seconds_signed(_timestamp_,<br>_defaultTimestamp = 0_)]
+pass:[gsql_ts_to_epoch_seconds_signed(timestamp,<br>defaultTimestamp = 0)]
 ]
 |`int64_t`
 |Converts a timestamp to Unix epoch time. Supports a wider range of dates, including pre-1970, and returns negative values for those dates.

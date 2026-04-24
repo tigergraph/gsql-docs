@@ -501,25 +501,26 @@ The data from query-body level `FILE` print statements (either `TO_CSV` or `prin
 [discrete]
 === Example
 
+In 4.1.4, users can declare a FILE object with a linux octal-encoded file permission code to specify file permissions.
+See xref:querying:declaration-and-assignment-statements.adoc#_file_objects[Declaration and Assignment Statements] page for details.
+
 .File object query example
 
 [source,gsql]
 ----
 include::appendix:example$work_net/output_statements_file_object_query_example.gsql[]
-INSTALL QUERY file_ex
-RUN QUERY file_ex("/home/tigergraph/files")
+INSTALL QUERY get_US_worker_interests
+RUN QUERY get_US_worker_interests("/home/tigergraph/fileEx.txt")
 
 ----
-
-
 
 All of the `PRINT` statements in this example use the `TO_CSV` option, so there is no JSON output to the console.
 
-.Results from Query fileEx
+.Results from Query get_US_worker_interests
 
 [source,gsql]
 ----
-GSQL > RUN QUERY file_ex("/home/tigergraph/file_ex.txt")
+GSQL > RUN QUERY get_US_worker_interests("/home/tigergraph/fileEx.txt")
 {
   "error": false,
   "message": "",
@@ -536,11 +537,11 @@ GSQL > RUN QUERY file_ex("/home/tigergraph/file_ex.txt")
 
 All the output in this case goes to the `FILE` object. In the query definition, the line `"header"` is printed first, followed by the `println` statements in the `ACCUM` clause, and `"footer"` is printed last. The output in the file follows this order because the order of query-body level statements is maintained in the output.
 
-.File contents produced by file_ex example
+.File contents produced by get_US_worker_interests example
 
 [source,gsql]
 ----
-[tigergraph@localhost]$ more /home/tigergraph/file_ex.txt
+[tigergraph@localhost]$ more /home/tigergraph/fileEx.txt
 header
 person7,art sport
 person10,football sport

@@ -376,12 +376,10 @@ When loading data from CSV files the following values are accepted for BOOL attr
 
 When loading data from JSON documents, the valid BOOL values are `true` and `false`.
 
-=== Loading a nullable attribute
+=== Loading a nullable attribute [v4.3+]
 
-In 4.3, `NULL` values can be loaded into vertex or edge attributes
+`NULL` values can be loaded into vertex or edge attributes
 defined as `NULLABLE` using the `NULL` or `null` keyword in the `VALUES` clause.
-
-
 
 .Example
 [source,gsql]
@@ -395,7 +393,7 @@ CREATE LOADING JOB load_null_country FOR GRAPH Work_Net {
 RUN LOADING JOB load_null_country USING f="/data/company.csv"
 ----
 
-`NULL` values are also supported when xref:4.3@gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Running a Loading Job]
+`NULL` values are also supported when xref:ddl-and-loading:running-a-loading-job.adoc[Running a Loading Job]
 
 === Loading a User-defined type (UDT) attribute
 

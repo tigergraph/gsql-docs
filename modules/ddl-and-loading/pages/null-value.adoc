@@ -11,20 +11,20 @@ A vertex or edge attribute can be defined with the `NULLABLE` keyword, which all
 * If an attribute is `NULLABLE` and `DEFAULT`  is not specified, then its default value is `NULL`.
 * If `NULLABLE` option is given, and default value is given, then the given default value will be used.
 * The following constraints apply when defining `NULLABLE` attributes:
-** In xref:4.3@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_create_vertex[CREATE VERTEX]
+** In the xref:ddl-and-loading:defining-a-graph-schema.adoc#_create_vertex[CREATE VERTEX]
 statement, `PRIMARY_ID` and `PRIMARY KEY` cannot be `NULL` .
-** In xref:4.3@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_create_edge[CREATE EDGE] statement, any attribute used as a discriminator cannot be defined with `NULLABLE`.
+** In the xref:ddl-and-loading:defining-a-graph-schema.adoc#_create_edge[CREATE EDGE] statement, any attribute used as a discriminator cannot be defined with `NULLABLE`.
 
-For xref:4.3@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_vertex_edge[modifying an existing schema], the same principles apply as in `CREATE VERTEX` or `CREATE EDGE` syntax.
+For xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_vertex_edge[modifying an existing schema], the same principles apply as in `CREATE VERTEX` or `CREATE EDGE` syntax.
 
 
 
 == Supported Data Types
 
-* xref:4.3@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Primitive types]
-used as vertex or edge attributes can be set to `NULL` .
+* xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Primitive types]
+used as vertex or edge attributes can be set to `NULL`.
 
-* xref:4.3@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_collection_types[Collection types]
+* xref:ddl-and-loading:attribute-data-types.adoc#_collection_types[Collection types]
 (`LIST`, `SET`, `MAP`) can be set to `NULL`  as a whole, but `NULL` elements within
 a collection are not supported.
 
@@ -35,27 +35,25 @@ For `MAP`, neither keys nor values can be NULL.
 
 
 == Data Loading
+A null value can be loading into the database in three circumstances:
 
-* `NULL` values can be ingested into nullable attributes through a
-loading job (xref:4.3@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Create a Loading Job] and xref:4.3@gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Running a Loading Job])
-or the xref:4.3@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO] statement using the `NULL` keyword in the `VALUES` clause.
-
-* If no default value is defined for an attribute, using the underscore (`_`)
-placeholder loads `NULL` into the attribute. For existing vertices or edges,
-the attribute value remains unchanged.
+*  The input data source contains `NULL` values.
+* The loading job indicates via the underscore (`_`)  that an attribute is to be skipped.  In this case, if a default value has been specified, the default value is loaded.  Otherwise, if the attribute is nullable, the null value is loaded.  If neither of those conditions hold, then the default value for that attribute type (e.g., 0 for integer) is loaded.
+* The loading job explicitly specifies `NULL` for an attribute.
 
 
 [WARNING]
 ====
-Attempts to load a null value into a non-nullable attribute causes a loading failure.
+Attempting to load a null value into a non-nullable attribute causes a loading failure.
 ====
 
 
 
 == Query Output
 
-* `NULL` values loaded into nullable attributes can be printed using the xref:4.3@gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT statement].
-* The output is represented as `null` in xref:4.3@gsql-ref:querying:output-statements-and-file-objects.adoc#_json_format_keys[JSON] and CSV formats.
+In both JSON and CSV output, the null value is represented as `null`.
+
+See the xref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT statement] section for more details.
 
 == NULL Value and Boolean Operations
 

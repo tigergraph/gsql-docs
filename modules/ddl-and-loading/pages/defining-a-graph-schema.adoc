@@ -266,7 +266,7 @@ attribute_list :=
 
 The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
-*  In 4.3, attributes can be defined as `NULLABLE` to allow xref:4.3@gsql-ref:ddl-and-loading:null-value.adoc[NULL] as a valid value.
+*  Attributes defined as `NULLABLE` can have xref:ddl-and-loading:null-value.adoc[NULL] as a valid value [v4.3+].
 * Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
 * If an attribute is `NULLABLE` and `DEFAULT` is not specified, then its default value is `NULL`.
 * There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].

@@ -137,7 +137,7 @@ PRINT @@vList, v;           // output will contain only vertex ids
 ----
 ====
 
-In 4.3, xref:4.3@gsql-ref:ddl-and-loading:null-value.adoc[NULL values] can be printed using the `PRINT` statement and are represented as `null` in JSON and CSV output.
+xref:gsql-ref:ddl-and-loading:null-value.adoc[NULL values] can be printed using the `PRINT` statement and are represented as `null` in JSON and CSV output [v4.3+].
 
 
 .Printing nullable attribute values

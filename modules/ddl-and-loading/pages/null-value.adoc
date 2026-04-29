@@ -17,8 +17,6 @@ If an attribute is defined to be `NULLABLE` and `DEFAULT` is not specified, then
 
 For xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_vertex_edge[modifying an existing schema], the same principles apply as in `CREATE VERTEX` or `CREATE EDGE` syntax.
 
-
-
 == Supported Data Types
 
 * xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Primitive types]
@@ -41,13 +39,10 @@ A null value can be loaded into the database in three circumstances:
 * The loading job indicates via the underscore (`_`)  that an attribute is to be skipped.  In this case, if a default value has been specified, the default value is loaded.  Otherwise, if the attribute is nullable, the null value is loaded.  If neither of those conditions hold, then the default value for that attribute type (e.g., 0 for integer) is loaded.
 * The loading job explicitly specifies `NULL` for an attribute.
 
-
 [WARNING]
 ====
 Attempting to load a null value into a non-nullable attribute causes a loading failure.
 ====
-
-
 
 == Query Output
 

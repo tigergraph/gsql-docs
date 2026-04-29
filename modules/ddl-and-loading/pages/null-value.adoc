@@ -35,7 +35,9 @@ For `MAP`, neither keys nor values can be NULL.
 
 
 == Data Loading
-A null value can be loading into the database in three circumstances:
+== Data Loading
+
+A null value can be loaded into the database in three circumstances:
 
 *  The input data source contains `NULL` values.
 * The loading job indicates via the underscore (`_`)  that an attribute is to be skipped.  In this case, if a default value has been specified, the default value is loaded.  Otherwise, if the attribute is nullable, the null value is loaded.  If neither of those conditions hold, then the default value for that attribute type (e.g., 0 for integer) is loaded.

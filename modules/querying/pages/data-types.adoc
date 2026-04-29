@@ -618,7 +618,15 @@ set s3_aws_secret_access_key = <AWS_ACCESS_KEY>;
 set s3_region = <REGION>;
 ----
 
-These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace `<AWS_KEY_ID>` and `<AWS_ACCESS_KEY>` with your actual AWS credentials, and `<REGION>` with your S3 bucket's region (for example, `us-west-2`). If you don't set `s3_region`, it defaults to `us-east-1`.
+you can also authenticate using AWS role assumption. Set the `s3_assume_role` session parameter to the role ARN [4.3+].
+
+[source, gsql]
+----
+set s3_assume_role="<RoleARN>";
+----
+
+
+These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace `<AWS_KEY_ID>`, `<AWS_ACCESS_KEY>` and `<RoleARN>` with your actual AWS credentials, and `<REGION>` with your S3 bucket's region (for example, `us-west-2`). If you don't set `s3_region`, it defaults to `us-east-1`.
 
 ==== Output
 Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same bucket.  

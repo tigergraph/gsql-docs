@@ -6,14 +6,14 @@ The two valid input formats for a null value are `NULL` and `null`.
 
 == Schema Definition
 
-A vertex or edge attribute can be defined with the `NULLABLE` keyword, which allows it to store `NULL` values.
+Any non-key vertex or edge attribute can be defined with the `NULLABLE` keyword, which allows it to store `NULL` values.
 
-* If an attribute is `NULLABLE` and `DEFAULT`  is not specified, then its default value is `NULL`.
-* If `NULLABLE` option is given, and default value is given, then the given default value will be used.
-* The following constraints apply when defining `NULLABLE` attributes:
-** In the xref:ddl-and-loading:defining-a-graph-schema.adoc#_create_vertex[CREATE VERTEX]
-statement, `PRIMARY_ID` and `PRIMARY KEY` cannot be `NULL` .
-** In the xref:ddl-and-loading:defining-a-graph-schema.adoc#_create_edge[CREATE EDGE] statement, any attribute used as a discriminator cannot be defined with `NULLABLE`.
+The following cannot be `NULLABLE` because they are used as key:
+
+* `PRIMARY_ID` and `PRIMARY KEY` in a vertex or edge
+* any attribute used in a xref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator] in an edge
+
+If an attribute is defined to be `NULLABLE` and `DEFAULT` is not specified, then its default value is `NULL`.
 
 For xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_vertex_edge[modifying an existing schema], the same principles apply as in `CREATE VERTEX` or `CREATE EDGE` syntax.
 

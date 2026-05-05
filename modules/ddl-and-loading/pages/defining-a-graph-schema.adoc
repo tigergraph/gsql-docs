@@ -148,8 +148,8 @@ id_and_attribute_list :=
   | attribute list "," PRIMARY KEY "("key_list")" // <3>
 
 attribute_list :=
-  attribute_name type [DEFAULT default_value]
-  ["," attribute_name type [DEFAULT default_value] ]*
+  attribute_name type [NULLABLE][DEFAULT default_value]
+  ["," attribute_name type [NULLABLE][DEFAULT default_value] ]*
 ----
 
 `id_type` may be `STRING`, `INT`, `UINT`, or `DATETIME`.
@@ -260,14 +260,16 @@ The attribute list is a list of one or more _id definitions_ and _attribute desc
 [source,ebnf]
 ----
 attribute_list :=
-  attribute_name type [DEFAULT default_value]
-  ["," attribute_name type [DEFAULT default_value] ]*
+  attribute_name type [NULLABLE][DEFAULT default_value]
+  ["," attribute_name type [NULLABLE][DEFAULT default_value] ]*
 ----
 
 The available attribute types, including user-defined types, are listed in the section xref:attribute-data-types.adoc[Attribute Data Types].
 
-. Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
-. There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].
+*  Attributes defined as `NULLABLE` can have xref:ddl-and-loading:null-value.adoc[NULL] as a valid value [v4.3+].
+* Every attribute data type has a built-in default value (e.g., the default value for INT type is 0). The `DEFAULT default_value` option overrides the built-in value.
+* If an attribute is `NULLABLE` and `DEFAULT` is not specified, then its default value is `NULL`.
+* There is no maximum number of attributes, but there is a maximum storage size for a xref:_create_vertex[vertex].
 
 Example:
 
@@ -345,7 +347,7 @@ CREATE UNDIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
    [ "," DISCRIMINATOR "(" attribute_name type ("," attribute_name type)* ")"]
-   [ "," attribute_name type [DEFAULT default_value]]* ")"
+   [ "," attribute_name type [NULLABLE][DEFAULT default_value]]* ")"
 ")"
 ----
 --
@@ -358,7 +360,7 @@ CREATE DIRECTED EDGE Edge_Type_Name "("
         FROM Vertex_Type_Name "," TO Vertex_Type_Name
    [ "|" FROM Vertex_Type_Name "," TO Vertex_Type_Name]*
    [ "," DISCRIMINATOR "(" attribute_name type ("," attribute_name type)* ")"]
-   [ "," attribute_name type [DEFAULT default_value]]* ")"
+   [ "," attribute_name type [NULLABLE][DEFAULT default_value]]* ")"
 ----
 --
 ====

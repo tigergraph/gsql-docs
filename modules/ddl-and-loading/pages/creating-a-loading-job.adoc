@@ -376,6 +376,25 @@ When loading data from CSV files the following values are accepted for BOOL attr
 
 When loading data from JSON documents, the valid BOOL values are `true` and `false`.
 
+=== Loading a nullable attribute [v4.3+]
+
+`NULL` values can be loaded into vertex or edge attributes
+defined as `NULLABLE` using the `NULL` or `null` keyword in the `VALUES` clause.
+
+.Example
+[source,gsql]
+----
+// Company(PRIMARY_ID client_id STRING, id STRING, country STRING NULLABLE)
+
+CREATE LOADING JOB load_null_country FOR GRAPH Work_Net {
+    DEFINE FILENAME f;
+    LOAD f TO VERTEX Company VALUES ($0, $1, NULL);
+}
+RUN LOADING JOB load_null_country USING f="/data/company.csv"
+----
+
+`NULL` values are also supported when xref:ddl-and-loading:running-a-loading-job.adoc[Running a Loading Job]
+
 === Loading a User-defined type (UDT) attribute
 
 To load a UDT attribute, state the name of the UDT type, followed by the list of attribute expressions for the UDT's fields, in parentheses.

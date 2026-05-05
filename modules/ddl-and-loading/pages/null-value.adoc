@@ -1,0 +1,73 @@
+= NULL Value
+
+Null indicates that a data value has not been provided. It is not the same as an empty string ("") or `0`, as those represent specific values.
+
+The two valid input formats for a null value are `NULL` and `null`.
+
+== Schema Definition
+
+Any non-key vertex or edge attribute can be defined with the `NULLABLE` keyword, which allows it to store `NULL` values.
+
+The following cannot be `NULLABLE` because they are used as key:
+
+* `PRIMARY_ID` and `PRIMARY KEY` in a vertex or edge
+* any attribute used in a xref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator] in an edge
+
+If an attribute is defined to be `NULLABLE` and `DEFAULT` is not specified, then its default value is `NULL`.
+
+For xref:ddl-and-loading:modifying-a-graph-schema.adoc#_add_vertex_edge[modifying an existing schema], the same principles apply as in `CREATE VERTEX` or `CREATE EDGE` syntax.
+
+== Supported Data Types
+
+* xref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[Primitive types]
+used as vertex or edge attributes can be set to `NULL`.
+
+* xref:ddl-and-loading:attribute-data-types.adoc#_collection_types[Collection types]
+(`LIST`, `SET`, `MAP`) can be set to `NULL`  as a whole, but `NULL` elements within
+a collection are not supported.
+
+[NOTE]
+====
+For `MAP`, neither keys nor values can be NULL.
+====
+
+== Data Loading
+
+A null value can be loaded into the database in three circumstances:
+
+*  The input data source contains `NULL` values.
+* The loading job indicates via the underscore (`_`)  that an attribute is to be skipped.  In this case, if a default value has been specified, the default value is loaded.  Otherwise, if the attribute is nullable, the null value is loaded.  If neither of those conditions hold, then the default value for that attribute type (e.g., 0 for integer) is loaded.
+* The loading job explicitly specifies `NULL` for an attribute.
+
+[WARNING]
+====
+Attempting to load a null value into a non-nullable attribute causes a loading failure.
+====
+
+== Query Output
+
+In both JSON and CSV output, the null value is represented as `null`.
+
+See the xref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT statement] section for more details.
+
+== NULL Value and Boolean Operations
+
+The truth table below shows the results of `AND` and `OR` when `NULL` is involved.
+
+[%header,cols="1,1,1,1",grid="rows",frame="none"]
+|===
+|x |y |x AND y |x OR y
+
+|TRUE |TRUE |TRUE |TRUE
+|TRUE |FALSE |FALSE |TRUE
+|TRUE |NULL |NULL |TRUE
+|FALSE |TRUE |FALSE |TRUE
+|FALSE |FALSE |FALSE |FALSE
+|FALSE |NULL |FALSE |NULL
+|NULL |TRUE |NULL |TRUE
+|NULL |FALSE |FALSE |NULL
+|NULL |NULL |NULL |NULL
+|===
+
+
+

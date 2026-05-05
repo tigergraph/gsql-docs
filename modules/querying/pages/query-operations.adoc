@@ -726,6 +726,48 @@ The names of the individual queries are not needed.
 This operation optimizes all previously installed queries, reducing their run times by about 20%.
 Optimize a query if query run time is more important to you than query installation time.
 
+=== log output
+`INSTALL QUERY` displays the following log details:
+
+* *Installation summary*: A summary line prints when installation
+  finishes, showing the total count of succeeded, skipped, and
+  failed queries.
+
+* *Skipped or failed queries*: Each query is reported as succeeded,
+  skipped, or failed after installation completes.
+
+* *Elapsed time*: The progress bar displays elapsed time during
+  installation.
+
+* *Estimated time*: The estimated completion time updates based on
+  the number of queries being installed.
+
+.Example
+[source,console]
+----
+Installing 6 queries in graph 'my_graph'.
+Start installing queries, about 1 minute ...
+
+Warning: These queries below in the graph 'my_graph' cannot be
+correctly installed: [query_with_error]
+For more information, please check log at node 'm1':
+  /home/tigergraph/tigergraph/gsql-checker-log/ERROR.20260327-120426.340
+
+[======================================================================] 100% (5/5) elapsed 0:34
+
+Query installation summary for graph 'my_graph':
+  succeeded: 5, skipped: 0, failed: 1.
+Query installation failure report written to
+  gsql-checker-log/FailedQueryReport/QUERY_INSTALLATION_REPORT.20260327-120517.json
+Query installation finished.
+----
+
+[NOTE]
+====
+These improvements are also displayed when installing 
+queries during a TigerGraph upgrade.
+====
+
 [#_run_query]
 == RUN QUERY
 

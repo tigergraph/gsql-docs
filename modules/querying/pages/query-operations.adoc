@@ -727,7 +727,7 @@ This operation optimizes all previously installed queries, reducing their run ti
 Optimize a query if query run time is more important to you than query installation time.
 
 === log output
-The following log details are displayed during query installation:
+The following logs are displayed when installing queries:
 
 * *Installation summary*: A summary line prints when installation
   finishes, showing the total count of succeeded, skipped, and
@@ -764,8 +764,7 @@ Query installation finished.
 
 [NOTE]
 ====
-These improvements are also displayed when installing 
-queries during a TigerGraph upgrade.
+These logs are also displayed when installing queries during a TigerGraph upgrade.
 ====
 
 [#_run_query]

@@ -733,8 +733,8 @@ Optimize a query if query run time is more important to you than query installat
   finishes, showing the total count of succeeded, skipped, and
   failed queries.
 
-* *Skipped or failed queries*: Each query is reported as succeeded,
-  skipped, or failed after installation completes.
+* *Failure report*: A report of all skipped or failed queries 
+  is generated after installation completes.
 
 * *Elapsed time*: The progress bar displays elapsed time during
   installation.

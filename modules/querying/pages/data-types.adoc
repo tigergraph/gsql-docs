@@ -597,21 +597,44 @@ During the execution of the query, content written to the `FILE` will be appende
 When the query where the `FILE` was declared finishes running, the `FILE` contents are saved to the text file.
 
 === S3 object
+
 ==== Define s3 file object
-The path should start with `s3://`, followed by the bucket name and the S3 path, e.g., `s3://bucket-name/queryoutput/output.csv`. During the execution of the query, content will be uploaded to the S3 bucket. Note that the S3 object cannot be modified or appended, if an S3 object with the same path already exists, it will be overwritten.
+The path must start with `s3://`, followed by the bucket name and the S3 path, for example:
+
+`s3://bucket-name/queryoutput/output.csv`
+
+During query execution, content is uploaded to the S3 bucket.
+
+If an S3 object with the same path already exists, it is overwritten.
+An S3 object cannot be appended.
 
 ==== Set S3 connection credentials
-The S3 credentials can be set as GSQL session parameters, so they persist for a user for a full session.
+
+The S3 credentials and region can be set as GSQL session parameters, so they persist for a user for a full session.
 [source,gsql]
 ----
 set s3_aws_access_key_id = <AWS_KEY_ID>;
 set s3_aws_secret_access_key = <AWS_ACCESS_KEY>;
+set s3_region = <REGION>;
 ----
 
-These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace `<AWS_KEY_ID>` and `<AWS_ACCESS_KEY>` with your actual AWS credentials.
+you can also authenticate using AWS role assumption. Set the `s3_assume_role` session parameter to the role ARN [4.2.3].
+
+[source, gsql]
+----
+set s3_assume_role="<RoleARN>";
+----
+
+
+These session parameters should be set within the GSQL Editor to enable read/write access to the specified S3 bucket for query results. Replace `<AWS_KEY_ID>`, `<AWS_ACCESS_KEY>` and `<RoleARN>` with your actual AWS credentials, and `<REGION>` with your S3 bucket's region (for example, `us-west-2`). If you don't set `s3_region`, it defaults to `us-east-1`.
 
 ==== Output
-Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket. To handle potential conflicts and ensure unique output files, the S3 path can include a suffix based on the instance name, such as `\_GPE_{PartitionId}_{ReplicaId}`. For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE. Specifically, suffixes like `_coordinator` and `_worker` will be added, where `_coordinator` refers to the worker manager and `_worker` refers to the worker node.
+Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same bucket.  
+To avoid conflicts and ensure unique output files, the S3 path may include a suffix such as:
+
+`\_GPE_{PartitionId}_{ReplicaId}`
+
+For distributed queries, additional suffixes such as `_coordinator` and `_worker` are added to distinguish roles.
 
 ==== Error code
 For S3 bucket connection errors, refer to error code `GSQL-5301`.
@@ -619,9 +642,11 @@ For S3 bucket connection errors, refer to error code `GSQL-5301`.
 [NOTE]
 ====
 A `FILE` object can be passed as a parameter to another query.
-When a query receives a `FILE` object as a parameter, for a file on the local machine, it can append data to that `FILE`, as can every other query which receives this FILE object as a parameter.
-However, an S3 bucket `FILE` object cannot be appended to.
-When you write to an S3 path, any existing object will be overwritten.
+
+For local files, multiple queries can append to the same `FILE`.
+
+For S3 `FILE` objects, content cannot be appended.  
+If the S3 object already exists, it is overwritten.
 ====
 
 == Query parameter types

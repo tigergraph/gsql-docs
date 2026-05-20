@@ -47,7 +47,7 @@ For S3-compatible systems like Ceph, set the endpoint URL using GSQL session par
 
 == Use GSQL Session Parameters
 
-Set credentials and the endpoint URL for your current GSQL session. This method suits users working with their own buckets or testing different S3-compatible systems. Alternatively, you can authenticate using an AWS role by setting `s3_assume_role`  [4.2.3].
+Set credentials and the endpoint URL for your current GSQL session. This method suits users working with their own buckets or testing different S3-compatible systems. Alternatively, you can authenticate using an AWS role by setting `s3_assume_role`  [v4.2.3].
 
 . Open the GSQL shell.
 . Run these commands:
@@ -76,8 +76,7 @@ SET s3_endpoint = "http://<your-s3-host>"
 * `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph).
 
 `s3_region` allows you to explicitly set the S3 bucket region. If `s3_region` is not set, the default region is `us-east-1`.
-If your bucket is located in a different region and `s3_region` is not set correctly, the query may fail [v4.3+].
-
+If your S3 bucket is in a different region, set `s3_region` to match the bucket region. Otherwise, requests to the bucket may fail [v4.2.3].
 
 [NOTE]
 ====

@@ -73,7 +73,7 @@ SET s3_endpoint = "http://<your-s3-host>"
 * `<your-secret-access-key>`: Your S3 secret key.
 * `<region>`: Your S3 bucket's AWS region (for example, `us-west-2`, `eu-central-1`).
 * `<RoleARN>`: Your IAM role's ARN (for example, `arn:aws:iam::123456789012:role/MyRole`).
-* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph).
+* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph) [v4.2.1].
 
 `s3_region` allows you to explicitly set the S3 bucket region. If `s3_region` is not set, the default region is `us-east-1`.
 If your S3 bucket is in a different region, set `s3_region` to match the bucket region. Otherwise, requests to the bucket may fail [v4.2.3].
@@ -82,7 +82,7 @@ If your S3 bucket is in a different region, set `s3_region` to match the bucket 
 ====
 * These settings apply only to your session.
 * Session parameters override gadmin settings.
-* For S3-compatible systems, you must set `s3_endpoint`.
+* For S3-compatible systems, you must set `s3_endpoint`[v4.2.1].
 ====
 
 == Use RESTPP Headers (API Calls)

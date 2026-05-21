@@ -1,6 +1,5 @@
 = Writing Output to Cloud Storage
 :description: How to configure TigerGraph to write query results to AWS S3 or S3-compatible storage like Ceph, MinIO, or Wasabi
-:page-aliases: write-query-data-to-cloud.adoc
 
 This guide shows you how to configure TigerGraph to write query results to AWS S3 or S3-compatible storage systems, such as Ceph, MinIO, or Wasabi.
 

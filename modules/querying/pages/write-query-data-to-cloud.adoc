@@ -1,38 +1,100 @@
-= Write Query Output to Cloud
+= Writing Output to Cloud Storage
+:description: How to configure TigerGraph to write query results to AWS S3 or S3-compatible storage like Ceph, MinIO, or Wasabi
+:page-aliases: write-query-data-to-cloud.adoc
 
-Before you can write query results to an S3 bucket, you need to set up the connection to the S3 service. This requires credentials like an AWS Access Key ID and Secret Access Key. Make sure the necessary read/write permissions are granted for the S3 bucket.
-There are two methods to configure these credentials:
+This guide shows you how to configure TigerGraph to write query results to AWS S3 or S3-compatible storage systems, such as Ceph, MinIO, or Wasabi.
 
-== Using gadmin config
+To write to an S3 bucket, you need:
 
-This method configures the S3 connection for the entire TigerGraph cluster. Once you set the credentials, they apply to all users in the cluster. Here's how to do it:
+* Access Key ID
+* Secret Access Key
+* Endpoint URL for S3-compatible systems
 
-[source,GSQL]
+*Configure the S3 Connection*
+
+You can configure S3 access in three ways:
+
+* Cluster-wide using gadmin
+* Per-session using GSQL parameters
+* Via RESTPP headers
+
+Choose the method based on whether you want settings to apply to all users or just your session.
+
+== Use gadmin Config (Cluster-Wide)
+
+Set S3 credentials for the entire TigerGraph cluster.
+
+. Open your terminal.
+. Run these commands:
++
+[source,bash]
 ----
-gadmin config set GPE.QueryOutputS3AWSAccessKeyID <YOUR_AWS_ACCESS_KEY_ID>
-gadmin config set GPE.QueryOutputS3AWSSecretAccessKey <YOUR_AWS_SECRET_ACCESS_KEY>
+gadmin config set GPE.QueryOutputS3AWSAccessKeyID <your-access-key-id>
+gadmin config set GPE.QueryOutputS3AWSSecretAccessKey <your-secret-access-key>
 gadmin config apply -y
 gadmin restart gpe -y
 ----
-* Replace <YOUR_AWS_ACCESS_KEY_ID> and <YOUR_AWS_SECRET_ACCESS_KEY> with your actual AWS credentials
+. Replace `<your-access-key-id>` and `<your-secret-access-key>` with your S3 credentials.
 
-== Using GSQL Session Parameters 
+[NOTE]
+====
+gadmin supports only Access Key ID and Secret Access Key.
 
-This method configures the credentials only for the current session and user.
+For S3-compatible systems like Ceph, set the endpoint URL using GSQL session parameters or RESTPP headers, as gadmin doesn’t support it.
+====
 
-[source,GSQL]
+== Use GSQL Session Parameters
+
+Set credentials and the endpoint URL for your current GSQL session. This method suits users working with their own buckets or testing different S3-compatible systems.
+
+. Open the GSQL shell.
+. Run these commands:
++
+[source,gsql]
 ----
-SET s3_aws_access_key_id = <YOUR_AWS_ACCESS_KEY_ID>
-SET s3_aws_secret_access_key = <YOUR_AWS_SECRET_ACCESS_KEY>
+SET s3_aws_access_key_id = "<your-access-key-id>"
+SET s3_aws_secret_access_key = "<your-secret-access-key>"
+SET s3_endpoint = "http://<your-s3-host>"
 ----
-* These parameters are set per session, so each user will need to provide their own credentials if they’re working with S3.
-* All queries run during this session will use these credentials to write to S3.
+. Replace the placeholders:
+* `<your-access-key-id>`: Your S3 access key.
+* `<your-secret-access-key>`: Your S3 secret key.
+* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph).
 
-[NOTE]:If both methods (using gadmin config and GSQL session parameters) are applied simultaneously, the GSQL session parameters take precedence.
+[NOTE]
+====
+* These settings apply only to your session.
+* Session parameters override gadmin settings.
+* For S3-compatible systems, you must set `s3_endpoint` [v4.1.4].
+====
+
+== Use RESTPP Headers (API Calls)
+
+Set S3 parameters in HTTP headers for queries run via RESTPP, such as with curl. This method does not require setting parameters in a GSQL session and is ideal for API integrations or one-off queries.
+
+. Open your terminal.
+. Run a curl command:
++
+[source,bash]
+----
+curl -X GET \
+  -H "GSQL-S3AWSAccessKeyId: <your-access-key-id>" \
+  -H "GSQL-S3AWSSecretAccessKey: <your-secret-access-key>" \
+  -H "GSQL-S3Endpoint: http://<your-s3-host>" \
+  'http://<tigergraph-host>:14240/restpp/query/<graph-name>/<query-name>?param=<s3-path>'
+----
+. Replace the placeholders:
+* `<your-access-key-id>`: Your S3 access key.
+* `<your-secret-access-key>`: Your S3 secret key.
+* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://`.
+* `<tigergraph-host>`: Your TigerGraph server address (for example, `10.244.106.233`).
+* `<graph-name>`: Your graph name.
+* `<query-name>`: Your query name.
+* `<s3-path>`: The S3 path.
 
 == Unique File Paths to Avoid Conflicts
 
-Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket.To avoid naming conflicts (multiple nodes trying to write to the same file),the S3 path will include a prefix based on the instance name :
+Since S3 is a shared storage system, multiple nodes in a cluster can upload to the same S3 bucket. To avoid naming conflicts (multiple nodes trying to write to the same file), the S3 path will include a prefix based on the instance name:
 
 * Instance Name: A prefix like GPE_{PartitionId}_{ReplicaId} ensures uniqueness by identifying the instance that generated the output.
 * Role: For distributed queries, additional suffixes will be used to differentiate between the manager and worker roles on the same GPE:
@@ -44,7 +106,7 @@ So, your S3 file paths might look like:
 * GPE_{PartitionId}_{ReplicaId}.coordinator
 * GPE_{PartitionId}_{ReplicaId}.worker
 
-== Example:
+== Example
 
 Consider a scenario where a 3 x 2 cluster is executing a distributed query, and the results are being saved to a file called queryResults.
 
@@ -56,3 +118,8 @@ GPE_0_0.worker.queryResults.csv – This file represents the output from the wor
 GPE_0_1.coordinator.queryResults.csv – This file represents the output from the coordinator node in partition 0, replica 1.
 
 These unique file names help ensure that no conflicts occur when multiple nodes are writing query outputs at the same time.
+
+== Troubleshoot Common Issues
+
+* *“Cannot determine target” error*: You didn’t set `s3_endpoint` for an S3-compatible system. Add it in session parameters or RESTPP headers.
+* *Connection fails on Ceph, MinIO, or Wasabi*: Verify the endpoint URL includes `http://` or `https://`. Check your bucket permissions and credentials.

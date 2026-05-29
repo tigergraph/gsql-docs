@@ -338,7 +338,7 @@ The loader accepts any of the following string formats:
 * `%Y-%m-%dT%H:%M:%S.000z` (e.g., 2011-02-03T01:02:03.123z, 123 will be ignored)
 * `%Y-%m-%d` (only date, no time, e.g., 2011-02-03)
 * `%Y/%m/%d` (only date, no time, e.g., 2011/02/03)
-* Any integer value (Unix Epoch time, where Jan 1, 1970 at 00:00:00 is integer 0)
+* Any string value (Unix Epoch time, where Jan 1, 1970 at 00:00:00 is 0)
 
 Format notation:
 

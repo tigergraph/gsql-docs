@@ -100,6 +100,48 @@ The following schema creates a directed edge plus a reserved edge for a *parent-
 ----
 CREATE DIRECTED EDGE Parent_Of (FROM Person, TO Person) WITH REVERSE_EDGE = "Child_Of"
 ----
+==== Memory and Storage Considerations
+
+The type of edge you define affects memory usage, storage space, and data loading time.
+Understanding the storage model of each edge type helps you make the right choice for your schema.
+
+[cols="1,1,1,1,1", options="header"]
+|===
+| Edge Configuration | Physical Edges Stored | Memory and Storage | Load Time | Reverse Traversal
+
+| Directed, no reverse edge
+| 1
+| Lowest
+| Fastest
+| Not supported
+
+| Directed with `WITH REVERSE_EDGE`
+| 2
+| Higher
+| Slower
+| Supported
+
+| Undirected
+| 2
+| Higher
+| Slower
+| Supported
+|===
+
+*Undirected edge* is stored as two physical edges internally, one in each direction. It takes up more memory and storage space than a directed edge.
+
+*Directed edge with a reverse edge* stores two physical edges per relationship, the same storage space as an undirected edge.
+It supports efficient reverse traversal but uses more memory and storage space than a single directed edge.
+
+*Directed edge without a reverse edge* is the most compact option.
+It uses the least memory and storage space and loads faster than the other configurations.
+
+[TIP]
+====
+In many use cases, reverse traversal is the most natural and efficient action.
+Consider including a reverse edge unless saving on memory and storage space
+is much more important than performance.
+====
 
 ==== Multiple Relationships Between Two Vertices
 

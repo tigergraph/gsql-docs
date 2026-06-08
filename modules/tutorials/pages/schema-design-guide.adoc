@@ -52,7 +52,7 @@ image::Components-Edges.png[]
 
 ==== Choosing Edge Direction
 
-When designing your schema, you must decide whether to use *undirected*, *directed*, or *reversed* edges.
+When designing your schema, you must decide whether to use *undirected*, *directed*, or *reverse* edges.
 Each type of edge serves a specific purpose depending on how you intend to query and traverse the data.
 
 *Undirected Edges*
@@ -85,11 +85,11 @@ The following schema creates a xref:gsql-ref:ddl-and-loading:defining-a-graph-sc
 CREATE DIRECTED EDGE Works_For (FROM Person, TO Company)
 ----
 
-*Reversed Edge*
+*Reverse Edge*
 
-A *reversed edge* allows you to traverse a directed edge in the opposite direction of its semantic flow.
+A *reverse edge* allows you to traverse a directed edge in the opposite direction of its semantic flow.
 For example, in a *parent-child relationship*, we might define the primary edge as *"parent_of"* (Parent → Child).
-However, to easily traverse the relationship in the opposite direction (from Child to Parent), we can use a *reversed edge* with a different name, like "child_of" (Child → Parent). This makes it easy to query in either direction.
+However, to easily traverse the relationship in the opposite direction (from Child to Parent), we can use a *reverse edge* with a different name, like "child_of" (Child → Parent). This makes it easy to query in either direction.
 
 image::Reversed Edge.png[]
 

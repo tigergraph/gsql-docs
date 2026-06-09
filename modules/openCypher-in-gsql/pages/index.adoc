@@ -59,11 +59,11 @@ See below for restrictions before version *4.1.2*.
 
 |UNWIND … [AS] |Projecting Expands a list into a sequence of records.
 
-|CREATE |Writing create nodes and relationships.
+|CREATE |Writing create nodes and relationships. Partially supported. See the note below for limitations.
 
-|REMOVE |Writing Remove properties and labels from nodes and relationships.
+|REMOVE |Writing Remove properties and labels from nodes and relationships. Partially supported. See the note below for limitations.
 
-|SET |Writing Update labels on nodes and properties on nodes and relationships.
+|SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
 |===
 
 === Operators
@@ -247,15 +247,15 @@ See below for restrictions before version *4.1.2*.
 
 |collect() |Numeric | Returns a list containing the values returned by an expression.
 
-|endNode() |Scalar |Returns the end node of a relationship.
+|endNode() |Scalar |Returns the end node of a relationship. Partially supported. See the note below for limitations.
 
-|startNode() |Scalar |Returns the start node of a relationship.
+|startNode() |Scalar |Returns the start node of a relationship. Partially supported. See the note below for limitations.
 |===
 
 [NOTE]
 ====
-CREATE, REMOVE, SET, startNode(), and endNode() are partially supported. 
-They are supported only for simple single-block queries that do not involve tables.
+CREATE, REMOVE, SET, startNode(), and endNode() are partially supported.
+These features are supported only in single-block queries and are not supported in queries that involve tables.
 ====
 
 === Expressions

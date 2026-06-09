@@ -116,7 +116,7 @@ To re-enable them:
 
 . Check each disabled query to see if the UDF change causes a need to revise the query.  Make necessary modifications.
 . Run `CREATE OR REPLACE QUERY` for each disabled query.
-. Run `INSTALL QUERY`, singly or for a batch of queries.
+. Run `INSTALL QUERY`, single or for a batch of queries.
 ====
 
 === Use GitHub to store UDFs

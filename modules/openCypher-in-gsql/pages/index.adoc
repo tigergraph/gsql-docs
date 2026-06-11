@@ -245,7 +245,7 @@ See below for restrictions before version *4.1.2*.
 
 |type() |Scalar |Returns the string representation of the relationship type.
 
-|collect() |Numeric | Returns a list containing the values returned by an expression.
+|collect() |List |Returns a list containing the values returned by an expression.
 
 |endNode() |Scalar |Returns the end node of a relationship. Partially supported. See the note below for limitations.
 

@@ -21,6 +21,8 @@ From version 4.1.2, certain restrictions on the `MATCH` and `WITH` clauses have 
 |===
 |Clause |Description
 
+|CREATE |Writing create nodes and relationships. Partially supported. See the note below for limitations.
+
 |DELETE |Delete graph elements — nodes and relationships.
 
 Any node to be deleted must also have all associated relationships explicitly deleted.
@@ -41,15 +43,13 @@ See below for restrictions before version *4.1.2*.
 
 |RETURN or WITH |Specifying that the output should be sorted in either ascending (the default) or descending order.
 
+|REMOVE |Writing Remove properties and labels from nodes and relationships. Partially supported. See the note below for limitations.
+
 |RETURN … [AS] |Projecting Defines what to include in the query result set.
 
 |SKIP |Reading/Writing A sub-clause defining from which record to start including the records in the output.
 
-|WITH … [AS] |Projecting Allows query parts to be chained together, piping the results from one to be used as starting points or criteria in the next.
-
-See below for restrictions before version *4.1.2*.
-
-|WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
+|SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
 
 |UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
 
@@ -57,11 +57,11 @@ See below for restrictions before version *4.1.2*.
 
 |UNWIND … [AS] |Projecting Expands a list into a sequence of records.
 
-|CREATE |Writing create nodes and relationships. Partially supported. See the note below for limitations.
+|WITH … [AS] |Projecting Allows query parts to be chained together, piping the results from one to be used as starting points or criteria in the next.
 
-|REMOVE |Writing Remove properties and labels from nodes and relationships. Partially supported. See the note below for limitations.
+See below for restrictions before version *4.1.2*.
 
-|SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
+|WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
 |===
 
 === Operators
@@ -150,9 +150,13 @@ See below for restrictions before version *4.1.2*.
 
 |degrees() |Trigonometric Converts radians to degrees.
 
+|collect() |Returns a list containing the values returned by an expression.
+
 |e() |Logarithmic Returns the base of the natural logarithm, e.
 
 |elementId() |Scalar Returns the String id of a relationship or node.
+
+|endNode() |Returns the end node of a relationship. Partially supported. See the note below for limitations.
 
 |exp() |Logarithmic Returns e^n, where e is the base of the natural logarithm, and n is the value of the argument expression.
 
@@ -204,6 +208,8 @@ See below for restrictions before version *4.1.2*.
 
 |sqrt() |Logarithmic Returns the square root of a number.
 
+|startNode() |Returns the start node of a relationship. Partially supported. See the note below for limitations.
+
 |stDev() |Aggregating Returns the standard deviation for the given value over a group for a sample of a population.
 
 |stDevP() |Aggregating Returns the standard deviation for the given value over a group for an entire population
@@ -231,12 +237,6 @@ See below for restrictions before version *4.1.2*.
 |toFloat() |Scalar Converts an integer or string value to a floating point number.
 
 |toInteger() |Scalar Converts a floating point or string value to an integer value.
-
-|collect() |Returns a list containing the values returned by an expression.
-
-|endNode() |Returns the end node of a relationship. Partially supported. See the note below for limitations.
-
-|startNode() |Returns the start node of a relationship. Partially supported. See the note below for limitations.
 |===
 
 [NOTE]

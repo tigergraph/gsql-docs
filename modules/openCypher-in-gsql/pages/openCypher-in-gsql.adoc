@@ -11,7 +11,7 @@ It also describes how the different xref:#_key_differences_gsql_vs_opencypher[sc
 
 [NOTE]
 ====
-From version 4.1.2, certain restrictions on the `MATCH` and `WITH` clauses have been eliminated.
+From version 4.1.2, certain restrictions on the `MATCH` and `WITH` clauses have been eliminated. Support was also added for `UNION`, `UNION ALL`, `UNWIND`, and `collect()`. Additionally, `CREATE`, `REMOVE`, `SET`, `startNode()`, and `endNode()` became partially supported.
 ====
 
 == openCypher Features in GSQL
@@ -50,6 +50,18 @@ See below for restrictions before version *4.1.2*.
 See below for restrictions before version *4.1.2*.
 
 |WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
+
+|UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
+
+|UNION ALL |Set operations Combines the result of multiple queries. Duplicates are retained.
+
+|UNWIND … [AS] |Projecting Expands a list into a sequence of records.
+
+|CREATE |Writing create nodes and relationships. Partially supported. See the note below for limitations.
+
+|REMOVE |Writing Remove properties and labels from nodes and relationships. Partially supported. See the note below for limitations.
+
+|SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
 |===
 
 === Operators
@@ -220,7 +232,18 @@ See below for restrictions before version *4.1.2*.
 
 |toInteger() |Scalar Converts a floating point or string value to an integer value.
 
+|collect() |Returns a list containing the values returned by an expression.
+
+|endNode() |Returns the end node of a relationship. Partially supported. See the note below for limitations.
+
+|startNode() |Returns the start node of a relationship. Partially supported. See the note below for limitations.
 |===
+
+[NOTE]
+====
+CREATE, REMOVE, SET, startNode(), and endNode() are partially supported.
+These features are supported only in single-block queries and are not supported in queries that involve tables.
+====
 
 === Expressions
 [cols="1,1"]
@@ -236,19 +259,7 @@ See below for restrictions before version *4.1.2*.
 
 |CALL […YIELD] |Reading/Writing Invoke a procedure deployed in the database.
 
-|CREATE |Writing create nodes and relationships.
-
 |MERGE |Reading/Writing Ensures that a pattern exists in the graph. Either the pattern already exists, or it needs to be created.
-
-|REMOVE |Writing Remove properties and labels from nodes and relationships.
-
-|UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
-
-|UNION ALL |Set operations Combines the result of multiple queries. Duplicates are retained.
-
-|UNWIND … [AS] |Projecting Expands a list into a sequence of records.
-
-|SET |Writing Update labels on nodes and properties on nodes and relationships.
 |===
 
 === Operators
@@ -258,10 +269,6 @@ N/A
 [cols="1,1"]
 |===
 |coalesce() |Scalar Returns the first non-null value in a list of expressions.
-
-|collect() |Aggregating Returns a list containing the values returned by an expression.
-
-|endNode() |Scalar Returns the end node of a relationship.
 
 |exists() |Predicate Returns true if a match for the pattern exists in the graph, or if the specified property exists in the node, relationship or map.
 
@@ -287,8 +294,6 @@ N/A
 pattern expression)
 
 |size() |Scalar Returns the size of a string. (When applied to string)
-
-|startNode() |Scalar Returns the start node of a relationship.
 
 |type() |Scalar Returns the string representation of the relationship type.
 

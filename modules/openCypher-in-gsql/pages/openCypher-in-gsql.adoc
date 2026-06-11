@@ -47,9 +47,9 @@ See below for restrictions before version *4.1.2*.
 
 |RETURN … [AS] |Projecting Defines what to include in the query result set.
 
-|SKIP |Reading/Writing A sub-clause defining from which record to start including the records in the output.
-
 |SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
+
+|SKIP |Reading/Writing A sub-clause defining from which record to start including the records in the output.
 
 |UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
 

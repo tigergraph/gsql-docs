@@ -511,6 +511,9 @@ The optional `WHERE` clause supports boolean conditions to filter the items in t
 [discrete]
 === Examples
 
+When updating collection-type attributes, note the syntax differences:
+use `[]` for list-type, `()` for set-type, and `->` for map-type attributes.
+
 .`UPDATE` statement example
 [source.wrap,gsql]
 ----

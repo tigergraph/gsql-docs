@@ -294,7 +294,7 @@ Like any other data modification in a query, the insertion does not take effect 
 [source,ebnf]
 ----
 insertStmt := insertVertexStmt | insertEdgeStmt
-insertVertexStmt := INSERT INTO (vertexType | name)
+insertVertexStmt := INSERT INTO vertexType
                  ["(" PRIMARY_ID ["," attrName]* ")"]
                  VALUES "(" ( "_" | expr ) ["," ("_" | expr)]*] ")"
 insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)

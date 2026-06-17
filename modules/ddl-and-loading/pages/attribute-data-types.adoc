@@ -56,7 +56,7 @@ Has the same input and output format as FLOAT, but the range and precision are g
 | `false`
 | `true`, `false` (case insensitive), 1, 0
 | `true`, `false`
-| Boolean true and false, represented within GSQL as _true_ and _false_ , and represented in input and output as 1 and 0
+| Boolean true and false, represented within GSQL as _true_ and _false_ , and represented in input and output as 1 and 0. Stored using 1 byte.
 
 | `STRING`
 | Empty string
@@ -102,13 +102,17 @@ Some numeric expressions may return a non-numeric string result, such as "inf" f
 |Description
 
 |`DATETIME` |UTC time 0 |See xref:ddl-and-loading:creating-a-loading-job.adoc#_loading_a_datetime_attribute[Loading `DATETIME` Attribute]
-|1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC) as the
-number of seconds elapsed since the start of Jan 1, 1970. Time zones are
+|1582-10-15 00:00:00 to 9999-12-31 23:59:59 |Date and time (UTC), internally represented as the number of seconds elapsed since Jan 1, 1970 (Unix epoch time). Typically stored as a 4-byte integer. Time zones are
 not supported. Displayed in YYYY-MM-DD hh:mm:ss format.
 
 |`FIXED_BINARY(*n*)` |N/A | |N/A |Stream of n binary-encoded
 bytes
 |===
+
+[NOTE]
+====
+TigerGraph optimizes storage for certain data types internally. Integer-based types such as `INT`, `UINT`, and `DATETIME` may use compressed storage depending on the value. These optimizations are implementation details and may vary by version.
+====
 
 [NOTE]
 ====

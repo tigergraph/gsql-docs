@@ -1280,6 +1280,42 @@ include::appendix:example$minimal_net/accum_mapaccum_results.gsql[]
 --
 ====
 
+==== Traversing a MapAccum
+
+MapAccum key-value pairs can be iterated using the following syntax:
+
+[source,gsql]
+----
+FOREACH (key, value) IN mapAccum DO
+  ...
+END;
+----
+
+The following query demonstrates how to traverse a MapAccum using a query-body FOREACH statement and a POST-ACCUM FOREACH statement.
+
+[tabs]
+====
+Query::
++
+--
+.MapAccum Traversal Example
+[source,gsql]
+----
+include::appendix:example$work_net/mapaccum_traverse.gsql[]
+----
+--
+
+Results::
++
+--
+[source,gsql]
+----
+GSQL > RUN QUERY mapaccum_traverse()
+include::appendix:example$minimal_net/mapaccum_traverse_results.gsql[]
+----
+----
+====
+
 
 === ArrayAccum
 

@@ -1,0 +1,25 @@
+CREATE QUERY mapaccum_traverse() FOR GRAPH Work_Net {
+  MapAccum<STRING, INT> @@employee_count;
+  ListAccum<STRING> @@summary;
+  SumAccum<INT> @country_size;
+
+  start = {Person.*};
+
+  s1 = SELECT v FROM start:v
+       ACCUM @@employee_count += (v.location_id -> 1);
+
+  FOREACH (country, cnt) IN @@employee_count DO
+    @@summary += (country + ": " + to_string(cnt));
+  END;
+
+  result = SELECT v FROM start:v
+           POST-ACCUM
+             FOREACH (country, cnt) IN @@employee_count DO
+               CASE WHEN country == v.location_id THEN
+                 v.@country_size += cnt
+               END
+             END;
+
+  PRINT @@employee_count;
+  PRINT @@summary;
+}

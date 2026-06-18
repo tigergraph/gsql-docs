@@ -1291,7 +1291,7 @@ FOREACH (key, value) IN mapAccum DO
 END;
 ----
 
-The following query counts the number of employees per country using a MapAccum and demonstrates two ways to traverse it.
+The following query demonstrates how to traverse a MapAccum using a query-body FOREACH statement and a POST-ACCUM FOREACH statement.
 
 [tabs]
 ====

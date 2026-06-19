@@ -234,6 +234,12 @@ See below for restrictions before version *4.1.2*.
 |type() |Scalar |Returns the string representation of the relationship type.
 |===
 
+
+[NOTE]
+====
+All OpenCypher functions listed below can be used in GSQL mode, and all primitive GSQL functions can be used in OpenCypher mode.
+====
+
 === Expressions
 [cols="1,3"]
 |===

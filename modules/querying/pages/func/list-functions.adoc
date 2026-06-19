@@ -200,3 +200,35 @@ split("aaabcaabca", "abc") -> ["aa", "a", "a"]
 ----
 tail(["a", "b", "c"]) -> ["b", "c"]
 ----
+
+== labels()
+
+=== Syntax
+
+`labels(vertex)`
+
+=== Description
+
+Returns a `LIST<STRING>` containing the string representation of the type of the given vertex.
+
+=== Return type
+
+`LIST<STRING>`
+
+=== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `vertex`
+| The vertex whose type will be returned.
+| `VERTEX`
+
+|===
+
+=== Example
+
+[source,text]
+----
+labels(v) -> ["person"]
+----

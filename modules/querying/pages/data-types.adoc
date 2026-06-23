@@ -222,9 +222,7 @@ a| A decimal precise up to about 7 digits: `3.14159`
 
 [CAUTION]
 ====
-When passing a `DATETIME` value as a query parameter via a REST API call,
-do not enclose the value in single or double quotes.
-Quoted values will not return an error but will silently return `0` results.
+Quoted values are not parsed as valid DATETIME parameters. The query may execute successfully, but DATETIME-based comparisons can return incorrect results, such as returning no matching records.
 
 *Incorrect:*
 [source,console]

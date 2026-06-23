@@ -222,3 +222,35 @@ GSQL > run query elementId_example()
   ]
 }
 ----
+
+=== type()
+
+==== Syntax
+
+`type(e)`
+
+==== Description
+
+Returns the string representation of the edge type.
+
+==== Return type
+
+`STRING`
+
+==== Parameters
+
+|===
+| Parameter | Description | Data type
+
+| `e`
+| The edge whose type will be returned.
+| `EDGE`
+
+|===
+
+==== Example
+
+[source,text]
+----
+type(e) -> "worksFor"
+----

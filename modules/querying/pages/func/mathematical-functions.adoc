@@ -647,6 +647,25 @@ Return the common logarithm of a number (base 10).
 | Number
 |===
 
+=== e()
+
+==== Syntax
+
+`e()`
+
+==== Description
+
+Returns the base of the natural logarithm, e (approximately 2.718281828459045).
+
+==== Return type
+
+`FLOAT`
+
+==== Parameters
+
+None.
+
+
 == Trigonometric
 
 === acos()

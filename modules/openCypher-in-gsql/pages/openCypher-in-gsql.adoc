@@ -245,6 +245,11 @@ CREATE, REMOVE, SET, startNode(), and endNode() are partially supported.
 These features are supported only in single-block queries and are not supported in queries that involve tables.
 ====
 
+[NOTE]
+====
+All openCypher functions listed above can be used in GSQL mode, and all primitive GSQL functions can be used in OpenCypher mode.
+====
+
 === Expressions
 [cols="1,1"]
 |===

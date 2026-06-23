@@ -218,6 +218,34 @@ Converts a `DATETIME` value to epoch time.
 datetime_to_epoch(to_datetime("1970-01-01 00:01:00")) -> 60
 ----
 
+== `timestamp()`
+
+[discrete]
+=== Syntax
+
+`timestamp()`
+
+[discrete]
+=== Description
+Returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
+
+[discrete]
+=== Return type
+
+`INT`
+
+[discrete]
+=== Parameters
+
+None.
+
+[discrete]
+=== Example
+[source,text]
+----
+timestamp() -> 1609459200000
+----
+
 == `day()`
 
 [discrete]

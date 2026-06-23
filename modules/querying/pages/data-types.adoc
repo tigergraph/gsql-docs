@@ -215,6 +215,25 @@ a| A decimal precise up to about 7 digits: `3.14159`
 | No literal. Can be converted from a correctly formatted string with xref:querying:func/type-conversion-functions.adoc#_parse_json_array[`parse_json_array()`].
 |===
 
+[CAUTION]
+====
+Quoted values are not parsed as valid DATETIME parameters. The query may execute successfully, but DATETIME-based comparisons can return incorrect results, such as returning no matching records.
+
+*Incorrect:*
+[source,console]
+----
+curl -X GET 'http://127.0.0.1:9000/query/gsql_demo/dt?dt="2022-12-31T00:00:00"'
+curl -X GET "http://127.0.0.1:9000/query/gsql_demo/dt?dt='2022-12-31T00:00:00'"
+----
+
+*Correct:*
+[source,console]
+----
+curl -X GET 'http://127.0.0.1:9000/query/gsql_demo/dt?dt=2022-12-31T00:00:00'
+curl -X GET 'http://127.0.0.1:9000/query/gsql_demo/dt?dt=2022-12-31%2000%3A00%3A00'
+----
+====
+
 The `FLOAT` and `DOUBLE` data types have the same precision limits as in C++.
 See xref:appendix:common-errors-and-problems.adoc[] for more details.
 

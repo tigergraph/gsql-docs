@@ -1902,6 +1902,38 @@ GSQL > RUN QUERY vUpdateIndirectAccess()
 --
 ====
 
+==== WHERE Clause and ACCUM in Multi-Hop Queries
+
+In multi-hop queries, the `WHERE` clause may not govern the `ACCUM` clause for all query patterns. Use the following approaches to explicitly control this behavior.
+
+To ensure ACCUM only executes when the WHERE condition is satisfied*, duplicate the condition in the `ACCUM` clause:
+
+[source,gsql]
+----
+result =
+  SELECT a
+  FROM A:a -(E1:e1)- B:b -(E2:e2)- C:c
+  WHERE a != c
+  ACCUM
+    IF a != c THEN
+      @@same += a,
+      @@same += c
+    END;
+----
+
+To allow ACCUM to execute before filtering, use a `HAVING` clause instead of `WHERE`:
+
+[source,gsql]
+----
+result =
+  SELECT a
+  FROM A:a -(E1:e1)- B:b -(E2:e2)- C:c
+  ACCUM
+    @@same += a,
+    @@same += c,
+    a.@equal += (a != c)
+  HAVING NOT a.@equal;
+----
 
 === ACCUM and POST-ACCUM Examples
 

@@ -988,7 +988,51 @@ include::appendix:example$work_net/accum_vertex_listaccum_results.json[]
 ----
 --
 ====
+[tabs]
+====
+Query::
++
+--
+.Example for `get()` returning by reference
+[source,gsql]
+----
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy.gsql[]
+----
+--
 
+Results::
++
+--
+[source,json]
+----
+GSQL > RUN QUERY update_get_reference()
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy_results.json[]
+----
+--
+====
+
+[tabs]
+====
+Query::
++
+--
+.Example for `get()` returning a value copy via assignment
+[source,gsql]
+----
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy.gsql[]
+----
+--
+
+Results::
++
+--
+[source,json]
+----
+GSQL > RUN QUERY get_side_effects_2()
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy_results.json[]
+----
+--
+====
 
 [#_setaccum]
 === SetAccum

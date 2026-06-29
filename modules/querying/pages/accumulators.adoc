@@ -958,7 +958,7 @@ Query::
 .Example for `get()` returning by reference
 [source,gsql]
 ----
-include::appendix:example$minimal_net/accum_update_get_reference.gsql[]
+include::appendix:example$minimal_net/accum_listaccum_get_reference.gsql[]
 ----
 --
 
@@ -968,7 +968,7 @@ Results::
 [source,json]
 ----
 GSQL > RUN QUERY update_get_reference()
-include::appendix:example$minimal_net/accum_update_get_reference_results.json[]
+include::appendix:example$minimal_net/accum_listaccum_get_reference_results.json[]
 ----
 --
 ====

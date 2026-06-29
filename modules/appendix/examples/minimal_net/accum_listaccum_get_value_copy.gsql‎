@@ -1,0 +1,6 @@
+CREATE OR REPLACE QUERY get_side_effects_2() {
+  ListAccum<ListAccum<INT>> @@l1 = [[1]];
+  ListAccum<INT> @@l2 = @@l1.get(0);
+  @@l2.update(0, 3);
+  PRINT @@l1;
+}

@@ -55,5 +55,5 @@ This allows the query plan to remain valid even if the values of these constants
 
 There are two key xref:{page-component-version}@tigergraph-server:reference:configuration-parameters.adoc#gsql[configuration parameters] available to customize the query plan cache.
 The `GSQL.QueryPlanCache.Enable` parameter enables the query plan cache, with the default value set to `true`. This ensures that query plans are cached to improve performance. 
-Additionally, the `GSQL.QueryPlanCache.Capacity` parameter defines the maximum number of queries that can be stored in the cache, with a default value of `10,000`. 
+Additionally, the `GSQL.QueryPlanCache.Capacity` parameter defines the maximum number of query plans that can be stored in the cache, with a default value of `10,000`. 
 This capacity can be adjusted within the range of 1 to 100,000, depending on your system’s requirements.

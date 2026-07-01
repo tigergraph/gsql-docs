@@ -1,0 +1,5 @@
+CREATE QUERY update_get_reference() {
+  ListAccum<ListAccum<INT>> @@l1 = [[1]];
+  @@l1.get(0).update(0, 3);
+  PRINT @@l1;
+}

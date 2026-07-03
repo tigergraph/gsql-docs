@@ -53,6 +53,16 @@ INTERPRET QUERY (INT GSQL_p1, STRING GSQL_p2, STRING GSQL_p3, INT GSQL_p4) {
 Here, the constants `100`, `"Wang"`, `"1982-02-06 00:00:00"`, and `1200` have been replaced with query parameters (`GSQL_p1`, `GSQL_p2`, `GSQL_p3`, `GSQL_p4`). 
 This allows the query plan to remain valid even if the values of these constants change in future executions.
 
+== Query plan cache invalidation
+
+Cached query plans are invalidated in the following cases:
+
+* Schema changes clear the entire query plan cache.
+* Changes to a query definition invalidate the cached plan for that query. Changes that only substitute constant values do not invalidate the cached query plan.
+* When the query plan cache reaches its configured capacity, older cached plans are evicted to make room for new entries.
+
+The query plan cache is stored in memory and is cleared when GPE is restarted.
+
 There are two key xref:{page-component-version}@tigergraph-server:reference:configuration-parameters.adoc#gsql[configuration parameters] available to customize the query plan cache.
 The `GSQL.QueryPlanCache.Enable` parameter enables the query plan cache, with the default value set to `true`. This ensures that query plans are cached to improve performance. 
 Additionally, the `GSQL.QueryPlanCache.Capacity` parameter defines the maximum number of query plans that can be stored in the cache, with a default value of `10,000`. 

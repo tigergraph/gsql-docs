@@ -1,0 +1,20 @@
+CREATE QUERY vertex_set_seeding_from_string_values(
+    STRING vtype,
+    SET<STRING> vtypes
+) FOR GRAPH Social_Net {
+
+    SetAccum<STRING> @@types;
+
+    FOREACH t IN vtypes DO
+        @@types += t;
+    END;
+
+    seed_from_string = {vtype};
+    seed_from_set = {vtypes};
+    seed_from_setaccum = {@@types};
+
+    PRINT
+        seed_from_string.size() AS string_count,
+        seed_from_set.size() AS set_count,
+        seed_from_setaccum.size() AS setaccum_count;
+}

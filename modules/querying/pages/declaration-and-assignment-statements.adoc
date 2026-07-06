@@ -362,6 +362,49 @@ The query below lists all ways of assigning a vertex set variable an initial set
 * Union of vertex set variables
 * A vertex variable enclosed in curly brackets
 
+==== Vertex set seeding from string values
+
+A `STRING`, `SET<STRING>`, or `SetAccum<STRING>` can be used to initialize a vertex set when the values of the `STRING`, `SET<STRING>`, or `SetAccum<STRING>` are valid vertex type names.
+
+The `STRING`, `SET<STRING>`, and `SetAccum<STRING>` forms behave equivalently when they contain the same vertex type names.
+
+==== Example
+
+[tabs]
+====
+Query::
++
+--
+.Vertex set seeding from string values
+[source,gsql]
+----
+include::appendix:example$social_net/vertex_set_seeding_from_string_values.gsql[]
+----
+--
+Result::
++
+--
+.vertex_set_seeding_from_string_values Query Results
+[source,gsql]
+----
+GSQL > RUN QUERY vertex_set_seeding_from_string_values("Account_1", ["Account_1"])
+include::appendix:example$social_net/vertex_set_seeding_from_string_values_results.json[]
+----
+--
+====
+
+If any supplied string is not a valid vertex type name, GSQL reports a runtime error.
+
+[source,text]
+----
+GSQL > RUN QUERY vertex_set_seeding_from_string_values(
+    "NotARealVertexType",
+    ["NotARealVertexType"]
+)
+
+Runtime Error: 'NotARealVertexType' is not valid vertex type.
+----
+
 .Vertex set example
 [source.wrap,gsql]
 ----

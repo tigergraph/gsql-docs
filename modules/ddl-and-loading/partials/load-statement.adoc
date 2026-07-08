@@ -286,8 +286,7 @@ Both values are strings and must be enclosed in double quotes.
 Default is `"false"`
 
 |`USER_DEFINED_HEADER`
-|Specifies the name of the header variable, when a
-header has been defined in the loading job, rather than in the data file
+|Specifies the name of a header variable defined by a preceding DEFINE HEADER statement. The loader uses the user-defined column names instead of the column names in the input file. For an example, see xref:data-loading:load-local-files.adoc#user-defined-header-example[Example: Using USER_DEFINED_HEADER].
 |The variable name in the preceding `DEFINE HEADER` statement
 
 |`REJECT_LINE_RULE`

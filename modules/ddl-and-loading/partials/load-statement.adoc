@@ -286,7 +286,7 @@ Both values are strings and must be enclosed in double quotes.
 Default is `"false"`
 
 |`USER_DEFINED_HEADER`
-|Specifies the name of a header variable defined by a preceding DEFINE HEADER statement. The loader uses the user-defined column names instead of the column names in the input file. For an example, see xref:data-loading:load-local-files.adoc#user-defined-header-example[Example: Using USER_DEFINED_HEADER].
+|Instructs the loading job to use the user-defined column names defined by a preceding DEFINE HEADER statement instead of the column names in the input file or the generic positional indexes ($0, $1, etc.). For an example, see xref:{page-component-version}@tigergraph-server:data-loading:load-local-files.adoc#user-defined-header-example[Example: Using USER_DEFINED_HEADER].
 |The variable name in the preceding `DEFINE HEADER` statement
 
 |`REJECT_LINE_RULE`

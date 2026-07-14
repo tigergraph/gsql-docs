@@ -373,6 +373,16 @@ For example:
 CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined DATETIME)
 ----
 
+=== Multi-edges
+
+By default, an edge type allows only one edge of a given type between the same source and target vertices. This is suitable for relationships where only a single connection is required between two vertices.
+
+Some graph models require multiple edges of the same type between the same pair of vertices. For example, a person may study at the same university during different academic years. Each `Study_At` relationship represents a distinct edge between the same source and target vertices.
+
+Multiple edges between the same pair of vertices can be defined by specifying a `DISCRIMINATOR` in the edge type definition. The discriminator uniquely identifies each edge instance while allowing multiple edges of the same type to exist between the same source and target vertices.
+
+For information on defining discriminators, see xref:#discriminator[DISCRIMINATOR].
+
 === `DISCRIMINATOR`
 A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.
 The `DISCRIMINATOR` keyword defines a discriminator in an edge type definition to allow multiple instances of an edge type between two vertices.

@@ -61,7 +61,7 @@ Cached query plans are invalidated in the following cases:
 * Changes to a query definition invalidate the cached plan for that query. Changes that only substitute constant values do not invalidate the cached query plan.
 * When the query plan cache reaches its configured capacity, older cached plans are evicted to make room for new entries.
 
-The query plan cache is stored in memory and is cleared when GPE is restarted.
+The query plan cache is stored in memory and is cleared when GSQL is restarted.
 
 There are two key xref:{page-component-version}@tigergraph-server:reference:configuration-parameters.adoc#gsql[configuration parameters] available to customize the query plan cache.
 The `GSQL.QueryPlanCache.Enable` parameter enables the query plan cache, with the default value set to `true`. This ensures that query plans are cached to improve performance. 

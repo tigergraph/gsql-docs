@@ -47,7 +47,7 @@ For S3-compatible systems like Ceph, set the endpoint URL using GSQL session par
 
 == Use GSQL Session Parameters
 
-Set credentials and the endpoint URL for your current GSQL session. This method suits users working with their own buckets or testing different S3-compatible systems. Alternatively, you can authenticate using an AWS role by setting `s3_assume_role`  [v4.2.3].
+Set credentials and the endpoint URL for your current GSQL session. This method suits users working with their own buckets or testing different S3-compatible systems.
 
 . Open the GSQL shell.
 . Run these commands:
@@ -56,33 +56,19 @@ Set credentials and the endpoint URL for your current GSQL session. This method 
 ----
 SET s3_aws_access_key_id = "<your-access-key-id>"
 SET s3_aws_secret_access_key = "<your-secret-access-key>"
-SET s3_region = "<region>"
-SET s3_endpoint = "http://<your-s3-host>"
-----
-+
-or
-+
-[source,gsql]
-----
-SET s3_assume_role= "<RoleARN>"
-SET s3_region = "<region>"
 SET s3_endpoint = "http://<your-s3-host>"
 ----
 . Replace the placeholders:
 * `<your-access-key-id>`: Your S3 access key.
 * `<your-secret-access-key>`: Your S3 secret key.
-* `<region>`: Your S3 bucket's AWS region (for example, `us-west-2`, `eu-central-1`).
-* `<RoleARN>`: Your IAM role's ARN (for example, `arn:aws:iam::123456789012:role/MyRole`).
-* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph) [v4.2.1].
+* `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://` (for example, `http://192.168.99.1:8080` for Ceph).
 
-`s3_region` allows you to explicitly set the S3 bucket region. If `s3_region` is not set, the default region is `us-east-1`.
-If your S3 bucket is in a different region, set `s3_region` to match the bucket region. Otherwise, requests to the bucket may fail [v4.2.3].
 
 [NOTE]
 ====
 * These settings apply only to your session.
 * Session parameters override gadmin settings.
-* For S3-compatible systems, you must set `s3_endpoint`[v4.2.1].
+* For S3-compatible systems, you must set `s3_endpoint` [v4.1.4].
 ====
 
 == Use RESTPP Headers (API Calls)

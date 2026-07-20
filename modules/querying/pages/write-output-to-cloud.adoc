@@ -87,23 +87,11 @@ curl -X GET \
   -H "GSQL-S3Endpoint: http://<your-s3-host>" \
   'http://<tigergraph-host>:14240/restpp/query/<graph-name>/<query-name>?param=<s3-path>'
 ----
-+
-or
 
-+
-[source,bash]
-----
-curl -X GET \
-  -H "GSQL-S3AssumeRole: <RoleARN>" \
-  -H "GSQL-S3Region: <region>" \
-  -H "GSQL-S3Endpoint: http://<your-s3-host>" \
-  'http://<tigergraph-host>:14240/restpp/query/<graph-name>/<query-name>?param=<s3-path>'
-----
 . Replace the placeholders:
 * `<your-access-key-id>`: Your S3 access key.
 * `<your-secret-access-key>`: Your S3 secret key.
 * `<region>`: Your S3 bucket's AWS region (for example, `us-west-2`).
-* `<RoleARN>`: Your IAM role's ARN (for example, `arn:aws:iam::123456789012:role/MyRole`).
 * `<your-s3-host>`: Your S3-compatible server URL, including `http://` or `https://`.
 * `<tigergraph-host>`: Your TigerGraph server address (for example, `10.244.106.233`).
 * `<graph-name>`: Your graph name (for example, `ldbc_snb`).
@@ -137,25 +125,12 @@ gsql -g <graph-name> "set query_timeout=7200000
                       set s3_endpoint = \"http://<your-s3-host>\"
                       run query <query-name>(\"s3://<bucket-name>/<file-path>\")"
 ----
-+
-or
-
-+
-[source,bash]
-----
-gsql -g <graph-name> "set query_timeout=7200000
-                      set s3_assume_role=\"<RoleARN>\";
-                      set s3_region = \"<region>\"
-                      set s3_endpoint = \"http://<your-s3-host>\"
-                      run query <query-name>(\"s3://<bucket-name>/<file-path>\")"
-----
 
 . Replace the placeholders:
 * `<graph-name>`: Your graph (for example, `ldbc_snb`).
 * `<your-access-key-id>`: Your S3 access key.
 * `<your-secret-access-key>`: Your S3 secret key.
 * `<region>`: Your S3 bucket's AWS region (for example, `us-west-2`).
-* `<RoleARN>`: Your IAM role's ARN (for example, `arn:aws:iam::123456789012:role/MyRole`).
 * `<your-s3-host>`: Your S3-compatible server URL (for example, `http://192.168.99.1:8080`).
 * `<query-name>`: Your query (for example, `gsql_test`).
 * `<bucket-name>`: Your S3 bucket (for example, `my-test-bucket-1749720243`).

@@ -74,11 +74,13 @@ To understand where query execution time is spent, enable xref:querying:query-pr
 
 Query plan cache is primarily designed to improve the performance of interpreted queries.
 
-Installed queries are compiled into native code when you run the `INSTALL QUERY` command. The parsing, transformation, optimization, and query plan generation steps are performed once during installation. Subsequent executions use the compiled query directly, so these steps are not performed again.
+Installed queries are compiled into native code when you run the `INSTALL QUERY` command. The parsing, transformation, optimization, and query plan generation steps are performed once during installation. Subsequent executions use the compiled query directly, so these steps are not performed again. This makes installed queries well suited for stable, frequently executed workloads because they incur the compilation overhead only once.
 
-In contrast, interpreted queries are executed without an installation step. By default, each execution parses, transforms, optimizes, and generates a query plan before the query is executed. The query plan cache avoids repeating these steps by reusing a previously generated query plan for subsequent executions of the same interpreted query.
+In contrast, interpreted queries are executed without an installation step. Each execution parses, transforms, optimizes, and generates a query plan before the query is executed. The query plan cache avoids repeating these steps by reusing a previously generated query plan for subsequent executions of the same interpreted query.
 
-As a result, the query plan cache provides the greatest benefit for workloads that repeatedly execute the same interpreted query. It reduces the overhead of query interpretation while preserving the flexibility of running queries without installing them.
+As a result, the query plan cache significantly reduces the overhead of repeatedly executing interpreted queries while preserving the flexibility of running queries without installing them. This makes interpreted queries well suited for scenarios such as ad hoc analysis, dynamically generated GSQL, and workflows where installing every query variation is impractical.
+
+The choice between installed and interpreted queries involves a tradeoff between performance and flexibility. Installed queries require a one-time installation and provide the best execution performance for repeated use. Interpreted queries eliminate the installation step and allow queries to be executed immediately. By reducing the repeated query interpretation overhead, the query plan cache narrows the performance gap between repeated interpreted query executions and installed queries.
 
 == Query plan cache invalidation
 

@@ -8,7 +8,7 @@ To mitigate this overhead, TigerGraph caches the generated query plan in memory,
 == Query Normalization
 
 In many cases, users may frequently change constants in their queries. These changes would invalidate the cached query plan, making it necessary to re-interpret the query. 
-To avoid the reinterpretation, TigerGraph employs a process known as *query normalization*.
+To avoid reinterpreting the query, TigerGraph employs a process known as *query normalization*.
 
 Query normalization helps maintain the validity of the cached query plan even when constants in the query change. Here's how it works:
 
@@ -57,7 +57,7 @@ This allows the query plan to remain valid even if the values of these constants
 
 The query plan cache improves only the query interpretation phase by reusing a previously generated query plan. Specifically, it reduces the time required to parse, transform, optimize, and generate the query plan before the query is sent for execution.
 
-After the query plan is generated, the query execution continues through other TigerGraph components. The overall execution time of an interpreted query therefore depends on additional factors beyond the query plan cache, including:
+After the query plan is generated, query execution continues through other TigerGraph components. The overall execution time of an interpreted query therefore depends on additional factors beyond the query plan cache, including:
 
 * Request queuing in RESTPP or GPE.
 * Inter-node communication in a multi-node cluster.
@@ -69,6 +69,16 @@ As a result, subsequent executions of the same interpreted query are not guarant
 To accurately evaluate the effect of the query plan cache, compare executions of the same interpreted query using the same parameter values. Although query normalization allows different parameter values to reuse the cached query plan, different parameter values may cause the query to process different amounts of data, resulting in different execution times.
 
 To understand where query execution time is spent, enable xref:querying:query-profiling.adoc[Query Profiling] to view detailed execution metrics.
+
+== Why query plan cache primarily benefits interpreted queries
+
+Query plan cache is primarily designed to improve the performance of interpreted queries.
+
+Installed queries are compiled into native code when you run the `INSTALL QUERY` command. The parsing, transformation, optimization, and query plan generation steps are performed once during installation. Subsequent executions use the compiled query directly, so these steps are not performed again.
+
+In contrast, interpreted queries are executed without an installation step. By default, each execution parses, transforms, optimizes, and generates a query plan before the query is executed. The query plan cache avoids repeating these steps by reusing a previously generated query plan for subsequent executions of the same interpreted query.
+
+As a result, the query plan cache provides the greatest benefit for workloads that repeatedly execute the same interpreted query. It reduces the overhead of query interpretation while preserving the flexibility of running queries without installing them.
 
 == Query plan cache invalidation
 

@@ -55,20 +55,20 @@ This allows the query plan to remain valid even if the values of these constants
 
 == Performance considerations
 
-The query plan cache improves only the query interpretation phase by reusing a previously generated query plan. 
+The query plan cache improves only the query interpretation phase by reusing a previously generated query plan. Specifically, it reduces the time required to parse, transform, optimize, and generate the query plan before the query is sent for execution.
 
-While this reduces the overhead of parsing, normalizing, and generating a query plan, it does not guarantee that subsequent executions of the same interpreted query will complete faster than the first execution because the overall execution time depends on additional factors.
-
-The overall execution time of an interpreted query also depends on factors such as:
+After the query plan is generated, the query execution continues through other TigerGraph components. The overall execution time of an interpreted query therefore depends on additional factors beyond the query plan cache, including:
 
 * Request queuing in RESTPP or GPE.
 * Inter-node communication in a multi-node cluster.
-* The amount of data processed by the query.
+* The amount of data processed by the query during execution.
 * Post-processing of the query result before it is returned.
 
-To accurately evaluate the effect of the query plan cache, compare executions of the same interpreted query using the same parameter values. Different parameter values may cause the query to process different amounts of data, resulting in different execution times.
+As a result, subsequent executions of the same interpreted query are not guaranteed to complete faster than the first execution, even when the query plan is reused.
 
-To understand how query execution time is distributed across different phases, enable xref:querying:query-profiling.adoc[Query Profiling] to view detailed execution metrics.
+To accurately evaluate the effect of the query plan cache, compare executions of the same interpreted query using the same parameter values. Although query normalization allows different parameter values to reuse the cached query plan, different parameter values may cause the query to process different amounts of data, resulting in different execution times.
+
+To understand where query execution time is spent, enable xref:querying:query-profiling.adoc[Query Profiling] to view detailed execution metrics.
 
 == Query plan cache invalidation
 

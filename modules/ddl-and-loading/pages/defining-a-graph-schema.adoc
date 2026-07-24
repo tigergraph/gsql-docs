@@ -333,7 +333,10 @@ A `CREATE EDGE` statement must specify at least one pair of source and target ve
 In GSQL, they are often referred to as `FROM` vertex and `TO` vertex, respectively, to reflect the keywords used to define the edge type.
 
 By default, only one instance of an edge type is allowed between two vertices.
-You can add a discriminator to the edge type definition to allow for multiple instances of one edge type between two vertices.
+
+Some graph models require multiple edges of the same type between the same pair of vertices. These are known as *multi-edges*. For example, a person may attend the same university multiple times to earn different degrees, or a customer may place multiple orders with the same merchant.
+
+To create multi-edges, define a `DISCRIMINATOR` in the edge type. See xref:#discriminator[DISCRIMINATOR] for the syntax and implementation details.
 
 
 [tabs]
@@ -372,16 +375,6 @@ For example:
 ----
 CREATE DIRECTED EDGE Member_Of (FROM Person, TO Org | FROM Org, TO Org, joined DATETIME)
 ----
-
-=== Multi-edges
-
-By default, an edge type allows only one edge of a given type between the same source and target vertices. This is suitable for relationships where only a single connection is required between two vertices.
-
-Some graph models require multiple edges of the same type between the same pair of vertices. For example, a person may study at the same university during different academic years. Each `Study_At` relationship represents a distinct edge between the same source and target vertices.
-
-Multiple edges between the same pair of vertices can be defined by specifying a `DISCRIMINATOR` in the edge type definition. The discriminator uniquely identifies each edge instance while allowing multiple edges of the same type to exist between the same source and target vertices.
-
-For information on defining discriminators, see xref:#discriminator[DISCRIMINATOR].
 
 === `DISCRIMINATOR`
 A discriminator is an attribute or a set of attributes that can be used to uniquely identify an edge.

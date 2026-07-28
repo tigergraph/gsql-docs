@@ -338,7 +338,9 @@ A `CREATE EDGE` statement must specify at least one pair of source and target ve
 In GSQL, they are often referred to as `FROM` vertex and `TO` vertex, respectively, to reflect the keywords used to define the edge type.
 
 By default, only one instance of an edge type is allowed between two vertices.
-You can add a discriminator to the edge type definition to allow for multiple instances of one edge type between two vertices.
+Some graph models require multiple edges of the same type between the same pair of vertices. These are known as *multi-edges*. For example, a person may attend the same university multiple times to earn different degrees, or a customer may place multiple orders with the same merchant.
+
+To create multi-edges, define a `DISCRIMINATOR` in the edge type. See xref:#discriminator[DISCRIMINATOR] for the syntax and implementation details.
 
 
 [tabs]

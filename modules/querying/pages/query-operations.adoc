@@ -1125,6 +1125,17 @@ You can also use the `-PROFILE` option with the `-async` option to run the query
 This is useful for long-running queries where you need to monitor the execution while the query is still running. 
 Once the query is submitted, you can use the `/query_status` API to get profiling data for that query.
 
+==== Gzip compression 
+
+Use the `-gzip` option with `RUN QUERY` to request a gzip-compressed response. Use the `-o` option to specify the output file path.
+
+[source,gsql]
+----
+RUN QUERY <queryName> -gzip -o "/path/to/zip.gz"
+----
+
+NOTE: This option only works for installed queries. See xref:tigergraph-server:API:index.adoc#_response_size[Response size] for details on when compression is applied.
+
 == GSQL Query output format
 
 The standard output of GSQL queries is in industry-standard JSON format. A JSON *object* is an unordered set of *key-value pairs*, enclosed in curly braces. Among the acceptable data types for a JSON *value* are *array* and *object*. A JSON *array* is an ordered list of *values*, enclosed in square brackets. Since values can be objects or arrays, JSON supports hierarchical, nested structures. Strings are enclosed in double quotation marks. We also use the term *field* to refer to a key (or a key-value pair) of a given object.

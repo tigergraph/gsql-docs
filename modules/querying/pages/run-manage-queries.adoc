@@ -1,29 +1,23 @@
-= Create and Run Queries
-:description: Commands in the GSQL query language associated with query operations.
-:page-aliases: run-queries.adoc
+= Run and Manage Queries
+:navtitle: RUN/MANAGE QUERY
+:description: Commands in the GSQL query language for interpreting, running, and managing queries.
+:page-aliases: run-queries.adoc, query-operations.adoc
 :pp: {plus}{plus}
+:toc:
+
+This page covers the *execution phase* of the query lifecycle: interpreting, running, and managing GSQL queries.
+
+To define, compile, and install queries during the *build phase*, see xref:create-and-install-queries.adoc[Create and Install Queries].
+
+This page also explains how to manage descriptions for queries and query parameters, including how to update, view, and remove them.
 
 
-A GSQL query is a sequence of data retrieval and computation statements executed as a single operation.
-Users can write queries to explore and manipulate data in the graph, perform computations, update the graph, and retrieve results.
-A query functions similarly to a user-defined procedure or function, accepting one or more input parameters and producing output by either returning values or printing results.
-In addition to querying the graph, you can also manage descriptions for your queries and query parameters. This includes updating, viewing, and removing descriptions, which can help document and clarify the purpose of your queries.
-
-
-.EBNF for `CREATE QUERY`
+.EBNF for query execution and management
 [source,ebnf]
 ----
-createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
-               "(" [parameterList] ")"
-               [FOR GRAPH graphName]
-               [RETURNS "("  baseType | accumType ")"]
-               [API "(" stringLiteral ")"]
-               [SYNTAX syntaxName]
-               "{" queryBody "}"
-
 interpretAnonymousQuery := INTERPRET QUERY
                [-QUEUE workload_query_name]
-               "(" ")"	       
+               "(" ")"
                [FOR GRAPH graphName]
                [SYNTAX syntaxName]
                "{" queryBody "}"
@@ -33,25 +27,18 @@ parameterValue := parameterConstant
                 | "[" parameterValue ["," parameterValue]* "]"  // BAG or SET
                 | "(" stringLiteral "," stringLiteral ")"        // generic VERTEX value
 parameterConstant := numeric | stringLiteral | TRUE | FALSE
-parameterDeclaration := parameterType paramName ["=" constant]
-parameterList := parameterDeclaration ["," parameterDeclaration]*
 
-syntaxName := name
-
-queryBody := [typedefs] [declStmts] [declExceptStmts] queryBodyStmts
-typedefs := (typedef ";")+
-declStmts := (declStmt ";")+
-declStmt := baseDeclStmt | accumDeclStmt | fileDeclStmt
-declExceptStmts := (declExceptStmt ";")+
-queryBodyStmts := (queryBodyStmt ";")+
-
-installQuery := INSTALL QUERY [installOptions] ( "*" | ALL |queryName ["," queryName]* )
 runOrInterpretNamedQuery := (RUN | INTERPRET) QUERY [runOptions] queryName "(" parameterValueList | parameterValueJSON ")"
     ["-mode" ("legacy" | "instruction" | "debug")]
 
 showQuery := SHOW QUERY queryName
 dropQuery := DROP QUERY ( "*" | ALL | queryName ["," queryName]* )
 ----
+
+[NOTE]
+====
+For the `createQuery` and `installQuery` EBNF, see xref:create-and-install-queries.adoc[Create and Install Queries].
+====
 
 .EBNF for `DESCRIPTION OF QUERY`
 [source,ebnf]
@@ -86,495 +73,20 @@ Alternately, there is also a built-in REST{pp} endpoint to interpret a query str
 `POST /gsqlserver/interpreted_query` +
 See the xref:{page-component-version}@tigergraph-server:API:index.adoc[RESTPP API User Guide] for details.
 . Define a named query and then run it.
-.. `CREATE QUERY`: define the functionality of the query
+.. xref:create-and-install-queries.adoc#_create_query[`CREATE QUERY`]: define the functionality of the query
 .. `INTERPRET QUERY`: execute the query with input values
 . Define a named query, compile it to optimize performance, and then run it.
-.. `CREATE QUERY`: define the functionality of the query
-.. `INSTALL QUERY`: compile the query
+.. xref:create-and-install-queries.adoc#_create_query[`CREATE QUERY`]: define the functionality of the query
+.. xref:create-and-install-queries.adoc#_install_query[`INSTALL QUERY`]: compile the query
 .. `RUN QUERY`: execute the query with input values
 
 There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
-[#_create_query]
-== `CREATE QUERY`
-
-Required privilege:
-CREATE_QUERY or UPDATE_QUERY
-
-If create or replace a query that does not exist, only require `CREATE_QUERY` privilege.
-If create or replace an existing query, only require `UPDATE_QUERY` privilege.
-
-[source,ebnf]
-----
-createQuery := CREATE [OR REPLACE] [DISTRIBUTED] QUERY queryName
-               "(" [parameterList] ")"
-               [FOR GRAPH graphName]
-               [RETURNS "("  baseType | accumType ")"]
-               [API ( v2 )]
-               [SYNTAX syntaxName]
-               "{" queryBody "}"
-
-queryBody := [typedefs] [declExceptStmts] queryBodyStmts
-----
-
-`CREATE QUERY` defines the functionality of a query on a given graph schema.
-
-A query has a name, a parameter list, the name of the graph being queried, an optional `RETURNS` type (see Section "xref:querying:output-statements-and-file-objects.adoc#_return_statement[`RETURN` Statement]" for more details), optional specifiers for the output API and the language syntax version, and a body.
-The body consists of an optional sequence of `typedefs`, followed by an optional sequence of declarations, then followed by one or more statements.
-The body defines the behavior of the query.
-
-=== Parameters
-
-`OR REPLACE`::
-
-If the optional keywords `OR REPLACE` are included, then this query definition, if error-free, replaces a previous definition with the same query name.
-If the original query was installed, you'll need to reinstall the new query.
-+
-However, if there are any errors in this query definition, then the previous query definition is maintained.
-If the `OR REPLACE` option is not used, GSQL rejects a `CREATE QUERY` command that uses an existing name.
-`DISTRIBUTED`::
-The `DISTRIBUTED` option applies only to installations where the graph has been distributed across a cluster.
-If specified, the query will run with a different execution model which may give better performance for queries that traverse a large portion of the cluster.
-For details, see xref:distributed-query-mode.adoc[Distributed Query Mode.]
-
-`queryName`:: Name of the query.
-
-`parameterList`:: A comma-separated list of parameters for the query.
-Each parameter declaration gives the parameter type, the parameter name, and optionally, the default value of the parameter.
-+
-[source,ebnf]
-----
-parameterDeclaration := parameterType paramName ["=" constant]
-parameterList := parameterDeclaration ["," parameterDeclaration]*
-----
-For a list of allowed data types for query parameters, see xref:data-types.adoc#_query_parameter_types[Query parameter types].
-
-`FOR GRAPH graphName`:: Specifies the graph that the query is created on.
-This clause is optional if you have already specified a working graph either when entering GSQL or through the `USE GRAPH` command.
-
-`RETURNS` clause::
-The optional `RETURNS` clause makes the query a subquery and specifies the data type to be returned in  the `RETURN` statement of the subquery.
-For more information, see xref:operators-and-expressions.adoc#_subqueries[Subqueries].
-
-`API v2`:: Specifies the JSON output format.
-The only option is v2.
-
-`SYNTAX syntaxName`:: Specifies the GSQL syntax version to be used by the query.
-See the
-xref:querying:syntax-versions.adoc[] for an outline of the differences.
-See
-xref:tutorials:pattern-matching/index.adoc[Pattern Matching tutorial] for
-details on v2.
-
-`queryBody`::
-The query body contains a sequence of data retrieval-and-computation statements.
-+
-Typedefs allow the definition of custom types for use within the body.
-The declarations support the definition of _accumulators_ (see Chapter "xref:accumulators.adoc[Accumulators]" for more details) and global/local variables.
-All accumulators and global variables must be declared before any statements.There are various types of statements that can be used within the body.
-+
-Typically, the core statement(s) in the body of a query is one or more `SELECT`, `UPDATE`, `INSERT`, `DELETE` statements.
-The language supports conditional statements such as an `IF` statement as well as looping constructs such as `WHILE` and `FOREACH`.
-It also supports calling functions, assigning variables, printing, and modifying the graph data.
-+
-The query body may include calls to other queries. That is, the other queries are treated as subquery functions.
-See the subsection on "xref:querying:operators-and-expressions.adoc#_subqueries[subqueries]".
-+
-Additionally, GSQL supports openCypher syntax in the query body. See pages xref:openCypher-in-gsql:index.adoc[], xref:openCypher-in-gsql:openCypher-in-gsql-web-shell.adoc[], and xref:openCypher-in-gsql:openCypher-gsql-from-clause-extension.adoc[] to learn more about openCypher and for examples.
-
-=== Examples
-
-.Example of a `CREATE QUERY` statement
-[source.wrap,gsql]
-----
-include::appendix:example$social_net/query_operations_example_create_query.gsql[]
-----
-
-=== Default query parameter values
-
-You can specify default values for parameters of primitive types when creating a query. Primitive types include:
-
-* `INT`
-* `UINT`
-* `FLOAT`
-* `DOUBLE`
-* `STRING`
-* `BOOL`
-* `DATETIME`
-
-To specify the default value for a parameter, use the assignment operator (`=`) after the parameter name and specify the default value:
-
-.Example of a `CREATE QUERY` command with a default parameter value
-[source.wrap,gsql]
-----
-include::appendix:example$social_net/query_operations_example_create_query_defaults.gsql[]
-----
-
-To specify the default value of a `DATETIME` type parameter, use the `to_datetime()` function.
-You cannot use other functions that return a `DATETIME` value to specify the default value.
-For example, the following query definition sets the default value of `d1` to `2023-01-01 00:00:00`.
-
-[.wrap,gsql]
-----
-CREATE QUERY print_default(DATETIME d1 = to_datetime("2023-01-01 00:00:00")) {
-    PRINT d1;
-}
-----
-
-
-
-[#_dynamic_querying]
-=== Dynamic querying
-
-TigerGraph 3.0+ supports Dynamic Querying.
-This means the query can be written and installed as a saved procedure without referencing a particular graph.
-Schema details -- the name of the graph, vertex types, edge types, and attributes -- can all be parameterized and only need to be specified at run time.
-
-Here are the ingredients for a dynamic query:
-
-* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already.
-The graph name can be specified either when entering GSQL: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
-* *Vertex type and edge type in `SELECT` statements*.
-Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
-String or string set parameters can be used for edge and target types instead.
-* *Attribute names*.
-The xref:querying:func/vertex-methods.adoc[`getAttr` and `setAttr` functions], which take attribute name and data type as string parameters, can be used to parameterize attribute access.
-* `INSERT` *statements*: If you are using xref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT`] to add data to your graph, you need to specify what type of vertex or edge you want to add.This can also be parameterized.
-
-The following example demonstrates Dynamic GSQL Query techniques using the xref:graph-ml:centrality-algorithms:pagerank.adoc[PageRank algorithm] from our Graph Data Science library.
-The query is written with schema information embedded statically in it:
-
-* graph name = social
-* vertex type = Page
-* edge type  = Link
-* vertex attribute = Score
-
-[tabs]
-====
-Embedded schema::
-+
---
-[source,gsql]
-----
-include::appendix:example$test-schema/query_operations_embedded_schema.gsql[]
-----
---
-Dynamic querying::
-+
---
-[source,gsql]
-----
-include::appendix:example$test-schema/query_operations_dynamic_querying.gsql[]
-----
---
-====
-
-
-[#_statement_types]
-=== Statement types
-
-A _statement_ is a standalone instruction that expresses an action to be carried out.
-The most common statements are _data manipulation language (DML) statements_.
-DML statements include the `SELECT`, `UPDATE`, `INSERT INTO`, `DELETE FROM`, and `DELETE` statements.
-
-A GSQL query has two levels of statements.
-The upper-level statement type is called _query-body-level statement_, or _*query-body statement*_ for short.
-This statement type is part of either the top-level block or a query-body control flow block.
-For example, each of the statements at the top level directly under `CREATE QUERY` is a query-body statement.
-If one of the statements is a `CASE` statement with several `THEN` blocks, each of the statements in the `THEN` blocks is also a query-body statement.
-Each query-body statement ends with a semicolon.
-
-The lower-level statement type is called _DML-sub-level statement_ or _DML-sub statement_ for short.
-This statement type is used inside certain query-body DML statements, to define particular data manipulation actions.DML-sub-statements are comma-separated.
-There is no comma or semicolon after the last DML-sub-statement in a block.
-For example, one of the top-level statements is a `SELECT` statement, each of the statements in its `ACCUM` clause is a DML-sub-statement.
-If one of those DML-sub-statements is a `CASE` statement, each of the statement in the `THEN` blocks is a DML-sub-statement.
-
-There is some overlap in the types.
-For example, an assignment statement can be used either at the query-body level or the DML-sub-level.
-
-[source,ebnf]
-----
-queryBodyStmts := (queryBodyStmt ";")+
-
-queryBodyStmt := assignStmt           // Assignment
-               | vSetVarDeclStmt      // Declaration
-               | gAccumAssignStmt     // Assignment
-               | gAccumAccumStmt      // Assignment
-               | lAccumAccumStmt      // Assignment
-               | funcCallStmt         // Function Call
-               | selectStmt           // Select
-               | queryBodyCaseStmt    // Control Flow
-               | queryBodyIfStmt      // Control Flow
-               | queryBodyWhileStmt   // Control Flow
-               | queryBodyForEachStmt // Control Flow
-               | BREAK                // Control Flow
-               | CONTINUE             // Control Flow
-               | updateStmt           // Data Modification
-               | insertStmt           // Data Modification
-               | queryBodyDeleteStmt  // Data Modification
-               | printStmt            // Output
-               | printlnStmt          // Output
-               | logStmt              // Output
-               | returnStmt           // Output
-               | raiseStmt            // Exception
-               | tryStmt              // Exception
-
-DMLSubStmtList := DMLSubStmt ["," DMLSubStmt]*
-
-DMLSubStmt := assignStmt           // Assignment
-            | funcCallStmt         // Function Call
-            | gAccumAccumStmt      // Assignment
-            | lAccumAccumStmt      // Assignment
-            | attrAccumStmt        // Assignment
-            | vAccumFuncCall       // Function Call
-            | localVarDeclStmt     // Declaration
-            | DMLSubCaseStmt       // Control Flow
-            | DMLSubIfStmt         // Control Flow
-            | DMLSubWhileStmt      // Control Flow
-            | DMLSubForEachStmt    // Control Flow
-            | BREAK                // Control Flow
-            | CONTINUE             // Control Flow
-            | insertStmt           // Data Modification
-            | DMLSubDeleteStmt     // Data Modification
-            | printlnStmt          // Output
-            | logStmt              // Output
-----
-
-Guidelines for understanding statement type hierarchy:
-
-* Top-level statements are Query-Body type (each statement ending with a semicolon).
-* The statements within a DML statement are DML-sub statements (comma-separated list).
-* The blocks within a Control Flow statement have the same type as the entire Control Flow statement itself.
-
-// Each statement's operation type is either ControlFlow, DML, or other.
-// Each statement's syntax type is either queryBodyStmt or DMLSubStmt.
-
-.Schematic illustration of relationship between queryBodyStmt and DMLSubStmt
-[source,gsql]
-----
-CREATE QUERY stmt_types (parameterList) FOR GRAPH g [
-	other queryBodyStmt1;
-	ControlFlow queryBodyStmt2   // ControlFlow inside top level.
-		other queryBodyStmt2.1;      // subStmts in ControlFlow are queryBody unless inside DML.
-		ControlFlow queryBodyStmt2.2 // ControlFlow inside ControlFlow inside top level
-			other queryBodyStmt2.2.1;
-			other queryBodyStmt2.2.2;
-		END;
-		DML queryBodyStmt2.3     // DML inside ControlFlow inside top-level
-			other DMLSubStmt2.3.1,   // switch to DMLSubStmt
-			other DMLSubStmt2.3.2
-		;
-	END;
-	DML queryBodyStmt3           // DML inside top level.
-		other DMLSubStmt3.1,      // All subStmts in DML must be DMLSubStmt type
-		ControlFlow DMLSubStmt3.2 // ControlFlow inside DML inside top level
-			other DMLSubStmt3.2.1,
-			other DMLSubStmt3.2.2
-		,
-		DML DMLsubStmt3.3
-			other DMLSubStmt3.3.1,
-			other DMLSubStmt3.3.2
-	;
-	other queryBodyStmt4;
-----
-
-Here is a descriptive list of query-body statements:
-
-|===
-| EBNF term | Common Name | Description
-
-| assignStmt
-| Assignment Statement
-| See "Declaration and Assignment Statements"
-
-| vSetVarDeclStmt
-| Vertex Set Variable Declaration Statement
-| See "Declaration and Assignment Statements"
-
-| gAccumAssignStmt
-| Global Accumulator Assignment Statement
-| See "Declaration and Assignment Statements"
-
-| gAccumAccumStmt
-| Global Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"
-
-| lAccumAccumStmt
-| Local Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"
-
-| funcCallStmt
-| Functional Call or Query Call Statement
-| See "Declaration and Assignment Statements"
-
-| selectStmt
-| SELECT Statement
-| See "SELECT Statement"
-
-| queryBodyCaseStmt
-| query-body CASE statement
-| See "Control Flow Statements"
-
-| queryBodyIfStmt
-| query-body IF statement
-| See "Control Flow Statements"
-
-| queryBodyWhileStmt
-| query-body WHILE statement
-| See "Control Flow Statements"
-
-| queryBodyForEachStmt
-| query-body FOREACH statement
-| See "Control Flow Statements"
-
-| updateStmt
-| UPDATE Statement
-| See "Data Modification Statements"
-
-| insertStmt
-| INSERT INTO statement
-| See "Data Modification Statements"
-
-| queryBodyDeleteStmt
-| Query-body DELETE Statement
-| See "Data Modification Statements"
-
-| printStmt
-| PRINT Statement
-| See "Output Statements"
-
-| logStmt
-| LOG Statement
-| See Output Statements"
-
-| returnStmt
-| RETURN Statement
-| See  "Output Statements"
-
-| raiseStmt
-| PRINT Statement
-| See  "Exception Statements"
-
-| tryStmt
-| TRY Statement
-| See "Exception Statements"
-|===
-
-Here is a descriptive list of DML-sub-statements:
-
-|===
-| EBNF term | Common Name | Description
-
-| assignStmt
-| Assignment Statement
-| See "Declaration and Assignment Statements"
-
-| funcCallStmt
-| Functional Call Statement
-| See  "Declaration and Assignment Statements"
-
-| gAccumAccumStmt
-| Global Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"
-
-| lAccumAccumStmt
-| Local Accumulator Accumulation Statement
-| See "Declaration and Assignment Statements"/
-
-| attrAccumStmt
-| Attribute Accumulation Statement
-| See "Declaration and Assignment Statements"
-
-| vAccumFuncCall
-| Vertex-attached Accumulator Function Call Statement
-| See "Declaration and Assignment Statements"
-
-| localVarDeclStmt
-| Local Variable Declaration Statement
-| See "SELECT Statement"
-
-| insertStmt
-| INSERT INTO Statement
-| See "Control Flow Statements"
-
-| DMLSubDeleteStmt
-| DML-sub DELETE Statement
-| See "Data Modification Statements"
-
-| DMLSubcaseStmt
-| DML-sub CASE statement
-| See "Data Modification Statements"
-
-| DMLSubIfStmt
-| DML-sub IF statement
-| See "Data Modification Statements"
-
-| DMLSubForEachStmt
-| DML-sub FOREACH statement
-| See "Data Modification Statements"
-
-| DMLSubWhileStmt
-| DML-sub WHILE statement
-| See "Data Modification Statements"
-
-| logStmt
-| LOG Statement
-| See "Output Statements"
-|===
-
-=== Draft queries
-
-GSQL internally has two statuses for queries, `DRAFT` and `VALID`.
-
-If your query passes the semantic checks upon running the `CREATE QUERY` command, it is saved automatically in `VALID` status.
-If not, along with the error statement, a message appears to indicate the draft status.
-
-In this example, the first query gets saved upon running `CREATE QUERY`, while the second one remains a draft.
-
-[source, gsql]
-----
-GSQL > CREATE QUERY valid_query(){   print 1; }
-Successfully created queries: [valid_query].
-
-
-GSQL > BEGIN
-GSQL > CREATE QUERY draft_query(){
-GSQL >   PRINT;
-GSQL >   PRINT "I am a draft"
-GSQL > }
-GSQL > END
-line 2:7 mismatched input ';' expecting {ABORT, AND, ANY, AVG, BY, COALESCE, COMMIT, COUNT, DATETIME_ADD, DATETIME_SUB, DISTINCT, FALSE, FILE, GROUP, INSERT, ISEMPTY, LASTHOP, LIST, LOG, MAP, MATCH, MAX, MIN, NOT, NOW, OR, PATH, PER, RANGE, REPLACE, SELECT_VERTEX, SET, SRC, SUM, TGT, TO_DATETIME, TRIM, TRUE, UPDATE, GSQL_INT_MAX, GSQL_INT_MIN, GSQL_UINT_MAX, '__ENGINE__E_ATTR', '__ENGINE__SRC_ATTR', '__ENGINE__TGT_ATTR', '__ENGINE__V_ATTR', '__ENGINE__SRC_VAL', '__ENGINE__TGT_VAL', '__ENGINE__V_VAL', '__ENGINE__MESSAGE', '__ENGINE__CONTEXT', '__ENGINE__REQUEST', '__ENGINE__SERVICEAPI', '(', '[', '-', '.', '_', CONST_INT, CONST_STR, NAME, GACCNAME}
-line 4:0 mismatched input '}' expecting {TO_CSV, WHERE, ',', ';'}
-Parsing encountered 2 syntax error(s)
-
-Saved as draft query with type/semantic error: [draft_query].
-----
-
-Because the query status is determined and saved internally, there are no commands for users to choose to save valid queries as `DRAFT` status.
-
-Queries are not saved as drafts in the following situations:
-
-* The user does not have the correct permissions to create a query.
-* An existing valid query has the same name, and there is no `REPLACE` command used while creating the new query.
-* An existing valid query is called by another query.
-** The new query will change its signature (parameters or return type).
-* A circular call is detected, where `queryA` calls `queryB and `queryB` calls `queryA`.
-** However, a recursive call (A calls A) is allowed.
-
-If a query is saved as a draft before it reaches valid status, any queries that call it are also set to draft status.
-
-[NOTE]
-====
-If a user creates a query, this user becomes the owner of this query automatically.
-
-For a detailed description, please refer to xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc[]
-====
-
-== `INTERPRET QUERY`
+[#_interpret_query]
+== INTERPRET QUERY
 
 `INTERPRET QUERY` runs a query by translating it line-by-line.
-This is in contrast to the 2-step flow to <<_install_query,install a query>> first and then <<_run_query,run the query>>.
+This is in contrast to the 2-step flow to xref:create-and-install-queries.adoc#_install_query[install a query] first and then <<_run_query,run the query>>.
 
 `INTERPRET QUERY` runs a query immediately but may take longer to finish than running an installed query.
 `INTERPRET QUERY` also has xref:appendix:interpreted-gsql-limitations.adoc[limitations] and does not support all GSQL query language features.
@@ -604,7 +116,7 @@ Required privilege: No specific query privilege required.
 This syntax is similar in concept to SQL queries.
 Queries are not named, do not accept parameters, and are not saved after being run.
 
-Compare the example below to the example in the `Create Query` section:
+Compare the example below to the `CREATE QUERY` example on xref:create-and-install-queries.adoc[Create and Install Queries]:
 
 * No query name, no parameters, no `RETURN` statement.
 * Because no parameter is allowed, the parameter `uid` is set within the query.
@@ -639,7 +151,7 @@ This syntax is similar to `RUN QUERY`, except:
 
 When you use `INTERPRET QUERY`, TigerGraph executes the query using an interpreted engine.
 
-Starting in 4.3.0, interpreted queries can run using one of two engines:
+Starting in 4.3, interpreted queries can run using one of two engines:
 
 * Instruction engine  
   A newer engine designed to improve performance.
@@ -704,132 +216,6 @@ You forced the instruction engine, but the query requires features supported onl
 The query mixes features that are exclusive to both engines.
 Install the query and run it with `RUN QUERY` instead of `INTERPRET QUERY`.
 
-
-[#_install_query]
-== `INSTALL QUERY`
-
-[source,ebnf]
-----
-installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryName]* )
-----
-
-Required privilege:
-INSTALL_QUERY
-
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
-
-Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
-The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
-
-If a query calls a xref:querying:operators-and-expressions.adoc#_subqueries[subquery], the query can only be installed after one of the following conditions is met:
-
-* The subquery has already been installed
-* The subquery is being installed in the same `INSTALL QUERY` command as the query itself
-
-If a subquery that was previously installed is dropped from the graph, all installed queries that call the subquery will be disabled. To re-enable a disabled query, all its subqueries need to be installed with the same parameters and return type.
-
-When a single `INSTALL QUERY` command installs multiple queries, each query is installed independently. If one query fails to be installed, it will not affect the installation of other queries.
-
-To install a query, the user needs to have the `INSTALL_QUERY` privilege on the given query and subqueries that need to be installed in order to install given query. If a subquery has already been installed, then the user is not required to have `INSTALL_QUERY` privilege on it.
-
-Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, using either of the following commands:
-
-* `INSTALL QUERY *`
-* `INSTALL QUERY ALL`
-
-[CAUTION]
-====
-Installing takes several seconds for each query. The current version does not support concurrent installation and running of queries. Other concurrent graph operations will be delayed until the installation finishes.
-
-Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
-====
-
-=== Options
-
-`INSTALL QUERY` offers the following options:
-
-[cols=",6", options="header"]
-|===
-
-|Option|Effect
-
-|`-COST`
-a|Install and optimize the query using xref:query-optimizer/index.adoc[cost-based optimization].
-The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
-You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
-
-[NOTE]
-====
-* This option can be used together with other options, but it must come after the other options.
-For example, you cannot run `INSTALL QUERY -COST -FORCE ALL`, it must be `INSTALL QUERY -FORCE -COST ALL`
-* This is a *Preview feature* and should not be used in production.
-====
-
-|`-FORCE`
-|Re-install the query even if the system indicates the
-query is already installed.
-This is useful for overwriting an installation that is corrupted or otherwise outdated.
-If this option is not used, the GSQL shell will refuse to re-install a query that is already installed.
-
-|`-SINGLE`
-a|Apply the same engine framework used for distributed queries, even on a single server. Equivalent to the `single_gpr` session parameter described at xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters].
-
-NOTE: This option treats the loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] as a copy.
-Updating the loop variable (copy) in the `FOREACH` block will not affect the actual loop variable.
-
-|===
-
-=== Optimize installed queries
-
-`INSTALL QUERY -OPTIMIZE`
-
-WARNING: This feature is deprecated and support for it will be dropped in a future version.
-
-Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.
-The names of the individual queries are not needed.
-This operation optimizes all previously installed queries, reducing their run times by about 20%.
-Optimize a query if query run time is more important to you than query installation time.
-
-=== log output
-The following logs are displayed when installing queries:
-
-* *Installation summary*: A summary line prints when installation
-  finishes, showing the total count of succeeded, skipped, and
-  failed queries.
-
-* *Failure report*: A report of all skipped or failed queries 
-  is generated after installation completes.
-
-* *Elapsed time*: The progress bar displays elapsed time during
-  installation.
-
-* *Estimated time*: The estimated completion time updates based on
-  the number of queries being installed.
-
-.Example
-[source,console]
-----
-Installing 6 queries in graph 'my_graph'.
-Start installing queries, about 1 minute ...
-
-Warning: These queries below in the graph 'my_graph' cannot be
-correctly installed: [query_with_error]
-For more information, please check log at node 'm1':
-  /home/tigergraph/tigergraph/gsql-checker-log/ERROR.20260327-120426.340
-
-[======================================================================] 100% (5/5) elapsed 0:34
-
-Query installation summary for graph 'my_graph':
-  succeeded: 5, skipped: 0, failed: 1.
-Query installation failure report written to
-  gsql-checker-log/FailedQueryReport/QUERY_INSTALLATION_REPORT.20260327-120517.json
-Query installation finished.
-----
-
-[NOTE]
-====
-These logs are also displayed when installing queries during a TigerGraph upgrade.
-====
 
 [#_run_query]
 == RUN QUERY

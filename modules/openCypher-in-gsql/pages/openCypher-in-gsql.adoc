@@ -256,6 +256,7 @@ All openCypher functions listed above can be used in GSQL mode, and all primitiv
 |CASE Expression |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
+////
 == openCypher Features Not Yet Supported
 === Clauses
 [cols="1,1]
@@ -342,6 +343,7 @@ WHERE x.friendCount = y.friendCount
 …
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
+////
 
 [#_key_differences_gsql_vs_opencypher]
 == OpenCypher vs. GSQL Schema Models

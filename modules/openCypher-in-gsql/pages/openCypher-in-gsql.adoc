@@ -205,6 +205,7 @@ See below for restrictions.
 |CASE Expression |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
+////
 == openCypher Features Not Yet Supported
 === Clauses
 [cols="1,1]
@@ -320,3 +321,4 @@ WHERE x.friendCount = y.friendCount
 …
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
+////

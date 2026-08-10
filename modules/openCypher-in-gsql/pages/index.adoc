@@ -242,6 +242,7 @@ See below for restrictions before version *4.1.2*.
 |CASE |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
+////
 == openCypher Features Not Yet Supported
 === Clauses
 [cols="1,3"]
@@ -341,6 +342,7 @@ WHERE x.friendCount = y.friendCount
 …
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
+////
 
 [#_key_differences_gsql_vs_opencypher]
 == OpenCypher vs. GSQL Schema Models

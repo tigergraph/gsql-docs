@@ -3,9 +3,32 @@
 :description: the CREATE QUERY and INSTALL QUERY commands in GSQL, key stages for developing optimized TigerGraph queries.
 :toc:
 
+== Query workflows
+
+GSQL provides three workflows for executing queries:
+
+[cols="1,2,2", options="header"]
+|===
+|Workflow |Description |Considerations
+
+|`CREATE QUERY` > `INSTALL QUERY` > `RUN QUERY`
+|Create and save a named query, install it to compile it, and then run the installed query.
+|Best for queries that are run repeatedly. Installation provides better execution performance than interpreting a query, but requires an additional installation step.
+
+|`CREATE QUERY` > `INTERPRET QUERY`
+|Create and save a named query, then execute it directly without installing it.
+|Useful when developing or testing a named query. The query does not need to be installed, but interpreted execution has limitations compared with installed queries.
+
+|`INTERPRET QUERY`
+|Define and execute an anonymous query directly without saving or installing it.
+|Useful for quick, one-off queries and experimentation. The query is not saved for later execution.
+|===
+
+The commands described on this page and the xref:run-manage-queries.adoc[Run and Manage Queries] page support one or more of these workflows.
+
 This page covers the *build phase* of the query lifecycle: defining, compiling, and installing GSQL queries.
 
-To interpret, run, and manage queries during the *execution phase*, see xref:run-manage-queries.adoc[Run and Manage Queries].
+To interpret, run, and manage queries during the *query use phase*, see xref:run-manage-queries.adoc[Run and Manage Queries].
 
 It describes the <<_create_query>> and <<_install_query>> commands used to prepare procedural queries for execution.
 
@@ -184,7 +207,8 @@ Schema details -- the name of the graph, vertex types, edge types, and attribute
 
 Here are the ingredients for a dynamic query:
 
-* *Graph name:* When <<_create_query,creating a query>>, *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already.
+* *Graph name:* When <<_create_query,creating a query>>, *`FOR GRAPH graphName`* is optional.
+Queries are usually written to fit a specific graph schema, so specifying `FOR GRAPH` is helpful for self-documentation.
 The graph name can be specified either when entering GSQL: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
 * *Vertex type and edge type in `SELECT` statements*.
 Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
@@ -535,7 +559,8 @@ installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," quer
 Required privilege:
 INSTALL_QUERY
 
-`INSTALL QUERY` installs a query or multiple queries on a graph.Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+`INSTALL QUERY` installs a query or multiple queries on a graph.
+Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
 
 Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
 The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
@@ -587,7 +612,7 @@ For example, you cannot run `INSTALL QUERY -COST -FORCE ALL`, it must be `INSTAL
 |`-FORCE`
 |Re-install the query even if the system indicates the
 query is already installed.
-This is useful for overwriting an installation that is corrupted or otherwise outdated.
+This is useful for overwriting an installation that is outdated or otherwise incorrect.
 If this option is not used, the GSQL shell will refuse to re-install a query that is already installed.
 
 |`-SINGLE`

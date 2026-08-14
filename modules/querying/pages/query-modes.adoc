@@ -26,7 +26,7 @@ GSQL is xref:index.adoc[TigerGraph's original native language].
 
 It supports graph traversal and pattern-matching queries using declarative syntax similar to SQL. It also extends SQL-style queries with procedural programming capabilities, enabling more advanced algorithmic queries. GSQL includes xref:querying:accumulators.adoc[accumulators] for efficient analytics and allows queries to be installed (precompiled) to optimize execution performance.
 
-GSQL is used not only for xref:querying:query-operations.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition], but also for data loading. The xref:ddl-and-loading:index.adoc[data loading language] lets you define stored procedures (jobs) that map and transform tabular data into graph structures.
+GSQL is used not only for xref:querying:run-manage-queries.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition], but also for data loading. The xref:ddl-and-loading:index.adoc[data loading language] lets you define stored procedures (jobs) that map and transform tabular data into graph structures.
 
 === OpenCypher
 
@@ -273,7 +273,7 @@ INTERPRET QUERY topMovies(1939, 10) -mode instruction
 INTERPRET QUERY topMovies(1939, 10) -mode legacy
 ----
 
-For full syntax details, see xref:querying:query-operations.adoc#_interpret_query[Interpret Query].
+For full syntax details, see xref:querying:run-manage-queries.adoc#_interpret_query[Interpret Query].
 
 == Cluster Execution (Installed Queries on Partitioned Graphs Only)
 

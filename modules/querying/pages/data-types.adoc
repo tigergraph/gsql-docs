@@ -591,7 +591,8 @@ A `FILE` object is a sequential data storage object, associated with a text file
 When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
 ====
 
-See xref:declaration-and-assignment-statements.adoc#_file_objects[FILE Object Declaration] to declare a `FILE` object.
+A `FILE` object can also point to cloud storage instead of a local file, e.g. `FILE f ("s3://bucket-name/queryoutput/output.csv");`.
+See xref:declaration-and-assignment-statements.adoc#_file_objects[FILE Object Declaration] for more details.
 
 === Local disk file
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased.

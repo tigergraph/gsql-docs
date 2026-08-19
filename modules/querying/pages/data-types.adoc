@@ -588,7 +588,7 @@ A `FILE` object is a sequential data storage object, associated with a text file
 
 [NOTE]
 ====
-When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
+When referring to a `FILE` object, this documentation capitalizes the word `FILE` to distinguish it from ordinary files.
 ====
 
 A `FILE` object can also point to cloud storage instead of a local file, e.g. `FILE f ("s3://bucket-name/queryoutput/output.csv");`.

@@ -433,12 +433,11 @@ GSQL > RUN QUERY print_example_v2("person1")
 }
 ----
 
-
-
 === Printing CSV to a FILE Object
 
 Instead of printing output in JSON format, output can be written to a `FILE` object in comma-separated values (CSV) format by appending the keyword `TO_CSV` followed by the `FILE` object name to the `PRINT` statement:
-The FILE object can be a local file or a S3 bucket storage object, allowing flexibility in how and where the output is stored.
+The FILE object can be a local file or a S3 bucket storage object, allowing flexibility in how and where the output is stored. See xref:declaration-and-assignment-statements.adoc#_file_objects[FILE Object Declaration] to declare a `FILE` object.
+For details on writing output to S3 or S3-compatible storage, see xref:write-output-to-cloud.adoc[Write Output to Cloud].
 
 [source,gsql]
 ----

@@ -173,5 +173,6 @@ These unique names ensure no conflicts across nodes.
 
 * *“Cannot determine target” error*: You didn’t set `s3_endpoint` for an S3-compatible system. Add it in session parameters or RESTPP headers.
 * *Connection fails on Ceph, MinIO, or Wasabi*: Verify the endpoint URL includes `http://` or `https://`. Check your bucket permissions and credentials.
+* *S3 bucket connection error*: If the query fails to connect to the S3 bucket, refer to error code `GSQL-5301`.
 * *Region-related errors*: The system infers the region from the endpoint, so no separate region setting is needed. If errors persist, confirm the endpoint is correct.
 * *Backup vs. query output*: Backup features support more S3 options, like endpoint. If queries fail, test your bucket with a backup to validate settings.

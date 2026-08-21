@@ -122,3 +122,4 @@ These unique file names help ensure that no conflicts occur when multiple nodes 
 
 * *“Cannot determine target” error*: You didn’t set `s3_endpoint` for an S3-compatible system. Add it in session parameters or RESTPP headers.
 * *Connection fails on Ceph, MinIO, or Wasabi*: Verify the endpoint URL includes `http://` or `https://`. Check your bucket permissions and credentials.
+* *S3 bucket connection error*: If the query fails to connect to the S3 bucket, refer to error code `GSQL-5301`.

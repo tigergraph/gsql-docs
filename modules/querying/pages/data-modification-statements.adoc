@@ -285,7 +285,11 @@ will produce the following result:
 == `INSERT INTO` Statement
 
 The `INSERT INTO` statement adds edges or vertices to the graph.
-When the ID value(s) for the inserted vertex/edge match those of an existing vertex/edge, the new values will overwrite the old values.
+When the ID value(s) of the inserted vertex or edge match an existing one, the new value(s) are updated depending on the attribute type:
+
+* **Primitive attributes** — The new value will overwrite the old value.
+* **Collection attributes (`LIST`, `SET`, `MAP`)** — the new value(s)  are appended to the old value. This behavior is similar to xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_a_list_or_set_attribute[cumulative loading for collection attributes].
+
 To insert an edge, its endpoint vertices must already exist, either before running the query or inserted earlier in that query.
 The `INSERT INTO` statement can be used as a query-body-level statement or a DML-sub statement.
 
@@ -294,7 +298,7 @@ Like any other data modification in a query, the insertion does not take effect 
 [source,ebnf]
 ----
 insertStmt := insertVertexStmt | insertEdgeStmt
-insertVertexStmt := INSERT INTO (vertexType | name)
+insertVertexStmt := INSERT INTO vertexType
                  ["(" PRIMARY_ID ["," attrName]* ")"]
                  VALUES "(" ( "_" | expr ) ["," ("_" | expr)]*] ")"
 insertEdgeStmt   := INSERT INTO (edgeType | EDGE name)
@@ -510,6 +514,9 @@ The optional `WHERE` clause supports boolean conditions to filter the items in t
 
 [discrete]
 === Examples
+
+When updating collection-type attributes, note the syntax differences:
+use `[]` for list-type, `()` for set-type, and `->` for map-type attributes.
 
 .`UPDATE` statement example
 [source.wrap,gsql]

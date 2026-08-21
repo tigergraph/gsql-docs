@@ -988,7 +988,51 @@ include::appendix:example$work_net/accum_vertex_listaccum_results.json[]
 ----
 --
 ====
+[tabs]
+====
+Query::
++
+--
+.Example for `get()` returning by reference
+[source,gsql]
+----
+include::appendix:example$minimal_net/accum_update_get_reference.gsql[]
+----
+--
 
+Results::
++
+--
+[source,json]
+----
+GSQL > RUN QUERY update_get_reference()
+include::appendix:example$minimal_net/accum_update_get_reference_results.json[]
+----
+--
+====
+
+[tabs]
+====
+Query::
++
+--
+.Example for `get()` returning a value copy via assignment
+[source,gsql]
+----
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy.gsql[]
+----
+--
+
+Results::
++
+--
+[source,json]
+----
+GSQL > RUN QUERY get_side_effects_2()
+include::appendix:example$minimal_net/accum_listaccum_get_value_copy_results.json[]
+----
+--
+====
 
 [#_setaccum]
 === SetAccum
@@ -1278,6 +1322,42 @@ GSQL > RUN QUERY map_accum_ex()
 include::appendix:example$minimal_net/accum_mapaccum_results.gsql[]
 ----
 --
+====
+
+==== Traversing a MapAccum
+
+MapAccum key-value pairs can be iterated using the following syntax:
+
+[source,gsql]
+----
+FOREACH (key, value) IN mapAccum DO
+  ...
+END;
+----
+
+The following query demonstrates how to traverse a MapAccum using a query-body FOREACH statement and a POST-ACCUM FOREACH statement.
+
+[tabs]
+====
+Query::
++
+--
+.MapAccum Traversal Example
+[source,gsql]
+----
+include::appendix:example$work_net/mapaccum_traverse.gsql[]
+----
+--
+
+Results::
++
+--
+[source,gsql]
+----
+GSQL > RUN QUERY mapaccum_traverse()
+include::appendix:example$minimal_net/mapaccum_traverse_results.gsql[]
+----
+----
 ====
 
 

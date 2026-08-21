@@ -21,6 +21,8 @@ From version 4.1.2, certain restrictions on the `MATCH` and `WITH` clauses have 
 |===
 |Clause |Description
 
+|CREATE |Writing create nodes and relationships. Partially supported. See the note below for limitations.
+
 |DELETE |Delete graph elements — nodes and relationships.
 
 Any node to be deleted must also have all associated relationships explicitly deleted.
@@ -39,13 +41,23 @@ See below for restrictions before version *4.1.2*.
 
 |OPTIONAL MATCH |Reading Specify the patterns to search for in the database while using nulls for missing parts of the pattern.
 
-|ORDER BY [ASC[ENDING] DESC[ENDING]] |Reading sub-clause A sub-clause following
+|ORDER BY [ASC[ENDING] DESC[ENDING]] |Reading sub-clause A sub-clause following.
+
+|REMOVE |Writing Remove properties and labels from nodes and relationships. Partially supported. See the note below for limitations.
 
 |RETURN or WITH |Specifying that the output should be sorted in either ascending (the default) or descending order.
 
 |RETURN … [AS] |Projecting Defines what to include in the query result set.
 
+|SET |Writing Update labels on nodes and properties on nodes and relationships. Partially supported. See the note below for limitations.
+
 |SKIP |Reading/Writing A sub-clause defining from which record to start including the records in the output.
+
+|UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
+
+|UNION ALL |Set operations Combines the result of multiple queries. Duplicates are retained.
+
+|UNWIND … [AS] |Projecting Expands a list into a sequence of records.
 
 |WHERE |Reading sub-clause A sub-clause used to add constraints to the patterns in a MATCH clause, or to filter the results of a WITH clause.
 
@@ -138,6 +150,8 @@ See below for restrictions before version *4.1.2*.
 
 |coalesce() |Scalar |Returns the first non-null value in a list of expressions.
 
+|collect() |List |Returns a list containing the values returned by an expression.
+
 |cos() |Numeric | Returns the cosine of a number.
 
 |cot() |Numeric | Returns the cotangent of a number.
@@ -149,6 +163,8 @@ See below for restrictions before version *4.1.2*.
 |e() |Numeric | Returns the base of the natural logarithm, e.
 
 |elementId() |Scalar |Returns the String id of a relationship or node.
+
+|endNode() |Scalar |Returns the end node of a relationship. Partially supported. See the note below for limitations.
 
 |exp() |Numeric | Returns e^n, where e is the base of the natural logarithm, and n is the value of the argument expression.
 
@@ -203,6 +219,8 @@ See below for restrictions before version *4.1.2*.
 
 |sqrt() |Numeric | Returns the square root of a number.
 
+|startNode() |Scalar |Returns the start node of a relationship. Partially supported. See the note below for limitations.
+
 |stDev() |Numeric | Returns the standard deviation for the given value over a group for a sample of a population.
 
 |stDevP() |Numeric | Returns the standard deviation for the given value over a group for an entire population
@@ -234,6 +252,17 @@ See below for restrictions before version *4.1.2*.
 |type() |Scalar |Returns the string representation of the relationship type.
 |===
 
+[NOTE]
+====
+CREATE, REMOVE, SET, startNode(), and endNode() are partially supported.
+These features are supported only in single-block queries and are not supported in queries that involve tables.
+====
+
+[NOTE]
+====
+All openCypher functions listed above can be used in GSQL mode, and all primitive GSQL functions can be used in OpenCypher mode.
+====
+
 === Expressions
 [cols="1,3"]
 |===
@@ -242,6 +271,7 @@ See below for restrictions before version *4.1.2*.
 |CASE |A generic conditional expression, similar to if/else statements available in other languages.
 |===
 
+////
 == openCypher Features Not Yet Supported
 === Clauses
 [cols="1,3"]
@@ -250,19 +280,7 @@ See below for restrictions before version *4.1.2*.
 
 |CALL […YIELD] |Reading/Writing Invoke a procedure deployed in the database.
 
-|CREATE |Writing create nodes and relationships.
-
 |MERGE |Reading/Writing Ensures that a pattern exists in the graph. Either the pattern already exists, or it needs to be created.
-
-|REMOVE |Writing Remove properties and labels from nodes and relationships.
-
-|SET |Writing Update labels on nodes and properties on nodes and relationships.
-
-|UNION |Set operations Combines the result of multiple queries. Duplicates are removed.
-
-|UNION ALL |Set operations Combines the result of multiple queries. Duplicates are retained.
-
-|UNWIND … [AS] |Projecting Expands a list into a sequence of records.
 |===
 
 === Operators
@@ -273,10 +291,6 @@ N/A
 [%autowidth]
 |===
 | Function | Value Type | Description
-
-|collect() |Numeric | Returns a list containing the values returned by an expression.
-
-|endNode() |Scalar |Returns the end node of a relationship.
 
 |exists() |Boolean | Returns true if a match for the pattern exists in the graph, or if the specified property exists in the node, relationship or map.
 
@@ -299,8 +313,6 @@ N/A
 |size() of a pattern expression |Numeric | Returns the number of subgraphs matching the pattern expression.
 
 |size() of a string |Numeric | Returns the size of a string.
-
-|startNode() |Scalar |Returns the start node of a relationship.
 |===
 
 === Syntax
@@ -341,6 +353,7 @@ WHERE x.friendCount = y.friendCount
 …
 
 * Pattern fragments (x:user) and (y:user) *are not* connected by edge traversal or by sharing vertex variables.
+////
 
 [#_key_differences_gsql_vs_opencypher]
 == OpenCypher vs. GSQL Schema Models

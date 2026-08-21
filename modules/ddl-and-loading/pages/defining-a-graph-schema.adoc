@@ -41,6 +41,9 @@ The TigerGraph system user designs a graph schema to fit the source data and the
 The TigerGraph system user should consider what type of relationships are of interest and what type of analysis is needed.
 The TigerGraph system lets the user modify an existing schema, so the user is not locked into the initial design decision.
 
+The choice between directed and undirected edges also affects memory usage, storage space,
+and data loading time. See xref:tutorials:schema-design-guide.adoc#_memory_and_storage_considerations[Memory and Storage Considerations] for choosing the right edge configuration for your schema.
+
 In the first schema diagram above, there are seven entities: four vertex types and three edge types.
 You may wonder why it was decided to make Occupation a separate vertex type instead of an attribute of User.
 Likewise, why is Genre a vertex type instead of an attribute of Book?  These are examples of design choices.
@@ -335,7 +338,9 @@ A `CREATE EDGE` statement must specify at least one pair of source and target ve
 In GSQL, they are often referred to as `FROM` vertex and `TO` vertex, respectively, to reflect the keywords used to define the edge type.
 
 By default, only one instance of an edge type is allowed between two vertices.
-You can add a discriminator to the edge type definition to allow for multiple instances of one edge type between two vertices.
+Some graph models require multiple edges of the same type between the same pair of vertices. These are known as *multi-edges*. For example, a person may attend the same university multiple times to earn different degrees, or a customer may place multiple orders with the same merchant.
+
+To create multi-edges, define a `DISCRIMINATOR` in the edge type. See xref:#discriminator[DISCRIMINATOR] for the syntax and implementation details.
 
 
 [tabs]

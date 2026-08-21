@@ -132,9 +132,22 @@ However, if the `USING` clause is omitted, then the entire loading job will be r
 * If a `filepath_string` is given, it overrides the `filepath_string` defined in the loading job.
 If a particular `filevar` is not assigned a `filepath_string` either in the loading job or in the `RUN LOADING JOB` statement, then an error is reported and the job exits.
 
+[NOTE]
+====
+When loading local files in a cluster, you can specify which nodes participate in loading by using one of the following formats:
+
+* `file` or `file:any` loads from any node where the file is available (default behavior).
+* `file:all` requires the file to be available on every node.
+* `file:<machine>` (for example, `file:m1`) loads from a specific node.
+* `file:<m1>\|<m2>\|<m3>` allows loading from any of the listed nodes.
+
+Choosing the appropriate node specification helps distribute loading across cluster nodes for improved parallel loading.
+====
+
 ==== `CONCURRENCY`
 
 The `CONCURRENCY` parameter sets the maximum number of concurrent requests that the loading job may send to the GPE.  The default is 256.
+Increasing `CONCURRENCY` can improve loading throughput. In a cluster, you can also increase parallelism by distributing file loading across multiple nodes using the appropriate local file specification (`file:any`, `file:all`, `file:<machine>`, or `file:<m1>\|<m2>\|<m3>`).
 
 ==== `BATCH_SIZE`
 

@@ -478,8 +478,11 @@ A `FILE` object is a sequential data storage object, associated with a text file
 
 [NOTE]
 ====
-When referring to a `FILE` object, we always capitalize the word `FILE` to distinguish it from ordinary files.
+When referring to a `FILE` object, this documentation capitalizes the word `FILE` to distinguish it from ordinary files.
 ====
+
+A `FILE` object can also point to cloud storage instead of a local file, e.g. `FILE f ("s3://bucket-name/queryoutput/output.csv");`.
+See xref:declaration-and-assignment-statements.adoc#_file_objects[FILE Object Declaration] for more details.
 
 When a `FILE` object is declared, associated with a particular text file, any existing content in the text file will be erased.
 During the execution of the query, content written to the `FILE` will be appended to the `FILE`.

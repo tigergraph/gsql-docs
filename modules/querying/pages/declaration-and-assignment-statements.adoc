@@ -396,7 +396,7 @@ Therefore, `S` must be declared as an ANY-type vertex set variable.
 [#_file_objects]
 === `FILE` objects
 
-A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
+A `FILE` object is a sequential text storage object, associated with a text file on the local machine or with a cloud storage bucket.
 
 .EBNF for FILE object declaration
 [source,ebnf]
@@ -418,6 +418,21 @@ See xref:querying:output-statements-and-file-objects.adoc#_file_println_statemen
 ----
 include::appendix:example$work_net/declaration_file_object_query.gsql[]
 ----
+
+=== S3 object
+==== Define s3 file object
+The path should start with `s3://`, followed by the bucket name and the S3 path, e.g., `s3://bucket-name/queryoutput/output.csv`. During the execution of the query, content will be uploaded to the S3 bucket. Append mode writing is not supported.
+If an S3 object with the same path already exists, it will be overwritten.
+
+For S3 access credentials, file path conflict handling, and connection error codes, see xref:write-output-to-cloud.adoc[Write Output to Cloud].
+
+[NOTE]
+====
+A `FILE` object can be passed as a parameter to another query.
+When a query receives a `FILE` object as a parameter, for a file on the local machine, it can append data to that `FILE`, as can every other query which receives this FILE object as a parameter.
+However, an S3 bucket `FILE` object cannot be appended to.
+When you write to an S3 path, any existing object will be overwritten.
+====
 
 == Assignment and Accumulate Statements
 

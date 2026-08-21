@@ -436,7 +436,7 @@ Therefore, `S` must be declared as an ANY-type vertex set variable.
 [#_file_objects]
 === `FILE` objects
 
-A `FILE` object is a sequential text storage object, associated with a text file on the local machine.
+A `FILE` object is a sequential text storage object, associated with a text file on the local machine or with a cloud storage bucket.
 
 .EBNF for FILE object declaration
 [source,ebnf]
@@ -457,8 +457,6 @@ When the query where the `FILE` object is declared finishes running, the content
 ----
 include::appendix:example$work_net/declaration_file_object_query.gsql[]
 ----
-
-
 
 == Assignment and Accumulate Statements
 

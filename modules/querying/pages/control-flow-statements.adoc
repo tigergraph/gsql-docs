@@ -161,7 +161,36 @@ CASE drink
 END
 // Since drink = "Juice", 50 will be added to calories
 ----
+=== CASE Block Syntax
+The punctuation used for statements within a CASE `THEN` or `ELSE` block depends on where the CASE statement is used.
 
+At the query-body level, statements within each `THEN` or `ELSE` block are query-body statements and are separated by semicolons. The CASE statement itself also ends with a semicolon.
+
+[source,gsql]
+----
+CASE
+  WHEN condition THEN
+    statement1;
+    statement2;
+  ELSE
+    statement3;
+    statement4;
+END;
+----
+
+At the DML-sub level, statements within each `THEN` or `ELSE` block are DML-sub statements and are separated by commas. There is no punctuation after the final statement before `END`.
+
+[source,gsql]
+----
+ACCUM CASE
+  WHEN condition THEN
+    statement1,
+    statement2
+  ELSE
+    statement3,
+    statement4
+END
+----
 
 === Examples
 

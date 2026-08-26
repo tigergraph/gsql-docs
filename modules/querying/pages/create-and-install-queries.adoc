@@ -583,9 +583,9 @@ Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, 
 
 [CAUTION]
 ====
-Installing takes several seconds for each query. The current version does not support concurrent installation and running of queries. Other concurrent graph operations will be delayed until the installation finishes.
+Installing takes several seconds for each query. Query installation and query execution cannot run concurrently: other concurrent graph operations, including running queries, are delayed until installation finishes.
 
-Concurrent `INSTALL QUERY` commands are allowed as long as only one `INSTALL QUERY` command is running on a single graph. Concurrent `INSTALL QUERY` commands are _not_ allowed on a single graph.
+Only one `INSTALL QUERY` command can run on a given graph at a time. Concurrent `INSTALL QUERY` commands are allowed only when they target different graphs.
 ====
 
 === Options

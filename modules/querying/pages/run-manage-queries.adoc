@@ -333,6 +333,149 @@ Supplying the parameters with a JSON object will look like the following. The pa
 RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 ----
 
+==== Scalar parameter examples
+
+The following examples show how to define scalar query parameters and
+pass values to queries using GSQL and RESTPP.
+
+[cols="1,3,3,4", options="header"]
+|===
+|Parameter type |Create query |Run query in GSQL |Run query in RESTPP
+
+|BOOL
+a|
+[source,gsql]
+----
+CREATE QUERY testBOOL(BOOL bool_param) {
+  PRINT bool_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testBOOL(true)
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool_param=true"
+----
+
+|DATETIME
+a|
+[source,gsql]
+----
+CREATE QUERY testDATETIME(DATETIME datetime_param) {
+  PRINT datetime_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testDATETIME("2026-08-14 20:00:00")
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME?datetime_param=2026-08-14%2020:00:00"
+----
+
+|DOUBLE
+a|
+[source,gsql]
+----
+CREATE QUERY testDOUBLE(DOUBLE double_param) {
+  PRINT double_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testDOUBLE(10.5678)
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?double_param=10.5678"
+----
+
+|FLOAT
+a|
+[source,gsql]
+----
+CREATE QUERY testFLOAT(FLOAT float_param) {
+  PRINT float_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testFLOAT(10.5)
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?float_param=10.5"
+----
+
+|INT
+a|
+[source,gsql]
+----
+CREATE QUERY testINT(INT int_param) {
+  PRINT int_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testINT(5)
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_param=5"
+----
+
+|STRING
+a|
+[source,gsql]
+----
+CREATE QUERY testSTRING(STRING string_param) {
+  PRINT string_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testSTRING("Hello")
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?string_param=Hello"
+----
+
+|UINT
+a|
+[source,gsql]
+----
+CREATE QUERY testUINT(UINT uint_param) {
+  PRINT uint_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testUINT(5)
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testUINT?uint_param=5"
+----
+|===
+
 [#_complex_type_parameter_passing]
 === Parameter format for complex types
 
@@ -430,6 +573,123 @@ vertex ID and a field `"type"` for the type of the vertex.
 
 |List/set/bag of `VERTEX<type>` |Use a JSON array containing a list of
 JSON `VERTEX<type>` objects |`[{"id": "person1"}, {"id": "person2"}]`
+|===
+
+#### Complex parameter examples
+
+The following examples show how to create and run queries with complex
+query parameter types in GSQL and through RESTPP.
+
+[cols="1,3,3,4", options="header"]
+|===
+|Parameter type |Create query |Run Query in GSQL |Run Query in RESTPP
+
+|BAG
+a|
+[source,gsql]
+----
+CREATE QUERY testBAG(BAG<INT> bag_param) {
+  PRINT bag_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testBAG([1, 2, 3, 2])
+----
+a|
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBAG?bag_param=1&bag_param=2&bag_param=3&bag_param=2"
+----
+
+|MAP
+a|
+[source,gsql]
+----
+CREATE QUERY testMAP(MAP<STRING, INT> map_param) {
+  PRINT map_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN testMAP({"keylist":["A","B"],"valuelist":[10,20]})
+----
+a|
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" \
+-d '{"map_param":{"keylist":["A","B"],"valuelist":[10,20]}}' \
+"http://127.0.0.1:14240/restpp/query/Entity_Resolution/testMAP"
+----
+
+|FILE
+a|
+[source,gsql]
+----
+CREATE QUERY testFILE(FILE file_param) {
+  PRINT file_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testFILE("/home/tigergraph/data/test.csv")
+----
+a|
+[source,bash]
+----
+curl -X GET "http://127.0.0.1:14240/restpp/query/Entity_Resolution/testFILE?file_param=%2Fhome%2Ftigergraph%2Fdata%2Ftest.csv"
+----
+
+|SET
+a|
+[source,gsql]
+----
+CREATE QUERY testSET(SET<INT> set_param) {
+  PRINT set_param;
+}
+----
+a|
+[source,gsql]
+----
+RUN QUERY testSET([1, 2, 3, 4])
+
+RUN QUERY testSET([1, 2, 3, 2])
+----
+a|
+[source,bash]
+----
+curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testSET?set_param=1&set_param=2&set_param=3&set_param=4"
+----
+
+|VERTEX
+a|
+[source,gsql]
+----
+CREATE QUERY getEntityByVertex(VERTEX<Entity> inputVertex)
+FOR GRAPH Entity_Resolution {
+  Start = {inputVertex};
+  Result = SELECT e FROM Start:e;
+  PRINT Result;
+}
+----
+a|
+If we have a vertex `Entity` whose ID is `Entity_1`, we can call the
+query as follows:
+
+[source,gsql]
+----
+RUN QUERY getEntityByVertex("Entity_1")
+----
+a|
+The same query can be called through RESTPP using the vertex ID:
+
+[source,bash]
+----
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVertex?inputVertex=Entity_1"
+----
 |===
 
 === Options

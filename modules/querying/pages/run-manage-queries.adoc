@@ -380,6 +380,11 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME?datetime_param=2026-08-14%2020:00:00"
 ----
 
+[source,bash]
+----
+curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME1" -d "datetime_param=2026-08-14 20:00:00"
+----
+
 |DOUBLE
 a|
 [source,gsql]
@@ -475,6 +480,11 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testUINT?uint_param=5"
 ----
 |===
+
+When passing a `DATETIME` value that includes a space (as in `YYYY-MM-DD HH:MM:SS`), there are two ways to send it:
+
+* With a `GET` request, the space must be URL-encoded as `%20`. Note that `%20` immediately followed by an hour like `20:00:00` can visually resemble the year "2020" when reading the raw URL — this is only a formatting coincidence and does not affect how the value is parsed.
+* With a `POST` request using `-d`, the value can be sent as plain text with a literal space, since it is part of the request body rather than the URL — no encoding is required.
 
 [#_complex_type_parameter_passing]
 === Parameter format for complex types

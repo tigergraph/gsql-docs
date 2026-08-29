@@ -702,6 +702,15 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVe
 ----
 |===
 
+Unlike `SET` or `BAG`, a `MAP<KEY_TYPE, VALUE_TYPE>` parameter cannot be passed as repeated
+query-string parameters. Because a map holds key-value pairs rather than a flat list of
+values, RESTPP requires the value to be sent as a JSON object in a `POST` request body,
+using two parallel arrays: `keylist` (the keys, in order) and `valuelist` (the corresponding
+values, in the same order).
+
+NOTE: If your curl version is older than 7.82 and does not support `--json`, use
+`-H "Content-Type: application/json" -d '...'` instead — both achieve the same result.
+
 === Options
 
 ==== All-vertex mode -av option

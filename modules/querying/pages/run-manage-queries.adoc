@@ -382,7 +382,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME?
 
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME1" -d "datetime_param=2026-08-14 20:00:00"
+curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME" -d "datetime_param=2026-08-14 20:00:00"
 ----
 
 |DOUBLE

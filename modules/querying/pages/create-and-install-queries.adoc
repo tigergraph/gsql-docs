@@ -549,7 +549,7 @@ Here is a descriptive list of DML-sub-statements:
 |===
 
 [#_install_query]
-== INSTALL QUERY
+== 
 
 [source,ebnf]
 ----
@@ -583,9 +583,9 @@ Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, 
 
 [CAUTION]
 ====
-Installing takes several seconds for each query. Query installation and query execution cannot run concurrently: other concurrent graph operations, including running queries, are delayed until installation finishes.
+Installing a query takes several seconds. Query installation and query execution cannot run concurrently on the same graph. Query execution is delayed until query installation finishes.
 
-Only one `INSTALL QUERY` command can run on a given graph at a time. Concurrent `INSTALL QUERY` commands are allowed only when they target different graphs.
+Only one `INSTALL QUERY` command can run on a given graph at a time. Concurrent `INSTALL QUERY` commands are allowed when they target different graphs.
 ====
 
 === Options

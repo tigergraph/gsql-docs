@@ -338,23 +338,79 @@ RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 The following examples show how to define scalar query parameters and
 pass values to queries using GSQL and RESTPP for Graph Entity_Resolution
 
-[cols="1,3,3,4", options="header"]
+[tabs]
+====
+GSQL::
+
+[cols="2,3", options="header"]
 |===
-|Parameter type |Create query |Run query in GSQL |Run query in RESTPP
+|Parameter type / Query signature |Run query in GSQL
 
 |BOOL
-a|
-[source,gsql]
-----
-CREATE QUERY testBOOL(BOOL bool_param) {
-  PRINT bool_param;
-}
-----
+`testBOOL(BOOL bool_param)`
 a|
 [source,gsql]
 ----
 RUN QUERY testBOOL(true)
 ----
+
+|DATETIME
+`testDATETIME(DATETIME datetime_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testDATETIME("2026-08-14 20:00:00")
+----
+
+|DOUBLE
+`testDOUBLE(DOUBLE double_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testDOUBLE(10.5678)
+----
+
+|FLOAT
+`testFLOAT(FLOAT float_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testFLOAT(10.5)
+----
+
+|INT
+`testINT(INT int_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testINT(5)
+----
+
+|STRING
+`testSTRING(STRING string_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testSTRING("Hello")
+----
+
+|UINT
+`testUINT(UINT uint_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testUINT(5)
+----
+|===
+ 
+RESTPP::
+
+[cols="2,3", options="header"]
+|===
+|Parameter type / Query signature |Run query in RESTPP
+
+|BOOL
+`testBOOL(BOOL bool_param)`
 a|
 [source,bash]
 ----
@@ -362,18 +418,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool
 ----
 
 |DATETIME
-a|
-[source,gsql]
-----
-CREATE QUERY testDATETIME(DATETIME datetime_param) {
-  PRINT datetime_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testDATETIME("2026-08-14 20:00:00")
-----
+`testDATETIME(DATETIME datetime_param)`
 a|
 [source,bash]
 ----
@@ -382,22 +427,12 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME?
 
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME" -d "datetime_param=2026-08-14 20:00:00"
+curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME" \
+-d "datetime_param=2026-08-14 20:00:00"
 ----
 
 |DOUBLE
-a|
-[source,gsql]
-----
-CREATE QUERY testDOUBLE(DOUBLE double_param) {
-  PRINT double_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testDOUBLE(10.5678)
-----
+`testDOUBLE(DOUBLE double_param)`
 a|
 [source,bash]
 ----
@@ -405,18 +440,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?do
 ----
 
 |FLOAT
-a|
-[source,gsql]
-----
-CREATE QUERY testFLOAT(FLOAT float_param) {
-  PRINT float_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testFLOAT(10.5)
-----
+`testFLOAT(FLOAT float_param)`
 a|
 [source,bash]
 ----
@@ -424,18 +448,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?flo
 ----
 
 |INT
-a|
-[source,gsql]
-----
-CREATE QUERY testINT(INT int_param) {
-  PRINT int_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testINT(5)
-----
+`testINT(INT int_param)`
 a|
 [source,bash]
 ----
@@ -443,18 +456,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_p
 ----
 
 |STRING
-a|
-[source,gsql]
-----
-CREATE QUERY testSTRING(STRING string_param) {
-  PRINT string_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testSTRING("Hello")
-----
+`testSTRING(STRING string_param)`
 a|
 [source,bash]
 ----
@@ -462,24 +464,14 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?st
 ----
 
 |UINT
-a|
-[source,gsql]
-----
-CREATE QUERY testUINT(UINT uint_param) {
-  PRINT uint_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testUINT(5)
-----
+`testUINT(UINT uint_param)`
 a|
 [source,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testUINT?uint_param=5"
 ----
 |===
+====
 
 When passing a `DATETIME` value that includes a space (as in `YYYY-MM-DD HH:MM:SS`), there are two ways to send it:
 

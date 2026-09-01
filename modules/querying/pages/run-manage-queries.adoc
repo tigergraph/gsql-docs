@@ -700,6 +700,10 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVe
 ----
 |===
 
+NOTE: `BAG` and `SET` use the same data syntax when passed as query
+parameters. A `BAG` can contain duplicate values, while a `SET` stores
+only unique values.
+
 Unlike `SET` or `BAG`, a `MAP<KEY_TYPE, VALUE_TYPE>` parameter cannot be passed as repeated
 query-string parameters. Because a map holds key-value pairs rather than a flat list of
 values, RESTPP requires the value to be sent as a JSON object in a `POST` request body,

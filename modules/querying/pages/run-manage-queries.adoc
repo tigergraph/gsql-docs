@@ -336,7 +336,7 @@ RUN QUERY greet_person( {"name": "Emma", "age": 21} )
 ==== Scalar parameter examples
 
 The following examples show how to define scalar query parameters and
-pass values to queries using GSQL and RESTPP.
+pass values to queries using GSQL and RESTPP for Graph Entity_Resolution
 
 [cols="1,3,3,4", options="header"]
 |===
@@ -588,7 +588,7 @@ JSON `VERTEX<type>` objects |`[{"id": "person1"}, {"id": "person2"}]`
 #### Complex parameter examples
 
 The following examples show how to create and run queries with complex
-query parameter types in GSQL and through RESTPP.
+query parameter types in GSQL and through RESTPP for Graph Entity_Resolution.
 
 [cols="1,3,3,4", options="header"]
 |===
@@ -611,6 +611,13 @@ a|
 [source,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBAG?bag_param=1&bag_param=2&bag_param=3&bag_param=2"
+----
+
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" \
+-d '{"bag_param": [1, 2, 3, 2]}' \
+"http://localhost:14240/restpp/query/Entity_Resolution/testBAG"
 ----
 
 |MAP
@@ -672,13 +679,20 @@ a|
 curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testSET?set_param=1&set_param=2&set_param=3&set_param=4"
 ----
 
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" \
+-d '{"set_param": [1, 2, 3, 4]}' \
+"http://localhost:14240/restpp/query/Entity_Resolution/testSET"
+----
+
 |VERTEX
 a|
 [source,gsql]
 ----
-CREATE QUERY getEntityByVertex(VERTEX<Entity> inputVertex)
+CREATE QUERY getEntityByVertex(VERTEX<Entity> vertex_param)
 FOR GRAPH Entity_Resolution {
-  Start = {inputVertex};
+  Start = {vertex_param};
   Result = SELECT e FROM Start:e;
   PRINT Result;
 }
@@ -696,7 +710,7 @@ The same query can be called through RESTPP using the vertex ID:
 
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVertex?inputVertex=Entity_1"
+curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVertex?vertex_param=Entity_1"
 ----
 |===
 

@@ -582,23 +582,66 @@ JSON `VERTEX<type>` objects |`[{"id": "person1"}, {"id": "person2"}]`
 The following examples show how to create and run queries with complex
 query parameter types in GSQL and through RESTPP for Graph Entity_Resolution.
 
-[cols="1,3,3,4", options="header"]
+[tabs]
+====
+GSQL::
+
+[cols="1,3", options="header"]
 |===
-|Parameter type |Create query |Run Query in GSQL |Run Query in RESTPP
+|Parameter type / Query signature |Run query in GSQL
 
 |BAG
-a|
-[source,gsql]
-----
-CREATE QUERY testBAG(BAG<INT> bag_param) {
-  PRINT bag_param;
-}
-----
+`testBAG(BAG<INT> bag_param)`
 a|
 [source,gsql]
 ----
 RUN QUERY testBAG([1, 2, 3, 2])
 ----
+
+|MAP
+`testMAP(MAP<STRING, INT> map_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testMAP({"keylist":["A","B"],"valuelist":[10,20]})
+----
+
+|FILE
+`testFILE(FILE file_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testFILE("/home/tigergraph/data/test.csv")
+----
+
+|SET
+`testSET(SET<INT> set_param)`
+a|
+[source,gsql]
+----
+RUN QUERY testSET([1, 2, 3, 4])
+----
+
+|VERTEX
+`getEntityByVertex(VERTEX<Entity> vertex_param)`
+a|
+If we have a vertex `Entity` whose ID is `Entity_1`, we can call the
+query as follows:
+
+[source,gsql]
+----
+RUN QUERY getEntityByVertex("Entity_1")
+----
+|===
+ 
+RESTPP::
+
+[cols="1,3", options="header"]
+|===
+|Parameter type / Query signature |Run query in RESTPP
+
+|BAG
+`testBAG(BAG<INT> bag_param)`
 a|
 [source,bash]
 ----
@@ -613,18 +656,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |MAP
-a|
-[source,gsql]
-----
-CREATE QUERY testMAP(MAP<STRING, INT> map_param) {
-  PRINT map_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN testMAP({"keylist":["A","B"],"valuelist":[10,20]})
-----
+`testMAP(MAP<STRING, INT> map_param)`
 a|
 [source,bash]
 ----
@@ -634,18 +666,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |FILE
-a|
-[source,gsql]
-----
-CREATE QUERY testFILE(FILE file_param) {
-  PRINT file_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testFILE("/home/tigergraph/data/test.csv")
-----
+`testFILE(FILE file_param)`
 a|
 [source,bash]
 ----
@@ -653,18 +674,7 @@ curl -X GET "http://127.0.0.1:14240/restpp/query/Entity_Resolution/testFILE?file
 ----
 
 |SET
-a|
-[source,gsql]
-----
-CREATE QUERY testSET(SET<INT> set_param) {
-  PRINT set_param;
-}
-----
-a|
-[source,gsql]
-----
-RUN QUERY testSET([1, 2, 3, 4])
-----
+`testSET(SET<INT> set_param)`
 a|
 [source,bash]
 ----
@@ -679,24 +689,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |VERTEX
-a|
-[source,gsql]
-----
-CREATE QUERY getEntityByVertex(VERTEX<Entity> vertex_param)
-FOR GRAPH Entity_Resolution {
-  Start = {vertex_param};
-  Result = SELECT e FROM Start:e;
-  PRINT Result;
-}
-----
-a|
-If we have a vertex `Entity` whose ID is `Entity_1`, we can call the
-query as follows:
-
-[source,gsql]
-----
-RUN QUERY getEntityByVertex("Entity_1")
-----
+`getEntityByVertex(VERTEX<Entity> vertex_param)`
 a|
 The same query can be called through RESTPP using the vertex ID:
 
@@ -705,6 +698,7 @@ The same query can be called through RESTPP using the vertex ID:
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/getEntityByVertex?vertex_param=Entity_1"
 ----
 |===
+====
 
 NOTE: `BAG` and `SET` use the same data syntax when passed as query
 parameters. A `BAG` can contain duplicate values, while a `SET` stores

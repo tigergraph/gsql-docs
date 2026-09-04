@@ -2,9 +2,9 @@
 :description: This page lists the features available for installed queries that are not available for interpreted queries.
 :page-aliases: querying:appendix-query/interpreted-gsql-limitations.adoc
 
-This page lists the limitations of GSQL's xref:querying:query-operations.adoc#interpret-a-created-query[Interpreted mode].
+This page lists the limitations of GSQL's xref:querying:run-manage-queries.adoc#interpret-a-created-query[Interpreted mode].
 
-To use the features on this page, xref:querying:query-operations.adoc#_install_query[install the query] and then run it instead.
+To use the features on this page, xref:querying:create-and-install-queries.adoc#_install_query[install the query] and then run it instead.
 
 == Unsupported Features in Interpreted Mode
 

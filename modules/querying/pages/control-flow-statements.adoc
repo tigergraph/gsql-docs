@@ -17,7 +17,7 @@ In a _queryBodyStmts_ block, each individual statement ends with a semicolon, so
 If the control flow statement is at the DML-sub level, then its block(s) of statements are DML-sub statements ( _dmlSubStmtList_ ).
 In a _dmlSubStmtList_ block, a comma separates statements, but there is no punctuation at the end.
 
-For more detailed general examples of the difference between query-body statements and DML-sub statements, see xref:query-operations.adoc#_statement_types[statement types].
+For more detailed general examples of the difference between query-body statements and DML-sub statements, see xref:create-and-install-queries.adoc#_statement_types[statement types].
 
 == `IF` Statement
 

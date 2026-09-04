@@ -23,7 +23,7 @@ Query Language Options:
 GSQL is xref:index.adoc[TigerGraph's original native language].
 it offers graph traversal and pattern matching queries using declarative syntax similar to SQL, extends it for procedural programming to enable more complex algorithmic querying, adds _xref:querying:accumulators.adoc[accumulators]_ for efficient analytics, and installs (pre-compiles) queries to optimize the execution performance.
 
-GSQL is more than just for xref:querying:query-operations.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition].
+GSQL is more than just for xref:querying:run-manage-queries.adoc[querying] and xref:ddl-and-loading:defining-a-graph-schema.adoc[schema definition].
 It also includes a xref:ddl-and-loading:index.adoc[data loading language] to define stored procedures (jobs) that map and transform data from tabular sources to a graph.
 
 === OpenCypher

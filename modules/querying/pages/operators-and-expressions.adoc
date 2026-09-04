@@ -439,7 +439,7 @@ name "." attrName // read/write. Accesses attribute called attrName
 .Dynamic query support
 [NOTE]
 ====
-The name of the attribute can be parameterized using the *getAttr* and *setAttr* xref:querying:func/vertex-methods.adoc[vertex functions], described later in this section. This allows you to write xref:querying:query-operations.adoc#_dynamic_querying[dynamic query] procedures where the attribute names are specified when you run the query.
+The name of the attribute can be parameterized using the *getAttr* and *setAttr* xref:querying:func/vertex-methods.adoc[vertex functions], described later in this section. This allows you to write xref:querying:create-and-install-queries.adoc#_dynamic_querying[dynamic query] procedures where the attribute names are specified when you run the query.
 ====
 
 For example, the following code snippet shows two different `SELECT` statements which produce equivalent results.
@@ -679,7 +679,7 @@ A subquery must be installed either before or in the same `INSTALL QUERY` comman
 
 
 === Subquery Limitations
-* xref:query-operations.adoc#_interpret_query[Interpreted mode] is not supported.
+* xref:run-manage-queries.adoc#_interpret_query[Interpreted mode] is not supported.
 * A xref:distributed-query-mode.adoc[distributed query] cannot call another distributed query
 * A non-distributed query cannot call a distributed query in an `ACCUM` or `POST-ACCUM` clause.
 

@@ -1,7 +1,7 @@
 = Run and Manage Queries
 :navtitle: RUN/MANAGE QUERY
 :description: Commands in the GSQL query language for interpreting, running, and managing queries.
-:page-aliases: query-operations.adoc
+:page-aliases: run-queries.adoc, query-operations.adoc
 :pp: {plus}{plus}
 :toc:
 
@@ -82,7 +82,7 @@ See the xref:{page-component-version}@tigergraph-server:API:index.adoc[RESTPP AP
 
 There are some limitations to Interpreted Mode. See the section on <<Interpret a created query>> and the appendix section xref:appendix:interpreted-gsql-limitations.adoc[Interpreted GSQL Limitations].
 
-== `INTERPRET QUERY`
+== INTERPRET QUERY
 
 `INTERPRET QUERY` runs a query by translating it line-by-line.
 This is in contrast to the 2-step flow to <<_install_query,install a query>> first and then <<_run_query,run the query>>.

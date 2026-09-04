@@ -23,9 +23,9 @@ To see the different between the legacy version and V2, see xref:querying:syntax
 
 == Query operations
 
-A typical workflow for working with GSQL queries is to xref:query-operations.adoc#_create_query[create the query], xref:query-operations.adoc#_install_query[install the query], and then xref:query-operations.adoc#_run_query[run the query].
+A typical workflow for working with GSQL queries is to xref:create-and-install-queries.adoc#_create_query[create the query], xref:create-and-install-queries.adoc#_install_query[install the query], and then xref:run-manage-queries.adoc#_run_query[run the query].
 
-GSQL also supports xref:query-operations.adoc#interpret-a-created-query[interpreting a query], which allows users to skip query installation and execute the query directly.
+GSQL also supports xref:run-manage-queries.adoc#interpret-a-created-query[interpreting a query], which allows users to skip query installation and execute the query directly.
 
 == Query Descriptions
 
@@ -37,7 +37,7 @@ Here you will find the procedures for updating, showing, and dropping descriptio
 The following pages describes the syntax of the GSQL Query Language:
 
 * xref:data-types.adoc[]
-* xref:query-operations.adoc[]
+* xref:run-manage-queries.adoc[Run and Manage Queries]
 * xref:data-types.adoc[]
 * xref:accumulators.adoc[]
 * xref:operators-and-expressions.adoc[]

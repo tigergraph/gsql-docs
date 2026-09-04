@@ -279,7 +279,7 @@ Syntax v2 has a specific semantic meaning for the arrowheads.
 ** *`"_"`* or *`"ANY"`* or <blank>, which means any edge/vertex.
 ** a named type (*`edgeType`* or *`vertexType`*)
 ** a global SetAccum accumulator containing a set of edges or vertices (*`"@@"accumName`*)
-** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:query-operations.adoc[*Dynamic Querying*].
+** a string or string set parameter which names one or more edge or vertex types  (*`paramName`*) This parameterized type is one aspect of xref:querying:create-and-install-queries.adoc[*Dynamic Querying*].
 ** A list of types, string parameters, or global accumulators, e.g., *`"(" edgeSetType ["|" edgeSetType]* ")"`*
 ** The list of types must contain the same type of specifiers.
 +

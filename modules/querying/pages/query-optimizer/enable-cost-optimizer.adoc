@@ -114,7 +114,7 @@ For best results, compute the histogram data for every attribute referenced in a
 === Install query with `-COST` option
 
 Now that the relevant statistics are available to the query optimizer, you can install the query with cost-based optimization.
-To use the cost-based optimization during installation, use the xref:query-operations.adoc#_install_query[`-COST` option] when installing the query.
+To use the cost-based optimization during installation, use the xref:create-and-install-queries.adoc#_install_query[`-COST` option] when installing the query.
 
 For example, to install the query `example3`, run `INSTALL QUERY -COST example3`.
 

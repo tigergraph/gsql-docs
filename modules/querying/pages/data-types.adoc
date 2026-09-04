@@ -646,7 +646,7 @@ parameterType := INT
 (STRING name, BAG<INT> ids, SET<VERTEX<person>> friends, FILE f1)
 ----
 
-For how to declare the parameters in a query, see xref:querying:run-manage-queries.adoc#_parameters[CREATE QUERY: parameterList].
+For how to declare the parameters in a query, see xref:querying:create-and-install-queries.adoc#_create_query_syntax_elements[CREATE QUERY: parameterList].
 
 For how to run a query, see
 

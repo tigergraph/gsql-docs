@@ -3,8 +3,34 @@
 :description: the CREATE QUERY and INSTALL QUERY commands in GSQL, key stages for developing optimized TigerGraph queries.
 :toc:
 
-This page describes the <<#_create_query>> and <<#_install_query>> commands, the steps that precede running an installed (compiled) procedural query.
-See
+== Query workflows
+
+GSQL provides three workflows for executing queries:
+
+[cols="1,2,2", options="header"]
+|===
+|Workflow |Description |Considerations
+
+|`CREATE QUERY` > `INSTALL QUERY` > `RUN QUERY`
+|Create and save a named query, install it to compile it, and then run the installed query.
+|Best for queries that are run repeatedly. Installation provides better execution performance than interpreting a query, but requires an additional installation step.
+
+|`CREATE QUERY` > `INTERPRET QUERY`
+|Create and save a named query, then execute it directly without installing it.
+|Useful when developing or testing a named query. The query does not need to be installed, but interpreted execution has limitations compared with installed queries.
+
+|`INTERPRET QUERY`
+|Define and execute an anonymous query directly without saving or installing it.
+|Useful for quick, one-off queries and experimentation. The query is not saved for later execution.
+|===
+
+The commands described on this page and the xref:run-manage-queries.adoc[Run and Manage Queries] page support one or more of these workflows.
+
+This page covers the *build phase* of the query lifecycle: defining, compiling, and installing GSQL queries.
+
+To interpret, run, and manage queries during the *query use phase*, see xref:run-manage-queries.adoc[Run and Manage Queries].
+
+It describes the <<_create_query>> and <<_install_query>> commands used to prepare procedural queries for execution.
 
 [#_create_query]
 == CREATE QUERY
@@ -73,7 +99,7 @@ queryBody := [typedefs] [declExceptStmts] queryBodyStmts
 
 
 
-=== Key Parts of CREATE QUERY
+=== CREATE QUERY syntax elements
 
 `OR REPLACE`::
 
@@ -181,7 +207,8 @@ Schema details -- the name of the graph, vertex types, edge types, and attribute
 
 Here are the ingredients for a dynamic query:
 
-* *Graph name:* When xref:querying:query-operations.adoc#_create_query[creating a query], *`FOR GRAPH graphName`* is optional, as long as the graph has been specified already.
+* *Graph name:* When <<_create_query,creating a query>>, *`FOR GRAPH graphName`* is optional.
+Queries are usually written to fit a specific graph schema, so specifying `FOR GRAPH` is helpful for self-documentation.
 The graph name can be specified either when entering GSQL: *`GSQL -g graphName [<gsql_command>]`* or once inside the GSQL shell, by using the *`USE GRAPH graphName`* command.
 * *Vertex type and edge type in `SELECT` statements*.
 Typically, the xref:querying:select-statement/index.adoc#_from_clause[`FROM` clause] mentions the name of specific vertex types and edge types.
@@ -265,7 +292,7 @@ If a query is saved as a draft before it reaches valid status, any queries that 
 ====
 If a user creates a query, this user becomes the owner of this query automatically.
 
-For a detailed description, please refer to xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc
+For a detailed description, please refer to xref:{page-component-version}@tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-Grained Query Privileges].
 ====
 
 [#_statement_types]
@@ -521,4 +548,132 @@ Here is a descriptive list of DML-sub-statements:
 | See "Output Statements"
 |===
 
-## INSTALL QUERY
+[#_install_query]
+== INSTALL QUERY
+
+[source,ebnf]
+----
+installQuery := INSTALL QUERY [installOptions] ( "*" | ALL | queryName ["," queryName]* )
+----
+
+Required privilege:
+INSTALL_QUERY
+
+`INSTALL QUERY` installs a query or multiple queries on a graph.
+Installing a query compiles the procedures described by the query as well as generates a xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_get[REST endpoint] for running the query.
+
+Installing a query allows the query to be run through the `RUN QUERY` command as well as through its REST endpoint, both offering stronger performance as compared to running the query through the `INTERPRET QUERY` command.
+The `INSTALL QUERY` command will install the queries specified, with query names separated by a comma.
+
+If a query calls a xref:querying:operators-and-expressions.adoc#_subqueries[subquery], the query can only be installed after one of the following conditions is met:
+
+* The subquery has already been installed
+* The subquery is being installed in the same `INSTALL QUERY` command as the query itself
+
+If a subquery that was previously installed is dropped from the graph, all installed queries that call the subquery will be disabled. To re-enable a disabled query, all its subqueries need to be installed with the same parameters and return type.
+
+When a single `INSTALL QUERY` command installs multiple queries, each query is installed independently. If one query fails to be installed, it will not affect the installation of other queries.
+
+To install a query, the user needs to have the `INSTALL_QUERY` privilege on the given query and subqueries that need to be installed in order to install given query. If a subquery has already been installed, then the user is not required to have `INSTALL_QUERY` privilege on it.
+
+Users can also install all uninstalled queries on a graph with `INSTALL QUERY`, using either of the following commands:
+
+* `INSTALL QUERY *`
+* `INSTALL QUERY ALL`
+
+[CAUTION]
+====
+Installing a query takes several seconds. Query installation and query execution cannot run concurrently on the same graph. Query execution is delayed until query installation finishes.
+
+Only one `INSTALL QUERY` command can run on a given graph at a time. Concurrent `INSTALL QUERY` commands are allowed when they target different graphs.
+====
+
+=== Options
+
+`INSTALL QUERY` offers the following options:
+
+[cols=",6", options="header"]
+|===
+
+|Option|Effect
+
+|`-COST`
+a|Install and optimize the query using xref:query-optimizer/index.adoc[cost-based optimization].
+The optimizer uses various statistics to generate an efficient traversal plan when compiling a query.
+You can benefit from this option if your query uses a `FROM` clause that uses a xref:select-statement/index.adoc#_path_pattern[path pattern].
+
+[NOTE]
+====
+* This option can be used together with other options, but it must come after the other options.
+For example, you cannot run `INSTALL QUERY -COST -FORCE ALL`, it must be `INSTALL QUERY -FORCE -COST ALL`
+* This is a *Preview feature* and should not be used in production.
+====
+
+|`-FORCE`
+|Re-install the query even if the system indicates the
+query is already installed.
+This is useful for overwriting an installation that is outdated or otherwise incorrect.
+If this option is not used, the GSQL shell will refuse to re-install a query that is already installed.
+
+|`-SINGLE`
+a|Apply the same engine framework used for distributed queries, even on a single server. Equivalent to the `single_gpr` session parameter described at xref:ddl-and-loading:system-and-language-basics.adoc#_session_parameters[Session Parameters].
+
+NOTE: This option treats the loop variable in a `xref:querying:control-flow-statements.adoc#_foreach_statement[FOREACH` loop] as a copy.
+Updating the loop variable (copy) in the `FOREACH` block will not affect the actual loop variable.
+
+|===
+
+=== Optimize installed queries
+
+`INSTALL QUERY -OPTIMIZE`
+
+WARNING: This feature is deprecated and support for it will be dropped in a future version.
+
+Users can run `INSTALL QUERY -OPTIMIZE` to optimize all installed queries.
+The names of the individual queries are not needed.
+This operation optimizes all previously installed queries, reducing their run times by about 20%.
+Optimize a query if query run time is more important to you than query installation time.
+
+=== Log output
+The following logs are displayed when installing queries:
+
+* *Installation summary*: A summary line prints when installation
+finishes, showing the total count of succeeded, skipped, and
+failed queries.
+
+* *Failure report*: A report of all skipped or failed queries
+is generated after installation completes.
+
+* *Elapsed time*: The progress bar displays elapsed time during
+installation.
+
+* *Estimated time*: The estimated completion time updates based on
+the number of queries being installed.
+
+.Example
+[source,console]
+----
+Installing 6 queries in graph 'my_graph'.
+Start installing queries, about 1 minute ...
+
+Warning: These queries below in the graph 'my_graph' cannot be
+correctly installed: [query_with_error]
+For more information, please check log at node 'm1':
+  /home/tigergraph/tigergraph/gsql-checker-log/ERROR.20260327-120426.340
+
+[======================================================================] 100% (5/5) elapsed 0:34
+
+Query installation summary for graph 'my_graph':
+  succeeded: 5, skipped: 0, failed: 1.
+Query installation failure report written to
+  gsql-checker-log/FailedQueryReport/QUERY_INSTALLATION_REPORT.20260327-120517.json
+Query installation finished.
+----
+
+[NOTE]
+====
+These logs are also displayed when installing queries during a TigerGraph upgrade.
+====
+
+Once a query is installed, run it with `RUN QUERY`, or manage it with `SHOW QUERY` / `DROP QUERY`.
+See xref:run-manage-queries.adoc#_run_query[RUN QUERY] on the xref:run-manage-queries.adoc[Run and Manage Queries] page.

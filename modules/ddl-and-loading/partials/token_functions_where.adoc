@@ -17,7 +17,7 @@
 | `INT`
 | Returns the length of _main_string._
 
-| xref:functions/token_where/gsql_is_not_empty.adoc[gsql_is_not_empty_string( _main_string_ )]
+| xref:functions/token_where/gsql_is_not_empty_string.adoc[gsql_is_not_empty_string( _main_string_ )]
 | `BOOL`
 | Returns true if _main_string_ is empty after removing white space. Returns false otherwise.
 

@@ -415,7 +415,7 @@ RESTPP::
 |BOOL
 `testBOOL(BOOL bool_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool_param=true"
 ----
@@ -423,12 +423,12 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool
 |DATETIME
 `testDATETIME(DATETIME datetime_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME?datetime_param=2026-08-14%2020:00:00"
 ----
 
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME" \
 -d "datetime_param=2026-08-14 20:00:00"
@@ -437,7 +437,7 @@ curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME
 |DOUBLE
 `testDOUBLE(DOUBLE double_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?double_param=10.5678"
 ----
@@ -445,7 +445,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?do
 |FLOAT
 `testFLOAT(FLOAT float_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?float_param=10.5"
 ----
@@ -453,7 +453,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?flo
 |INT
 `testINT(INT int_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_param=5"
 ----
@@ -461,7 +461,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_p
 |STRING
 `testSTRING(STRING string_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?string_param=Hello"
 ----
@@ -469,7 +469,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?st
 |UINT
 `testUINT(UINT uint_param)`
 a|
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testUINT?uint_param=5"
 ----

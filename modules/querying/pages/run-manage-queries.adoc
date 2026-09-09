@@ -645,7 +645,7 @@ RESTPP::
 --
 [cols="1,3", options="header"]
 |===
-|Parameter type / Query signature |Run query in RESTPP
+|Parameter type \| Query signature |Run query in RESTPP
 
 |BAG +
 `testBAG(BAG<INT> bag_param)`

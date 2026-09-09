@@ -347,8 +347,7 @@ GSQL::
 |===
 |Parameter type \| Query signature |Run query in GSQL
 
-|BOOL
-+
+|BOOL +
 `testBOOL(BOOL bool_param)`
 a|
 [source,gsql]
@@ -356,8 +355,7 @@ a|
 RUN QUERY testBOOL(true)
 ----
 
-|DATETIME
-+
+|DATETIME +
 `testDATETIME(DATETIME datetime_param)`
 a|
 [source,gsql]
@@ -365,8 +363,7 @@ a|
 RUN QUERY testDATETIME("2026-08-14 20:00:00")
 ----
 
-|DOUBLE
-+
+|DOUBLE +
 `testDOUBLE(DOUBLE double_param)`
 a|
 [source,gsql]
@@ -374,8 +371,7 @@ a|
 RUN QUERY testDOUBLE(10.5678)
 ----
 
-|FLOAT
-+
+|FLOAT +
 `testFLOAT(FLOAT float_param)`
 a|
 [source,gsql]
@@ -383,8 +379,7 @@ a|
 RUN QUERY testFLOAT(10.5)
 ----
 
-|INT
-+
+|INT +
 `testINT(INT int_param)`
 a|
 [source,gsql]
@@ -392,8 +387,7 @@ a|
 RUN QUERY testINT(5)
 ----
 
-|STRING
-+
+|STRING +
 `testSTRING(STRING string_param)`
 a|
 [source,gsql]
@@ -401,8 +395,7 @@ a|
 RUN QUERY testSTRING("Hello")
 ----
 
-|UINT
-+
+|UINT +
 `testUINT(UINT uint_param)`
 a|
 [source,gsql]
@@ -419,8 +412,7 @@ RESTPP::
 |===
 |Parameter type \| Query signature |Run query in RESTPP
 
-|BOOL
-+
+|BOOL +
 `testBOOL(BOOL bool_param)`
 a|
 [source.wrap,bash]
@@ -428,8 +420,7 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool_param=true"
 ----
 
-|DATETIME
-+
+|DATETIME +
 `testDATETIME(DATETIME datetime_param)`
 a|
 [source.wrap,bash]
@@ -443,8 +434,7 @@ curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME
 -d "datetime_param=2026-08-14 20:00:00"
 ----
 
-|DOUBLE
-+
+|DOUBLE +
 `testDOUBLE(DOUBLE double_param)`
 a|
 [source.wrap,bash]
@@ -452,8 +442,7 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?double_param=10.5678"
 ----
 
-|FLOAT
-+
+|FLOAT +
 `testFLOAT(FLOAT float_param)`
 a|
 [source.wrap,bash]
@@ -461,8 +450,7 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?float_param=10.5"
 ----
 
-|INT
-+
+|INT +
 `testINT(INT int_param)`
 a|
 [source.wrap,bash]
@@ -470,8 +458,7 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_param=5"
 ----
 
-|STRING
-+
+|STRING +
 `testSTRING(STRING string_param)`
 a|
 [source.wrap,bash]
@@ -479,8 +466,7 @@ a|
 curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?string_param=Hello"
 ----
 
-|UINT
-+
+|UINT +
 `testUINT(UINT uint_param)`
 a|
 [source.wrap,bash]
@@ -609,8 +595,7 @@ GSQL::
 |===
 |Parameter type \| Query signature |Run query in GSQL
 
-|BAG
-+
+|BAG +
 `testBAG(BAG<INT> bag_param)`
 a|
 [source,gsql]
@@ -618,8 +603,7 @@ a|
 RUN QUERY testBAG([1, 2, 3, 2])
 ----
 
-|MAP
-+
+|MAP +
 `testMAP(MAP<STRING, INT> map_param)`
 a|
 [source,gsql]
@@ -627,8 +611,7 @@ a|
 RUN QUERY testMAP({"keylist":["A","B"],"valuelist":[10,20]})
 ----
 
-|FILE
-+
+|FILE +
 `testFILE(FILE file_param)`
 a|
 [source,gsql]
@@ -636,8 +619,7 @@ a|
 RUN QUERY testFILE("/home/tigergraph/data/test.csv")
 ----
 
-|SET
-+
+|SET +
 `testSET(SET<INT> set_param)`
 a|
 [source,gsql]
@@ -645,8 +627,7 @@ a|
 RUN QUERY testSET([1, 2, 3, 4])
 ----
 
-|VERTEX
-+
+|VERTEX +
 `getEntityByVertex(VERTEX<Entity> vertex_param)`
 a|
 If we have a vertex `Entity` whose ID is `Entity_1`, we can call the
@@ -666,8 +647,7 @@ RESTPP::
 |===
 |Parameter type / Query signature |Run query in RESTPP
 
-|BAG
-+
+|BAG +
 `testBAG(BAG<INT> bag_param)`
 a|
 [source,bash]
@@ -682,8 +662,7 @@ curl -X POST -H "Content-Type: application/json" \
 "http://localhost:14240/restpp/query/Entity_Resolution/testBAG"
 ----
 
-|MAP
-+
+|MAP +
 `testMAP(MAP<STRING, INT> map_param)`
 a|
 [source,bash]
@@ -693,8 +672,7 @@ curl -X POST -H "Content-Type: application/json" \
 "http://127.0.0.1:14240/restpp/query/Entity_Resolution/testMAP"
 ----
 
-|FILE
-+
+|FILE +
 `testFILE(FILE file_param)`
 a|
 [source,bash]
@@ -702,8 +680,7 @@ a|
 curl -X GET "http://127.0.0.1:14240/restpp/query/Entity_Resolution/testFILE?file_param=%2Fhome%2Ftigergraph%2Fdata%2Ftest.csv"
 ----
 
-|SET
-+
+|SET +
 `testSET(SET<INT> set_param)`
 a|
 [source,bash]
@@ -718,8 +695,7 @@ curl -X POST -H "Content-Type: application/json" \
 "http://localhost:14240/restpp/query/Entity_Resolution/testSET"
 ----
 
-|VERTEX
-+
+|VERTEX +
 `getEntityByVertex(VERTEX<Entity> vertex_param)`
 a|
 The same query can be called through RESTPP using the vertex ID:

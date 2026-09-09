@@ -345,9 +345,10 @@ GSQL::
 --
 [cols="2,3", options="header"]
 |===
-|Parameter type / Query signature |Run query in GSQL
+|Parameter type \| Query signature |Run query in GSQL
 
 |BOOL
++
 `testBOOL(BOOL bool_param)`
 a|
 [source,gsql]
@@ -356,6 +357,7 @@ RUN QUERY testBOOL(true)
 ----
 
 |DATETIME
++
 `testDATETIME(DATETIME datetime_param)`
 a|
 [source,gsql]
@@ -364,6 +366,7 @@ RUN QUERY testDATETIME("2026-08-14 20:00:00")
 ----
 
 |DOUBLE
++
 `testDOUBLE(DOUBLE double_param)`
 a|
 [source,gsql]
@@ -372,6 +375,7 @@ RUN QUERY testDOUBLE(10.5678)
 ----
 
 |FLOAT
++
 `testFLOAT(FLOAT float_param)`
 a|
 [source,gsql]
@@ -380,6 +384,7 @@ RUN QUERY testFLOAT(10.5)
 ----
 
 |INT
++
 `testINT(INT int_param)`
 a|
 [source,gsql]
@@ -388,6 +393,7 @@ RUN QUERY testINT(5)
 ----
 
 |STRING
++
 `testSTRING(STRING string_param)`
 a|
 [source,gsql]
@@ -396,6 +402,7 @@ RUN QUERY testSTRING("Hello")
 ----
 
 |UINT
++
 `testUINT(UINT uint_param)`
 a|
 [source,gsql]
@@ -410,9 +417,10 @@ RESTPP::
 --
 [cols="2,3", options="header"]
 |===
-|Parameter type / Query signature |Run query in RESTPP
+|Parameter type \| Query signature |Run query in RESTPP
 
 |BOOL
++
 `testBOOL(BOOL bool_param)`
 a|
 [source.wrap,bash]
@@ -421,6 +429,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testBOOL?bool
 ----
 
 |DATETIME
++
 `testDATETIME(DATETIME datetime_param)`
 a|
 [source.wrap,bash]
@@ -435,6 +444,7 @@ curl -X POST "http://localhost:14240/restpp/query/Entity_Resolution/testDATETIME
 ----
 
 |DOUBLE
++
 `testDOUBLE(DOUBLE double_param)`
 a|
 [source.wrap,bash]
@@ -443,6 +453,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testDOUBLE?do
 ----
 
 |FLOAT
++
 `testFLOAT(FLOAT float_param)`
 a|
 [source.wrap,bash]
@@ -451,6 +462,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testFLOAT?flo
 ----
 
 |INT
++
 `testINT(INT int_param)`
 a|
 [source.wrap,bash]
@@ -459,6 +471,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testINT?int_p
 ----
 
 |STRING
++
 `testSTRING(STRING string_param)`
 a|
 [source.wrap,bash]
@@ -467,6 +480,7 @@ curl -X GET "http://localhost:14240/restpp/query/Entity_Resolution/testSTRING?st
 ----
 
 |UINT
++
 `testUINT(UINT uint_param)`
 a|
 [source.wrap,bash]
@@ -593,9 +607,10 @@ GSQL::
 --
 [cols="1,3", options="header"]
 |===
-|Parameter type / Query signature |Run query in GSQL
+|Parameter type \| Query signature |Run query in GSQL
 
 |BAG
++
 `testBAG(BAG<INT> bag_param)`
 a|
 [source,gsql]
@@ -604,6 +619,7 @@ RUN QUERY testBAG([1, 2, 3, 2])
 ----
 
 |MAP
++
 `testMAP(MAP<STRING, INT> map_param)`
 a|
 [source,gsql]
@@ -612,6 +628,7 @@ RUN QUERY testMAP({"keylist":["A","B"],"valuelist":[10,20]})
 ----
 
 |FILE
++
 `testFILE(FILE file_param)`
 a|
 [source,gsql]
@@ -620,6 +637,7 @@ RUN QUERY testFILE("/home/tigergraph/data/test.csv")
 ----
 
 |SET
++
 `testSET(SET<INT> set_param)`
 a|
 [source,gsql]
@@ -628,6 +646,7 @@ RUN QUERY testSET([1, 2, 3, 4])
 ----
 
 |VERTEX
++
 `getEntityByVertex(VERTEX<Entity> vertex_param)`
 a|
 If we have a vertex `Entity` whose ID is `Entity_1`, we can call the
@@ -648,6 +667,7 @@ RESTPP::
 |Parameter type / Query signature |Run query in RESTPP
 
 |BAG
++
 `testBAG(BAG<INT> bag_param)`
 a|
 [source,bash]
@@ -663,6 +683,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |MAP
++
 `testMAP(MAP<STRING, INT> map_param)`
 a|
 [source,bash]
@@ -673,6 +694,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |FILE
++
 `testFILE(FILE file_param)`
 a|
 [source,bash]
@@ -681,6 +703,7 @@ curl -X GET "http://127.0.0.1:14240/restpp/query/Entity_Resolution/testFILE?file
 ----
 
 |SET
++
 `testSET(SET<INT> set_param)`
 a|
 [source,bash]
@@ -696,6 +719,7 @@ curl -X POST -H "Content-Type: application/json" \
 ----
 
 |VERTEX
++
 `getEntityByVertex(VERTEX<Entity> vertex_param)`
 a|
 The same query can be called through RESTPP using the vertex ID:

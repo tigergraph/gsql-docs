@@ -522,6 +522,24 @@ RUN QUERY <queryName> -gzip -o "/path/to/zip.gz"
 
 NOTE: This option only works for installed queries. See xref:tigergraph-server:API:index.adoc#_response_size[Response size] for details on when compression is applied.
 
+==== Zstd compression
+
+Use the `-zstd` option with `RUN QUERY` to request a zstd-compressed response. Use the `-o` option to specify the output file path.
+
+[source,gsql]
+----
+RUN QUERY <queryName> -zstd -o "/path/to/out.zst"
+----
+
+NOTE: This option only works for installed queries.
+
+The default zstd compression level is `3`. To change the compression level, set the `ZSTD_COMPRESSION_LEVEL` environment variable in `RESTPP.BasicConfig.Env`. For example:
+
+[source,text]
+----
+ZSTD_COMPRESSION_LEVEL=4
+----
+
 == GSQL Query output format
 
 The standard output of GSQL queries is in industry-standard JSON format. A JSON *object* is an unordered set of *key-value pairs*, enclosed in curly braces. Among the acceptable data types for a JSON *value* are *array* and *object*. A JSON *array* is an ordered list of *values*, enclosed in square brackets. Since values can be objects or arrays, JSON supports hierarchical, nested structures. Strings are enclosed in double quotation marks. We also use the term *field* to refer to a key (or a key-value pair) of a given object.

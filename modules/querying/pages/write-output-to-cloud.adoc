@@ -158,7 +158,7 @@ or
 [source,bash]
 ----
 gsql -g <graph-name> "set query_timeout=7200000
-                      set s3_assume_role=\"<RoleARN>\";
+                      set s3_assume_role=\"<RoleARN>\"
                       set s3_region = \"<region>\"
                       set s3_endpoint = \"http://<your-s3-host>\"
                       run query <query-name>(\"s3://<bucket-name>/<file-path>\")"

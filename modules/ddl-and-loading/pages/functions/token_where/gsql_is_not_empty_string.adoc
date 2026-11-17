@@ -1,0 +1,24 @@
+:page-aliases: gsql_is_not_empty.adoc
+
+= gsql_is_not_empty_string()
+
+Returns true if a string is not empty after removing all white space.
+Returns false otherwise.
+This function does not alter the input token.
+
+== Syntax
+
+`gsql_is_not_empty_string(token)`
+
+== Return value
+
+`BOOL`
+Returns `true` if the string is not empty after removing all white space.
+Returns `false` otherwise.
+
+== Example
+
+----
+gsql_is_not_empty_string("h e ll o") -> true
+gsql_is_not_empty_string("     ")   -> false
+----
